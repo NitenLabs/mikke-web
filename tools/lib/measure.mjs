@@ -36,7 +36,7 @@ async function measureInBrowser(browserType, reqs, fontUrl, rootVars) {
     .join("\n");
   const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8">
 ${fontUrl ? `<link rel="stylesheet" href="${fontUrl}">` : ""}
-<style>:root{${rootVars.join("")}}
+<style>:root{font-size:10px;${rootVars.join("")}}
 ${MEASURE_CSS}</style></head><body>${boxes}</body></html>`;
 
   const launchOpts = browserType === chromium && process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {};
