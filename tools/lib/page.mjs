@@ -3,7 +3,7 @@
 import { computeSectionBackgrounds } from "./sections.mjs";
 import { repeaterLayout, designWidth, esc, rem, pct, boxWidthPx, ratioHeightPx } from "./render.mjs";
 import {
-  makeLinkResolver, makePageHref, layoutSection, elementHtml, repeaterHtml, elementCss, mq,
+  makeLinkResolver, makePageHref, layoutSection, elementHtml, repeaterHtml, elementCss, mq, elToReflow,
 } from "./emit.mjs";
 import { colorCss, themeRootVars, textStyle } from "./theme.mjs";
 import { googleFontsUrl } from "./fonts.mjs";
@@ -54,6 +54,17 @@ main{display:block}
 .el-shape-line{height:1px}
 .el-rep{position:absolute}
 .rep-card,.rep-head{position:absolute}
+/* 開閉式（accordion）：details/summary。JSなしでも開閉でき、開くと下がずれる（reflow） */
+.el-acc .acc-item{border-top:1px solid var(--c-surface)}
+.el-acc .acc-item:last-child{border-bottom:1px solid var(--c-surface)}
+.el-acc summary{list-style:none;cursor:pointer;padding:1.4rem 0;position:relative;font-family:var(--f-heading);font-weight:500;color:var(--c-text);line-height:1.4;letter-spacing:.1em}
+.el-acc summary::-webkit-details-marker{display:none}
+.el-acc summary::after{content:"＋";position:absolute;right:0;top:1.4rem;color:var(--c-accent)}
+.el-acc details[open] summary::after{content:"−"}
+.el-acc .acc-a{padding:0 0 1.4rem;font-family:var(--f-body);color:var(--c-text);line-height:1.8}
+.el-acc details:not([open]) .acc-a{display:none}
+${mq.pc}{.el-acc summary{font-size:1.8rem}.el-acc .acc-a{font-size:1.6rem}}
+${mq.sp}{.el-acc summary{font-size:1.6rem}.el-acc .acc-a{font-size:1.4rem}}
 .rep-card{overflow:hidden}
 .site-header{position:sticky;top:0;z-index:1000}
 /* ヘッダーを重ねる（FVの暗い写真に透明で重ねる）：最初のセクションの上に絶対配置し、スクロールで流れる */
@@ -134,6 +145,51 @@ if(document.fonts&&document.fonts.ready){document.fonts.ready.then(correct);}els
 document.querySelectorAll('.el-form').forEach(function(f){
   f.addEventListener('submit',function(e){ e.preventDefault(); var n=f.querySelector('.fnote'); if(n) n.hidden=false; });
 });
+// (4) 開閉式（accordion）：開閉したら reflow.mjs の規則で下の要素をずらし、セクションを伸縮させる
+(function(){
+  var data=document.getElementById('__accreflow'); if(!data) return;
+  var SECS; try{ SECS=JSON.parse(data.textContent); }catch(e){ return; }
+  // reflow.mjs と同じ規則（インライン版）
+  function reflowJS(els, sectionMinH){
+    var EPS=1, END={id:"__end",x:0,w:100,y:sectionMinH,h:0,actualH:0}, all=els.concat([END]);
+    var bottom=function(e){return e.y+e.h;};
+    var overlapX=function(a,b){return a.x<b.x+b.w-0.01&&b.x<a.x+a.w-0.01;};
+    var above=function(a,b){return a!==b&&bottom(a)<=b.y+EPS&&overlapX(a,b);};
+    var contains=function(q,p){return q!==p&&overlapX(q,p)&&q.y<=p.y+EPS&&bottom(q)>=bottom(p)-EPS;};
+    var preds=new Map(all.map(function(b){return [b, els.filter(function(a){return above(a,b);})];}));
+    var direct=new Map(all.map(function(b){var ps=preds.get(b);return [b, ps.filter(function(p){return !ps.some(function(q){return q!==p&&above(p,q);});})];}));
+    var succ=new Map(els.map(function(a){return [a, all.filter(function(b){return direct.get(b).indexOf(a)>=0;})];}));
+    var delta=new Map(els.map(function(e){ if(!e.hidden) return [e, Math.max(0,e.actualH-e.h)]; var gaps=succ.get(e).map(function(b){return b.y-bottom(e);}); var gb=gaps.length?Math.max(0,Math.min.apply(null,gaps)):0; return [e,-(e.h+gb)]; }));
+    var shift=new Map();
+    var newBottom=function(e){return e.y+shift.get(e)+e.h+delta.get(e);};
+    var order=all.slice().sort(function(a,b){return a.y-b.y||a.x-b.x;});
+    order.forEach(function(b){ var ps=preds.get(b); var contribs=direct.get(b).map(function(p){ var qs=ps.filter(function(q){return contains(q,p);}); if(!qs.length) return shift.get(p)+delta.get(p); var q=qs.reduce(function(m,x){return bottom(x)>bottom(m)?x:m;}); var base=shift.get(q)+delta.get(q); return p.hidden?base:base+Math.max(0,newBottom(p)-newBottom(q)); }); shift.set(b, contribs.length?Math.max.apply(null,contribs):0); });
+    var y={}; els.forEach(function(e){ y[e.id]=e.y+shift.get(e); });
+    var cb=Math.max.apply(null,[0].concat(els.filter(function(e){return !e.hidden;}).map(function(e){return y[e.id]+Math.max(e.h,e.actualH);})));
+    return { y:y, sectionH:Math.max(sectionMinH+shift.get(END), cb) };
+  }
+  function apply(){
+    var device=innerWidth<768?'sp':'pc';
+    var scale=parseFloat(getComputedStyle(document.documentElement).fontSize)/10;
+    SECS.forEach(function(entry){
+      var secEl=document.querySelector('[data-sec="'+entry.sec+'"]'); if(!secEl) return;
+      var conf=entry[device];
+      var inputs=conf.els.map(function(e){
+        var actualH=e.a;
+        if(e.acc){ var a=secEl.querySelector('[data-el="'+e.el+'"]'); if(a) actualH=a.offsetHeight/scale; }
+        return {id:e.el,x:e.x,w:e.w,y:e.y,h:e.h,actualH:actualH,hidden:false,decorative:!!e.dec};
+      });
+      var r=reflowJS(inputs, conf.minH);
+      conf.els.forEach(function(e){
+        if(e.acc) return; var node=secEl.querySelector('[data-el="'+e.el+'"]'); if(!node) return;
+        var dy=(r.y[e.el]-e.baseY)*scale;
+        node.style.transform = Math.abs(dy)>0.5 ? 'translateY('+dy+'px)' : '';
+      });
+      secEl.style.minHeight=(r.sectionH/10)+'rem';
+    });
+  }
+  document.querySelectorAll('.el-acc details').forEach(function(d){ d.addEventListener('toggle', apply); });
+})();
 `.trim();
 
 // セクションのCSS（min-height・背景・非表示）
@@ -244,6 +300,26 @@ export function renderPage(resolved, pageId, opts) {
     }
   }
 
+  // 開閉式（accordion）を含むセクションの reflow 入力を焼く（開閉時のクライアントJSが使う）
+  const accSecs = [];
+  for (const secId of pageSecs) {
+    const els = layoutByDevice.pc[secId].els;
+    if (!els.some((e) => e.type === "repeater" && e.repeater.display.mode === "accordion")) continue;
+    const entry = { sec: secId };
+    for (const device of ["pc", "sp"]) {
+      const L = layoutByDevice[device][secId];
+      entry[device] = {
+        minH: site.sections[secId].minHeight[device],
+        els: L.els.map((e) => {
+          const ri = elToReflow(e, device, resolved, resolved.repLayouts);
+          return { el: e.id, x: ri.x, w: ri.w, y: ri.y, h: ri.h, a: ri.actualH, dec: ri.decorative ? 1 : 0, acc: e.type === "repeater" && e.repeater.display.mode === "accordion" ? 1 : 0, baseY: L.positions[e.id] ?? e.box[device].y };
+        }),
+      };
+    }
+    accSecs.push(entry);
+  }
+  const accScript = accSecs.length ? `<script type="application/json" id="__accreflow">${JSON.stringify(accSecs)}</script>` : "";
+
   // HTML
   // ヘッダーを重ねるページ（headerOverlay.pages）では、ヘッダーを透明で最初のセクションに重ねる
   const ov = site.regions.headerOverlay;
@@ -266,6 +342,7 @@ ${headerHtml}
 ${mainHtml}
 </main>
 ${footerHtml}
+${accScript}
 <script>${CLIENT_JS}</script>
 </body>
 </html>`;

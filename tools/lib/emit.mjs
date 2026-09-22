@@ -7,7 +7,7 @@ import { computeSectionBackgrounds } from "./sections.mjs";
 import { resolveText } from "./text.mjs";
 import {
   DEVICES, boxWidthPx, ratioHeightPx, isDecorative, designWidth,
-  textBoxStyle, paragraphsHtml, esc, rem, pct, round, repeaterLayout,
+  textBoxStyle, paragraphsHtml, esc, rem, pct, round, repeaterLayout, accCels,
 } from "./render.mjs";
 import { colorCss, fontCss, textStyle, ROLE_TAG, themeRootVars } from "./theme.mjs";
 
@@ -209,6 +209,17 @@ function navHtml(el, resolved, linkResolver) {
 // ---------- 繰り返す部品のHTML（1つ、cel は中で解決済み） ----------
 function repeaterHtml(el, resolved, linkResolver) {
   const rp = el.repeater;
+  // 開閉式（accordion）：details/summary で作る（JS なしでも開閉できる）
+  if (rp.display.mode === "accordion") {
+    const { qCid, aCid } = accCels(rp);
+    const qStyle = rp.card.elements[qCid].style, aStyle = rp.card.elements[aCid].style;
+    const parts = rp.items.map((it) => {
+      const q = paragraphsHtml(it.cels[qCid], qStyle, {});
+      const a = paragraphsHtml(it.cels[aCid], aStyle, { linkResolver: (l) => linkResolver(l) });
+      return `<details class="acc-item"><summary><span class="acc-q">${q}</span></summary><div class="acc-a">${a}</div></details>`;
+    }).join("");
+    return `<div data-el="${el.id}" class="el el-rep el-acc">${parts}</div>`;
+  }
   // カード・見出しの並びは PC のレイアウト順（読む順）に合わせる
   const layPc = resolved.repLayouts[`${el.id}:pc`];
   const order = layPc.placements;
@@ -292,9 +303,12 @@ function elementCss(el, resolved, positions, device, rules) {
     if (el.shape.radius != null) lines.push(`border-radius:${el.shape.radius}px`);
     if (el.shape.opacity != null) lines.push(`opacity:${el.shape.opacity / 100}`);
   } else if (el.type === "repeater") {
-    // カードが下に伸びるので、箱の高さは内部レイアウトの総高（実測反映後）にする
-    const total = resolved.repLayouts?.[`${el.id}:${device}`]?.totalHeight ?? box.h;
-    lines.push(`height:${rem(total)}`);
+    // 開閉式は中身なりに伸びる（height:auto）＝開いたら箱が伸び、クライアントJSが下をずらせる。
+    // それ以外は内部レイアウトの総高（実測反映後）を高さにする。
+    if (el.repeater.display.mode !== "accordion") {
+      const total = resolved.repLayouts?.[`${el.id}:${device}`]?.totalHeight ?? box.h;
+      lines.push(`height:${rem(total)}`);
+    }
   } else {
     lines.push(`height:${rem(box.h)}`);
   }
@@ -306,6 +320,7 @@ function elementCss(el, resolved, positions, device, rules) {
 // 繰り返す部品の内部（カード・見出し・cel）のCSS
 function repeaterCss(el, resolved, device, rules) {
   const lay = resolved.repLayouts[`${el.id}:${device}`];
+  if (lay.accordion) return; // 開閉式は CSS（.el-acc）で組む。cel の個別配置はしない
   const rp = el.repeater;
   const base = `[data-el="${el.id}"]`;
   for (const pl of lay.placements) {
@@ -344,5 +359,5 @@ function repeaterCss(el, resolved, device, rules) {
 
 export {
   makeLinkResolver, makePageHref, layoutSection, elementHtml, repeaterHtml,
-  elementCss, computeSectionBackgrounds, mq,
+  elementCss, computeSectionBackgrounds, mq, elToReflow,
 };

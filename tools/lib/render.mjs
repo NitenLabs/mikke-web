@@ -236,9 +236,35 @@ function measuredH(heights, key, fixedH) {
 }
 
 // ---------- 繰り返す部品の内部レイアウト（カード反映後） ----------
+// 開閉式（accordion）の縦の余白（CSS の summary/answer の padding と一致させる）
+const ACC = { padV: 14, aPad: 14, border: 1 };
+// 開閉式の質問・答えのセルID（質問＝subheading、答え＝body）
+function accCels(rp) {
+  const cels = Object.entries(rp.card.elements).filter(([, c]) => c.type === "text");
+  const q = cels.find(([, c]) => c.role === "subheading") || cels[0];
+  const a = cels.find(([, c]) => c.role === "body") || cels[1] || cels[0];
+  return { qCid: q?.[0], aCid: a?.[0] };
+}
+
 function repeaterLayout(el, device, site, heights) {
   const rp = el.repeater;
   const repW = boxWidthPx(el.box[device], device, site);
+
+  // 開閉式（accordion）：閉じた状態は質問（summary）の積み重ね。開くと答えの高さぶん下が伸びる。
+  if (rp.display.mode === "accordion") {
+    const { qCid, aCid } = accCels(rp);
+    let cursor = 0;
+    const placements = [];
+    for (const it of rp.items) {
+      const qh = heights[`c:${device}:${el.id}:${it.id}:${qCid}`] ?? rp.card.elements[qCid].layout[device].h;
+      const ah = heights[`c:${device}:${el.id}:${it.id}:${aCid}`] ?? rp.card.elements[aCid].layout[device].h;
+      const collapsed = qh + 2 * ACC.padV;
+      placements.push({ kind: "acc", id: it.id, top: cursor, collapsed, expanded: collapsed + ah + ACC.aPad });
+      cursor += collapsed + ACC.border;
+    }
+    return { totalHeight: Math.max(cursor, 0), placements, cardW: repW, cols: 1, gap: 0, repW, accordion: true };
+  }
+
   const cols = rp.display.columns[device] || 1;
   const gap = rp.display.gap?.[device] || 0;
   const cardMinH = rp.card.height[device];
@@ -309,4 +335,4 @@ function repeaterLayout(el, device, site, heights) {
   return { totalHeight: Math.max(cursor, 0), placements, cardW, cols, gap, repW };
 }
 
-export { DEVICES, boxWidthPx, ratioHeightPx, isDecorative, designWidth, textBoxStyle, paragraphsHtml, esc, rem, pct, round, repeaterLayout };
+export { DEVICES, boxWidthPx, ratioHeightPx, isDecorative, designWidth, textBoxStyle, paragraphsHtml, esc, rem, pct, round, repeaterLayout, accCels };
