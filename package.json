@@ -4,7 +4,10 @@
   "description": "芦屋みっけ Web制作：データの定義と検査",
   "scripts": {
     "validate": "node tools/validate.mjs samples/ashiyado",
-    "test": "node --test tools/reflow.test.mjs",
+    "build": "node tools/build.mjs",
+    "shots": "node tools/shots.mjs",
+    "check": "node tools/check-layout.mjs",
+    "test": "node --test tools/reflow.test.mjs tools/format.test.mjs",
     "setup:browser": "npx playwright install chromium"
   },
   "dependencies": {
