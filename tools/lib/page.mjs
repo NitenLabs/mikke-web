@@ -28,7 +28,8 @@ function baseCss(resolved) {
   return `
 *{margin:0;padding:0;box-sizing:border-box}
 :root{${vars}}
-html{-webkit-text-size-adjust:100%}
+/* スマホのブラウザの文字の自動拡大を止める（拡大されると実測とずれるため） */
+html{-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;text-size-adjust:100%}
 body{background:var(--c-background);color:var(--c-text);font-family:var(--f-body);line-height:1.7;overflow-x:hidden}
 img{display:block;max-width:none}
 a{color:inherit}
@@ -36,7 +37,10 @@ main{display:block}
 .sec{position:relative;width:100%;overflow:hidden}
 .cbox{position:relative;margin:0 auto}
 .el{position:absolute}
+/* 改行の規則を明示的に固定する（エンジンごとの既定値の違いで折り返しがゆれないように） */
+.el-text{line-break:strict;word-break:normal;overflow-wrap:anywhere;white-space:normal}
 .el-text .pg{display:block}
+.el-text .nowrap{white-space:nowrap}
 .el-text .lc{display:flex}
 .el-text .lc-key{flex:none;color:var(--c-textMuted)}
 .el-text .lc-val{flex:1}
@@ -80,18 +84,30 @@ document.querySelectorAll('.el-rep details').forEach(function(d){
     });
   });
 });
-// (2) フォント読み込みなどで実測とずれたら、重なりを見つけて下をずらす
+// (2) フォント読み込み後に1回だけ、実測（build時に静的CSSへ焼いた高さ）と実際の高さのずれを直す。
+//     上（下の要素が食い込む）にも下（余白が広がる）にも動かす＝ずれが2pxを超えたら詰め直す。
 function correct(){
-  document.querySelectorAll('.sec').forEach(function(sec){
-    var box=sec.querySelector('.cbox'); if(!box)return;
-    var els=Array.prototype.slice.call(box.children).filter(function(e){return e.classList.contains('el-text')});
-    els.sort(function(a,b){return a.offsetTop-b.offsetTop});
-    for(var i=0;i<els.length-1;i++){
-      var a=els[i],b=els[i+1];
-      if(Math.abs(a.offsetLeft-b.offsetLeft)>4)continue; // 別の列は無視
-      var overlap=(a.offsetTop+a.offsetHeight)-b.offsetTop;
-      if(overlap>1){ for(var j=i+1;j<els.length;j++){ els[j].style.transform='translateY('+overlap+'px)'; } }
-    }
+  var device = innerWidth<768 ? 'sp' : 'pc';
+  var scale = parseFloat(getComputedStyle(document.documentElement).fontSize)/10; // 1rem=10px が基準
+  document.querySelectorAll('.cbox').forEach(function(box){
+    var els = Array.prototype.slice.call(box.children).filter(function(e){return e.classList.contains('el');});
+    els.forEach(function(e){ e.style.transform=''; });
+    // 各要素の「実際の高さ − 焼いた高さ」（design px）。焼いた高さは data-mh（文字の箱だけ持つ）
+    var info = els.map(function(e){
+      var mh = e.getAttribute('data-mh-'+device);
+      var delta = (mh==null) ? 0 : (e.offsetHeight - parseFloat(mh)*scale);
+      return { e:e, top:e.offsetTop, h:e.offsetHeight, left:e.offsetLeft, right:e.offsetLeft+e.offsetWidth, delta:delta };
+    });
+    // 各要素は、同じ列で自分より上にある要素たちの「ずれ」の合計だけ動く（上下どちらの向きも）
+    info.forEach(function(a){
+      var shift=0;
+      info.forEach(function(b){
+        if(b===a) return;
+        var sameCol = b.left < a.right-1 && a.left < b.right-1; // 横の範囲が重なる＝同じ列
+        if(sameCol && (b.top + b.h) <= a.top + 1) shift += b.delta;
+      });
+      if(Math.abs(shift)>2) a.e.style.transform='translateY('+shift+'px)';
+    });
   });
 }
 if(document.fonts&&document.fonts.ready){document.fonts.ready.then(correct);}else{window.addEventListener('load',correct);}

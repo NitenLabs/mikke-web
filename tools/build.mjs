@@ -17,7 +17,7 @@ import { measureHeights } from "./lib/measure.mjs";
 import { buildRepLayouts, renderPage, render404 } from "./lib/page.mjs";
 import { prepareAssets } from "./lib/assets.mjs";
 import { pageDesignOverlaps } from "./lib/overlap.mjs";
-import { themeFontIds } from "./lib/theme.mjs";
+import { themeFontIds, themeRootVars } from "./lib/theme.mjs";
 import { googleFontsUrl } from "./lib/fonts.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -55,7 +55,7 @@ const fontUrl = googleFontsUrl(resolved.fontIds);
 
 console.log("▸ 文字の高さを実測（ヘッドレスブラウザ）…");
 const requests = measurementRequests(resolved);
-resolved.heights = await measureHeights(requests, fontUrl);
+resolved.heights = await measureHeights(requests, fontUrl, themeRootVars(data.theme));
 console.log(`  実測: ${Object.keys(resolved.heights).length} 箇所（要求 ${requests.length}）`);
 
 buildRepLayouts(resolved);

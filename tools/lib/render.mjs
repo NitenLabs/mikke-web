@@ -126,36 +126,39 @@ function marksStyle(marks) {
   return p.join(";");
 }
 
+// 1つの run の中身（テキスト＋リンク）。priceAll は選択肢ごとに nowrap にし、選択肢の間でだけ折り返す。
+function runInner(r, linkResolver) {
+  let inner;
+  if (r.fmt === "priceAll" && r.text) {
+    // formatPriceAll の区切りは " ／ "。各選択肢を nowrap のかたまりにし、区切りの前後だけ折り返し可にする
+    inner = r.text.split(" ／ ").map((opt) => `<span class="nowrap">${esc(opt)}</span>`).join(" ／ ");
+  } else {
+    inner = esc(r.text);
+  }
+  const link = r.marks?.link;
+  if (link && linkResolver) {
+    const l = linkResolver(link);
+    if (l) inner = `<a href="${esc(l.href)}"${l.target ? ` target="${l.target}" rel="noopener"` : ""}>${inner}</a>`;
+  }
+  return inner;
+}
+function runSpan(r, linkResolver) {
+  const s = marksStyle(r.marks);
+  return `<span${s ? ` style="${s}"` : ""}>${runInner(r, linkResolver)}</span>`;
+}
+
 // 段落→HTML。linkResolver(link)→{href,target} があればリンクを張る。
 function paragraphsHtml(resolvedText, style, opts = {}) {
   const { linkResolver, labelColumn } = opts;
   return resolvedText.paragraphs
     .map((p) => {
-      const runsHtml = p.runs
-        .map((r) => {
-          const s = marksStyle(r.marks);
-          let inner = esc(r.text);
-          const link = r.marks?.link;
-          if (link && linkResolver) {
-            const l = linkResolver(link);
-            if (l) inner = `<a href="${esc(l.href)}"${l.target ? ` target="${l.target}" rel="noopener"` : ""}>${inner}</a>`;
-          }
-          return `<span${s ? ` style="${s}"` : ""}>${inner}</span>`;
-        })
-        .join("");
       if (labelColumn) {
         // 先頭の自由な文字を項目名の列に、残りを右に流す
         const first = p.runs[0];
-        const label = `<span class="lc-key">${esc(first?.text ?? "")}</span>`;
-        const restRuns = p.runs.slice(1).map((r) => {
-          const s = marksStyle(r.marks);
-          let inner = esc(r.text);
-          const link = r.marks?.link;
-          if (link && linkResolver) { const l = linkResolver(link); if (l) inner = `<a href="${esc(l.href)}">${inner}</a>`; }
-          return `<span${s ? ` style="${s}"` : ""}>${inner}</span>`;
-        }).join("");
+        const restRuns = p.runs.slice(1).map((r) => runSpan(r, linkResolver)).join("");
         return `<span class="pg lc"><span class="lc-key" style="width:${labelColumn}em">${esc(first?.text ?? "")}</span><span class="lc-val">${restRuns}</span></span>`;
       }
+      const runsHtml = p.runs.map((r) => runSpan(r, linkResolver)).join("");
       return `<span class="pg">${runsHtml}</span>`;
     })
     .join("");

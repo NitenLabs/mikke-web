@@ -87,15 +87,22 @@ const ANALYZE = ({ exclude, device }) => {
     if (dev > maxDev) { maxDev = dev; maxDevEl = el.getAttribute("data-el") || el.getAttribute("data-cel") || el.getAttribute("data-head") || ""; }
   }
 
-  // 補正の JS が発火するか（サイトの correct() と同じ判定：同じ列で下の文字と重なるか）
+  // 補正の JS が発火するか（サイトの correct() と同じ判定：同じ列で上の要素のずれ合計が 2px 超）
   let fires = false;
-  document.querySelectorAll(".sec").forEach((sec) => {
-    const box = sec.querySelector(".cbox"); if (!box) return;
-    const els = [...box.children].filter((e) => e.classList.contains("el-text")).sort((a, b) => a.offsetTop - b.offsetTop);
-    for (let i = 0; i < els.length - 1; i++) {
-      const a = els[i], b = els[i + 1];
-      if (Math.abs(a.offsetLeft - b.offsetLeft) > 4) continue;
-      if (a.offsetTop + a.offsetHeight - b.offsetTop > 1) fires = true;
+  document.querySelectorAll(".cbox").forEach((box) => {
+    const els = [...box.children].filter((e) => e.classList.contains("el"));
+    const info = els.map((e) => {
+      const mh = e.getAttribute("data-mh-" + device);
+      return { top: e.offsetTop, h: e.offsetHeight, left: e.offsetLeft, right: e.offsetLeft + e.offsetWidth, delta: mh == null ? 0 : e.offsetHeight - parseFloat(mh) * scale };
+    });
+    for (const a of info) {
+      let shift = 0;
+      for (const b of info) {
+        if (b === a) continue;
+        const sameCol = b.left < a.right - 1 && a.left < b.right - 1;
+        if (sameCol && b.top + b.h <= a.top + 1) shift += b.delta;
+      }
+      if (Math.abs(shift) > 2) fires = true;
     }
   });
 
@@ -117,33 +124,46 @@ for (const [engineName, engine] of ENGINES) {
   catch (e) { unavailable.push(`${engineName}（未インストール：npx playwright install ${engineName}）`); continue; }
   console.log(`【${engineName}】`);
   console.log(head);
-  // context・page を1つだけ作り、幅は setViewportSize で変える（フォントをキャッシュして使い回す＝速い）。
-  // ※ isMobile は使わない（firefox は mobile 端末エミュレーション非対応で setViewportSize が固まる。
-  //   レイアウトは幅で決まる〔メディアクエリ〕ので isMobile は不要）。
-  const ctx = await browser.newContext({ viewport: { width: 390, height: 900 }, deviceScaleFactor: 1, locale: "ja-JP", javaScriptEnabled: false });
-  // 地図の埋め込み（Google Maps iframe）は外部で、レイアウト検査には不要。読み込むと firefox が
-  // 再ナビゲーションで固まるので遮断する（フォントは通す＝実測との突き合わせに必要）。
-  await ctx.route(/google\.com\/maps/, (route) => route.abort());
-  const page = await ctx.newPage();
   for (const file of pages) {
     const name = pageName(file);
     const excl = layout.pages?.[name] || { pc: [], sp: [] };
     for (const width of WIDTHS) {
       const device = width < 768 ? "sp" : "pc";
-      // 1回の測定（goto→フォント猶予→計測）。firefox は同一URLへの再ナビゲーションで稀に固まるので
-      // 1回だけリトライし、それでも失敗したら「測定失敗」として続行する（1件で全体を止めない）。
+      // 1回の測定。幅ごとに新しい context を作る（その幅で最初から組む）。
+      // ※ setViewportSize での使い回しは webkit で不具合（幅%が古い基準で解決し要素が巨大化）。
+      // ※ isMobile は使わない（firefox は mobile エミュレーション非対応。レイアウトは幅で決まる）。
+      // firefox は稀にナビゲーションで固まるので1回だけリトライし、失敗したら「測定失敗」で続行する。
       let r = null;
       for (let attempt = 0; attempt < 2 && !r; attempt++) {
+        let ctx;
         try {
-          await page.setViewportSize({ width, height: 900 });
-          // 幅ごとに URL を変える（キャッシュ回避）と firefox の同一URL再ナビゲーションの固まりを避けられる
-          await page.goto(`${pathToFileURL(file).href}?w=${width}`, { waitUntil: "domcontentloaded", timeout: 20000 });
-          // フォントの読み込みの猶予（node 側の待ち。JS無効の firefox では in-page の async evaluate が
-          // 解決しないため使わない）。
-          await page.waitForTimeout(1200);
+          ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1, locale: "ja-JP", javaScriptEnabled: false });
+          // 地図の埋め込み（Google Maps iframe）は外部でレイアウト検査に不要。読み込むと firefox が
+          // 固まるので遮断する（フォントは通す＝実測との突き合わせに必要）。
+          await ctx.route(/google\.com\/maps/, (route) => route.abort());
+          const page = await ctx.newPage();
+          await page.goto(pathToFileURL(file).href, { waitUntil: "load", timeout: 20000 });
+          // (a) インラインCSSが適用され（webkit は domcontentloaded 時点で未適用のことがある）、
+          // (b) 必要なフォント（文字の subset を含む）が読み込まれるまで待つ。
+          // document.fonts.check・getComputedStyle は同期なので JS無効の firefox でも使える。
+          for (let i = 0; i < 40; i++) {
+            const ok = await page.evaluate(() => {
+              document.body.offsetHeight; // 強制レイアウト＝必要な文字の subset の読み込みを促す
+              const rf = parseFloat(getComputedStyle(document.documentElement).fontSize);
+              const cssApplied = rf > 0 && rf < 15; // 我々の clamp は 11.5px 以下（既定の16pxなら未適用）
+              // document.fonts.status は同期（JS無効の firefox でも読める）。全フォント完了で 'loaded'。
+              const fontsDone = !document.fonts || document.fonts.status === "loaded";
+              return cssApplied && fontsDone;
+            });
+            if (ok) break;
+            await page.waitForTimeout(120);
+          }
+          await page.waitForTimeout(120);
           r = await page.evaluate(ANALYZE, { exclude: excl[device], device });
         } catch (e) {
           if (attempt === 1) { console.log(`  ${name.padEnd(6)} ${String(width).padStart(4)}px  測定失敗（${e.name || "error"}）`); }
+        } finally {
+          if (ctx) await ctx.close().catch(() => {});
         }
       }
       if (!r) { problems++; continue; }

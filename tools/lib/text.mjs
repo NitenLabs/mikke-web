@@ -16,7 +16,7 @@ function resolveRun(run, scopes, ctx) {
     if (b.format === "flag") {
       return { kind: "flag", isTrue: evalFlag(value), marks: run.marks };
     }
-    return { kind: "bind", text: applyFormat(b.format || "plain", value, ctx), marks: run.marks };
+    return { kind: "bind", text: applyFormat(b.format || "plain", value, ctx), marks: run.marks, fmt: b.format };
   }
   // 自由な文字（連動を外した文字 detachedFrom も、表示上は固定の文字）
   return { kind: "free", text: run.text ?? "", marks: run.marks, detached: !!run.detachedFrom };
@@ -42,7 +42,7 @@ function resolveParagraph(paragraph, scopes, ctx) {
   // 表示する run（フラグ自体は文字を出さない）
   const outRuns = runs
     .filter((r) => r.kind !== "flag")
-    .map((r) => ({ text: r.text ?? "", marks: r.marks }));
+    .map((r) => ({ text: r.text ?? "", marks: r.marks, fmt: r.fmt }));
   return { visible, runs: outRuns };
 }
 
