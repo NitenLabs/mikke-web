@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ashiya-mikke.jp/schema/theme.schema.json",
+  "title": "③ 見た目の設定",
+  "description": "サイト全体の雰囲気。テーマ色と、文字の役割ごとの標準の見た目。②の要素が theme:トークン名 で参照している色は、ここを変えると一緒に変わる。②と同じ下書きに入る（サイトの組み立ての下書き）",
+  "type": "object",
+  "required": ["schemaVersion", "colors", "fonts", "textStyles"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "colors": {
+      "type": "object",
+      "description": "テーマ色。必須の6色＋任意の追加色（最大10色）。キーがトークン名",
+      "required": ["background", "surface", "text", "textMuted", "primary", "accent"],
+      "propertyNames": { "pattern": "^[a-z][a-zA-Z0-9]{1,23}$" },
+      "maxProperties": 10,
+      "additionalProperties": {
+        "type": "object", "required": ["value"], "additionalProperties": false,
+        "properties": {
+          "value": { "type": "string", "pattern": "^#[0-9A-F]{6}$" },
+          "label": { "type": "string", "maxLength": 12, "description": "色の一覧に出す名前。例：墨、生成り" }
+        }
+      }
+    },
+    "fonts": {
+      "type": "object",
+      "required": ["heading", "body"],
+      "additionalProperties": false,
+      "description": "フォントの一覧（約30種）のID。サイトで実際に読み込むのは使っているフォントだけ",
+      "properties": {
+        "heading": { "$ref": "#/$defs/fontId" },
+        "body": { "$ref": "#/$defs/fontId" },
+        "accent": { "$ref": "#/$defs/fontId", "description": "欧文の飾りなど（任意）" }
+      }
+    },
+    "textStyles": {
+      "type": "object",
+      "description": "文字の役割ごとの標準。新しく足した文字の初期値になり、検索エンジン・読み上げ向けの見出しの階層もここから決まる。個々の文字で上書きできる",
+      "required": ["pageTitle", "heading", "subheading", "body", "caption"],
+      "additionalProperties": false,
+      "properties": {
+        "pageTitle": { "$ref": "#/$defs/textStyle" },
+        "heading": { "$ref": "#/$defs/textStyle" },
+        "subheading": { "$ref": "#/$defs/textStyle" },
+        "body": { "$ref": "#/$defs/textStyle" },
+        "caption": { "$ref": "#/$defs/textStyle" }
+      }
+    },
+    "recentColors": {
+      "type": "array", "maxItems": 8,
+      "items": { "type": "string", "pattern": "^#[0-9A-F]{6}$" },
+      "description": "最近使った色（編集画面の色の一覧用）"
+    }
+  },
+  "$defs": {
+    "fontId": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]{2,40}$",
+      "description": "フォントの一覧のID。例：zen-old-mincho、noto-sans-jp"
+    },
+    "fontRef": {
+      "type": "string",
+      "pattern": "^(font:(heading|body|accent)|[a-z0-9-]{2,40})$",
+      "description": "font:heading のようにテーマのフォントを参照するか、フォントのIDを直接書く"
+    },
+    "textStyle": {
+      "type": "object",
+      "required": ["font", "size", "lineHeight"],
+      "additionalProperties": false,
+      "properties": {
+        "font": { "$ref": "#/$defs/fontRef" },
+        "size": {
+          "type": "object", "required": ["pc", "sp"], "additionalProperties": false,
+          "properties": { "pc": { "type": "number", "minimum": 8, "maximum": 200 }, "sp": { "type": "number", "minimum": 8, "maximum": 120 } }
+        },
+        "lineHeight": { "type": "number", "minimum": 0.8, "maximum": 3.5 },
+        "letterSpacing": { "type": "number", "minimum": -0.2, "maximum": 1, "description": "em" },
+        "weight": { "type": "integer", "enum": [300, 400, 500, 600, 700, 900] },
+        "color": { "$ref": "common.schema.json#/$defs/color" }
+      }
+    }
+  }
+}

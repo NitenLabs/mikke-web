@@ -1,0 +1,1495 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_ashiyado",
+  "templateId": "tpl_wa_01",
+  "canvas": {
+    "pcContentWidth": 1100,
+    "spDesignWidth": 390
+  },
+  "pages": {
+    "pg_home": {
+      "kind": "home",
+      "slug": "/",
+      "navLabel": "トップ",
+      "navOrder": 1,
+      "showInNav": true,
+      "published": true,
+      "sections": [
+        "sec_hero",
+        "sec_story",
+        "sec_pickup",
+        "sec_info"
+      ]
+    },
+    "pg_menu": {
+      "kind": "menu",
+      "slug": "/menu",
+      "navLabel": "お品書き",
+      "navOrder": 2,
+      "showInNav": true,
+      "published": true,
+      "sections": [
+        "sec_menutitle",
+        "sec_menu1",
+        "sec_menu2"
+      ],
+      "seo": {
+        "description": "御菓子司 芦屋堂のお品書き。季節の上生菓子、芦屋最中、甘味処のわらび餅など。"
+      }
+    },
+    "pg_404": {
+      "kind": "notFound",
+      "slug": "/404",
+      "navLabel": "見つかりません",
+      "navOrder": 99,
+      "showInNav": false,
+      "published": true,
+      "sections": []
+    }
+  },
+  "regions": {
+    "header": "sec_header",
+    "footer": "sec_footer",
+    "headerBehavior": "sticky"
+  },
+  "sections": {
+    "sec_header": {
+      "name": "ヘッダー",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 72,
+        "sp": 56
+      }
+    },
+    "sec_hero": {
+      "name": "最初の画面",
+      "background": {
+        "color": "theme:primary"
+      },
+      "minHeight": {
+        "pc": 620,
+        "sp": 480
+      }
+    },
+    "sec_story": {
+      "name": "店主より",
+      "background": {
+        "color": "theme:surface"
+      },
+      "minHeight": {
+        "pc": 560,
+        "sp": 640
+      }
+    },
+    "sec_pickup": {
+      "name": "おすすめ",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 560,
+        "sp": 700
+      }
+    },
+    "sec_info": {
+      "name": "店舗情報",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 660,
+        "sp": 900
+      },
+      "anchor": "info"
+    },
+    "sec_footer": {
+      "name": "フッター",
+      "background": {
+        "color": "theme:primary"
+      },
+      "minHeight": {
+        "pc": 140,
+        "sp": 160
+      }
+    },
+    "sec_menutitle": {
+      "background": {
+        "color": "theme:surface"
+      },
+      "minHeight": {
+        "pc": 240,
+        "sp": 180
+      }
+    },
+    "sec_menu1": {
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 400,
+        "sp": 400
+      }
+    },
+    "sec_menu2": {
+      "background": {
+        "color": "theme:surface"
+      },
+      "minHeight": {
+        "pc": 400,
+        "sp": 400
+      }
+    }
+  },
+  "elements": {
+    "el_hname": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "color": "theme:primary",
+        "link": {
+          "kind": "page",
+          "value": "pg_home"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 22,
+          "w": 40,
+          "size": 20,
+          "h": 39
+        },
+        "sp": {
+          "x": 4,
+          "y": 18,
+          "w": 70,
+          "size": 17,
+          "h": 33
+        }
+      },
+      "section": "sec_header"
+    },
+    "el_nav": {
+      "section": "sec_header",
+      "type": "nav",
+      "z": 3,
+      "layout": {
+        "pc": {
+          "x": 55,
+          "y": 24,
+          "w": 45,
+          "h": 24
+        },
+        "sp": {
+          "x": 84,
+          "y": 14,
+          "w": 12,
+          "h": 28
+        }
+      },
+      "style": {
+        "color": "theme:text",
+        "activeColor": "theme:accent",
+        "spMenuBackground": "theme:surface"
+      }
+    },
+    "el_heroph": {
+      "section": "sec_hero",
+      "type": "photo",
+      "z": 1,
+      "asset": "ast_hero",
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      },
+      "darken": 20,
+      "locked": true,
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "ratio": "16:9",
+          "fullBleed": true
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "ratio": "4:5"
+        }
+      }
+    },
+    "el_herosub": {
+      "type": "text",
+      "z": 2,
+      "role": "caption",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "芦屋の和菓子処"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "color": "theme:paleBlue"
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 350,
+          "w": 40,
+          "size": 15,
+          "h": 24
+        },
+        "sp": {
+          "x": 6,
+          "y": 292,
+          "w": 80,
+          "size": 12,
+          "h": 19
+        }
+      },
+      "section": "sec_hero"
+    },
+    "el_heroname": {
+      "type": "text",
+      "z": 3,
+      "role": "pageTitle",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 376,
+          "w": 70,
+          "size": 64,
+          "h": 83
+        },
+        "sp": {
+          "x": 6,
+          "y": 316,
+          "w": 88,
+          "size": 38,
+          "h": 49
+        }
+      },
+      "section": "sec_hero"
+    },
+    "el_herocopy": {
+      "type": "text",
+      "z": 4,
+      "role": "subheading",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "季節を、ひと口に。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "color": "theme:onDark"
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 470,
+          "w": 50,
+          "size": 24,
+          "h": 36
+        },
+        "sp": {
+          "x": 6,
+          "y": 378,
+          "w": 88,
+          "size": 18,
+          "h": 27
+        }
+      },
+      "section": "sec_hero",
+      "motion": {
+        "preset": "fadeIn",
+        "enabled": true
+      }
+    },
+    "el_storyh": {
+      "type": "text",
+      "z": 2,
+      "role": "heading",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "店主より"
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 88,
+          "w": 40,
+          "size": 34,
+          "h": 48
+        },
+        "sp": {
+          "x": 6,
+          "y": 56,
+          "w": 88,
+          "size": 26,
+          "h": 36
+        }
+      },
+      "section": "sec_story"
+    },
+    "el_storyb": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "芦屋堂は、季節の移ろいを小さな菓子に写す和菓子店です。朝いちばんに餡を炊き、その日の分だけを手で包みます。店先の上生菓子は、ひと月ごとに顔ぶれが変わります。（この文章はサンプルです）"
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 156,
+          "w": 42,
+          "size": 16,
+          "h": 125
+        },
+        "sp": {
+          "x": 6,
+          "y": 112,
+          "w": 88,
+          "size": 15,
+          "h": 146
+        }
+      },
+      "section": "sec_story"
+    },
+    "el_storyph": {
+      "section": "sec_story",
+      "type": "photo",
+      "z": 1,
+      "asset": "ast_wagashi",
+      "crop": {
+        "fx": 50,
+        "fy": 45,
+        "zoom": 1.1
+      },
+      "layout": {
+        "pc": {
+          "x": 54,
+          "y": 88,
+          "w": 40,
+          "ratio": "4:5"
+        },
+        "sp": {
+          "x": 6,
+          "y": 360,
+          "w": 88,
+          "ratio": "1:1"
+        }
+      }
+    },
+    "el_pickh": {
+      "type": "text",
+      "z": 1,
+      "role": "heading",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "おすすめ"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 72,
+          "w": 40,
+          "size": 34,
+          "h": 48
+        },
+        "sp": {
+          "x": 6,
+          "y": 48,
+          "w": 88,
+          "size": 26,
+          "h": 36
+        }
+      },
+      "section": "sec_pickup"
+    },
+    "el_pick": {
+      "section": "sec_pickup",
+      "type": "repeater",
+      "z": 2,
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_tento",
+        "labelIds": [
+          "lbl_recommended"
+        ],
+        "limit": 3
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 3,
+          "sp": 2
+        },
+        "gap": {
+          "pc": 32,
+          "sp": 12
+        },
+        "photoless": "compactCard"
+      },
+      "card": {
+        "height": {
+          "pc": 360,
+          "sp": 300
+        },
+        "elements": {
+          "cel_photo": {
+            "type": "photo",
+            "z": 1,
+            "bind": {
+              "scope": "item",
+              "path": "/photos/0"
+            },
+            "crop": {
+              "fx": 50,
+              "fy": 50,
+              "zoom": 1
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "ratio": "1:1"
+              },
+              "sp": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "ratio": "1:1"
+              }
+            }
+          },
+          "cel_name": {
+            "type": "text",
+            "z": 2,
+            "role": "subheading",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {},
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 272,
+                "w": 100,
+                "size": 18,
+                "h": 27
+              },
+              "sp": {
+                "x": 0,
+                "y": 168,
+                "w": 100,
+                "size": 15,
+                "h": 22
+              }
+            }
+          },
+          "cel_price": {
+            "type": "text",
+            "z": 3,
+            "role": "caption",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {},
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 304,
+                "w": 100,
+                "size": 14,
+                "h": 22
+              },
+              "sp": {
+                "x": 0,
+                "y": 196,
+                "w": 100,
+                "size": 12,
+                "h": 19
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 140,
+          "w": 88,
+          "h": 360
+        },
+        "sp": {
+          "x": 6,
+          "y": 100,
+          "w": 88,
+          "h": 612
+        }
+      }
+    },
+    "el_infoh": {
+      "type": "text",
+      "z": 2,
+      "role": "heading",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "店舗情報"
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 72,
+          "w": 40,
+          "size": 34,
+          "h": 48
+        },
+        "sp": {
+          "x": 6,
+          "y": 48,
+          "w": 88,
+          "size": 26,
+          "h": 36
+        }
+      },
+      "section": "sec_info"
+    },
+    "el_infob": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間　",
+              "marks": {
+                "color": "theme:textMuted"
+              }
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "hoursShort"
+              }
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "定休日　",
+              "marks": {
+                "color": "theme:textMuted"
+              }
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "住所　",
+              "marks": {
+                "color": "theme:textMuted"
+              }
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "アクセス　",
+              "marks": {
+                "color": "theme:textMuted"
+              }
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location/access",
+                "format": "access"
+              }
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "電話　",
+              "marks": {
+                "color": "theme:textMuted"
+              }
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              },
+              "marks": {
+                "link": {
+                  "kind": "shopPhone"
+                },
+                "underline": true
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "lineHeight": 2
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 136,
+          "w": 40,
+          "size": 16,
+          "h": 160
+        },
+        "sp": {
+          "x": 6,
+          "y": 100,
+          "w": 88,
+          "size": 15,
+          "h": 210
+        }
+      },
+      "section": "sec_info"
+    },
+    "el_infoph": {
+      "section": "sec_info",
+      "type": "photo",
+      "z": 1,
+      "asset": "ast_shop",
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      },
+      "layout": {
+        "pc": {
+          "x": 54,
+          "y": 72,
+          "w": 40,
+          "ratio": "3:2"
+        },
+        "sp": {
+          "x": 6,
+          "y": 420,
+          "w": 88,
+          "ratio": "3:2"
+        }
+      }
+    },
+    "el_map": {
+      "section": "sec_info",
+      "type": "embed",
+      "z": 1,
+      "kind": "map",
+      "layout": {
+        "pc": {
+          "x": 54,
+          "y": 380,
+          "w": 40,
+          "h": 240
+        },
+        "sp": {
+          "x": 6,
+          "y": 640,
+          "w": 88,
+          "h": 220
+        }
+      }
+    },
+    "el_telbtn": {
+      "section": "sec_info",
+      "type": "shape",
+      "z": 4,
+      "kind": "rect",
+      "fill": "theme:primary",
+      "radius": 8,
+      "link": {
+        "kind": "shopPhone"
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 420,
+          "w": 22,
+          "h": 52
+        },
+        "sp": {
+          "x": 6,
+          "y": 340,
+          "w": 88,
+          "h": 52
+        }
+      }
+    },
+    "el_teltxt": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "電話する"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "align": "center",
+        "color": "theme:onDark",
+        "bold": true,
+        "link": {
+          "kind": "shopPhone"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 434,
+          "w": 22,
+          "size": 16,
+          "h": 31
+        },
+        "sp": {
+          "x": 6,
+          "y": 354,
+          "w": 88,
+          "size": 16,
+          "h": 31
+        }
+      },
+      "section": "sec_info"
+    },
+    "el_fname": {
+      "type": "text",
+      "z": 1,
+      "role": "body",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "addressShort"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "color": "theme:paleBlue"
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 40,
+          "w": 50,
+          "size": 14,
+          "h": 55
+        },
+        "sp": {
+          "x": 6,
+          "y": 32,
+          "w": 88,
+          "size": 13,
+          "h": 51
+        }
+      },
+      "section": "sec_footer"
+    },
+    "el_fmikke": {
+      "type": "text",
+      "z": 2,
+      "role": "caption",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "芦屋みっけ 掲載店",
+              "marks": {
+                "link": {
+                  "kind": "url",
+                  "value": "https://ashiya-mikke.jp/"
+                }
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "align": "right",
+        "color": "theme:paleBlue"
+      },
+      "layout": {
+        "pc": {
+          "x": 60,
+          "y": 40,
+          "w": 34,
+          "size": 12,
+          "h": 19
+        },
+        "sp": {
+          "x": 6,
+          "y": 100,
+          "w": 88,
+          "size": 12,
+          "h": 19
+        }
+      },
+      "section": "sec_footer"
+    },
+    "el_menutitle": {
+      "type": "text",
+      "z": 1,
+      "role": "pageTitle",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お品書き"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "color": "theme:primary"
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 80,
+          "w": 60,
+          "size": 48,
+          "h": 62
+        },
+        "sp": {
+          "x": 6,
+          "y": 48,
+          "w": 88,
+          "size": 32,
+          "h": 42
+        }
+      },
+      "section": "sec_menutitle"
+    },
+    "el_menunote": {
+      "type": "text",
+      "z": 2,
+      "role": "caption",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "季節により内容が変わります。最新の品ぞろえはお電話でお問い合わせください。"
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 160,
+          "w": 60,
+          "size": 14,
+          "h": 22
+        },
+        "sp": {
+          "x": 6,
+          "y": 104,
+          "w": 88,
+          "size": 13,
+          "h": 42
+        }
+      },
+      "section": "sec_menutitle"
+    },
+    "el_menutento": {
+      "section": "sec_menu1",
+      "type": "repeater",
+      "z": 2,
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_tento",
+        "groupByCategory": true
+      },
+      "display": {
+        "mode": "list",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 64,
+          "sp": 56
+        },
+        "elements": {
+          "cel_rname": {
+            "type": "text",
+            "z": 1,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {},
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 16,
+                "w": 60,
+                "size": 16,
+                "h": 31
+              },
+              "sp": {
+                "x": 0,
+                "y": 12,
+                "w": 62,
+                "size": 15,
+                "h": 29
+              }
+            }
+          },
+          "cel_rprice": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 62,
+                "y": 16,
+                "w": 38,
+                "size": 16,
+                "h": 31
+              },
+              "sp": {
+                "x": 64,
+                "y": 12,
+                "w": 36,
+                "size": 14,
+                "h": 55
+              }
+            }
+          },
+          "cel_rline": {
+            "type": "shape",
+            "z": 0,
+            "kind": "line",
+            "fill": "theme:surface",
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 63,
+                "w": 100,
+                "strokeWidth": 1,
+                "h": 1
+              },
+              "sp": {
+                "x": 0,
+                "y": 55,
+                "w": 100,
+                "strokeWidth": 1,
+                "h": 1
+              }
+            }
+          }
+        }
+      },
+      "groupHeading": {
+        "type": "text",
+        "z": 1,
+        "role": "subheading",
+        "paragraphs": [
+          {
+            "runs": [
+              {
+                "bind": {
+                  "scope": "item",
+                  "path": "/category/name",
+                  "format": "plain"
+                }
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "layout": {
+          "pc": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "size": 22,
+            "h": 33
+          },
+          "sp": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "size": 18,
+            "h": 27
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 120,
+          "w": 60,
+          "h": 544
+        },
+        "sp": {
+          "x": 6,
+          "y": 90,
+          "w": 88,
+          "h": 472
+        }
+      }
+    },
+    "el_menu1h": {
+      "type": "text",
+      "z": 1,
+      "role": "heading",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_tento/name",
+                "format": "plain"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 48,
+          "w": 60,
+          "size": 30,
+          "h": 42
+        },
+        "sp": {
+          "x": 6,
+          "y": 32,
+          "w": 88,
+          "size": 24,
+          "h": 34
+        }
+      },
+      "section": "sec_menu1"
+    },
+    "el_menukanmi": {
+      "section": "sec_menu2",
+      "type": "repeater",
+      "z": 2,
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_kanmi",
+        "groupByCategory": true
+      },
+      "display": {
+        "mode": "list",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 64,
+          "sp": 56
+        },
+        "elements": {
+          "cel_rname": {
+            "type": "text",
+            "z": 1,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {},
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 16,
+                "w": 60,
+                "size": 16,
+                "h": 31
+              },
+              "sp": {
+                "x": 0,
+                "y": 12,
+                "w": 62,
+                "size": 15,
+                "h": 29
+              }
+            }
+          },
+          "cel_rprice": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 62,
+                "y": 16,
+                "w": 38,
+                "size": 16,
+                "h": 31
+              },
+              "sp": {
+                "x": 64,
+                "y": 12,
+                "w": 36,
+                "size": 14,
+                "h": 55
+              }
+            }
+          },
+          "cel_rline": {
+            "type": "shape",
+            "z": 0,
+            "kind": "line",
+            "fill": "theme:surface",
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 63,
+                "w": 100,
+                "strokeWidth": 1,
+                "h": 1
+              },
+              "sp": {
+                "x": 0,
+                "y": 55,
+                "w": 100,
+                "strokeWidth": 1,
+                "h": 1
+              }
+            }
+          }
+        }
+      },
+      "groupHeading": {
+        "type": "text",
+        "z": 1,
+        "role": "subheading",
+        "paragraphs": [
+          {
+            "runs": [
+              {
+                "bind": {
+                  "scope": "item",
+                  "path": "/category/name",
+                  "format": "plain"
+                }
+              }
+            ]
+          }
+        ],
+        "style": {},
+        "layout": {
+          "pc": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "size": 22,
+            "h": 33
+          },
+          "sp": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "size": 18,
+            "h": 27
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 160,
+          "w": 60,
+          "h": 208
+        },
+        "sp": {
+          "x": 6,
+          "y": 130,
+          "w": 88,
+          "h": 180
+        }
+      }
+    },
+    "el_menu2h": {
+      "type": "text",
+      "z": 1,
+      "role": "heading",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_kanmi/name",
+                "format": "plain"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 48,
+          "w": 60,
+          "size": 30,
+          "h": 42
+        },
+        "sp": {
+          "x": 6,
+          "y": 32,
+          "w": 88,
+          "size": 24,
+          "h": 34
+        }
+      },
+      "section": "sec_menu2"
+    },
+    "el_menu2d": {
+      "type": "text",
+      "z": 3,
+      "role": "caption",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_kanmi/description",
+                "format": "plain"
+              }
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "提供時間　",
+              "marks": {
+                "color": "theme:textMuted"
+              }
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_kanmi/servingTime",
+                "format": "hoursShort"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {},
+      "layout": {
+        "pc": {
+          "x": 6,
+          "y": 100,
+          "w": 60,
+          "size": 14,
+          "h": 45
+        },
+        "sp": {
+          "x": 6,
+          "y": 72,
+          "w": 88,
+          "size": 13,
+          "h": 42
+        }
+      },
+      "section": "sec_menu2"
+    }
+  }
+}

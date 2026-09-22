@@ -1,0 +1,1342 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ashiya-mikke.jp/schema/site.schema.json",
+  "title": "② サイトの組み立て",
+  "description": "どのページの、どのセクションに、どの材料を、どこに置くか。テンプレートでもオーダーメイドでも同じ形。editor_prototype.html の doc（sections と els）を複数ページ・連動・繰り返す部品まで広げたもの",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "shopId",
+    "canvas",
+    "pages",
+    "regions",
+    "sections",
+    "elements"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "shopId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "templateId": {
+      "type": "string",
+      "description": "元にしたテンプレート（オーダーメイドなら書かない）。「テンプレートの初期状態に戻す」に使う"
+    },
+    "canvas": {
+      "type": "object",
+      "required": [
+        "pcContentWidth",
+        "spDesignWidth"
+      ],
+      "additionalProperties": false,
+      "description": "位置の基準。PCは pcContentWidth の中身を中央に置き、fullBleed の要素と背景だけ画面いっぱいに広げる。画面幅768px未満はスマホの配置、768px以上はPCの配置を使う。どちらも配置を作った幅を基準に、位置・大きさ・文字の大きさをまとめて比例で拡大縮小する（DATA_SPEC 4.2）",
+      "properties": {
+        "pcContentWidth": {
+          "type": "integer",
+          "minimum": 960,
+          "maximum": 1440,
+          "description": "PCの中身の幅（px）。x・w の％はこの幅に対する割合。画面がこれより狭いPC・タブレットでは全体を比例で縮小する（下限0.7。それ未満ならスマホの配置）"
+        },
+        "spDesignWidth": {
+          "type": "integer",
+          "enum": [
+            375,
+            390,
+            393,
+            414
+          ],
+          "description": "スマホの配置を作った基準の幅。実機の幅との比で全体を比例で拡大縮小する（360pxなら約92%）。倍率は0.82〜1.15に収め、それを超える幅では中央に置いて左右に余白を取る"
+        }
+      }
+    },
+    "pages": {
+      "type": "object",
+      "description": "ページの追加・削除は制作側。オーナーは公開・非公開、メニューでの表示名・並び順まで",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "kind",
+          "slug",
+          "navLabel",
+          "navOrder",
+          "showInNav",
+          "published",
+          "sections"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "home",
+              "menu",
+              "about",
+              "access",
+              "staff",
+              "faq",
+              "contact",
+              "privacy",
+              "custom",
+              "notFound"
+            ]
+          },
+          "slug": {
+            "type": "string",
+            "pattern": "^/([a-z0-9-]+(/[a-z0-9-]+)*)?$",
+            "description": "ページのアドレス。制作時に自動で決め、オーナーは触らない。トップは /"
+          },
+          "navLabel": {
+            "type": "string",
+            "maxLength": 12
+          },
+          "navOrder": {
+            "type": "number"
+          },
+          "showInNav": {
+            "type": "boolean"
+          },
+          "published": {
+            "type": "boolean"
+          },
+          "sections": {
+            "type": "array",
+            "items": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "uniqueItems": true,
+            "description": "上から順のセクション（ヘッダー・フッターは含めない）"
+          },
+          "seo": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "書かなければお店の情報から自動で作る。例：御菓子司 芦屋堂｜芦屋市・阪神芦屋駅の和菓子店",
+            "properties": {
+              "title": {
+                "type": "string",
+                "maxLength": 60
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 160
+              },
+              "shareImage": {
+                "$ref": "common.schema.json#/$defs/assetRef",
+                "description": "SNS・LINEで共有したときの画像"
+              }
+            }
+          }
+        }
+      }
+    },
+    "regions": {
+      "type": "object",
+      "required": [
+        "header",
+        "footer"
+      ],
+      "additionalProperties": false,
+      "description": "全ページ共通の部分。ここで編集すると全ページに反映",
+      "properties": {
+        "header": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "footer": {
+          "$ref": "common.schema.json#/$defs/id"
+        },
+        "headerBehavior": {
+          "type": "string",
+          "enum": [
+            "static",
+            "sticky",
+            "hideOnScroll"
+          ],
+          "description": "制作側が決める"
+        },
+        "headerOverlay": {
+          "type": "object",
+          "required": [
+            "pages"
+          ],
+          "additionalProperties": false,
+          "description": "ヘッダーを重ねるページ。指定したページでは、ヘッダーを最初のセクションの上に透明で置く（ファーストビューの暗い写真に重ねる用）。DATA_SPEC 4.1",
+          "properties": {
+            "pages": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "uniqueItems": true,
+              "description": "ヘッダーを重ねるページのID"
+            },
+            "textColor": {
+              "$ref": "common.schema.json#/$defs/color",
+              "description": "重ねたときのヘッダーの文字の色（暗い写真の上なので明るい色など）"
+            }
+          }
+        }
+      }
+    },
+    "sections": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "minHeight"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 20,
+            "description": "編集画面での呼び名（任意）。例：店主より"
+          },
+          "background": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "color": {
+                "$ref": "common.schema.json#/$defs/color"
+              },
+              "alternate": {
+                "type": "boolean",
+                "description": "true なら、表示されているセクションの順番で theme:background と theme:surface を交互に使う（非表示のセクションがあってもずれない）。color が明示されていれば color を優先（DATA_SPEC 4.1）"
+              },
+              "photo": {
+                "type": "object",
+                "required": [
+                  "asset"
+                ],
+                "additionalProperties": false,
+                "description": "「写真を背景に敷く」。セクション全体に広げ、一番奥に置く",
+                "properties": {
+                  "asset": {
+                    "$ref": "common.schema.json#/$defs/assetRef"
+                  },
+                  "crop": {
+                    "$ref": "#/$defs/crop"
+                  },
+                  "darken": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 90
+                  }
+                }
+              }
+            }
+          },
+          "minHeight": {
+            "type": "object",
+            "required": [
+              "pc",
+              "sp"
+            ],
+            "additionalProperties": false,
+            "description": "セクションの高さ（px）。要素を下に動かしたり文章が伸びたりすると自動で伸びる",
+            "properties": {
+              "pc": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "sp": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
+          },
+          "anchor": {
+            "type": "string",
+            "pattern": "^[a-z0-9-]{1,30}$",
+            "description": "ページ内リンクの行き先（制作側が付ける）"
+          }
+        }
+      }
+    },
+    "elements": {
+      "type": "object",
+      "description": "要素（材料）。キーがID。section で置き場所のセクションを指す",
+      "additionalProperties": {
+        "$ref": "#/$defs/placedElement"
+      }
+    }
+  },
+  "$defs": {
+    "crop": {
+      "type": "object",
+      "required": [
+        "fx",
+        "fy",
+        "zoom"
+      ],
+      "additionalProperties": false,
+      "description": "枠の中で見せる範囲。fx/fy は写真の中の焦点（％）、zoom は拡大率",
+      "properties": {
+        "fx": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "fy": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "zoom": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 5
+        }
+      }
+    },
+    "box": {
+      "type": "object",
+      "required": [
+        "x",
+        "y",
+        "w"
+      ],
+      "additionalProperties": false,
+      "description": "1端末での位置と大きさ。x・w は幅に対する％、y・h は px（セクションの上端から）",
+      "properties": {
+        "x": {
+          "type": "number",
+          "minimum": -50,
+          "maximum": 150
+        },
+        "y": {
+          "type": "number"
+        },
+        "w": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 200
+        },
+        "h": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "配置したときの高さ（px、端末別）。写真以外は必須（写真は幅と形から決まるので custom のときだけ）。文字・繰り返す部品は中身によって実際の高さが変わり、その差の分だけ下にある要素をずらす（DATA_SPEC 4.3）。文字の h は編集画面が配置を確定したときに書き込む"
+        },
+        "ratio": {
+          "type": "string",
+          "pattern": "^(orig|custom|[1-9][0-9]?:[1-9][0-9]?)$",
+          "description": "写真の枠の形。orig=元の比率、custom=辺のつまみで作った自由な形（h を使う）"
+        },
+        "fullBleed": {
+          "type": "boolean",
+          "description": "PCで中身の幅を超えて画面いっぱいに広げる（x・w は画面幅に対する％になる）"
+        },
+        "size": {
+          "type": "number",
+          "minimum": 8,
+          "maximum": 200,
+          "description": "文字の大きさ（px、端末別）"
+        },
+        "strokeWidth": {
+          "type": "number",
+          "minimum": 0.5,
+          "maximum": 40,
+          "description": "線の太さ（端末別）"
+        },
+        "writingMode": {
+          "type": "string",
+          "enum": [
+            "horizontal",
+            "vertical"
+          ],
+          "description": "文字の向き（端末別。書かなければ横書き）。縦書きは「その端末でどう置くか」なので位置・大きさと同じ layout に持つ。vertical の端末では h は必須のまま、箱は大きさ（w・h）を固定して伸びない（入りきらなければ編集画面で知らせる）。PC は vertical・スマホは horizontal のように端末別に変えられる（DATA_SPEC 4.2・4.4）"
+        }
+      }
+    },
+    "common": {
+      "description": "すべての材料に共通",
+      "type": "object",
+      "required": [
+        "type",
+        "z",
+        "layout"
+      ],
+      "properties": {
+        "section": {
+          "$ref": "common.schema.json#/$defs/id",
+          "description": "置き場所のセクション。セクションに置く要素では必須、カードの中の要素では書かない"
+        },
+        "type": {
+          "type": "string"
+        },
+        "z": {
+          "type": "number",
+          "description": "重なり順（大きいほど前）"
+        },
+        "layout": {
+          "type": "object",
+          "required": [
+            "pc",
+            "sp"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "pc": {
+              "$ref": "#/$defs/box"
+            },
+            "sp": {
+              "$ref": "#/$defs/box"
+            }
+          }
+        },
+        "locked": {
+          "type": "boolean"
+        },
+        "hidden": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "pc": {
+              "type": "boolean"
+            },
+            "sp": {
+              "type": "boolean"
+            }
+          }
+        },
+        "motion": {
+          "type": "object",
+          "required": [
+            "preset",
+            "enabled"
+          ],
+          "additionalProperties": false,
+          "description": "動き。どんな動きかは制作側が決め、オーナーはオン・オフだけ",
+          "properties": {
+            "preset": {
+              "type": "string",
+              "enum": [
+                "fadeIn",
+                "slideUp",
+                "slideLeft",
+                "slideRight",
+                "zoomIn"
+              ]
+            },
+            "enabled": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "placedElement": {
+      "description": "セクションに置かれた要素",
+      "allOf": [
+        {
+          "type": "object",
+          "required": [
+            "section"
+          ],
+          "properties": {
+            "section": {
+              "$ref": "common.schema.json#/$defs/id"
+            }
+          }
+        },
+        {
+          "$ref": "#/$defs/element"
+        }
+      ]
+    },
+    "element": {
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "discriminator": {
+        "propertyName": "type"
+      },
+      "oneOf": [
+        {
+          "$ref": "#/$defs/text"
+        },
+        {
+          "$ref": "#/$defs/photo"
+        },
+        {
+          "$ref": "#/$defs/shape"
+        },
+        {
+          "$ref": "#/$defs/repeater"
+        },
+        {
+          "$ref": "#/$defs/embed"
+        },
+        {
+          "$ref": "#/$defs/form"
+        },
+        {
+          "$ref": "#/$defs/nav"
+        }
+      ]
+    },
+    "link": {
+      "type": "object",
+      "required": [
+        "kind"
+      ],
+      "additionalProperties": false,
+      "description": "リンク先。shop〜 の種類は①の値を使うので、電話番号などが変わっても直さずに済む",
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "url",
+            "tel",
+            "mail",
+            "instagram",
+            "page",
+            "anchor",
+            "service",
+            "shopPhone",
+            "shopEmail",
+            "shopInstagram",
+            "shopLine",
+            "shopMap",
+            "itemOrder"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "description": "url=URL / tel=数字 / mail=アドレス / instagram=ユーザー名 / page=ページID / anchor=ページID#アンカー / service=外部サービスID。shop〜 と itemOrder では書かない"
+        },
+        "newTab": {
+          "type": "boolean"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "url",
+                  "tel",
+                  "mail",
+                  "instagram",
+                  "page",
+                  "anchor",
+                  "service"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "value"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "shopPhone",
+                  "shopEmail",
+                  "shopInstagram",
+                  "shopLine",
+                  "shopMap",
+                  "itemOrder"
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "required": [
+                "value"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "marks": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "一部だけの装飾。書いていないものは文字の箱全体の設定に従う",
+      "properties": {
+        "font": {
+          "$ref": "theme.schema.json#/$defs/fontRef"
+        },
+        "sizeRatio": {
+          "type": "number",
+          "minimum": 0.3,
+          "maximum": 5,
+          "description": "周りの文字の何倍か（PCとスマホでバランスを保つため倍率で持つ）"
+        },
+        "color": {
+          "$ref": "common.schema.json#/$defs/color"
+        },
+        "bold": {
+          "type": "boolean"
+        },
+        "italic": {
+          "type": "boolean"
+        },
+        "underline": {
+          "type": "boolean"
+        },
+        "link": {
+          "$ref": "#/$defs/link"
+        }
+      }
+    },
+    "binding": {
+      "type": "object",
+      "required": [
+        "scope",
+        "path"
+      ],
+      "additionalProperties": false,
+      "description": "①お店の情報との連動。scope=shop は①全体、item/person/faq は繰り返す部品のカードの中で「その1件」を指す",
+      "properties": {
+        "scope": {
+          "type": "string",
+          "enum": [
+            "shop",
+            "item",
+            "person",
+            "faq"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "pattern": "^(/[^/]+)*$",
+          "description": "JSON Pointer。例：/contact/phone、/hours、（scope=item で）/name"
+        },
+        "format": {
+          "type": "string",
+          "enum": [
+            "plain",
+            "hoursTable",
+            "hoursShort",
+            "closedDays",
+            "address",
+            "addressShort",
+            "access",
+            "phone",
+            "payment",
+            "price",
+            "priceAll",
+            "yearsSince",
+            "seats",
+            "flag"
+          ],
+          "description": "複雑な値を文字にする書き方。例：hoursTable=曜日ごとの表、hoursShort=「9:00〜18:00（水曜定休）」、flag=true/false の項目（true なら段落の自由な文字だけを出し、false・空なら段落ごと消す。「できません」とは書かない）"
+        }
+      }
+    },
+    "run": {
+      "description": "文字のひとかたまり。自由な文字、連動している文字、連動を外した文字の3種類",
+      "oneOf": [
+        {
+          "type": "object",
+          "required": [
+            "text"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string"
+            },
+            "marks": {
+              "$ref": "#/$defs/marks"
+            },
+            "detachedFrom": {
+              "type": "object",
+              "required": [
+                "binding",
+                "sourceValueAtDetach"
+              ],
+              "additionalProperties": false,
+              "description": "「この場所だけ別の文章にする」で連動を外した文字。元の値が変わったら「古い内容のままかもしれません」と知らせ、あとから連動に戻せる",
+              "properties": {
+                "binding": {
+                  "$ref": "#/$defs/binding"
+                },
+                "sourceValueAtDetach": {
+                  "type": "string",
+                  "description": "外した時点で元の情報が表示していた文字"
+                }
+              }
+            }
+          }
+        },
+        {
+          "type": "object",
+          "required": [
+            "bind"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "bind": {
+              "$ref": "#/$defs/binding"
+            },
+            "marks": {
+              "$ref": "#/$defs/marks"
+            }
+          }
+        }
+      ]
+    },
+    "paragraph": {
+      "type": "object",
+      "required": [
+        "runs"
+      ],
+      "additionalProperties": false,
+      "description": "段落。連動している文字しか入っていない段落は、連動先が空なら段落ごと表示しない",
+      "properties": {
+        "runs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/run"
+          },
+          "minItems": 1
+        }
+      }
+    },
+    "text": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "required": [
+        "type",
+        "role",
+        "paragraphs",
+        "style"
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "type": {
+          "const": "text"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "pageTitle",
+            "heading",
+            "subheading",
+            "body",
+            "caption"
+          ],
+          "description": "文字の役割。制作時にこちらが決める。見出しの階層（検索・読み上げ）と標準の見た目がここから決まる"
+        },
+        "paragraphs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/paragraph"
+          },
+          "minItems": 1
+        },
+        "style": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "文字の箱全体の設定。書いていないものは③の役割ごとの標準に従う。大きさは layout の size（端末別）",
+          "properties": {
+            "font": {
+              "$ref": "theme.schema.json#/$defs/fontRef"
+            },
+            "color": {
+              "$ref": "common.schema.json#/$defs/color"
+            },
+            "bold": {
+              "type": "boolean"
+            },
+            "italic": {
+              "type": "boolean"
+            },
+            "underline": {
+              "type": "boolean"
+            },
+            "align": {
+              "type": "string",
+              "enum": [
+                "left",
+                "center",
+                "right"
+              ]
+            },
+            "lineHeight": {
+              "type": "number",
+              "minimum": 0.8,
+              "maximum": 3.5
+            },
+            "letterSpacing": {
+              "type": "number",
+              "minimum": -0.2,
+              "maximum": 1
+            },
+            "list": {
+              "type": "string",
+              "enum": [
+                "none",
+                "bullet",
+                "number"
+              ]
+            },
+            "effect": {
+              "type": "string",
+              "enum": [
+                "none",
+                "softShadow",
+                "hardShadow",
+                "outline"
+              ]
+            },
+            "labelColumn": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "maximum": 20,
+              "description": "項目名の列の幅（em）。指定すると、各段落の先頭の自由な文字をこの幅の列に置き、残りを右に流す（営業時間・住所などの定義リスト向け）。段落ごと消える規則（DATA_SPEC 4.4）はそのまま"
+            },
+            "link": {
+              "$ref": "#/$defs/link",
+              "description": "文字の箱全体に付けるリンク"
+            }
+          }
+        }
+      }
+    },
+    "photo": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "type": {
+          "const": "photo"
+        },
+        "asset": {
+          "$ref": "common.schema.json#/$defs/assetRef"
+        },
+        "bind": {
+          "$ref": "#/$defs/binding",
+          "description": "繰り返す部品のカードの中で、品の代表写真などを表示する"
+        },
+        "crop": {
+          "$ref": "#/$defs/crop"
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "角の丸み（％）。100で円・カプセル形"
+        },
+        "filters": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "brightness": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 150
+            },
+            "contrast": {
+              "type": "number",
+              "minimum": 50,
+              "maximum": 150
+            },
+            "saturation": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 200
+            }
+          }
+        },
+        "darken": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 90,
+          "description": "上に置く文字のための暗さ（％）"
+        },
+        "alt": {
+          "type": "string",
+          "maxLength": 120,
+          "description": "書かなければ④の標準の説明文"
+        },
+        "link": {
+          "$ref": "#/$defs/link"
+        }
+      },
+      "oneOf": [
+        {
+          "required": [
+            "asset"
+          ]
+        },
+        {
+          "required": [
+            "bind"
+          ]
+        }
+      ]
+    },
+    "shape": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "required": [
+        "type",
+        "kind",
+        "fill"
+      ],
+      "unevaluatedProperties": false,
+      "properties": {
+        "type": {
+          "const": "shape"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "rect",
+            "circle",
+            "line"
+          ]
+        },
+        "fill": {
+          "$ref": "common.schema.json#/$defs/color",
+          "description": "線の場合は線の色"
+        },
+        "radius": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "opacity": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "link": {
+          "$ref": "#/$defs/link",
+          "description": "図形＋文字＋リンクでボタンを作る（ボタン専用の部品は作らない）"
+        }
+      }
+    },
+    "repeater": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "required": [
+        "type",
+        "source",
+        "display",
+        "card"
+      ],
+      "unevaluatedProperties": false,
+      "description": "繰り返す部品。①のリストと連動し、カードの見た目を1つ作れば全カードに反映される。サイト上で品を足すと①に1品増える",
+      "properties": {
+        "type": {
+          "const": "repeater"
+        },
+        "source": {
+          "oneOf": [
+            {
+              "type": "object",
+              "required": [
+                "kind",
+                "menuId"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "const": "catalog"
+                },
+                "menuId": {
+                  "$ref": "common.schema.json#/$defs/id"
+                },
+                "categoryIds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "common.schema.json#/$defs/id"
+                  },
+                  "uniqueItems": true,
+                  "description": "書かなければそのメニューの全部の括り"
+                },
+                "labelIds": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "common.schema.json#/$defs/id"
+                  },
+                  "uniqueItems": true,
+                  "description": "このラベルのどれかが付いた品だけ（例：おすすめ）"
+                },
+                "pick": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "common.schema.json#/$defs/id"
+                  },
+                  "uniqueItems": true,
+                  "description": "品を直接選ぶ（この順で表示）。書けば括り・ラベルの条件より優先"
+                },
+                "groupByCategory": {
+                  "type": "boolean",
+                  "description": "括りの見出しを挟んで並べる（メニューページ向け）"
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 500
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "enum": [
+                    "people",
+                    "faq"
+                  ]
+                },
+                "limit": {
+                  "type": "integer",
+                  "minimum": 1
+                }
+              }
+            },
+            {
+              "type": "object",
+              "required": [
+                "kind",
+                "assets"
+              ],
+              "additionalProperties": false,
+              "description": "写真の並び（スライドショーなど）。①とは連動しない",
+              "properties": {
+                "kind": {
+                  "const": "photos"
+                },
+                "assets": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "common.schema.json#/$defs/assetRef"
+                  },
+                  "minItems": 1
+                }
+              }
+            }
+          ]
+        },
+        "display": {
+          "type": "object",
+          "required": [
+            "mode",
+            "columns"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "grid",
+                "list",
+                "slideshow",
+                "accordion"
+              ],
+              "description": "格子／一覧／スライドショー／開閉式（accordion＝見出しを押すと中身が開く。よくある質問の一覧でだけ使える）"
+            },
+            "columns": {
+              "type": "object",
+              "required": [
+                "pc",
+                "sp"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "pc": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 6
+                },
+                "sp": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 3
+                }
+              }
+            },
+            "gap": {
+              "type": "object",
+              "required": [
+                "pc",
+                "sp"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "pc": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "sp": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              }
+            },
+            "photoless": {
+              "type": "string",
+              "enum": [
+                "sameCard",
+                "compactCard",
+                "skip"
+              ],
+              "description": "写真のない品の出し方：同じカード（写真の場所を詰める）／文字だけの詰めたカード／出さない"
+            },
+            "slideInterval": {
+              "type": "number",
+              "minimum": 2,
+              "maximum": 20,
+              "description": "スライドショーの秒数"
+            }
+          }
+        },
+        "card": {
+          "type": "object",
+          "required": [
+            "height",
+            "elements"
+          ],
+          "additionalProperties": false,
+          "description": "カード1枚の設計。中の要素の位置はカードの左上が基準",
+          "properties": {
+            "height": {
+              "type": "object",
+              "required": [
+                "pc",
+                "sp"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "pc": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                },
+                "sp": {
+                  "type": "number",
+                  "exclusiveMinimum": 0
+                }
+              },
+              "description": "カードの最低の高さ。中の文字が長ければ行ごとにそろえて伸びる"
+            },
+            "elements": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "discriminator": {
+                  "propertyName": "type"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/text"
+                  },
+                  {
+                    "$ref": "#/$defs/photo"
+                  },
+                  {
+                    "$ref": "#/$defs/shape"
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "groupHeading": {
+          "$ref": "#/$defs/text",
+          "description": "groupByCategory のときの括りの見出しの設計（scope=item で /category/name などを連動）"
+        }
+      }
+    },
+    "embed": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "required": [
+        "type",
+        "kind"
+      ],
+      "unevaluatedProperties": false,
+      "description": "埋め込み。中身は制作時にこちらで組み込み、オーナーは位置と表示・非表示だけ",
+      "properties": {
+        "type": {
+          "const": "embed"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "map",
+            "instagramFeed",
+            "video",
+            "orderButton",
+            "reservationWidget",
+            "other"
+          ]
+        },
+        "config": {
+          "type": "object",
+          "description": "制作側だけが触る設定。map は①の住所・位置から自動（config 不要）"
+        }
+      }
+    },
+    "form": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "required": [
+        "type",
+        "formKind",
+        "enabled",
+        "fields",
+        "recipient"
+      ],
+      "unevaluatedProperties": false,
+      "description": "フォーム。オンのときプライバシーポリシーのページ（kind=privacy）が必要。届いた内容はメールと編集画面の受信箱の両方へ",
+      "properties": {
+        "type": {
+          "const": "form"
+        },
+        "formKind": {
+          "type": "string",
+          "enum": [
+            "contact",
+            "reservation"
+          ]
+        },
+        "enabled": {
+          "type": "boolean"
+        },
+        "fields": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "key",
+              "required"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "key": {
+                "type": "string",
+                "enum": [
+                  "name",
+                  "nameKana",
+                  "phone",
+                  "email",
+                  "preferredDate",
+                  "preferredDate2",
+                  "preferredTime",
+                  "people",
+                  "menu",
+                  "message"
+                ]
+              },
+              "required": {
+                "type": "boolean"
+              }
+            }
+          },
+          "description": "ひな形から選んだ項目。並びは配列の順"
+        },
+        "recipient": {
+          "$ref": "common.schema.json#/$defs/email"
+        },
+        "autoReply": {
+          "type": "object",
+          "required": [
+            "enabled"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            },
+            "subject": {
+              "type": "string",
+              "maxLength": 60
+            },
+            "body": {
+              "type": "string",
+              "maxLength": 2000,
+              "description": "予約のご希望では「お店からの連絡をもって予約確定となります」を仕組みが必ず足す（ここから消せない）"
+            }
+          }
+        }
+      }
+    },
+    "nav": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/common"
+        }
+      ],
+      "type": "object",
+      "required": [
+        "type"
+      ],
+      "unevaluatedProperties": false,
+      "description": "ページ移動のメニュー。中身は pages の showInNav・navOrder・navLabel から自動。スマホでは三本線のボタンで開閉",
+      "properties": {
+        "type": {
+          "const": "nav"
+        },
+        "style": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "font": {
+              "$ref": "theme.schema.json#/$defs/fontRef"
+            },
+            "color": {
+              "$ref": "common.schema.json#/$defs/color"
+            },
+            "activeColor": {
+              "$ref": "common.schema.json#/$defs/color"
+            },
+            "spMenuBackground": {
+              "$ref": "common.schema.json#/$defs/color"
+            }
+          }
+        }
+      }
+    }
+  }
+}

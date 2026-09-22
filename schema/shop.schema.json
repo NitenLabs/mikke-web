@@ -1,0 +1,1438 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ashiya-mikke.jp/schema/shop.schema.json",
+  "title": "① お店の情報",
+  "description": "見せ方と関係ない、お店にひとつだけの事実。芦屋みっけの一覧・特集ページの店舗情報欄・公式サイトのすべてがここを参照する。素材集めの画面と公開後の「お店の情報」の画面が読み書きするのはこのデータ。分からない項目はキーごと書かない。",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "shopId",
+    "basic",
+    "catalog"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "$ref": "common.schema.json#/$defs/schemaVersion"
+    },
+    "shopId": {
+      "$ref": "common.schema.json#/$defs/id"
+    },
+    "mikkeSpotId": {
+      "type": "string",
+      "description": "芦屋みっけの店舗データ（roster）の同じお店のID。裏取り済み情報の取り込みと、一覧・特集ページとの連動に使う"
+    },
+    "updatedAt": {
+      "$ref": "common.schema.json#/$defs/dateTime"
+    },
+    "isSample": {
+      "type": "boolean",
+      "description": "架空のサンプルのお店だけ true。素材サイトの写真（origin.kind=stock）を実物の枠（外観・品・人など）に使えるのは、このお店だけ。実在のお店では実物と誤解させないため使えない"
+    },
+    "basic": {
+      "type": "object",
+      "required": [
+        "name",
+        "genre"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "nameKana": {
+          "type": "string",
+          "pattern": "^[ぁ-んー・　 ]+$",
+          "description": "ひらがな"
+        },
+        "genre": {
+          "type": "object",
+          "required": [
+            "template"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "template": {
+              "type": "string",
+              "enum": [
+                "restaurant",
+                "retail",
+                "beauty",
+                "medical",
+                "bodycare",
+                "school",
+                "service",
+                "other"
+              ],
+              "description": "業種のひな形。聞く項目・括りの候補・写真の枠・注意事項がこれで決まる。飲食／物販／美容・理容／医療・歯科／整体・治療院／教室・習い事／士業・サービス／その他"
+            },
+            "detail": {
+              "type": "string",
+              "maxLength": 30,
+              "description": "お客さんに見せる業種名。例：和菓子店、イタリア料理、美容室"
+            }
+          }
+        },
+        "tagline": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "お店自身のひとこと紹介（40字まで）。芦屋みっけの一覧カード、特集ページの店舗情報欄、検索結果の説明文の自動生成に使う、①の事実。サイトの大きなキャッチコピー（例：季節を、ひと口に。）は②の自由な文字で、これとは別"
+        }
+      }
+    },
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "postalCode": {
+          "type": "string",
+          "pattern": "^[0-9]{3}-[0-9]{4}$"
+        },
+        "prefecture": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "town": {
+          "type": "string",
+          "description": "町名。芦屋市内は公式表記に正規化（朝日ヶ丘町／翠ケ丘町）。エリアは町名から自動で決まるので持たない"
+        },
+        "street": {
+          "type": "string",
+          "description": "丁目・番地。例：1-2-3"
+        },
+        "building": {
+          "type": "string",
+          "description": "建物名・階・部屋番号"
+        },
+        "geo": {
+          "type": "object",
+          "required": [
+            "lat",
+            "lng"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "lng": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            }
+          }
+        },
+        "hideStreet": {
+          "type": "boolean",
+          "description": "自宅兼店舗などで番地以下を公開しない。①は1か所なので、公式サイト・芦屋みっけ・Googleに渡す構造化データのすべてで町名までの表示になり、地図は町の中心を指す。制作側の手元（裏取り）には番地を残す"
+        },
+        "access": {
+          "type": "object",
+          "description": "最寄り駅からの行き方。キーはID、並びは order",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "station",
+              "method",
+              "order"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "station": {
+                "type": "string",
+                "description": "例：阪神芦屋駅"
+              },
+              "method": {
+                "type": "string",
+                "enum": [
+                  "walk",
+                  "bus",
+                  "car",
+                  "bicycle"
+                ]
+              },
+              "minutes": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 180
+              },
+              "note": {
+                "type": "string",
+                "maxLength": 60,
+                "description": "例：北口を出て芦屋川沿いに北へ"
+              },
+              "order": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "parking": {
+          "type": "object",
+          "required": [
+            "status"
+          ],
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "yes",
+                "no",
+                "nearbyPaid",
+                "partner"
+              ],
+              "description": "あり／なし／近くにコインパーキング／提携駐車場あり"
+            },
+            "spaces": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "note": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        }
+      }
+    },
+    "hours": {
+      "type": "object",
+      "description": "営業時間（医療は診療時間、教室は受付時間）。曜日ごとの決まった形＋例外の規則＋補足の自由記入の両方持ち。曜日のキーがない＝分からない。",
+      "additionalProperties": false,
+      "properties": {
+        "weekly": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mon": {
+              "$ref": "#/$defs/day"
+            },
+            "tue": {
+              "$ref": "#/$defs/day"
+            },
+            "wed": {
+              "$ref": "#/$defs/day"
+            },
+            "thu": {
+              "$ref": "#/$defs/day"
+            },
+            "fri": {
+              "$ref": "#/$defs/day"
+            },
+            "sat": {
+              "$ref": "#/$defs/day"
+            },
+            "sun": {
+              "$ref": "#/$defs/day"
+            }
+          }
+        },
+        "publicHoliday": {
+          "type": "object",
+          "required": [
+            "mode"
+          ],
+          "additionalProperties": false,
+          "description": "祝日の扱い",
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "asWeekday",
+                "closed",
+                "custom"
+              ],
+              "description": "曜日どおり／休み／祝日だけの時間"
+            },
+            "periods": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/period"
+              },
+              "minItems": 1
+            }
+          },
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "custom"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "periods"
+            ]
+          }
+        },
+        "closedRules": {
+          "type": "array",
+          "description": "曜日の表では表せない定休の規則。曜日の表より優先する。例：第3水曜休み、不定休",
+          "items": {
+            "oneOf": [
+              {
+                "type": "object",
+                "required": [
+                  "type",
+                  "weekday",
+                  "nth"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "const": "nthWeekday"
+                  },
+                  "weekday": {
+                    "$ref": "common.schema.json#/$defs/weekday"
+                  },
+                  "nth": {
+                    "type": "array",
+                    "items": {
+                      "type": "integer",
+                      "minimum": 1,
+                      "maximum": 5
+                    },
+                    "minItems": 1,
+                    "uniqueItems": true
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type",
+                  "weekday"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "const": "lastWeekday"
+                  },
+                  "weekday": {
+                    "$ref": "common.schema.json#/$defs/weekday"
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "required": [
+                  "type"
+                ],
+                "additionalProperties": false,
+                "properties": {
+                  "type": {
+                    "const": "irregular"
+                  }
+                },
+                "description": "不定休。これがあると「本日営業中」のような断定表示をしない"
+              }
+            ]
+          }
+        },
+        "exceptions": {
+          "type": "object",
+          "description": "あらかじめ分かっている決まった期間の例外（年末年始・お盆・夏季休業など）。素材集めでは「長期のお休み」としてだけ聞く。当日の臨時休業の知らせには使わない（お知らせ機能は作らない方針。臨時の情報はSNS・LINEへ）。Googleへ伝える特別営業時間にも使う。once は過ぎたら自動で表示から消え、1年後に自動で削除する",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "label",
+              "status"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "label": {
+                "type": "string",
+                "maxLength": 20,
+                "description": "例：年末年始"
+              },
+              "recurring": {
+                "type": "object",
+                "required": [
+                  "from",
+                  "to"
+                ],
+                "additionalProperties": false,
+                "description": "毎年くり返す期間",
+                "properties": {
+                  "from": {
+                    "$ref": "common.schema.json#/$defs/monthDay"
+                  },
+                  "to": {
+                    "$ref": "common.schema.json#/$defs/monthDay"
+                  }
+                }
+              },
+              "once": {
+                "type": "object",
+                "required": [
+                  "from",
+                  "to"
+                ],
+                "additionalProperties": false,
+                "description": "その年だけの期間。過ぎたら自動で表示から消える",
+                "properties": {
+                  "from": {
+                    "$ref": "common.schema.json#/$defs/date"
+                  },
+                  "to": {
+                    "$ref": "common.schema.json#/$defs/date"
+                  }
+                }
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "closed",
+                  "open"
+                ]
+              },
+              "periods": {
+                "type": "array",
+                "items": {
+                  "$ref": "common.schema.json#/$defs/period"
+                }
+              }
+            },
+            "oneOf": [
+              {
+                "required": [
+                  "recurring"
+                ]
+              },
+              {
+                "required": [
+                  "once"
+                ]
+              }
+            ]
+          }
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 200,
+          "description": "補足の自由記入。形に収まらないことはここへ"
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "phone": {
+          "$ref": "common.schema.json#/$defs/phone"
+        },
+        "fax": {
+          "$ref": "common.schema.json#/$defs/phone"
+        },
+        "email": {
+          "$ref": "common.schema.json#/$defs/email"
+        },
+        "sns": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "SNSのアカウント。ユーザー名で持ち、URLは表示時に作る（URLの形が変わっても直さずに済む）",
+          "properties": {
+            "instagram": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._]{1,30}$"
+            },
+            "x": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_]{1,15}$"
+            },
+            "facebook": {
+              "$ref": "common.schema.json#/$defs/url"
+            },
+            "line": {
+              "$ref": "common.schema.json#/$defs/url",
+              "description": "LINE公式アカウントの友だち追加URL"
+            },
+            "tiktok": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9._]{1,24}$"
+            },
+            "youtube": {
+              "$ref": "common.schema.json#/$defs/url"
+            }
+          }
+        }
+      }
+    },
+    "reservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "policy": {
+          "type": "string",
+          "enum": [
+            "required",
+            "recommended",
+            "notRequired",
+            "notAccepted"
+          ],
+          "description": "予約が必要／おすすめ／不要／受けていない"
+        },
+        "methods": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "phone",
+              "web",
+              "line",
+              "form",
+              "email",
+              "inStore"
+            ]
+          },
+          "description": "web を選んだら、外部サービスの一覧に kind=reservation の行が必要。form は②のフォームを使う"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    },
+    "externalServices": {
+      "type": "object",
+      "description": "通販・テイクアウト注文・デリバリー・予約などの外部サービス（02の5B.2）。01の「予約ページのURL」はここに一般化した",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "kind",
+          "provider",
+          "url"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "shop",
+              "takeout",
+              "delivery",
+              "reservation",
+              "other"
+            ],
+            "description": "通販／テイクアウト注文／デリバリー／予約／その他"
+          },
+          "provider": {
+            "type": "string",
+            "enum": [
+              "base",
+              "stores",
+              "shopify",
+              "airreserve",
+              "hotpepper",
+              "tabelog",
+              "tablecheck",
+              "ubereats",
+              "demaecan",
+              "wolt",
+              "line",
+              "other"
+            ]
+          },
+          "name": {
+            "type": "string",
+            "maxLength": 30,
+            "description": "provider=other のときの表示名、または表示名の上書き"
+          },
+          "url": {
+            "$ref": "common.schema.json#/$defs/url"
+          },
+          "note": {
+            "type": "string",
+            "maxLength": 60
+          },
+          "linkCheck": {
+            "type": "object",
+            "additionalProperties": false,
+            "description": "リンク切れの自動確認の結果（システムが書く）",
+            "properties": {
+              "lastCheckedAt": {
+                "$ref": "common.schema.json#/$defs/dateTime"
+              },
+              "ok": {
+                "type": "boolean"
+              }
+            }
+          }
+        }
+      }
+    },
+    "payment": {
+      "type": "object",
+      "description": "支払い方法。配列を書いた場合は「確認済みの一覧」（空配列＝使えない）。キーがない＝分からない",
+      "additionalProperties": false,
+      "properties": {
+        "cash": {
+          "type": "boolean"
+        },
+        "cards": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "visa",
+              "mastercard",
+              "jcb",
+              "amex",
+              "diners",
+              "unionpay"
+            ]
+          }
+        },
+        "eMoney": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "transit",
+              "id",
+              "quicpay",
+              "nanaco",
+              "waon",
+              "edy"
+            ]
+          },
+          "description": "transit=交通系（ICOCA等）"
+        },
+        "qr": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "paypay",
+              "rakutenpay",
+              "dbarai",
+              "aupay",
+              "merpay",
+              "alipay",
+              "wechatpay"
+            ]
+          }
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 100
+        }
+      }
+    },
+    "facilities": {
+      "type": "object",
+      "description": "業種を問わない設備・受け入れ。キーがない＝分からない",
+      "additionalProperties": false,
+      "properties": {
+        "seats": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "total": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "counter": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "table": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "privateRooms": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "terrace": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        "smoking": {
+          "type": "string",
+          "enum": [
+            "none",
+            "separated",
+            "allowed"
+          ],
+          "description": "全席禁煙／分煙（喫煙室あり）／喫煙可"
+        },
+        "children": {
+          "type": "string",
+          "enum": [
+            "welcome",
+            "ok",
+            "no"
+          ],
+          "description": "子ども連れ歓迎／可／不可"
+        },
+        "wheelchair": {
+          "type": "boolean"
+        },
+        "pets": {
+          "type": "string",
+          "enum": [
+            "ok",
+            "terraceOnly",
+            "no"
+          ]
+        },
+        "wifi": {
+          "type": "boolean"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 200
+        }
+      }
+    },
+    "genreInfo": {
+      "type": "object",
+      "description": "その業種ならではの情報（01の5.2の表の右列）。どれを聞くかは業種のひな形が決める。どの業種でも書けるが、聞かれない項目は空のまま",
+      "additionalProperties": false,
+      "properties": {
+        "takeout": {
+          "type": "boolean",
+          "description": "飲食：持ち帰りできる"
+        },
+        "delivery": {
+          "type": "boolean"
+        },
+        "shipping": {
+          "type": "boolean",
+          "description": "物販：通販・配送"
+        },
+        "holdForPickup": {
+          "type": "boolean",
+          "description": "物販：取り置き"
+        },
+        "giftWrapping": {
+          "type": "boolean",
+          "description": "物販：のし・包装"
+        },
+        "nominationFee": {
+          "$ref": "common.schema.json#/$defs/price",
+          "description": "美容：指名料"
+        },
+        "departments": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "description": "医療：診療科目"
+        },
+        "insurance": {
+          "type": "string",
+          "enum": [
+            "accepted",
+            "partly",
+            "no"
+          ],
+          "description": "医療・治療院：保険の取り扱い"
+        },
+        "firstVisit": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "医療・治療院・教室：初回の流れ"
+        },
+        "trialLesson": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "教室：体験レッスン",
+          "properties": {
+            "available": {
+              "type": "boolean"
+            },
+            "price": {
+              "$ref": "common.schema.json#/$defs/price"
+            },
+            "note": {
+              "type": "string",
+              "maxLength": 100
+            }
+          }
+        },
+        "admissionFee": {
+          "$ref": "common.schema.json#/$defs/price",
+          "description": "教室：入会金"
+        },
+        "serviceArea": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "士業・出張サービス：対応エリア"
+        },
+        "qualifications": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "maxLength": 40
+          },
+          "description": "士業など：資格（お店として）"
+        },
+        "consultationFlow": {
+          "type": "string",
+          "maxLength": 400,
+          "description": "士業：相談の流れ"
+        }
+      }
+    },
+    "story": {
+      "type": "object",
+      "description": "お店の物語の素材。短い問いへの答えをそのまま持つ。サイトの文章は制作側がこれを元に書く（連動しない自由な文字）",
+      "additionalProperties": false,
+      "properties": {
+        "foundedYear": {
+          "type": "integer",
+          "minimum": 1600,
+          "maximum": 2100
+        },
+        "ownerName": {
+          "type": "string",
+          "maxLength": 30,
+          "description": "店主・代表の名前。載せるかどうかはサイト側で選ぶ"
+        },
+        "answers": {
+          "type": "object",
+          "description": "キーは問いのID（業種のひな形で定義）。例：why_started",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "question",
+              "answer"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "question": {
+                "type": "string",
+                "description": "聞いたときの問いの文（ひな形の文言が変わっても意味が分かるよう控える）"
+              },
+              "answer": {
+                "type": "string",
+                "maxLength": 2000
+              },
+              "answeredAt": {
+                "$ref": "common.schema.json#/$defs/dateTime"
+              }
+            }
+          }
+        }
+      }
+    },
+    "faq": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "question",
+          "answer",
+          "order"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "question": {
+            "type": "string",
+            "maxLength": 100
+          },
+          "answer": {
+            "type": "string",
+            "maxLength": 600
+          },
+          "order": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "catalog": {
+      "$ref": "#/$defs/catalog"
+    },
+    "people": {
+      "type": "object",
+      "description": "スタッフ・医師・講師などの人の一覧。売り物ではないので、メニューの3段とは別に持つ",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "name",
+          "order",
+          "status"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "nameKana": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "maxLength": 30,
+            "description": "例：店主、院長、トップスタイリスト"
+          },
+          "bio": {
+            "type": "string",
+            "maxLength": 600
+          },
+          "photo": {
+            "$ref": "common.schema.json#/$defs/assetRef"
+          },
+          "qualifications": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 40
+            }
+          },
+          "specialties": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 30
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "active",
+              "hidden"
+            ]
+          },
+          "order": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "customFields": {
+      "type": "object",
+      "description": "ひな形に当てはまらない項目（共通項目＋自由項目）。よく出るものは後でひな形の正式な項目に格上げする",
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "label",
+          "value",
+          "order"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 20
+          },
+          "value": {
+            "type": "string",
+            "maxLength": 400
+          },
+          "order": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "description": "取り込んだ値の確認状態。キーは値の場所（JSON Pointer。コレクションはIDで指すので並べ替えても壊れない）。ここに載っていない値は、オーナー本人が入れた（または確認した）値。表示の仕組みはこの欄を読まない",
+      "propertyNames": {
+        "pattern": "^/"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "required": [
+          "status",
+          "sources"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "conflict",
+              "unreadable"
+            ],
+            "description": "確認待ち／出どころで食い違い（オーナーへの質問）／読み取れなかった。確認されたら行ごと消し、変更の記録に残す"
+          },
+          "sources": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "required": [
+                "kind"
+              ],
+              "additionalProperties": false,
+              "properties": {
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "mikke",
+                    "ownSite",
+                    "instagram",
+                    "googleMaps",
+                    "reviewSite",
+                    "menuPhoto",
+                    "csv",
+                    "oldSite",
+                    "producer"
+                  ]
+                },
+                "url": {
+                  "$ref": "common.schema.json#/$defs/url"
+                },
+                "value": {
+                  "description": "その出どころでの値（本文に入っている値と違うことがある）"
+                },
+                "fetchedAt": {
+                  "$ref": "common.schema.json#/$defs/dateTime"
+                }
+              }
+            }
+          },
+          "question": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "オーナーに見せる質問の文。conflict では必須"
+          }
+        },
+        "if": {
+          "properties": {
+            "status": {
+              "const": "conflict"
+            }
+          }
+        },
+        "then": {
+          "required": [
+            "question"
+          ],
+          "properties": {
+            "sources": {
+              "minItems": 2
+            }
+          }
+        }
+      }
+    },
+    "translations": {
+      "type": "object",
+      "description": "多言語化の余地（01の5.6）。キーは訳す値の場所（JSON Pointer）、値は言語ごとの訳。今は使わないが、形を変えずに後から足せるよう場所だけ決めておく",
+      "propertyNames": {
+        "pattern": "^/"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "propertyNames": {
+          "pattern": "^[a-z]{2}(-[A-Z]{2})?$"
+        },
+        "additionalProperties": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "day": {
+      "type": "object",
+      "required": [
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "open",
+            "closed",
+            "byAppointment"
+          ],
+          "description": "営業／休み／予約のみ"
+        },
+        "periods": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/period"
+          },
+          "minItems": 1
+        }
+      },
+      "if": {
+        "properties": {
+          "status": {
+            "const": "open"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "periods"
+        ]
+      },
+      "else": {
+        "not": {
+          "required": [
+            "periods"
+          ]
+        }
+      }
+    },
+    "catalog": {
+      "type": "object",
+      "description": "メニュー → 括り → 品 の3段（02の3章）。品（変わらない事実）と載せ方（どのメニューの、どの括りに、何番目に）を分けて持つ",
+      "required": [
+        "menus",
+        "categories",
+        "items",
+        "placements",
+        "labels"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "menus": {
+          "type": "object",
+          "description": "ランチ・ディナー・ドリンク・テイクアウトなど。1段目を使わないお店も、名前のないメニューを1つ持つ（画面ではメニューの段を見せない）",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "order"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 20,
+                "description": "メニューが1つだけのお店では書かない"
+              },
+              "description": {
+                "type": "string",
+                "maxLength": 200
+              },
+              "servingTime": {
+                "type": "object",
+                "additionalProperties": false,
+                "description": "提供する時間帯（ランチ営業など）",
+                "properties": {
+                  "weekdays": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "common.schema.json#/$defs/weekday"
+                    },
+                    "uniqueItems": true,
+                    "description": "書かなければ営業日すべて"
+                  },
+                  "periods": {
+                    "type": "array",
+                    "items": {
+                      "$ref": "common.schema.json#/$defs/period"
+                    },
+                    "minItems": 1
+                  }
+                }
+              },
+              "orderService": {
+                "$ref": "common.schema.json#/$defs/id",
+                "description": "メニュー全体の注文先（テイクアウト・デリバリー）。externalServices のID"
+              },
+              "order": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "categories": {
+          "type": "object",
+          "description": "括り。名前・数・並び順はお店が自由に決める。品が1つも載っていない括りは公開サイトで自動で非表示",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "menuId",
+              "name",
+              "order"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "menuId": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "name": {
+                "type": "string",
+                "maxLength": 20
+              },
+              "note": {
+                "type": "string",
+                "maxLength": 100,
+                "description": "括り全体への注記。例：※ディナーのみ"
+              },
+              "photo": {
+                "$ref": "common.schema.json#/$defs/assetRef"
+              },
+              "order": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "labels": {
+          "type": "object",
+          "description": "品に付ける印（いくつでも）。system を持つものは仕組みが意味を知っているラベルで、消せない（名前は変えられる）。おすすめ＝代表の品",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "name",
+              "order"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "maxLength": 12
+              },
+              "system": {
+                "type": "string",
+                "enum": [
+                  "recommended",
+                  "new",
+                  "spicy",
+                  "vegetarian",
+                  "takeout",
+                  "limited"
+                ]
+              },
+              "order": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "items": {
+          "type": "object",
+          "description": "品。メニューが変わっても変わらない事実",
+          "additionalProperties": {
+            "$ref": "#/$defs/item"
+          }
+        },
+        "placements": {
+          "type": "object",
+          "description": "載せ方。同じ品を複数のメニューに載せるときは、載せ方が複数になる（品は1つ）",
+          "additionalProperties": {
+            "type": "object",
+            "required": [
+              "itemId",
+              "menuId",
+              "categoryId",
+              "order"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "itemId": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "menuId": {
+                "$ref": "common.schema.json#/$defs/id"
+              },
+              "categoryId": {
+                "$ref": "common.schema.json#/$defs/id",
+                "description": "同じメニューの括りであること"
+              },
+              "order": {
+                "type": "number",
+                "description": "括りの中での並び順"
+              },
+              "prices": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "common.schema.json#/$defs/price"
+                },
+                "description": "このメニューだけの価格。書けば品の基本の価格を丸ごと置き換える（選択肢の数や名前もメニューごとに変えられる）。書かなければ品の価格を使う"
+              }
+            }
+          }
+        }
+      }
+    },
+    "item": {
+      "type": "object",
+      "required": [
+        "name",
+        "status"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "nameKana": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string",
+          "maxLength": 300
+        },
+        "photos": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/assetRef"
+          },
+          "maxItems": 6,
+          "description": "先頭が代表の写真。写真のない品もある前提でデザインする"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/id"
+          },
+          "uniqueItems": true
+        },
+        "prices": {
+          "type": "array",
+          "items": {
+            "$ref": "common.schema.json#/$defs/price"
+          },
+          "description": "基本の価格。空＝価格を載せない（または未確認）"
+        },
+        "hidePrice": {
+          "type": "boolean",
+          "description": "価格をサイトに出さない（注文先のある品で「価格・在庫はオンラインショップで」とする場合など）"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "onSale",
+            "paused"
+          ],
+          "description": "販売中／お休み中。消さずにお休みにできる"
+        },
+        "season": {
+          "type": "object",
+          "required": [
+            "months"
+          ],
+          "additionalProperties": false,
+          "description": "毎年くり返す販売時期。この月だけ自動で表示される。書くと「季節限定」の印も自動で付く",
+          "properties": {
+            "months": {
+              "type": "array",
+              "items": {
+                "$ref": "common.schema.json#/$defs/month"
+              },
+              "minItems": 1,
+              "maxItems": 11,
+              "uniqueItems": true
+            }
+          }
+        },
+        "availableFrom": {
+          "$ref": "common.schema.json#/$defs/date",
+          "description": "その年だけの販売開始日"
+        },
+        "availableUntil": {
+          "$ref": "common.schema.json#/$defs/date",
+          "description": "終わりの日。過ぎたら自動で表示から消える（データは残る）"
+        },
+        "orderLink": {
+          "type": "object",
+          "required": [
+            "serviceId"
+          ],
+          "additionalProperties": false,
+          "description": "注文先（02の5B.2）",
+          "properties": {
+            "serviceId": {
+              "$ref": "common.schema.json#/$defs/id"
+            },
+            "url": {
+              "$ref": "common.schema.json#/$defs/url",
+              "description": "その品のページ"
+            },
+            "externalId": {
+              "type": "string",
+              "maxLength": 64,
+              "description": "外部サービス側の商品ID。価格の差分確認と、将来の同期の突き合わせに使う"
+            }
+          }
+        },
+        "durationMinutes": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1440,
+          "description": "美容・治療院：所要時間"
+        },
+        "schedule": {
+          "type": "array",
+          "description": "教室：開講の曜日・時間",
+          "items": {
+            "type": "object",
+            "required": [
+              "weekday",
+              "start",
+              "end"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "weekday": {
+                "$ref": "common.schema.json#/$defs/weekday"
+              },
+              "start": {
+                "$ref": "common.schema.json#/$defs/time"
+              },
+              "end": {
+                "$ref": "common.schema.json#/$defs/time"
+              }
+            }
+          }
+        },
+        "target": {
+          "type": "string",
+          "maxLength": 40,
+          "description": "教室：対象（年齢・レベル）"
+        },
+        "coverage": {
+          "type": "string",
+          "enum": [
+            "insurance",
+            "selfPay",
+            "both"
+          ],
+          "description": "医療・治療院：保険／自費"
+        },
+        "note": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "品への短い注記。例：要予約、数量限定、原材料についてはお店にお尋ねください"
+        }
+      },
+      "if": {
+        "required": [
+          "hidePrice"
+        ],
+        "properties": {
+          "hidePrice": {
+            "const": true
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "orderLink"
+        ]
+      }
+    }
+  }
+}

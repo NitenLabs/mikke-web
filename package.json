@@ -1,0 +1,19 @@
+{
+  "name": "mikke-web-data",
+  "version": "0.1.0",
+  "description": "芦屋みっけ Web制作：データの定義と検査",
+  "scripts": {
+    "validate": "node tools/validate.mjs samples/ashiyado",
+    "test": "node --test tools/reflow.test.mjs",
+    "setup:browser": "npx playwright install chromium"
+  },
+  "dependencies": {
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "playwright": "^1.48.0"
+  }
+}

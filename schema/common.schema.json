@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ashiya-mikke.jp/schema/common.schema.json",
+  "title": "共通の定義",
+  "description": "4層（①お店の情報・②サイトの組み立て・③見た目の設定・④素材置き場）で共通して使う値の形。ルール：値が分からない項目はキーごと書かない（null や空文字は使わない）。書いていない項目は公開サイトで自動的に表示されない。",
+  "$defs": {
+    "id": {
+      "description": "中身が変わっても変わらない識別子。種類を表す接頭辞＋英小文字・数字。一度使ったIDは削除後も再利用しない（履歴・連動・外部サービスとの突き合わせが壊れるため）。例：itm_7k2m9q",
+      "type": "string",
+      "pattern": "^[a-z]{2,4}_[a-z0-9]{4,24}$"
+    },
+    "assetRef": {
+      "description": "④素材置き場の写真・ファイルへの参照",
+      "type": "string",
+      "pattern": "^ast_[a-z0-9]{4,24}$"
+    },
+    "schemaVersion": {
+      "description": "データの形の版。形を変えたら上げ、古い版のデータは変換スクリプトで引き上げる。",
+      "type": "integer",
+      "minimum": 1
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "YYYY-MM-DD"
+    },
+    "dateTime": {
+      "type": "string",
+      "format": "date-time",
+      "description": "日本時間を含むISO形式。例：2026-09-22T10:30:00+09:00"
+    },
+    "monthDay": {
+      "description": "毎年くり返す日付。MM-DD。例：12-29",
+      "type": "string",
+      "pattern": "^(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$"
+    },
+    "month": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 12
+    },
+    "weekday": {
+      "type": "string",
+      "enum": [
+        "mon",
+        "tue",
+        "wed",
+        "thu",
+        "fri",
+        "sat",
+        "sun"
+      ]
+    },
+    "time": {
+      "description": "HH:MM。深夜営業は日付をまたいで24時以降で書く（例：翌2時→26:00）。上限29:59。表示では「翌2:00」に変換する。",
+      "type": "string",
+      "pattern": "^([01][0-9]|2[0-9]):[0-5][0-9]$"
+    },
+    "period": {
+      "description": "時間帯ひとつ。1日に複数持てる（ランチ／ディナー、午前／午後）。",
+      "type": "object",
+      "required": [
+        "start",
+        "end"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/time"
+        },
+        "end": {
+          "$ref": "#/$defs/time"
+        },
+        "label": {
+          "type": "string",
+          "maxLength": 20,
+          "description": "任意。「ランチ」「午前の診療」など"
+        },
+        "lastOrder": {
+          "$ref": "#/$defs/time",
+          "description": "任意。ラストオーダー・最終受付"
+        }
+      }
+    },
+    "price": {
+      "description": "価格の選択肢ひとつ。1品が複数持てる（1個／5個入り、ショート／ロング）。金額は税込の円（総額表示の義務のため、税抜では持たない）。",
+      "type": "object",
+      "required": [
+        "id",
+        "type"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/id"
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 30,
+          "description": "選択肢の名前。1つしかないときは書かない"
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "fixed",
+            "from",
+            "range",
+            "market",
+            "ask",
+            "free"
+          ],
+          "description": "fixed=○円 / from=○円〜 / range=○円〜○円 / market=時価 / ask=応相談 / free=無料"
+        },
+        "amount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "円・税込"
+        },
+        "max": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "range のときの上限（円・税込）"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "fixed",
+                  "from",
+                  "range"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "amount"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "const": "range"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "max"
+            ]
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "type": {
+                "enum": [
+                  "market",
+                  "ask",
+                  "free"
+                ]
+              }
+            }
+          },
+          "then": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "amount"
+                  ]
+                },
+                {
+                  "required": [
+                    "max"
+                  ]
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "phone": {
+      "description": "電話番号。表示用と、発信リンク用の数字だけの形を両方持つ。入力時に自動で両方を作る。",
+      "type": "object",
+      "required": [
+        "display",
+        "digits"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "display": {
+          "type": "string",
+          "pattern": "^[0-9()\\- ]{9,16}$",
+          "description": "例：0797-00-0000"
+        },
+        "digits": {
+          "type": "string",
+          "pattern": "^0[0-9]{9,10}$",
+          "description": "例：0797000000"
+        }
+      }
+    },
+    "email": {
+      "type": "string",
+      "format": "email"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://"
+    },
+    "color": {
+      "description": "色。#RRGGBB か、③見た目の設定のテーマ色への参照（theme:トークン名）。テーマ色で塗った箇所は、テーマ色を変えると一緒に変わる（PowerPointのテーマの色と同じ）。",
+      "type": "string",
+      "pattern": "^(#[0-9A-F]{6}|theme:[a-z][a-zA-Z0-9]{1,23})$"
+    },
+    "actor": {
+      "description": "変更した人の区別",
+      "type": "string",
+      "enum": [
+        "owner",
+        "producer",
+        "system"
+      ]
+    }
+  }
+}

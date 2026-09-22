@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_hero": {
+      "kind": "photo",
+      "file": {
+        "key": "shp_ashiyado/hero.jpg",
+        "mime": "image/jpeg",
+        "width": 1600,
+        "height": 1000,
+        "bytes": 350000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-20T21:00:00+09:00",
+      "uploadedBy": "owner",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-20T21:05:00+09:00",
+        "confirmedBy": "owner"
+      },
+      "slot": "signature",
+      "alt": "店頭に並ぶ上生菓子（サンプル写真）"
+    },
+    "ast_wagashi": {
+      "kind": "photo",
+      "file": {
+        "key": "shp_ashiyado/wagashi.jpg",
+        "mime": "image/jpeg",
+        "width": 1200,
+        "height": 1500,
+        "bytes": 350000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-20T21:00:00+09:00",
+      "uploadedBy": "owner",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-20T21:05:00+09:00",
+        "confirmedBy": "owner"
+      },
+      "slot": "product",
+      "alt": "木箱に並ぶ和菓子（サンプル写真）"
+    },
+    "ast_shop": {
+      "kind": "photo",
+      "file": {
+        "key": "shp_ashiyado/shop.jpg",
+        "mime": "image/jpeg",
+        "width": 1500,
+        "height": 1000,
+        "bytes": 350000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-20T21:00:00+09:00",
+      "uploadedBy": "owner",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-20T21:05:00+09:00",
+        "confirmedBy": "owner"
+      },
+      "slot": "exterior",
+      "alt": "のれんのかかった店構え（サンプル写真）"
+    },
+    "ast_matcha": {
+      "kind": "photo",
+      "file": {
+        "key": "shp_ashiyado/tea.jpg",
+        "mime": "image/jpeg",
+        "width": 1400,
+        "height": 1000,
+        "bytes": 350000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-20T21:00:00+09:00",
+      "uploadedBy": "owner",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-20T21:05:00+09:00",
+        "confirmedBy": "owner"
+      },
+      "slot": "product",
+      "alt": "抹茶と上生菓子（サンプル写真）"
+    },
+    "ast_menuphoto": {
+      "kind": "reference",
+      "file": {
+        "key": "shp_ashiyado/menuphoto.jpg",
+        "mime": "image/jpeg",
+        "width": 3024,
+        "height": 4032,
+        "bytes": 350000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-20T21:00:00+09:00",
+      "uploadedBy": "owner",
+      "origin": {
+        "kind": "ownerUpload"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-20T21:05:00+09:00",
+        "confirmedBy": "owner"
+      }
+    },
+    "ast_oldsite01": {
+      "kind": "photo",
+      "file": {
+        "key": "shp_ashiyado/oldsite01.jpg",
+        "mime": "image/jpeg",
+        "width": 800,
+        "height": 600,
+        "bytes": 350000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-20T21:00:00+09:00",
+      "uploadedBy": "owner",
+      "origin": {
+        "kind": "oldSite"
+      },
+      "rights": {
+        "basis": "unknown",
+        "note": "旧サイトの写真。撮影者を確認中"
+      },
+      "slot": "interior"
+    }
+  }
+}

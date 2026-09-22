@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://ashiya-mikke.jp/schema/assets.schema.json",
+  "title": "④ 素材置き場",
+  "description": "写真・ファイルの実物の台帳。①②③はIDで参照するだけ。素材集めで上げた写真も、公開後の写真ライブラリも、ここに並ぶ。下書きの対象外（上げた時点で置き場に入る。どこかで使われて公開されるまでは外から見えない）",
+  "type": "object",
+  "required": ["schemaVersion", "assets"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "$ref": "common.schema.json#/$defs/schemaVersion" },
+    "assets": {
+      "type": "object",
+      "propertyNames": { "pattern": "^ast_[a-z0-9]{4,24}$" },
+      "additionalProperties": { "$ref": "#/$defs/asset" }
+    }
+  },
+  "$defs": {
+    "asset": {
+      "type": "object",
+      "required": ["kind", "file", "uploadedAt", "uploadedBy", "origin", "rights"],
+      "additionalProperties": false,
+      "if": { "properties": { "origin": { "properties": { "kind": { "const": "stock" } }, "required": ["kind"] } }, "required": ["origin"] },
+      "then": {
+        "description": "出どころが素材サイト（stock）なら、使う権利は必ず利用許諾（licensed）",
+        "properties": { "rights": { "properties": { "basis": { "const": "licensed" } } } }
+      },
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["photo", "logo", "reference"],
+          "description": "写真／ロゴ／制作用の資料（お品書きの写真、旧サイトの画面など。公開サイトには使わない）"
+        },
+        "file": {
+          "type": "object",
+          "required": ["key", "mime", "width", "height", "bytes"],
+          "additionalProperties": false,
+          "description": "変換後の元ファイル（HEIC→JPEG、向きの修正、位置情報の削除を済ませたもの）。表示用の縮小版は公開時に自動で作るので持たない",
+          "properties": {
+            "key": { "type": "string", "description": "保存先での名前" },
+            "mime": { "type": "string", "enum": ["image/jpeg", "image/png", "image/webp", "image/svg+xml", "application/pdf"] },
+            "width": { "type": "integer", "minimum": 1 },
+            "height": { "type": "integer", "minimum": 1 },
+            "bytes": { "type": "integer", "minimum": 1 },
+            "exifStripped": { "const": true, "description": "位置情報を消したことの記録。これがない写真は公開に使わない" }
+          }
+        },
+        "originalName": { "type": "string" },
+        "uploadedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+        "uploadedBy": { "$ref": "common.schema.json#/$defs/actor" },
+        "origin": {
+          "type": "object",
+          "required": ["kind"],
+          "additionalProperties": false,
+          "if": { "properties": { "kind": { "const": "stock" } } },
+          "then": { "required": ["provider", "pageUrl"] },
+          "properties": {
+            "kind": { "type": "string", "enum": ["ownerUpload", "instagram", "ownSite", "oldSite", "producer", "sample", "stock"], "description": "オーナー／Instagram／お店のサイト／旧サイト／制作側／サンプル用に用意したもの／素材サイト（Unsplashなど）" },
+            "url": { "$ref": "common.schema.json#/$defs/url" },
+            "provider": { "type": "string", "enum": ["unsplash"], "description": "素材サイトの名前（kind が stock のとき必須）" },
+            "credit": { "type": "string", "description": "撮影者名（クレジット表示に使う）" },
+            "pageUrl": { "$ref": "common.schema.json#/$defs/url", "description": "写真のページのURL。画像への直リンクではなく紹介ページ（kind が stock のとき必須）" }
+          }
+        },
+        "rights": {
+          "type": "object",
+          "required": ["basis"],
+          "additionalProperties": false,
+          "description": "使う権利の確認。basis が unknown の写真は公開に使えない（旧サイトの写真は、前の制作会社や素材サイトのものがあるため）",
+          "properties": {
+            "basis": { "type": "string", "enum": ["ownWork", "permission", "licensed", "unknown"], "description": "自分で撮った／使う許可をもらった／利用許諾のある素材／未確認" },
+            "confirmedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+            "confirmedBy": { "$ref": "common.schema.json#/$defs/actor" },
+            "note": { "type": "string", "maxLength": 200 }
+          }
+        },
+        "slot": {
+          "type": "string",
+          "enum": ["exterior", "signature", "interior", "work", "staff", "product", "other"],
+          "description": "素材集めでお願いした枠（外観・看板商品・店内・作業風景など）。どこに使うかの手がかり"
+        },
+        "alt": { "type": "string", "maxLength": 120, "description": "標準の説明文。写真を置いた場所ごとに上書きできる" },
+        "trashedAt": { "$ref": "common.schema.json#/$defs/dateTime", "description": "ゴミ箱に入れた日時。30日（仮）で完全に消える。古い版に戻したときに写真が欠けないよう、それまでは残す" }
+      }
+    }
+  }
+}
