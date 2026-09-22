@@ -110,6 +110,7 @@ function textBoxStyle(el, device, theme, unit) {
   if (ls) props.push(`letter-spacing:${ls}em`);
   props.push(`font-weight:${weight}`);
   if (st.italic) props.push("font-style:italic");
+  if (st.noWrap) props.push("white-space:nowrap");
   if (box.writingMode === "vertical") props.push("writing-mode:vertical-rl");
   return props;
 }

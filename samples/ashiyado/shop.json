@@ -522,15 +522,6 @@
         }
       ]
     },
-    "/catalog/items/itm_dorayaki/prices": {
-      "status": "unreadable",
-      "question": "お品書きの写真から、どら焼きの価格が読み取れませんでした",
-      "sources": [
-        {
-          "kind": "menuPhoto"
-        }
-      ]
-    },
     "/contact/phone": {
       "status": "pending",
       "sources": [

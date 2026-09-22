@@ -795,6 +795,10 @@
               "minimum": -0.2,
               "maximum": 1
             },
+            "noWrap": {
+              "type": "boolean",
+              "description": "折り返さない（white-space:nowrap）。短い札・ピルのボタン・ナビ・FAQ の「Q.」など、1行で見せる文字に使う。実測もこの設定で1行として測るので、端末や描画エンジンによる折り返しのばらつきが出ない"
+            },
             "list": {
               "type": "string",
               "enum": [

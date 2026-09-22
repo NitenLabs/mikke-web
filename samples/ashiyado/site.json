@@ -493,7 +493,8 @@
         "font": "font:heading",
         "weight": 900,
         "color": "theme:text",
-        "align": "center"
+        "align": "center",
+        "noWrap": true
       },
       "layout": {
         "pc": {
@@ -1382,7 +1383,7 @@
           "x": 3.9583,
           "y": 296,
           "w": 92.0833,
-          "h": 583
+          "h": 577
         },
         "sp": {
           "x": 5.1282,
@@ -1740,6 +1741,7 @@
         "weight": 700,
         "color": "theme:text",
         "align": "center",
+        "noWrap": true,
         "link": {
           "kind": "page",
           "value": "pg_menu"
@@ -2418,6 +2420,7 @@
         "weight": 700,
         "color": "theme:text",
         "align": "center",
+        "noWrap": true,
         "link": {
           "kind": "shopPhone"
         }
@@ -2648,6 +2651,7 @@
         "weight": 700,
         "color": "theme:text",
         "align": "center",
+        "noWrap": true,
         "link": {
           "kind": "page",
           "value": "pg_contact"

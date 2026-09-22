@@ -46,15 +46,17 @@ test("priceAll（芦屋最中）：1個 220円 ／ 5個入り 1,200円", () => {
   assert.equal(formatPriceAll(items.itm_monaka.prices), "1個 220円 ／ 5個入り 1,200円");
 });
 
-test("価格が空の品（どら焼き）は何も出さない", () => {
-  assert.equal(formatPriceAll(items.itm_dorayaki.prices), "");
-  assert.equal(formatPrice(items.itm_dorayaki.prices), "");
+test("価格が空の品は何も出さない（空配列）", () => {
+  // ※どら焼きはおすすめカード化に伴いサンプル価格 250円 を入れたので、空の検証は空配列で行う
+  assert.equal(formatPriceAll([]), "");
+  assert.equal(formatPrice([]), "");
 });
 
 test("priceAllTax：税込を1回付ける（区切りは／、空白なし）", () => {
   assert.equal(formatPriceAllTax(items.itm_monaka.prices), "1個 220円／5個入り 1,200円（税込）");
   assert.equal(formatPriceAllTax(items.itm_jonama.prices), "380円（税込）");
-  assert.equal(formatPriceAllTax(items.itm_dorayaki.prices), "");
+  assert.equal(formatPriceAllTax(items.itm_dorayaki.prices), "250円（税込）");
+  assert.equal(formatPriceAllTax([]), "");
 });
 
 test("わらび餅：店頭は450円、甘味処は載せ方の価格で「お茶付き 650円」", () => {
@@ -125,8 +127,9 @@ test("あんみつ（お休み中）はどちらの日付でも非表示", () =>
 
 test("おすすめ（トップ）：店頭販売の recommended 3件（括り順）", () => {
   const rows = resolveRepeater(shop, { kind: "catalog", menuId: "mnu_tento", labelIds: ["lbl_recommended"], limit: 3 }, makeRefDate("2026-09-22"));
-  // 括り順：上生菓子(jonama)→餅菓子(warabi)→焼き菓子(monaka)
-  assert.deepEqual(rows.map((r) => r.item.name), ["季節の上生菓子", "わらび餅", "芦屋最中"]);
+  // 括り順：上生菓子(jonama)→餅菓子(warabi)→焼き菓子(dorayaki)
+  // ※芦屋最中は Unsplash に無地・無文字の写真が無く、おすすめから外してどら焼きに差し替えた（SPEC 4.6）
+  assert.deepEqual(rows.map((r) => r.item.name), ["季節の上生菓子", "わらび餅", "どら焼き"]);
 });
 
 // ---------- 空になったセクションと背景の交互 ----------
