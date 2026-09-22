@@ -142,12 +142,37 @@ function photoHtml(el, resolved) {
   return `<div data-el="${el.id}" class="el el-photo" style="${radius}"><img src="${src}" alt="${alt}" style="${crop}">${darken}</div>`;
 }
 
+// セクションに表示される中身（飾りでない）があるか。空ならナビからも消す。
+function sectionHasContent(resolved, secId) {
+  const els = [...resolved.elements.values()].filter((e) => e.section === secId);
+  return els.some((e) => {
+    if (e.type === "text") return e.text.visible;
+    if (e.type === "repeater") return e.repeater.items.length > 0;
+    if (e.type === "photo") return !(e.box.pc?.fullBleed || e.box.sp?.fullBleed); // 前面の写真＝中身
+    if (e.type === "embed" || e.type === "nav" || e.type === "form") return true;
+    return false; // 図形だけ＝飾り
+  });
+}
+
 function navHtml(el, resolved, linkResolver) {
-  const pages = resolved.site.pages;
-  const items = Object.entries(pages)
-    .filter(([, p]) => p.showInNav && p.published)
-    .sort((a, b) => a[1].navOrder - b[1].navOrder)
-    .map(([pid, p]) => ({ pid, label: p.navLabel, href: linkResolver({ kind: "page", value: pid }).href, active: pid === resolved.currentPageId }));
+  const pages = resolved.site.pages, sections = resolved.site.sections;
+  const items = [];
+  // ページの項目
+  for (const [pid, p] of Object.entries(pages)) {
+    if (!p.showInNav || !p.published) continue;
+    items.push({ order: p.navOrder, label: p.navLabel, href: linkResolver({ kind: "page", value: pid }).href, active: pid === resolved.currentPageId && el.section === resolved.site.regions.header && !resolved._navAnchorActive });
+  }
+  // nav を持つセクションの項目（ページ内リンク）。空で表示されないセクションは出さない
+  const secToPage = {};
+  for (const [pid, p] of Object.entries(pages)) for (const s of p.sections) secToPage[s] = pid;
+  for (const [secId, sec] of Object.entries(sections)) {
+    if (!sec.nav) continue;
+    if (!sectionHasContent(resolved, secId)) continue; // 空セクションはナビからも消える
+    const pid = secToPage[secId];
+    const href = linkResolver({ kind: "anchor", value: `${pid}#${sec.anchor}` });
+    if (href) items.push({ order: sec.nav.order, label: sec.nav.label, href: href.href, active: false });
+  }
+  items.sort((a, b) => a.order - b.order);
   const links = items.map((i) => `<a href="${esc(i.href)}"${i.active ? ' aria-current="page"' : ""}>${esc(i.label)}</a>`).join("");
   const st = el.nav.style || {};
   const vars = [

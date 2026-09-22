@@ -237,6 +237,8 @@ for (const sid of Object.keys(secs)) if (!secOwner[sid]) warn(`[ページ] セ�
 for (const [sid, s] of Object.entries(secs)) {
   checkColor(s.background?.color, `セクション ${sid} の背景`);
   if (s.background?.photo) usableAsset(s.background.photo.asset, `セクション ${sid} の背景`);
+  // ナビに出すセクションには、行き先（anchor）が必要
+  if (s.nav && !s.anchor) err(`[ナビ] セクション ${sid}: nav を持つセクションには anchor（ページ内リンクの行き先）が必要です`);
 }
 
 // 連動（binding）の検査

@@ -28,7 +28,7 @@
       "kind": "menu",
       "slug": "/menu",
       "navLabel": "お品書き",
-      "navOrder": 2,
+      "navOrder": 4,
       "showInNav": true,
       "published": true,
       "sections": [
@@ -91,7 +91,11 @@
         "pc": 760,
         "sp": 1180
       },
-      "anchor": "about"
+      "anchor": "about",
+      "nav": {
+        "label": "お店の物語",
+        "order": 2
+      }
     },
     "sec_feature": {
       "name": "おすすめ",
@@ -102,7 +106,11 @@
         "pc": 900,
         "sp": 1260
       },
-      "anchor": "feature"
+      "anchor": "feature",
+      "nav": {
+        "label": "おすすめ",
+        "order": 3
+      }
     },
     "sec_menu": {
       "name": "お品書き・商品",
@@ -124,7 +132,11 @@
         "pc": 560,
         "sp": 700
       },
-      "anchor": "faq"
+      "anchor": "faq",
+      "nav": {
+        "label": "よくある質問",
+        "order": 5
+      }
     },
     "sec_info": {
       "name": "お店の情報",
@@ -135,7 +147,11 @@
         "pc": 820,
         "sp": 1480
       },
-      "anchor": "info"
+      "anchor": "info",
+      "nav": {
+        "label": "お店の情報",
+        "order": 6
+      }
     },
     "sec_contact": {
       "name": "お問い合わせ",
@@ -146,7 +162,11 @@
         "pc": 520,
         "sp": 560
       },
-      "anchor": "contact"
+      "anchor": "contact",
+      "nav": {
+        "label": "お問い合わせ",
+        "order": 7
+      }
     },
     "sec_footer": {
       "name": "フッター",

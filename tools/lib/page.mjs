@@ -35,6 +35,7 @@ img{display:block;max-width:none}
 a{color:inherit}
 main{display:block}
 .sec{position:relative;width:100%;overflow:hidden}
+.sec[id]{scroll-margin-top:9rem}
 .cbox{position:relative;margin:0 auto}
 .el{position:absolute}
 /* 改行の規則を明示的に固定する（エンジンごとの既定値の違いで折り返しがゆれないように） */
@@ -152,7 +153,8 @@ function renderSectionHtml(secId, site, resolved, linkResolver, readingOrder) {
   }
   const bleedHtml = bleed.map((el) => bleedPhotoHtml(el, resolved)).join("");
   const boxHtml = inBox.map((el) => (el.type === "repeater" ? repeaterHtml(el, resolved, linkResolver) : elementHtml(el, resolved, linkResolver))).join("");
-  return `<section data-sec="${secId}" class="sec">${bgPhoto}${bleedHtml}<div class="cbox">${boxHtml}</div></section>`;
+  const idAttr = secDef.anchor ? ` id="${secDef.anchor}"` : "";
+  return `<section${idAttr} data-sec="${secId}" class="sec">${bgPhoto}${bleedHtml}<div class="cbox">${boxHtml}</div></section>`;
 }
 
 function bleedPhotoHtml(el, resolved) {

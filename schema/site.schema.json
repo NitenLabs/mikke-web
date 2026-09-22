@@ -250,6 +250,16 @@
             "type": "string",
             "pattern": "^[a-z0-9-]{1,30}$",
             "description": "ページ内リンクの行き先（制作側が付ける）"
+          },
+          "nav": {
+            "type": "object",
+            "required": ["label", "order"],
+            "additionalProperties": false,
+            "description": "ページ移動のメニューに、このセクションへの行き先（ページ内リンク）を出す。ナビは「ページ」と「nav を持つセクション」から自動で作る。セクションが空で表示されなくなったら、ナビの項目も消える（DATA_SPEC 4.1）。nav を持つセクションには anchor が必要",
+            "properties": {
+              "label": { "type": "string", "maxLength": 12 },
+              "order": { "type": "number" }
+            }
           }
         }
       }
