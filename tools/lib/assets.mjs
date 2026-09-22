@@ -1,6 +1,8 @@
 // 芦屋みっけ Web制作：素材（写真）の書き出し
-// サンプルの店には実物の写真ファイルが無いので、台帳（④）の大きさ・説明文から
-// プレースホルダのSVGを作る。実在の店では実際の画像を配置する差し替え地点になる。
+//   - 架空のサンプルの店（isSample=true）だけ、台帳（④）の大きさ・説明文から
+//     プレースホルダのSVGを作れる（DATA_SPEC 5.2「サンプルの店だけ stock を実物枠に使える」に対応）。
+//   - 実在の店では、参照している素材の実ファイルが無ければ書き出しを止めてエラーにする
+//     （仮の写真で公開して、お客さんに実物と誤解させないため）。
 
 import fs from "node:fs";
 import path from "node:path";
@@ -14,7 +16,6 @@ export function collectUsedAssets(data) {
   for (const el of Object.values(site.elements)) {
     if (el.type === "photo" && el.asset) used.add(el.asset);
     if (el.type === "repeater") {
-      // カードで品の写真（/photos/0）を使う → 品の先頭写真
       for (const it of Object.values(shop.catalog.items)) if (it.photos?.[0]) used.add(it.photos[0]);
     }
   }
@@ -37,17 +38,47 @@ function placeholderSvg(asset, label) {
 </svg>`;
 }
 
-export function writeAssets(data, outDir) {
+// 実在の店で、素材の実ファイルを探す場所（台帳の file.key を基準に）
+function findRealFile(dataDir, key) {
+  if (!key) return null;
+  const cands = [
+    path.join(dataDir, "media", key),
+    path.join(dataDir, key),
+    path.join(dataDir, "assets", key),
+  ];
+  return cands.find((p) => fs.existsSync(p)) || null;
+}
+
+// 素材を dist/<name>/assets/ に用意する。
+//   返り値: { files: { astId -> 出力ファイル名 }, errors: [文字列] }
+export function prepareAssets(data, dataDir, outDir) {
   const used = collectUsedAssets(data);
   const dir = path.join(outDir, "assets");
   fs.mkdirSync(dir, { recursive: true });
-  const written = [];
+  const files = {}, errors = [];
+  const isSample = data.shop.isSample === true;
+
   for (const id of used) {
     const asset = data.assets.assets[id];
-    if (!asset) continue;
-    const label = asset.alt || id;
-    fs.writeFileSync(path.join(dir, `${id}.svg`), placeholderSvg(asset, label));
-    written.push(`assets/${id}.svg`);
+    if (!asset) { errors.push(`写真 ${id} が素材置き場（④）にありません`); continue; }
+
+    if (isSample) {
+      // サンプルの店：仮の写真（SVG）を作る
+      const label = asset.alt || id;
+      fs.writeFileSync(path.join(dir, `${id}.svg`), placeholderSvg(asset, label));
+      files[id] = `${id}.svg`;
+    } else {
+      // 実在の店：実ファイルが無ければエラー（仮の写真は使わない）
+      const key = asset.file?.key;
+      const real = findRealFile(dataDir, key);
+      if (!real) {
+        errors.push(`写真 ${id}（${key || "file.key 無し"}）の実ファイルが見つかりません。実在の店では仮の写真を使いません`);
+        continue;
+      }
+      const ext = path.extname(real) || ".jpg";
+      fs.copyFileSync(real, path.join(dir, `${id}${ext}`));
+      files[id] = `${id}${ext}`;
+    }
   }
-  return written;
+  return { files, errors };
 }

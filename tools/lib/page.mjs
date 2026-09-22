@@ -125,7 +125,7 @@ function renderSectionHtml(secId, site, resolved, linkResolver, readingOrder) {
   let bgPhoto = "";
   if (secDef.background?.photo) {
     const bp = secDef.background.photo;
-    const src = `${resolved.assetPrefix}assets/${bp.asset}.svg`;
+    const src = `${resolved.assetPrefix}assets/${resolved.assetFiles?.[bp.asset] || `${bp.asset}.svg`}`;
     const dk = bp.darken ? `<div class="darken" style="opacity:${bp.darken / 100}"></div>` : "";
     bgPhoto = `<div class="bleed sec-bg"><img src="${src}" alt="">${dk}</div>`;
   }
@@ -138,7 +138,7 @@ function bleedPhotoHtml(el, resolved) {
   const p = el.photo;
   const asset = resolved.assets.assets[p.asset];
   const alt = esc(p.alt || asset?.alt || "");
-  const src = `${resolved.assetPrefix}assets/${p.asset}.svg`;
+  const src = `${resolved.assetPrefix}assets/${resolved.assetFiles?.[p.asset] || `${p.asset}.svg`}`;
   const crop = p.crop ? `object-position:${p.crop.fx}% ${p.crop.fy}%;` : "";
   const dk = p.darken ? `<div class="darken" style="opacity:${p.darken / 100}"></div>` : "";
   // fullBleed は端末で切り替わることがある（PC=全面／SP=cbox内）→ ここは両端末とも全面として置き、
@@ -283,7 +283,7 @@ function pageHead(resolved, page, assetPrefix, css) {
   const title = page.seo?.title || autoTitle;
   const desc = page.seo?.description || shop.basic.tagline || "";
   const fontUrl = googleFontsUrl(resolved.fontIds);
-  const share = page.seo?.shareImage ? `${assetPrefix}assets/${page.seo.shareImage}.svg` : null;
+  const share = page.seo?.shareImage ? `${assetPrefix}assets/${resolved.assetFiles?.[page.seo.shareImage] || `${page.seo.shareImage}.svg`}` : null;
   const lines = [
     `<meta charset="utf-8">`,
     `<meta name="viewport" content="width=device-width,initial-scale=1">`,

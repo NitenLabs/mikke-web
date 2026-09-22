@@ -15,7 +15,8 @@ import { makeRefDate } from "./lib/catalog.mjs";
 import { resolveSite, measurementRequests } from "./lib/render.mjs";
 import { measureHeights } from "./lib/measure.mjs";
 import { buildRepLayouts, renderPage, render404 } from "./lib/page.mjs";
-import { writeAssets } from "./lib/assets.mjs";
+import { prepareAssets } from "./lib/assets.mjs";
+import { pageDesignOverlaps } from "./lib/overlap.mjs";
 import { themeFontIds } from "./lib/theme.mjs";
 import { googleFontsUrl } from "./lib/fonts.mjs";
 
@@ -64,32 +65,48 @@ const outDir = path.join(root, "dist", name);
 fs.rmSync(outDir, { recursive: true, force: true });
 fs.mkdirSync(outDir, { recursive: true });
 
-// ---------- 素材 ----------
-const assetFiles = writeAssets(data, outDir);
+// ---------- 素材（サンプルは仮の写真、実在の店は実ファイル必須） ----------
+const { files: assetFiles, errors: assetErrors } = prepareAssets(data, dataDirAbs, outDir);
+if (assetErrors.length) {
+  console.error("\n✗ 素材の用意でエラーがありました。書き出しを中止します。");
+  for (const e of assetErrors) console.error("  エラー " + e);
+  if (data.shop.isSample !== true) console.error("  （実在の店では仮の写真を使いません。素材の実ファイルを配置してください）");
+  process.exit(1);
+}
+resolved.assetFiles = assetFiles;
 
 // ---------- 3. ページを書き出す ----------
 const written = [];
+const layoutOverlaps = {}; // ページ名 -> {pc:[...],sp:[...]}（配置の時点で重なっていた組。検査の除外に使う）
 const slugDepth = (slug) => slug.split("/").filter(Boolean).length;
 const slugToFile = (slug) => (slug === "/" ? "index.html" : `${slug.slice(1)}/index.html`);
+const fileToPageName = (file) => (file === "index.html" ? "home" : file === "404.html" ? "404" : file.replace(/\/index\.html$/, "").replace(/\//g, "-"));
 
 for (const [pageId, page] of Object.entries(data.site.pages)) {
   if (!page.published) continue;
-  let html, file, depth;
+  let html, file, depth, sectionIds;
   if (page.kind === "notFound") {
     depth = 0; file = "404.html";
     html = render404(resolved, { depth });
+    sectionIds = [data.site.regions.header, data.site.regions.footer];
   } else {
     depth = slugDepth(page.slug);
     file = slugToFile(page.slug);
     html = renderPage(resolved, pageId, { depth });
+    sectionIds = [data.site.regions.header, ...page.sections, data.site.regions.footer];
   }
   const abs = path.join(outDir, file);
   fs.mkdirSync(path.dirname(abs), { recursive: true });
   fs.writeFileSync(abs, html);
   written.push(file);
+  layoutOverlaps[fileToPageName(file)] = pageDesignOverlaps(resolved, sectionIds);
 }
 
+// 検査（重なりの除外）用のサイドカー
+fs.writeFileSync(path.join(outDir, "_layout.json"), JSON.stringify({ pages: layoutOverlaps }, null, 2));
+
 // ---------- 報告 ----------
+const assetList = Object.values(assetFiles);
 console.log(`\n✓ 書き出し完了: dist/${name}/`);
 console.log("  ページ: " + written.join(" 、 "));
-console.log(`  素材: ${assetFiles.length} 件（${assetFiles.join(" 、 ")}）`);
+console.log(`  素材: ${assetList.length} 件（${assetList.join(" 、 ")}）`);

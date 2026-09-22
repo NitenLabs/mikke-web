@@ -13,6 +13,16 @@ import { colorCss, fontCss, textStyle, ROLE_TAG, themeRootVars } from "./theme.m
 
 const mq = { pc: "@media (min-width:768px)", sp: "@media (max-width:767.98px)" };
 
+// 素材のファイル名（サンプルは .svg、実在の店は実ファイル）
+function assetSrc(resolved, id) {
+  return `${resolved.assetPrefix}assets/${resolved.assetFiles?.[id] || `${id}.svg`}`;
+}
+// 文字の箱に実測値（design px）を data-mh-pc/sp として持たせる（検査で実測とのずれを測るため）
+function mhAttr(resolved, keyPc, keySp) {
+  const pc = resolved.heights?.[keyPc], sp = resolved.heights?.[keySp];
+  return `${pc != null ? ` data-mh-pc="${pc}"` : ""}${sp != null ? ` data-mh-sp="${sp}"` : ""}`;
+}
+
 // ---------- リンクの解決 ----------
 function makeLinkResolver(shop, site, page, pageHref) {
   const svc = shop.externalServices || {};
@@ -98,7 +108,8 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
   if (el.type === "text") {
     const tag = ROLE_TAG[el.role] || "div";
     const inner = paragraphsHtml(el.text, el.style, { linkResolver: (l) => linkResolver(l), labelColumn: el.style?.labelColumn });
-    return `<${tag} data-el="${el.id}" class="el el-text">${inner}</${tag}>`;
+    const mh = mhAttr(resolved, `t:pc:${el.id}`, `t:sp:${el.id}`);
+    return `<${tag} data-el="${el.id}" class="el el-text"${mh}>${inner}</${tag}>`;
   }
   if (el.type === "photo") return photoHtml(el, resolved);
   if (el.type === "shape") {
@@ -125,7 +136,7 @@ function photoHtml(el, resolved) {
   const asset = resolved.assets.assets[p.asset];
   const alt = esc(p.alt || asset?.alt || "");
   const crop = p.crop ? `object-position:${p.crop.fx}% ${p.crop.fy}%;` : "";
-  const src = `${resolved.assetPrefix}assets/${p.asset}.svg`;
+  const src = assetSrc(resolved, p.asset);
   const darken = p.darken ? `<div class="darken" style="opacity:${p.darken / 100}"></div>` : "";
   const radius = p.radius ? `border-radius:${p.radius}%;` : "";
   return `<div data-el="${el.id}" class="el el-photo" style="${radius}"><img src="${src}" alt="${alt}" style="${crop}">${darken}</div>`;
@@ -164,7 +175,8 @@ function repeaterHtml(el, resolved, linkResolver) {
       const gh = rp.groupHeading;
       const tag = ROLE_TAG[gh.role] || "h3";
       const rt = resolveText(gh, { item: it.view }, { refYear: resolved.refDate.year });
-      parts.push(`<${tag} data-head="${pl.catId}" class="rep-head el-text">${paragraphsHtml(rt, gh.style, {})}</${tag}>`);
+      const mh = mhAttr(resolved, `g:pc:${el.id}:${pl.catId}`, `g:sp:${el.id}:${pl.catId}`);
+      parts.push(`<${tag} data-head="${pl.catId}" class="rep-head el-text"${mh}>${paragraphsHtml(rt, gh.style, {})}</${tag}>`);
     } else {
       const it = rp.items.find((x) => x.id === pl.id);
       parts.push(cardHtml(el, it, resolved, linkResolver));
@@ -183,13 +195,14 @@ function cardHtml(el, it, resolved, linkResolver) {
       const rt = it.cels[cid];
       if (!rt || !rt.visible) return "";
       const tag = ROLE_TAG[ce.role] || "div";
-      return `<${tag} data-cel="${cid}" class="el el-text">${paragraphsHtml(rt, ce.style, { linkResolver: (l) => linkResolver(l, it) })}</${tag}>`;
+      const mh = mhAttr(resolved, `c:pc:${el.id}:${it.id}:${cid}`, `c:sp:${el.id}:${it.id}:${cid}`);
+      return `<${tag} data-cel="${cid}" class="el el-text"${mh}>${paragraphsHtml(rt, ce.style, { linkResolver: (l) => linkResolver(l, it) })}</${tag}>`;
     }
     if (ce.type === "photo") {
       if (!it.hasPhoto) return "";
       const assetId = it.item.photos[0];
       const asset = resolved.assets.assets[assetId];
-      const src = `${resolved.assetPrefix}assets/${assetId}.svg`;
+      const src = assetSrc(resolved, assetId);
       const crop = ce.crop ? `object-position:${ce.crop.fx}% ${ce.crop.fy}%;` : "";
       return `<div data-cel="${cid}" class="el el-photo"><img src="${src}" alt="${esc(asset?.alt || it.item.name)}" style="${crop}"></div>`;
     }
@@ -232,6 +245,10 @@ function elementCss(el, resolved, positions, device, rules) {
     const fill = colorCss(el.shape.fill); if (fill) lines.push(el.shape.kind === "line" ? `background:${fill}` : `background:${fill}`);
     if (el.shape.radius != null) lines.push(`border-radius:${el.shape.radius}px`);
     if (el.shape.opacity != null) lines.push(`opacity:${el.shape.opacity / 100}`);
+  } else if (el.type === "repeater") {
+    // カードが下に伸びるので、箱の高さは内部レイアウトの総高（実測反映後）にする
+    const total = resolved.repLayouts?.[`${el.id}:${device}`]?.totalHeight ?? box.h;
+    lines.push(`height:${rem(total)}`);
   } else {
     lines.push(`height:${rem(box.h)}`);
   }
