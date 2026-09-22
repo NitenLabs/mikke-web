@@ -1659,21 +1659,22 @@
             "style": {
               "font": "font:heading",
               "weight": 700,
-              "align": "right"
+              "align": "right",
+              "lineHeight": 1.4
             },
             "layout": {
               "pc": {
                 "x": 74.277,
                 "y": 43,
                 "w": 25.7232,
-                "h": 29,
+                "h": 22,
                 "size": 16
               },
               "sp": {
                 "x": 0,
                 "y": 104,
                 "w": 100,
-                "h": 25,
+                "h": 20,
                 "size": 14
               }
             }
@@ -1735,7 +1736,7 @@
           "x": 5.1282,
           "y": 1833,
           "w": 90,
-          "h": 252
+          "h": 251
         }
       }
     },
@@ -3329,21 +3330,22 @@
             "style": {
               "font": "font:heading",
               "weight": 700,
-              "align": "right"
+              "align": "right",
+              "lineHeight": 1.4
             },
             "layout": {
               "pc": {
                 "x": 74.277,
                 "y": 43,
                 "w": 25.7232,
-                "h": 58,
+                "h": 45,
                 "size": 16
               },
               "sp": {
                 "x": 0,
                 "y": 104,
                 "w": 100,
-                "h": 25,
+                "h": 20,
                 "size": 14
               }
             }
@@ -3444,7 +3446,7 @@
           "x": 5.1282,
           "y": 120,
           "w": 90,
-          "h": 918
+          "h": 917
         }
       }
     },
@@ -3650,21 +3652,22 @@
             "style": {
               "font": "font:heading",
               "weight": 700,
-              "align": "right"
+              "align": "right",
+              "lineHeight": 1.4
             },
             "layout": {
               "pc": {
                 "x": 74.277,
                 "y": 43,
                 "w": 25.7232,
-                "h": 29,
+                "h": 22,
                 "size": 16
               },
               "sp": {
                 "x": 0,
                 "y": 104,
                 "w": 100,
-                "h": 25,
+                "h": 20,
                 "size": 14
               }
             }

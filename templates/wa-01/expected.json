@@ -1,6 +1,26 @@
 {
   "note": "付録 A（appendixA.mjs）を種類ごとの仕組みで照合。旧来の自動生成（site.json 由来）は baseline として下に残すが、重複は付録 A を優先する。",
   "appendixResults": {
+    "A3-6": {
+      "status": "pass",
+      "details": []
+    },
+    "A3-7": {
+      "status": "pass",
+      "details": []
+    },
+    "A3-8": {
+      "status": "pass",
+      "details": []
+    },
+    "A12-5": {
+      "status": "pass",
+      "details": []
+    },
+    "A12-6": {
+      "status": "pass",
+      "details": []
+    },
     "A2-1": {
       "status": "pass",
       "details": []
@@ -293,6 +313,62 @@
       "status": "pass",
       "details": []
     },
+    "A3-2": {
+      "status": "pass",
+      "details": []
+    },
+    "A10-5": {
+      "status": "pass",
+      "details": []
+    },
+    "A10-7": {
+      "status": "pass",
+      "details": []
+    },
+    "A9-11": {
+      "status": "pass",
+      "details": []
+    },
+    "A9-12": {
+      "status": "pass",
+      "details": []
+    },
+    "A9-13": {
+      "status": "pass",
+      "details": []
+    },
+    "A1-3": {
+      "status": "pass",
+      "details": []
+    },
+    "A1-4": {
+      "status": "pass",
+      "details": []
+    },
+    "A3-4": {
+      "status": "pass",
+      "details": []
+    },
+    "A11-2": {
+      "status": "pass",
+      "details": []
+    },
+    "A10-3": {
+      "status": "pass",
+      "details": []
+    },
+    "A9-14": {
+      "status": "pass",
+      "details": []
+    },
+    "A10-6": {
+      "status": "pass",
+      "details": []
+    },
+    "A10-4": {
+      "status": "pass",
+      "details": []
+    },
     "A1-2a": {
       "status": "pass",
       "details": []
@@ -352,138 +428,7 @@
     "A1-6": {
       "status": "pass",
       "details": []
-    },
-    "A1-3": {
-      "status": "manual",
-      "details": [
-        "『不透明度50%の線』の実効色は背景合成後になり、rgba の元値を computed から取り出せないため目視（色は #B0B0B0 として line で照合済み）"
-      ]
-    },
-    "A1-4": {
-      "status": "manual",
-      "details": [
-        "セクション背景色の並びは A1-6 で照合。個別の帯/CONTACT/フッター #333 は box/line で担保"
-      ]
-    },
-    "A2-10": {
-      "status": "manual",
-      "details": [
-        "FAQ の『Q.』と質問は accordion の summary 内 span。実装後に celtext 相当で照合（3.4 実装後に自動化予定）"
-      ]
-    },
-    "A3-2": {
-      "status": "manual",
-      "details": [
-        "ヘッダー高さ 88/80 はヘッダー要素の box で担保。sec_header は sticky で高さ0扱いのため直接照合は手動"
-      ]
-    },
-    "A3-4": {
-      "status": "manual",
-      "details": [
-        "ナビの右端 x1376・項目間隔24 は nav 内 a の配置で、要素単位の box では測れない（navtext で書体は照合）"
-      ]
-    },
-    "A3-6": {
-      "status": "manual",
-      "details": [
-        "スクロール後のヘッダーの色替えは JS 動作。静的照合の対象外（check で目視）"
-      ]
-    },
-    "A3-7": {
-      "status": "manual",
-      "details": [
-        "/privacy はヘッダーを重ねない＝本体が y88 から。ページ描画の差で、box では別ページのため手動確認"
-      ]
-    },
-    "A3-8": {
-      "status": "manual",
-      "details": [
-        "SP メニューを開いた全面 #222 は details[open] の JS 状態。静的照合の対象外"
-      ]
-    },
-    "A9-10toA9-14": {
-      "status": "manual",
-      "details": [
-        "甘味処の表の行内（品名/説明/価格/縦罫線）は list セルの内部。cel 単位の実測を要し、3章の実装確認後に自動化予定"
-      ]
-    },
-    "A10-3toA10-7": {
-      "status": "manual",
-      "details": [
-        "FAQ 行内（Q./質問/∨/答え/行の下線）は accordion 内部。3.4 実装後に自動化予定"
-      ]
-    },
-    "A11-2": {
-      "status": "manual",
-      "details": [
-        "縦書きの添え書きは writing-mode 固定箱。位置は box で近似できるが向きの照合は手動"
-      ]
-    },
-    "A12-5": {
-      "status": "manual",
-      "details": [
-        "CONTACT背景の明るさ＝画素サンプリングが必要で spec-check の要素実測では測れない（別測定）。基準＝参照元46.5（sec-pc-06 の中央以外の平均輝度）。芦屋堂＝暗化10%＋枠K露出2.6倍で39.1（差-7.4／±10以内）"
-      ]
-    },
-    "A12-6": {
-      "status": "manual",
-      "details": [
-        "白文字と背景のコントラスト比＝別測定で 14.9（≥4.5）。同上の理由で spec-check の対象外"
-      ]
     }
   },
-  "manual": [
-    {
-      "id": "A1-3",
-      "reason": "『不透明度50%の線』の実効色は背景合成後になり、rgba の元値を computed から取り出せないため目視（色は #B0B0B0 として line で照合済み）"
-    },
-    {
-      "id": "A1-4",
-      "reason": "セクション背景色の並びは A1-6 で照合。個別の帯/CONTACT/フッター #333 は box/line で担保"
-    },
-    {
-      "id": "A2-10",
-      "reason": "FAQ の『Q.』と質問は accordion の summary 内 span。実装後に celtext 相当で照合（3.4 実装後に自動化予定）"
-    },
-    {
-      "id": "A3-2",
-      "reason": "ヘッダー高さ 88/80 はヘッダー要素の box で担保。sec_header は sticky で高さ0扱いのため直接照合は手動"
-    },
-    {
-      "id": "A3-4",
-      "reason": "ナビの右端 x1376・項目間隔24 は nav 内 a の配置で、要素単位の box では測れない（navtext で書体は照合）"
-    },
-    {
-      "id": "A3-6",
-      "reason": "スクロール後のヘッダーの色替えは JS 動作。静的照合の対象外（check で目視）"
-    },
-    {
-      "id": "A3-7",
-      "reason": "/privacy はヘッダーを重ねない＝本体が y88 から。ページ描画の差で、box では別ページのため手動確認"
-    },
-    {
-      "id": "A3-8",
-      "reason": "SP メニューを開いた全面 #222 は details[open] の JS 状態。静的照合の対象外"
-    },
-    {
-      "id": "A9-10toA9-14",
-      "reason": "甘味処の表の行内（品名/説明/価格/縦罫線）は list セルの内部。cel 単位の実測を要し、3章の実装確認後に自動化予定"
-    },
-    {
-      "id": "A10-3toA10-7",
-      "reason": "FAQ 行内（Q./質問/∨/答え/行の下線）は accordion 内部。3.4 実装後に自動化予定"
-    },
-    {
-      "id": "A11-2",
-      "reason": "縦書きの添え書きは writing-mode 固定箱。位置は box で近似できるが向きの照合は手動"
-    },
-    {
-      "id": "A12-5",
-      "reason": "CONTACT背景の明るさ＝画素サンプリングが必要で spec-check の要素実測では測れない（別測定）。基準＝参照元46.5（sec-pc-06 の中央以外の平均輝度）。芦屋堂＝暗化10%＋枠K露出2.6倍で39.1（差-7.4／±10以内）"
-    },
-    {
-      "id": "A12-6",
-      "reason": "白文字と背景のコントラスト比＝別測定で 14.9（≥4.5）。同上の理由で spec-check の対象外"
-    }
-  ]
+  "manual": []
 }

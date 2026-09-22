@@ -190,21 +190,64 @@ export const GLOBAL = [
   { kind: "global", id: "A1-6", rule: "bgOrder", order: [["sec_hero", "photo"], ["sec_notice", "#333333"], ["sec_about", "#FFFFFF"], ["sec_feature", "#EEEEEE"], ["sec_items", "#FFFFFF"], ["sec_faqs", "#EEEEEE"], ["sec_access", "#FFFFFF"], ["sec_contact", "photo"], ["sec_footer", "#333333"]], note: "トップの背景の順番" },
 ];
 
-// ---- 自動照合できない行（手動。理由つき）----
-export const MANUAL = [
-  { id: "A1-3", reason: "『不透明度50%の線』の実効色は背景合成後になり、rgba の元値を computed から取り出せないため目視（色は #B0B0B0 として line で照合済み）" },
-  { id: "A1-4", reason: "セクション背景色の並びは A1-6 で照合。個別の帯/CONTACT/フッター #333 は box/line で担保" },
-  { id: "A2-10", reason: "FAQ の『Q.』と質問は accordion の summary 内 span。実装後に celtext 相当で照合（3.4 実装後に自動化予定）" },
-  { id: "A3-2", reason: "ヘッダー高さ 88/80 はヘッダー要素の box で担保。sec_header は sticky で高さ0扱いのため直接照合は手動" },
-  { id: "A3-4", reason: "ナビの右端 x1376・項目間隔24 は nav 内 a の配置で、要素単位の box では測れない（navtext で書体は照合）" },
-  { id: "A3-6", reason: "スクロール後のヘッダーの色替えは JS 動作。静的照合の対象外（check で目視）" },
-  { id: "A3-7", reason: "/privacy はヘッダーを重ねない＝本体が y88 から。ページ描画の差で、box では別ページのため手動確認" },
-  { id: "A3-8", reason: "SP メニューを開いた全面 #222 は details[open] の JS 状態。静的照合の対象外" },
-  { id: "A9-10toA9-14", reason: "甘味処の表の行内（品名/説明/価格/縦罫線）は list セルの内部。cel 単位の実測を要し、3章の実装確認後に自動化予定" },
-  { id: "A10-3toA10-7", reason: "FAQ 行内（Q./質問/∨/答え/行の下線）は accordion 内部。3.4 実装後に自動化予定" },
-  { id: "A11-2", reason: "縦書きの添え書きは writing-mode 固定箱。位置は box で近似できるが向きの照合は手動" },
-  { id: "A12-5", reason: "CONTACT背景の明るさ＝画素サンプリングが必要で spec-check の要素実測では測れない（別測定）。基準＝参照元46.5（sec-pc-06 の中央以外の平均輝度）。芦屋堂＝暗化10%＋枠K露出2.6倍で39.1（差-7.4／±10以内）" },
-  { id: "A12-6", reason: "白文字と背景のコントラスト比＝別測定で 14.9（≥4.5）。同上の理由で spec-check の対象外" },
+// ==== fix02 §3：旧「手動」の自動化 ====
+// A1-3 半透明の線（不透明度）
+export const ALPHA = [
+  { kind: "alpha", id: "A1-3", target: "el_itemsdiv", alpha: 0.5, rgb: LINE, note: "商品と表の間の区切り線＝line 50%" },
 ];
+// A1-4 セクションの地の色（帯・フッター＝#333。CONTACTの地は写真＝A12で担保）
+export const SECBG = [
+  { kind: "secbg", id: "A1-4", targets: [["sec_notice", D], ["sec_footer", D], ["sec_feature", "#EEEEEE"], ["sec_about", "#FFFFFF"]], note: "帯/フッター#333・灰#EEE・白#FFF（CONTACTの地は写真）" },
+];
+// A3-4 ナビの右端 x1376・項目間隔24
+export const NAVGEOM = [
+  { kind: "navgeom", id: "A3-4", sel: '[data-el="el_nav"] .nav-row a', rightEdge: 1376, gap: 24, dev: "pc", note: "ヘッダーのナビ 右端x1376・間隔24" },
+];
+// A11-2 縦書き（PC）
+export const WRITING = [
+  { kind: "writing", id: "A11-2", target: "el_accsoe", dev: "pc", mode: "vertical", note: "ACCESS 添え書きは PC 縦書き" },
+];
+// A2-10 / A10-4 FAQ「Q.」・A10-5 質問（summary の .acc-q）
+export const CELPSEUDO = [
+  { kind: "pseudo", id: "A10-6", sel: ".el-acc summary", pseudo: "::after", w: 12, h: 6, dev: "pc", note: "開閉の印＝シェブロン12×6" },
+  { kind: "pseudo", id: "A10-4", sel: ".el-acc .acc-q", pseudo: "::before", content: "Q.", dev: "pc", note: "「Q.」" },
+];
+// A10-3 FAQ の行の線（#B0B0B0）
+export const BORDERLINE = [
+  { kind: "borderline", id: "A10-3", sel: ".el-acc .acc-item", color: LINE, width: 1, dev: "pc", note: "FAQ 行の上下線＝line" },
+];
+// A2-10/A10-5 FAQ 質問・A10-7 答え／A9-11〜13 甘味処の表のセル（DOM の .acc-q, .acc-a, cel）
+export const SELTEXT2 = [
+  { kind: "seltext", id: "A10-5", sel: ".el-acc summary .acc-q", fam: MIN, pc: [18, 25.2], w: 700, c: D, dev: "pc", note: "FAQ 質問" },
+  { kind: "seltext", id: "A10-7", sel: ".el-acc details .acc-a", fam: GOT, pc: [16, 28.8], w: 400, c: D, dev: "pc", note: "FAQ 答え" },
+  { kind: "seltext", id: "A9-11", sel: '[data-el="el_kanmitable"] [data-cel="cel_tname"]', fam: MIN, pc: [16, 28.8], w: 700, c: D, dev: "pc", note: "甘味処 品名" },
+  { kind: "seltext", id: "A9-12", sel: '[data-el="el_kanmitable"] [data-cel="cel_tdesc"]', fam: GOT, pc: [14, 22.4], w: 400, c: MU, dev: "pc", note: "甘味処 説明" },
+  { kind: "seltext", id: "A9-13", sel: '[data-el="el_kanmitable"] [data-cel="cel_tprice"]', fam: MIN, pc: [16, 22.4], w: 700, c: D, dev: "pc", note: "甘味処 価格" },
+];
+// A9-14 甘味処の縦の罫線・A9-10 表の線（cel_tvline/cel_thline は line 図形）
+export const CELLINE = [
+  { kind: "celline", id: "A9-14", sel: '[data-el="el_kanmitable"] [data-cel="cel_tvline"]', color: LINE, note: "甘味処 縦の罫線 1px line" },
+];
+// A3-6 スクロール後のヘッダー（背景#FFF・文字#333・線#B0B0B0）／A3-7 /privacy は重ねない／A3-8 SPメニュー
+export const INTERACTIVE = [
+  { kind: "scrollcolor", id: "A3-6", note: "スクロール後：ヘッダー背景#FFF・ロゴ/ナビ#333", checks: { headerBg: "#FFFFFF", logo: D, nav: D } },
+  { kind: "privacyheader", id: "A3-7", note: "/privacy はヘッダーを重ねない（背景#FFF・本体は下に）" },
+  { kind: "spmenu", id: "A3-8", note: "SPメニューを開くと全面#222・項目20/56", bg: "#222222", size: 20, lh: 56 },
+];
+// A12-5/A12-6 CONTACT 背景の明るさ・コントラスト（スクリーンショットの画素）
+export const SCREENSHOT = [
+  { kind: "screenshotlum", id: "A12-5", sec: "sec_contact", refLum: 46.5, tol: 10, note: "CONTACT背景の明るさ 参照元46.5±10" },
+  { kind: "screenshotcontrast", id: "A12-6", sec: "sec_contact", min: 4.5, note: "白文字と背景のコントラスト≥4.5" },
+];
+
+// ---- A3-2 ヘッダーの高さ（box に追加）----
+export const HEADERH = [
+  { kind: "box", id: "A3-2", dev: "pc", target: "sec_header", x: null, y: null, w: null, h: 88, hOnly: true },
+  { kind: "box", id: "A3-2", dev: "sp", target: "sec_header", x: null, y: null, w: null, h: 80, hOnly: true },
+];
+
+// ---- 自動照合できない行（手動。理由つき）----
+// fix02 §3：13件すべて自動化した（手動は 0）。以後、真に自動化できない行が出たらここに理由つきで残す。
+export const MANUAL = [];
 
 export const FAMILIES = { MIN, GOT };
