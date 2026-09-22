@@ -17,6 +17,7 @@ WB_B  = 1.075   # 青を上げて暖色を弱める
 GAIN  = 0.80    # 露出：全体を暗く（明るすぎを補正）
 KNEE  = 0.44    # ハイライト圧縮の膝：これ以上明るい画素を tanh で丸める（白背景を範囲側へ）
 SAT   = 1.16    # 彩度：わずかに上げて参照元(36)へ
+KGAIN_K = 2.6   # 枠Kだけの露出（§3.8。CONTACT背景を参照元の明るさ≈46に近づける）
 
 def grade(im):
     a = np.asarray(im, dtype=np.float64) / 255.0
@@ -67,6 +68,11 @@ for key, src, tw, th, fx, fy in JOBS:
     im = Image.open(f"{CAND}/{src}").convert("RGB")
     out = cover_crop(im, tw, th, fx, fy)
     out = grade(out)
+    # 枠K（CONTACT背景・お問い合わせ帯）は暗すぎて参照元CONTACTの明るさ(≈46)に届かないため、
+    # K だけ露出を上げる（§3.8。暗化%と合わせて背景の明るさを参照元±10に入れる）。
+    if key == "ast_K.jpg":
+        a = np.asarray(out, dtype=np.float64) * KGAIN_K
+        out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGB")
     dst = f"{MEDIA}/{key}"
     out.save(dst, "JPEG", quality=82, optimize=True)  # 新規JPEG＝元EXIF/GPSは付かない
     import os

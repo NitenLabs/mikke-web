@@ -186,6 +186,8 @@ export const MANUAL = [
   { id: "A9-10toA9-14", reason: "甘味処の表の行内（品名/説明/価格/縦罫線）は list セルの内部。cel 単位の実測を要し、3章の実装確認後に自動化予定" },
   { id: "A10-3toA10-7", reason: "FAQ 行内（Q./質問/∨/答え/行の下線）は accordion 内部。3.4 実装後に自動化予定" },
   { id: "A11-2", reason: "縦書きの添え書きは writing-mode 固定箱。位置は box で近似できるが向きの照合は手動" },
+  { id: "A12-5", reason: "CONTACT背景の明るさ＝画素サンプリングが必要で spec-check の要素実測では測れない（別測定）。基準＝参照元46.5（sec-pc-06 の中央以外の平均輝度）。芦屋堂＝暗化10%＋枠K露出2.6倍で39.1（差-7.4／±10以内）" },
+  { id: "A12-6", reason: "白文字と背景のコントラスト比＝別測定で 14.9（≥4.5）。同上の理由で spec-check の対象外" },
 ];
 
 export const FAMILIES = { MIN, GOT };
