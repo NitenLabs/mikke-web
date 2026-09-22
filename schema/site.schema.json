@@ -637,6 +637,7 @@
             "payment",
             "price",
             "priceAll",
+            "priceAllTax",
             "yearsSince",
             "seats",
             "flag"

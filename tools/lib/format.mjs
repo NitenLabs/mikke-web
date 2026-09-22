@@ -53,6 +53,14 @@ export function formatPriceAll(prices) {
     .join(" ／ ");
 }
 
+// priceAllTax：priceAll に「（税込）」を1回付ける。区切りは「／」（前後に空白なし）。
+//   例：「380円（税込）」「1個 220円／5個入り 1,200円（税込）」。空なら空文字。
+export function formatPriceAllTax(prices) {
+  if (!Array.isArray(prices) || prices.length === 0) return "";
+  const body = prices.map((p) => (p.name ? `${p.name} ${priceValue(p)}` : priceValue(p))).join("／");
+  return `${body}（税込）`;
+}
+
 // hoursShort：いちばん多い時間帯を本体にし、違う曜日を括弧で添える。
 //   例：「9:00〜18:00（日曜は17:00まで）」
 //   servingTime のように periods を直接持つ値は、その時間帯を出す（曜日はない）。
@@ -210,6 +218,7 @@ export function applyFormat(format, value, ctx = {}) {
     case "payment": return formatPayment(value);
     case "price": return formatPrice(value);
     case "priceAll": return formatPriceAll(value);
+    case "priceAllTax": return formatPriceAllTax(value);
     case "yearsSince": return formatYearsSince(value, ctx.refYear);
     case "seats": return formatSeats(value);
     case "flag": return ""; // flag は文字を出さない

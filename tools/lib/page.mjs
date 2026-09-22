@@ -47,10 +47,11 @@ main{display:block}
 .el-text .lc-val{flex:1}
 .el-photo{overflow:hidden}
 .el-photo img{width:100%;height:100%;object-fit:cover}
-.bleed{position:absolute;inset:0;z-index:0;overflow:hidden}
+.bleed{position:absolute;z-index:0;overflow:hidden}
 .bleed img{width:100%;height:100%;object-fit:cover}
 .darken{position:absolute;inset:0;background:#000;pointer-events:none}
 .el-embed iframe{width:100%;height:100%;border:0;display:block}
+.el-embed.map-gray iframe{filter:grayscale(1) contrast(.9)}
 .el-shape-line{height:1px}
 .el-rep{position:absolute}
 .rep-card,.rep-head{position:absolute}
@@ -66,18 +67,22 @@ main{display:block}
 ${mq.pc}{.el-acc summary{font-size:1.8rem}.el-acc .acc-a{font-size:1.6rem}}
 ${mq.sp}{.el-acc summary{font-size:1.6rem}.el-acc .acc-a{font-size:1.4rem}}
 .rep-card{overflow:hidden}
-.site-header{position:sticky;top:0;z-index:1000}
-/* ヘッダーを重ねる（FVの暗い写真に透明で重ねる）：最初のセクションの上に絶対配置し、スクロールで流れる */
-.site-header.overlay{position:absolute;top:0;left:0;right:0;background:transparent!important}
-.site-header.overlay .el-text,.site-header.overlay .el-nav a,.site-header.overlay .nav-sp summary{color:var(--overlay-on,var(--c-onDark))!important}
+/* ヘッダー：常に sticky。重ねるページでは最初は透明（FVに重ねる）、スクロールで通常の面に切り替える */
+.site-header{position:sticky;top:0;z-index:1000;transition:background .2s}
+.site-header.overlay{background:transparent}
+.site-header.overlay.scrolled{background:var(--c-background)}
+.site-header.overlay.scrolled .el-text,.site-header.overlay.scrolled .el-nav a,.site-header.overlay.scrolled .nav-sp summary{color:var(--c-text)}
+.site-header.overlay.scrolled .el-shape{background:var(--c-line)!important;opacity:1!important}
 .el-nav .nav-row{display:flex;gap:1.6rem;justify-content:flex-end;align-items:center;height:100%;font-family:var(--nav-font,inherit)}
 .el-nav a{text-decoration:none;color:var(--nav,inherit);white-space:nowrap}
 .el-nav a[aria-current]{color:var(--nav-active,inherit)}
-.el-nav .nav-sp{height:100%}
+.el-nav .nav-sp{height:100%;position:relative;z-index:1002}
 .el-nav .nav-sp summary{list-style:none;cursor:pointer;font-size:2.2rem;line-height:1;text-align:right;color:var(--nav,inherit)}
 .el-nav .nav-sp summary::-webkit-details-marker{display:none}
-.el-nav .nav-menu{position:absolute;right:0;top:110%;background:var(--nav-bg,var(--c-surface));display:flex;flex-direction:column;gap:1.2rem;padding:1.6rem 2rem;min-width:14rem;z-index:1001}
-.el-nav .nav-menu a{font-size:1.6rem}
+/* SP のメニューを開いたら画面全体を deep(#222) で覆い、項目を 20px/行間56 で縦に並べる */
+.el-nav .nav-menu{position:fixed;inset:0;background:var(--c-deep);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:1001}
+.el-nav .nav-menu a{font-size:2rem;line-height:5.6rem;color:var(--c-onDark)}
+.el-nav .nav-sp[open] summary{position:fixed;top:1.2rem;right:2rem;color:var(--c-onDark);z-index:1003}
 .notfound{max-width:60rem;margin:0 auto;padding:12rem 2rem;text-align:center}
 .notfound h1{font-family:var(--f-heading);margin-bottom:2rem}
 /* フォーム（送信処理は公開時。今はボタンで「サンプルのため送信されません」） */
@@ -141,6 +146,12 @@ function correct(){
   });
 }
 if(document.fonts&&document.fonts.ready){document.fonts.ready.then(correct);}else{window.addEventListener('load',correct);}
+// (0) ヘッダーを重ねるページ：スクロールしたら通常の面（背景あり）に切り替える
+(function(){
+  var h=document.querySelector('.site-header.overlay'); if(!h) return;
+  var on=function(){ h.classList.toggle('scrolled', window.scrollY>40); };
+  window.addEventListener('scroll',on,{passive:true}); on();
+})();
 // (3) フォーム：送信処理は公開時に作る。今は送信すると「サンプルのため送信されません」と出す
 document.querySelectorAll('.el-form').forEach(function(f){
   f.addEventListener('submit',function(e){ e.preventDefault(); var n=f.querySelector('.fnote'); if(n) n.hidden=false; });

@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  formatTime, formatHoursShort, formatClosedDays, formatPriceAll, formatPrice,
+  formatTime, formatHoursShort, formatClosedDays, formatPriceAll, formatPrice, formatPriceAllTax,
 } from "./lib/format.mjs";
 import { resolveRepeater, makeRefDate, effectivePrices } from "./lib/catalog.mjs";
 import { resolveText } from "./lib/text.mjs";
@@ -49,6 +49,12 @@ test("priceAll（芦屋最中）：1個 220円 ／ 5個入り 1,200円", () => {
 test("価格が空の品（どら焼き）は何も出さない", () => {
   assert.equal(formatPriceAll(items.itm_dorayaki.prices), "");
   assert.equal(formatPrice(items.itm_dorayaki.prices), "");
+});
+
+test("priceAllTax：税込を1回付ける（区切りは／、空白なし）", () => {
+  assert.equal(formatPriceAllTax(items.itm_monaka.prices), "1個 220円／5個入り 1,200円（税込）");
+  assert.equal(formatPriceAllTax(items.itm_jonama.prices), "380円（税込）");
+  assert.equal(formatPriceAllTax(items.itm_dorayaki.prices), "");
 });
 
 test("わらび餅：店頭は450円、甘味処は載せ方の価格で「お茶付き 650円」", () => {

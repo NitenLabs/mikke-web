@@ -130,9 +130,11 @@ function marksStyle(marks) {
 // 1つの run の中身（テキスト＋リンク）。priceAll は選択肢ごとに nowrap にし、選択肢の間でだけ折り返す。
 function runInner(r, linkResolver) {
   let inner;
-  if (r.fmt === "priceAll" && r.text) {
-    // formatPriceAll の区切りは " ／ "。各選択肢を nowrap のかたまりにし、区切りの前後だけ折り返し可にする
-    inner = r.text.split(" ／ ").map((opt) => `<span class="nowrap">${esc(opt)}</span>`).join(" ／ ");
+  if ((r.fmt === "priceAll" || r.fmt === "priceAllTax") && r.text) {
+    // 各選択肢を nowrap のかたまりにし、区切りの前後だけ折り返し可にする（priceAll は " ／ "、
+    // priceAllTax は "／"）
+    const sep = r.fmt === "priceAll" ? " ／ " : "／";
+    inner = r.text.split(sep).map((opt) => `<span class="nowrap">${esc(opt)}</span>`).join(sep);
   } else {
     inner = esc(r.text);
   }

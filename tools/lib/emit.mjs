@@ -123,7 +123,7 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
       const g = resolved.shop.location?.geo;
       const src = g ? `https://www.google.com/maps?q=${g.lat},${g.lng}&z=16&hl=ja&output=embed` : "";
       const label = esc(`${resolved.shop.basic.name}の地図`);
-      return `<div data-el="${el.id}" class="el el-embed"><iframe title="${label}" src="${src}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`;
+      return `<div data-el="${el.id}" class="el el-embed map-gray"><iframe title="${label}" src="${src}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`;
     }
     return `<div data-el="${el.id}" class="el el-embed"></div>`;
   }
@@ -276,11 +276,14 @@ function elementCss(el, resolved, positions, device, rules) {
   const sel = `[data-el="${el.id}"]`;
   const lines = [];
 
-  // 全面写真（どちらかの端末で fullBleed）は bleed 層（セクション全面）に置く。
-  // 片方の端末だけ fullBleed でも、bleed 層に描くので両端末とも inset:0（セクションを覆う）にする。
+  // 全面写真（どちらかの端末で fullBleed）は bleed 層に置く。x・w は画面幅（=セクション幅）に対する
+  // ％、y・h は px。x0・w100 なら全幅、負の x や 100%超で写真の帯（ABOUT）も表せる。はみ出しは
+  // セクションの overflow:hidden で切り取る。
   const isBleed = el.type === "photo" && (el.box.pc?.fullBleed || el.box.sp?.fullBleed);
   if (isBleed) {
-    rules.push(`${mq[device]}{${sel}{position:absolute;inset:0;z-index:${el.z}}}`);
+    const w = (box.w / 100) * designWidth(resolved.site, device);
+    const h = ratioHeightPx(box.ratio, w, box.h);
+    rules.push(`${mq[device]}{${sel}{position:absolute;left:${pct(box.x)};width:${pct(box.w)};top:${rem(box.y)};height:${rem(h)};z-index:${el.z}}}`);
     return;
   }
 
