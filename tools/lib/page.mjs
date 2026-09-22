@@ -69,6 +69,21 @@ main{display:block}
 .el-nav .nav-menu a{font-size:1.6rem}
 .notfound{max-width:60rem;margin:0 auto;padding:12rem 2rem;text-align:center}
 .notfound h1{font-family:var(--f-heading);margin-bottom:2rem}
+/* フォーム（送信処理は公開時。今はボタンで「サンプルのため送信されません」） */
+.el-form{height:auto;display:flex;flex-direction:column;gap:1.4rem;text-align:left}
+.el-form .ff{display:flex;flex-direction:column;gap:.4rem}
+.el-form .flabel{font-size:1.3rem;color:var(--c-onDark)}
+.el-form .freq{font-size:1.1rem;color:var(--c-onDark);opacity:.75;border:1px solid currentColor;padding:0 .4em;border-radius:2px;margin-left:.4em}
+.el-form input,.el-form textarea{width:100%;font:inherit;font-size:1.5rem;padding:.9rem 1rem;border:1px solid var(--c-onDark);background:rgba(247,243,236,.94);color:var(--c-text);border-radius:2px}
+.el-form textarea{resize:vertical}
+.el-form .fprivacy{font-size:1.2rem;color:var(--c-onDark)}
+.el-form .fprivacy a{color:var(--c-onDark);text-decoration:underline}
+.el-form .fsubmit{align-self:center;min-width:20rem;height:4.8rem;border:0;border-radius:999px;background:var(--c-background);color:var(--c-accent);font:inherit;font-size:1.6rem;cursor:pointer}
+.el-form .fnote{text-align:center;font-size:1.3rem;color:var(--c-onDark)}
+.privacy{max-width:72rem;margin:0 auto;padding:11rem 2rem 8rem}
+.privacy h1{font-family:var(--f-heading);font-size:2.6rem;margin-bottom:2rem}
+.privacy h2{font-family:var(--f-heading);font-size:1.8rem;margin:2.4rem 0 .8rem}
+.privacy p{margin-bottom:1rem;font-size:1.5rem}
 ${mq.pc}{:root{font-size:clamp(7px,calc(100vw/${pcDiv}),10px)}.cbox{width:${site.canvas.pcContentWidth / 10}rem}.only-sp{display:none!important}}
 ${mq.sp}{:root{font-size:clamp(8.2px,calc(100vw/${spDiv}),11.5px)}.cbox{width:${site.canvas.spDesignWidth / 10}rem}.only-pc{display:none!important}}
 `.trim();
@@ -115,6 +130,10 @@ function correct(){
   });
 }
 if(document.fonts&&document.fonts.ready){document.fonts.ready.then(correct);}else{window.addEventListener('load',correct);}
+// (3) フォーム：送信処理は公開時に作る。今は送信すると「サンプルのため送信されません」と出す
+document.querySelectorAll('.el-form').forEach(function(f){
+  f.addEventListener('submit',function(e){ e.preventDefault(); var n=f.querySelector('.fnote'); if(n) n.hidden=false; });
+});
 `.trim();
 
 // セクションのCSS（min-height・背景・非表示）
@@ -296,6 +315,52 @@ export function render404(resolved, opts) {
 ${head}
 </head>
 <body data-page="pg_404">
+${headerHtml}
+${body}
+${footerHtml}
+</body>
+</html>`;
+}
+
+// プライバシーポリシーのページ（kind=privacy）。中身は自動（DATA_SPEC 6章）。
+export function renderPrivacy(resolved, pageId, opts) {
+  const site = resolved.site, shop = resolved.shop;
+  const depth = opts.depth;
+  const assetPrefix = "../".repeat(depth);
+  resolved.assetPrefix = assetPrefix;
+  resolved.currentPageId = pageId;
+  const pageHref = makePageHref(site.pages, depth);
+  const linkResolver = makeLinkResolver(shop, site, { id: pageId }, pageHref);
+  const headerId = site.regions.header, footerId = site.regions.footer;
+
+  const rules = [];
+  for (const secId of [headerId, footerId]) {
+    for (const device of ["pc", "sp"]) layoutSection(secId, { id: pageId }, resolved, device, resolved.repLayouts);
+    const bg = { pc: site.sections[secId].background?.color, sp: site.sections[secId].background?.color };
+    sectionCss(secId, site, bg, { pc: false, sp: false }, { pc: 0, sp: 0 }, rules);
+    for (const el of [...resolved.elements.values()].filter((e) => e.section === secId)) {
+      elementCss(el, resolved, {}, "pc", rules);
+      elementCss(el, resolved, {}, "sp", rules);
+    }
+  }
+  const headerHtml = `<header class="sec site-header" data-sec="${headerId}">${sectionInner(headerId, site, resolved, linkResolver, {})}</header>`;
+  const footerHtml = `<footer class="sec" data-sec="${footerId}">${sectionInner(footerId, site, resolved, linkResolver, {})}</footer>`;
+  const name = esc(shop.basic.name);
+  const body = `<main><div class="privacy"><h1>プライバシーポリシー</h1>
+<p>${name}（以下「当店」）は、お問い合わせフォーム等でお預かりする個人情報を、以下のとおり取り扱います。</p>
+<h2>取得する情報</h2><p>お名前、メールアドレス、電話番号、お問い合わせ内容など、フォームにご入力いただいた情報。</p>
+<h2>利用目的</h2><p>お問い合わせやご予約への対応、およびそのための連絡にのみ利用します。</p>
+<h2>第三者への提供</h2><p>法令に基づく場合を除き、ご本人の同意なく第三者へ提供しません。</p>
+<h2>お問い合わせ</h2><p>個人情報の開示・訂正・削除のご希望は、当店までご連絡ください。</p>
+<p style="margin-top:2rem;color:var(--c-textMuted)">※これはサンプルの雛形です。公開前に実際の運用に合わせて改訂してください。</p></div></main>`;
+  const css = baseCss(resolved) + "\n" + rules.join("\n");
+  const head = pageHead(resolved, { id: pageId, seo: { title: `プライバシーポリシー｜${shop.basic.name}` } }, assetPrefix, css);
+  return `<!doctype html>
+<html lang="ja">
+<head>
+${head}
+</head>
+<body data-page="${pageId}">
 ${headerHtml}
 ${body}
 ${footerHtml}

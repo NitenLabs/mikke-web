@@ -14,7 +14,7 @@ import { fileURLToPath } from "node:url";
 import { makeRefDate } from "./lib/catalog.mjs";
 import { resolveSite, measurementRequests } from "./lib/render.mjs";
 import { measureHeights } from "./lib/measure.mjs";
-import { buildRepLayouts, renderPage, render404 } from "./lib/page.mjs";
+import { buildRepLayouts, renderPage, render404, renderPrivacy } from "./lib/page.mjs";
 import { prepareAssets } from "./lib/assets.mjs";
 import { pageDesignOverlaps } from "./lib/overlap.mjs";
 import { themeFontIds, themeRootVars } from "./lib/theme.mjs";
@@ -88,6 +88,11 @@ for (const [pageId, page] of Object.entries(data.site.pages)) {
   if (page.kind === "notFound") {
     depth = 0; file = "404.html";
     html = render404(resolved, { depth });
+    sectionIds = [data.site.regions.header, data.site.regions.footer];
+  } else if (page.kind === "privacy") {
+    depth = slugDepth(page.slug);
+    file = slugToFile(page.slug);
+    html = renderPrivacy(resolved, pageId, { depth });
     sectionIds = [data.site.regions.header, data.site.regions.footer];
   } else {
     depth = slugDepth(page.slug);

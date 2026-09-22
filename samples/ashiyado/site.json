@@ -48,6 +48,15 @@
       "showInNav": false,
       "published": true,
       "sections": []
+    },
+    "pg_privacy": {
+      "kind": "privacy",
+      "slug": "/privacy",
+      "navLabel": "プライバシー",
+      "navOrder": 98,
+      "showInNav": false,
+      "published": true,
+      "sections": []
     }
   },
   "regions": {
@@ -159,8 +168,8 @@
         "color": "theme:primary"
       },
       "minHeight": {
-        "pc": 520,
-        "sp": 560
+        "pc": 800,
+        "sp": 960
       },
       "anchor": "contact",
       "nav": {
@@ -1871,69 +1880,6 @@
         }
       }
     },
-    "el_contact_btnbg": {
-      "type": "shape",
-      "z": 3,
-      "kind": "rect",
-      "fill": "theme:background",
-      "radius": 100,
-      "section": "sec_contact",
-      "link": {
-        "kind": "shopEmail"
-      },
-      "layout": {
-        "pc": {
-          "x": 38,
-          "y": 290,
-          "w": 24,
-          "h": 48
-        },
-        "sp": {
-          "x": 20,
-          "y": 280,
-          "w": 60,
-          "h": 48
-        }
-      }
-    },
-    "el_contact_btn": {
-      "type": "text",
-      "z": 4,
-      "role": "body",
-      "section": "sec_contact",
-      "paragraphs": [
-        {
-          "runs": [
-            {
-              "text": "メールでお問い合わせ"
-            }
-          ]
-        }
-      ],
-      "style": {
-        "align": "center",
-        "color": "theme:accent",
-        "link": {
-          "kind": "shopEmail"
-        }
-      },
-      "layout": {
-        "pc": {
-          "x": 38,
-          "y": 303,
-          "w": 24,
-          "size": 16,
-          "h": 29
-        },
-        "sp": {
-          "x": 20,
-          "y": 293,
-          "w": 60,
-          "size": 15,
-          "h": 27
-        }
-      }
-    },
     "el_fname": {
       "type": "text",
       "z": 1,
@@ -2629,6 +2575,49 @@
           "y": 128,
           "w": 90,
           "h": 218
+        }
+      }
+    },
+    "el_contact_form": {
+      "type": "form",
+      "z": 3,
+      "section": "sec_contact",
+      "formKind": "contact",
+      "enabled": true,
+      "fields": [
+        {
+          "key": "name",
+          "required": true
+        },
+        {
+          "key": "email",
+          "required": true
+        },
+        {
+          "key": "phone",
+          "required": false
+        },
+        {
+          "key": "message",
+          "required": true
+        }
+      ],
+      "recipient": "info@example.com",
+      "autoReply": {
+        "enabled": false
+      },
+      "layout": {
+        "pc": {
+          "x": 33,
+          "y": 280,
+          "w": 34,
+          "h": 440
+        },
+        "sp": {
+          "x": 8,
+          "y": 270,
+          "w": 84,
+          "h": 540
         }
       }
     }

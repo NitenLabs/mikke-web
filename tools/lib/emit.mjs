@@ -128,7 +128,26 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
     return `<div data-el="${el.id}" class="el el-embed"></div>`;
   }
   if (el.type === "nav") return navHtml(el, resolved, linkResolver);
+  if (el.type === "form") return formHtml(el, resolved, linkResolver);
   return "";
+}
+
+// フォーム。送信処理は公開時に作るので、今は送信ボタンで「サンプルのため送信されません」と出す。
+function formHtml(el, resolved, linkResolver) {
+  const f = el.form;
+  const LABELS = { name: "お名前", nameKana: "ふりがな", phone: "電話番号", email: "メールアドレス", preferredDate: "ご希望日", preferredDate2: "ご希望日（第2希望）", preferredTime: "ご希望の時間帯", people: "人数", menu: "ご希望のメニュー", message: "お問い合わせ内容" };
+  const TYPES = { phone: "tel", email: "email", preferredDate: "date", preferredDate2: "date", people: "number" };
+  const fields = f.fields.map((fl) => {
+    const label = esc(LABELS[fl.key] || fl.key);
+    const req = fl.required ? " required" : "";
+    const reqMark = fl.required ? ' <span class="freq">必須</span>' : "";
+    if (fl.key === "message") return `<label class="ff"><span class="flabel">${label}${reqMark}</span><textarea name="${fl.key}" rows="4"${req}></textarea></label>`;
+    return `<label class="ff"><span class="flabel">${label}${reqMark}</span><input type="${TYPES[fl.key] || "text"}" name="${fl.key}"${req}></label>`;
+  }).join("");
+  // プライバシーポリシーのページへリンク
+  const priv = Object.entries(resolved.site.pages).find(([, p]) => p.kind === "privacy" && p.published);
+  const privacy = priv ? `<p class="fprivacy"><a href="${esc(linkResolver({ kind: "page", value: priv[0] }).href)}">プライバシーポリシー</a>に同意のうえ、送信してください。</p>` : "";
+  return `<form data-el="${el.id}" class="el el-form" novalidate>${fields}${privacy}<button type="submit" class="fsubmit">送信する</button><p class="fnote" role="status" hidden>サンプルのため送信されません。</p></form>`;
 }
 
 function photoHtml(el, resolved) {
