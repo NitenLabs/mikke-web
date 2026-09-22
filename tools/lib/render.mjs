@@ -102,7 +102,7 @@ function textBoxStyle(el, device, theme, unit) {
   const lh = st.lineHeight ?? ts.lineHeight;
   const ls = st.letterSpacing ?? ts.letterSpacing ?? 0;
   const font = fontCss(st.font || ts.font);
-  const weight = st.bold ? 700 : ts.weight || 400;
+  const weight = st.weight ?? (st.bold ? 700 : ts.weight || 400);
   const props = [];
   props.push(`font-family:${font}`);
   props.push(`font-size:${unit === "px" ? `${round(sizePx)}px` : rem(sizePx)}`);

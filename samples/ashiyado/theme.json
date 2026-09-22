@@ -1,94 +1,27 @@
 {
   "schemaVersion": 1,
   "colors": {
-    "background": {
-      "value": "#F7F3EC",
-      "label": "生成り"
-    },
-    "surface": {
-      "value": "#EDE6D9",
-      "label": "ベージュ"
-    },
-    "text": {
-      "value": "#2C2620",
-      "label": "墨"
-    },
-    "textMuted": {
-      "value": "#877D6E",
-      "label": "薄墨"
-    },
-    "primary": {
-      "value": "#2C2620",
-      "label": "濃墨"
-    },
-    "accent": {
-      "value": "#4C5A3F",
-      "label": "抹茶"
-    },
-    "onDark": {
-      "value": "#F7F3EC",
-      "label": "白抜き"
-    }
+    "background": { "value": "#FFFFFF", "label": "白" },
+    "surface": { "value": "#EEEEEE", "label": "灰" },
+    "text": { "value": "#333333", "label": "墨" },
+    "textMuted": { "value": "#7B7B7B", "label": "薄墨" },
+    "primary": { "value": "#333333", "label": "濃墨" },
+    "accent": { "value": "#7B7B7B", "label": "灰" },
+    "line": { "value": "#B0B0B0", "label": "罫線" },
+    "dark": { "value": "#333333", "label": "濃い面" },
+    "deep": { "value": "#222222", "label": "最暗" },
+    "onDark": { "value": "#FFFFFF", "label": "白抜き" }
   },
   "fonts": {
-    "heading": "shippori-mincho",
-    "body": "zen-kaku-gothic-new",
-    "accent": "eb-garamond"
+    "heading": "zen-old-mincho",
+    "body": "zen-kaku-gothic-new"
   },
   "textStyles": {
-    "pageTitle": {
-      "font": "font:heading",
-      "size": {
-        "pc": 28,
-        "sp": 20
-      },
-      "lineHeight": 1.5,
-      "letterSpacing": 0.15,
-      "weight": 500,
-      "color": "theme:text"
-    },
-    "heading": {
-      "font": "font:heading",
-      "size": {
-        "pc": 28,
-        "sp": 20
-      },
-      "lineHeight": 1.4,
-      "letterSpacing": 0.1,
-      "weight": 500,
-      "color": "theme:text"
-    },
-    "subheading": {
-      "font": "font:heading",
-      "size": {
-        "pc": 24,
-        "sp": 18
-      },
-      "lineHeight": 1.4,
-      "letterSpacing": 0.1,
-      "weight": 500,
-      "color": "theme:text"
-    },
-    "body": {
-      "font": "font:body",
-      "size": {
-        "pc": 16,
-        "sp": 14
-      },
-      "lineHeight": 1.8,
-      "color": "theme:text"
-    },
-    "caption": {
-      "font": "font:body",
-      "size": {
-        "pc": 14,
-        "sp": 13
-      },
-      "lineHeight": 1.7,
-      "color": "theme:textMuted"
-    }
+    "pageTitle": { "font": "font:heading", "size": { "pc": 28, "sp": 20 }, "lineHeight": 1.8, "weight": 700, "color": "theme:text" },
+    "heading": { "font": "font:heading", "size": { "pc": 28, "sp": 20 }, "lineHeight": 1.4, "letterSpacing": 0.1, "weight": 700, "color": "theme:text" },
+    "subheading": { "font": "font:heading", "size": { "pc": 24, "sp": 16 }, "lineHeight": 1.8, "letterSpacing": 0.1, "weight": 700, "color": "theme:text" },
+    "body": { "font": "font:body", "size": { "pc": 16, "sp": 14 }, "lineHeight": 1.8, "color": "theme:text" },
+    "caption": { "font": "font:body", "size": { "pc": 14, "sp": 14 }, "lineHeight": 1.6, "letterSpacing": 0.1, "weight": 400, "color": "theme:textMuted" }
   },
-  "recentColors": [
-    "#4C5A3F"
-  ]
+  "recentColors": []
 }

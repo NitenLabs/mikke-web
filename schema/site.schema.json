@@ -766,6 +766,11 @@
             "bold": {
               "type": "boolean"
             },
+            "weight": {
+              "type": "integer",
+              "enum": [300, 400, 500, 600, 700, 900],
+              "description": "文字の太さ（③の役割ごとの標準を上書き）。bold より優先。参照元どおりの太さ（900 の英字ラベルなど）を出すために持つ"
+            },
             "italic": {
               "type": "boolean"
             },

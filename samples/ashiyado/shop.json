@@ -290,7 +290,7 @@
         "name": "季節の上生菓子",
         "description": "月ごとに意匠が変わる、練り切りときんとん。",
         "photos": [
-          "ast_jonama"
+          "ast_frmg"
         ],
         "labels": [
           "lbl_recommended",
@@ -331,7 +331,10 @@
           "serviceId": "svc_base0001",
           "url": "https://ashiyado-sample.example.com/items/0001",
           "externalId": "0001"
-        }
+        },
+        "photos": [
+          "ast_frmh"
+        ]
       },
       "itm_dorayaki": {
         "name": "どら焼き",
@@ -340,9 +343,6 @@
         ],
         "prices": [],
         "status": "onSale",
-        "photos": [
-          "ast_band3"
-        ],
         "description": "ふっくら焼いた皮に、自家製の粒餡をはさみました。"
       },
       "itm_warabi": {
@@ -356,7 +356,13 @@
           }
         ],
         "status": "onSale",
-        "note": "お持ち帰りは当日中にお召し上がりください"
+        "note": "お持ち帰りは当日中にお召し上がりください",
+        "labels": [
+          "lbl_recommended"
+        ],
+        "photos": [
+          "ast_frmi"
+        ]
       },
       "itm_sakura": {
         "name": "桜餅",
@@ -402,9 +408,7 @@
       },
       "itm_matcha": {
         "name": "抹茶（上生菓子付き）",
-        "labels": [
-          "lbl_recommended"
-        ],
+        "labels": [],
         "prices": [
           {
             "id": "prc_matcha1",

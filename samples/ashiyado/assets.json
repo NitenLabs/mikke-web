@@ -1,265 +1,281 @@
 {
   "schemaVersion": 1,
   "assets": {
-    "ast_fvbg": {
+    "ast_frma": {
       "kind": "photo",
       "file": {
-        "key": "ast_fvbg.jpg",
+        "key": "ast_A.jpg",
         "mime": "image/jpeg",
-        "width": 2600,
-        "height": 3466,
-        "bytes": 2001379,
+        "width": 1440,
+        "height": 720,
+        "bytes": 100000,
         "exifStripped": true
       },
       "uploadedAt": "2026-09-22T18:00:00+09:00",
       "uploadedBy": "producer",
       "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Vicky Ng",
-        "pageUrl": "https://unsplash.com/photos/Ayy_K-y_dLA"
+        "kind": "sample"
       },
       "rights": {
-        "basis": "licensed",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "signature",
-      "alt": "木の器に並ぶ花の練り切り（季節の上生菓子）"
-    },
-    "ast_jonama": {
-      "kind": "photo",
-      "file": {
-        "key": "ast_jonama.jpg",
-        "mime": "image/jpeg",
-        "width": 2600,
-        "height": 1733,
-        "bytes": 1489874,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
-      "uploadedBy": "producer",
-      "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Stephen Pontes",
-        "pageUrl": "https://unsplash.com/photos/PbMdA9CegYo"
-      },
-      "rights": {
-        "basis": "licensed",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "product",
-      "alt": "季節の上生菓子（練り切りの盛り合わせ）"
-    },
-    "ast_feat1": {
-      "kind": "photo",
-      "file": {
-        "key": "ast_feat1.jpg",
-        "mime": "image/jpeg",
-        "width": 1800,
-        "height": 1424,
-        "bytes": 566603,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
-      "uploadedBy": "producer",
-      "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Andreas Haubold",
-        "pageUrl": "https://unsplash.com/photos/OTmHU9HdkHo"
-      },
-      "rights": {
-        "basis": "licensed",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "product",
-      "alt": "上生菓子と抹茶"
-    },
-    "ast_feat2": {
-      "kind": "photo",
-      "file": {
-        "key": "ast_feat2.jpg",
-        "mime": "image/jpeg",
-        "width": 1800,
-        "height": 2698,
-        "bytes": 368653,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
-      "uploadedBy": "producer",
-      "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Emma THERON",
-        "pageUrl": "https://unsplash.com/photos/XFVaBGj8Des"
-      },
-      "rights": {
-        "basis": "licensed",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "work",
-      "alt": "抹茶を点てる道具"
-    },
-    "ast_band1": {
-      "kind": "photo",
-      "file": {
-        "key": "ast_band1.jpg",
-        "mime": "image/jpeg",
-        "width": 1600,
-        "height": 2400,
-        "bytes": 702760,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
-      "uploadedBy": "producer",
-      "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Haley Truong",
-        "pageUrl": "https://unsplash.com/photos/NO6rghk3yyc"
-      },
-      "rights": {
-        "basis": "licensed",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "work",
-      "alt": "和菓子を手に取る手元"
-    },
-    "ast_band2": {
-      "kind": "photo",
-      "file": {
-        "key": "ast_band2.jpg",
-        "mime": "image/jpeg",
-        "width": 1600,
-        "height": 2133,
-        "bytes": 466096,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
-      "uploadedBy": "producer",
-      "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Vicky Ng",
-        "pageUrl": "https://unsplash.com/photos/bcPzSVSpN7g"
-      },
-      "rights": {
-        "basis": "licensed",
+        "basis": "ownWork",
         "confirmedAt": "2026-09-22T18:00:00+09:00",
         "confirmedBy": "producer"
       },
       "slot": "other",
-      "alt": "花の器と設え"
+      "alt": "FV背景"
     },
-    "ast_band3": {
+    "ast_frmb": {
       "kind": "photo",
       "file": {
-        "key": "ast_band3.jpg",
+        "key": "ast_B.jpg",
         "mime": "image/jpeg",
-        "width": 1600,
-        "height": 1246,
-        "bytes": 237756,
+        "width": 566,
+        "height": 420,
+        "bytes": 100000,
         "exifStripped": true
       },
       "uploadedAt": "2026-09-22T18:00:00+09:00",
       "uploadedBy": "producer",
       "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Jelleke Vanooteghem",
-        "pageUrl": "https://unsplash.com/photos/HKCNiY23Hxw"
+        "kind": "sample"
       },
       "rights": {
-        "basis": "licensed",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "product",
-      "alt": "どら焼き（皿盛り）"
-    },
-    "ast_band4": {
-      "kind": "photo",
-      "file": {
-        "key": "ast_band4.jpg",
-        "mime": "image/jpeg",
-        "width": 1600,
-        "height": 1048,
-        "bytes": 225546,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
-      "uploadedBy": "producer",
-      "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Jelleke Vanooteghem",
-        "pageUrl": "https://unsplash.com/photos/lQma_-1tZZ8"
-      },
-      "rights": {
-        "basis": "licensed",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "product",
-      "alt": "皿に盛ったどら焼き"
-    },
-    "ast_front": {
-      "kind": "photo",
-      "file": {
-        "key": "ast_front.jpg",
-        "mime": "image/jpeg",
-        "width": 1600,
-        "height": 1194,
-        "bytes": 401229,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
-      "uploadedBy": "producer",
-      "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "kai muro",
-        "pageUrl": "https://unsplash.com/photos/--5ImX4dVNo"
-      },
-      "rights": {
-        "basis": "licensed",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "exterior",
-      "alt": "瓦屋根と板壁の店構え"
-    },
-    "ast_garden": {
-      "kind": "photo",
-      "file": {
-        "key": "ast_garden.jpg",
-        "mime": "image/jpeg",
-        "width": 2600,
-        "height": 1736,
-        "bytes": 1148771,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
-      "uploadedBy": "producer",
-      "origin": {
-        "kind": "stock",
-        "provider": "unsplash",
-        "credit": "Scott Osborn",
-        "pageUrl": "https://unsplash.com/photos/mLhXZulSzcA"
-      },
-      "rights": {
-        "basis": "licensed",
+        "basis": "ownWork",
         "confirmedAt": "2026-09-22T18:00:00+09:00",
         "confirmedBy": "producer"
       },
       "slot": "other",
-      "alt": "苔むした庭石"
+      "alt": "物語 手元"
+    },
+    "ast_frmc": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_C.jpg",
+        "mime": "image/jpeg",
+        "width": 566,
+        "height": 420,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "物語 上生菓子"
+    },
+    "ast_frmd": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_D.jpg",
+        "mime": "image/jpeg",
+        "width": 566,
+        "height": 420,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "物語 設え"
+    },
+    "ast_frme": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_E.jpg",
+        "mime": "image/jpeg",
+        "width": 549,
+        "height": 404,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "季節の上生菓子"
+    },
+    "ast_frmf": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_F.jpg",
+        "mime": "image/jpeg",
+        "width": 549,
+        "height": 404,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "甘味処の情景"
+    },
+    "ast_frmg": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_G.jpg",
+        "mime": "image/jpeg",
+        "width": 426,
+        "height": 426,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "季節の上生菓子"
+    },
+    "ast_frmh": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_H.jpg",
+        "mime": "image/jpeg",
+        "width": 426,
+        "height": 426,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "芦屋最中"
+    },
+    "ast_frmi": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_I.jpg",
+        "mime": "image/jpeg",
+        "width": 426,
+        "height": 426,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "わらび餅"
+    },
+    "ast_frmj": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_J.jpg",
+        "mime": "image/jpeg",
+        "width": 473,
+        "height": 560,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "店構え"
+    },
+    "ast_frmk": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_K.jpg",
+        "mime": "image/jpeg",
+        "width": 1440,
+        "height": 590,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "お問い合わせ背景"
+    },
+    "ast_frml": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_L.jpg",
+        "mime": "image/jpeg",
+        "width": 1440,
+        "height": 400,
+        "bytes": 100000,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "sample"
+      },
+      "rights": {
+        "basis": "ownWork",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "other",
+      "alt": "お品書きの帯"
     }
   }
 }

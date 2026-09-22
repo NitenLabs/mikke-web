@@ -2,7 +2,7 @@
 // 外部から読み込むのは Google Fonts だけ（DATA_SPEC / 手順書）。実際に読み込むのは使っている書体だけ。
 
 export const FONT_REGISTRY = {
-  "zen-old-mincho": { family: "Zen Old Mincho", generic: "serif", param: "Zen+Old+Mincho:wght@400;500;700;900" },
+  "zen-old-mincho": { family: "Zen Old Mincho", generic: "serif", param: "Zen+Old+Mincho:wght@400;500;600;700;900" },
   "noto-sans-jp": { family: "Noto Sans JP", generic: "sans-serif", param: "Noto+Sans+JP:wght@400;500;700" },
   "shippori-mincho": { family: "Shippori Mincho", generic: "serif", param: "Shippori+Mincho:wght@400;500;700" },
   "zen-kaku-gothic-new": { family: "Zen Kaku Gothic New", generic: "sans-serif", param: "Zen+Kaku+Gothic+New:wght@400;500;700" },
