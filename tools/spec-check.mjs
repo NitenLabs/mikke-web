@@ -326,9 +326,10 @@ for (const aid of appendixIds) {
   const r = results[aid];
   if (!r) { notfound++; failList.push(`${aid}: 未実行`); continue; }
   if (r.status === "manual") { manual++; continue; }
+  const tag = (d) => `[${aid}] ${d}`;
   if (r.status === "pass") pass++;
-  else if (r.status === "notfound") { notfound++; failList.push(...r.details); }
-  else { fail++; failList.push(...r.details); }
+  else if (r.status === "notfound") { notfound++; failList.push(...r.details.map(tag)); }
+  else { fail++; failList.push(...r.details.map(tag)); }
 }
 const total = appendixIds.size;
 
