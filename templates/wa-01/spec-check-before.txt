@@ -1,0 +1,120 @@
+spec-check（付録 A）：総数 96／合格 47／不合格 38／要素が見つからない 0／手動 11
+― 不合格・見つからない ―
+  pc el_about_lbl: 行送り 期待22.4 実測25.6
+  pc el_feat_lbl: 行送り 期待22.4 実測25.6
+  pc el_items_lbl: 行送り 期待22.4 実測25.6
+  pc el_faq_lbl: 行送り 期待22.4 実測25.6
+  pc el_acc_lbl: 行送り 期待22.4 実測25.6
+  pc el_ct_lbl: 行送り 期待22.4 実測25.6 / 字間 期待0px 実測1.6px
+  pc el_mhlbl: 行送り 期待22.4 実測25.6 / 字間 期待0px 実測1.6px
+  pc el_chlbl: 行送り 期待22.4 実測25.6 / 字間 期待0px 実測1.6px
+  sp el_about_lbl: 行送り 期待19.6 実測22.4
+  sp el_feat_lbl: 行送り 期待19.6 実測22.4
+  sp el_items_lbl: 行送り 期待19.6 実測22.4
+  sp el_faq_lbl: 行送り 期待19.6 実測22.4
+  sp el_acc_lbl: 行送り 期待19.6 実測22.4
+  sp el_ct_lbl: 行送り 期待19.6 実測22.4 / 字間 期待0px 実測1.4px
+  sp el_mhlbl: 行送り 期待19.6 実測22.4 / 字間 期待0px 実測1.4px
+  sp el_chlbl: 行送り 期待19.6 実測22.4 / 字間 期待0px 実測1.4px
+  pc el_mhh: 行送り 期待39.2 実測50.4
+  pc el_chh: 行送り 期待39.2 実測50.4
+  sp el_mhh: 行送り 期待28 実測36
+  sp el_chh: 行送り 期待28 実測36
+  sp el_accinfo: 大きさ 期待14 実測16 / 行送り 期待25.2 実測28.8
+  pc el_kanmilbl: 行送り 期待33.6 実測43.2
+  pc el_mt_lbl: 行送り 期待33.6 実測43.2
+  pc el_mk_lbl: 行送り 期待33.6 実測43.2
+  sp el_kanmilbl: 行送り 期待25.2 実測32.4
+  sp el_mt_lbl: 行送り 期待25.2 実測32.4
+  sp el_mk_lbl: 行送り 期待25.2 実測32.4
+  pc el_itemsbtn: 行送り 期待22.4 実測28.8
+  pc el_acctel: 行送り 期待22.4 実測28.8
+  pc el_ct_btn: 行送り 期待22.4 実測28.8
+  sp el_itemsbtn: 行送り 期待22.4 実測28.8
+  sp el_acctel: 行送り 期待22.4 実測28.8
+  sp el_ct_btn: 行送り 期待22.4 実測28.8
+  pc el_logo: 行送り 期待33.6 実測43.2
+  sp el_logo: 行送り 期待33.6 実測43.2
+  pc el_fven: 行送り 期待19.6 実測22.4
+  sp el_fven: 行送り 期待16.8 実測19.2
+  pc el_fname: 字間 期待0px 実測3.2px
+  sp el_fname: 字間 期待0px 実測3.2px
+  pc el_fpriv: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px
+  pc el_fcopy: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px
+  pc el_fmikke: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px
+  sp el_fpriv: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px
+  sp el_fcopy: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px
+  sp el_fmikke: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px
+  pc el_kanmitime: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 字間 期待0px 実測1.4px
+  pc el_mk_time: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 字間 期待0px 実測1.4px
+  sp el_kanmitime: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 字間 期待0px 実測1.4px
+  sp el_mk_time: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 字間 期待0px 実測1.4px
+  pc el_ntlabel: 行送り 期待22 実測28.8
+  sp el_ntlabel: 行送り 期待17 実測21.6
+  pc el_nttext: 行送り 期待22 実測28.8
+  sp el_nttext: 行送り 期待17 実測21.6
+  pc A2-12: 大きさ 期待16 実測10 / 行送り 期待22.4 実測17 / 太さ 期待600 実測400 / 色 期待#FFFFFF 実測#333333
+  pc A2-18: 大きさ 期待16 実測10 / 行送り 期待22.4 実測17 / 太さ 期待600 実測400
+  sp A2-18: 大きさ 期待14 実測10 / 行送り 期待19.6 実測17 / 太さ 期待600 実測400
+  pc A2-20: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 太さ 期待700 実測400 / 色 期待#333333 実測#7B7B7B
+  sp A2-20: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 太さ 期待700 実測400 / 色 期待#333333 実測#7B7B7B
+  pc A2-8: 行送り 期待22.4 実測28.8
+  sp A2-8: 行送り 期待19.6 実測25.2
+  pc sec_hero: ページy 期待0 実測88.19
+  sp sec_hero: ページy 期待0 実測80.19
+  pc el_logo: 高さ 期待34 実測43.19
+  sp el_logo: 高さ 期待34 実測43.19
+  pc sec_hero: y 期待0 実測NaN
+  sp sec_hero: y 期待0 実測NaN
+  pc el_fven: 高さ 期待20 実測22.39
+  sp el_fven: 高さ 期待17 実測19.19
+  pc el_ntlabel: 高さ 期待22 実測28.8
+  sp el_ntlabel: 高さ 期待17 実測21.59
+  pc el_nttext: 高さ 期待22 実測28.8
+  pc el_about_lbl: 高さ 期待22 実測25.59
+  sp el_about_lbl: 高さ 期待20 実測22.39
+  pc el_feat_lbl: 高さ 期待22 実測25.59
+  sp el_feat_lbl: 高さ 期待20 実測22.39
+  pc el_items_lbl: 高さ 期待22 実測25.59
+  sp el_items_lbl: 高さ 期待20 実測22.39
+  pc el_faq_lbl: 高さ 期待22 実測25.59
+  sp el_faq_lbl: 高さ 期待20 実測22.39
+  pc el_acc_lbl: 高さ 期待22 実測25.59
+  sp el_acc_lbl: 高さ 期待20 実測22.39
+  pc el_ct_lbl: 高さ 期待22 実測25.59
+  sp el_ct_lbl: 高さ 期待20 実測22.39
+  sp el_aboutbody: 高さ 期待151 実測125.94
+  pc el_kanmilbl: 高さ 期待34 実測43.19
+  sp el_kanmilbl: 高さ 期待25 実測32.39
+  pc el_accinfotop: y 期待264 実測258.19
+  pc el_ct_body: 高さ 期待86 実測57.59
+  sp el_ct_body: 高さ 期待101 実測75.56
+  pc el_mhlbl: 高さ 期待22 実測25.59
+  sp el_mhlbl: 高さ 期待20 実測22.39
+  pc el_mhh: 高さ 期待39 実測50.39
+  sp el_mhh: 高さ 期待28 実測36
+  pc el_chlbl: y 期待170 実測130 / 高さ 期待22 実測25.59
+  sp el_chlbl: y 期待132 実測100 / 高さ 期待20 実測22.39
+  pc el_chh: y 期待201 実測161 / 高さ 期待39 実測50.39
+  sp el_chh: y 期待159 実測127.38 / 高さ 期待28 実測36
+  el_itemsbtnbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333
+  el_itemsbtnbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333
+  el_acctelbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333
+  el_acctelbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333
+  el_ct_btnbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333
+  el_ct_btnbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333
+  A8-8a: 文字中央525.58 写真中央537.19 差11.61
+  A8-8b: 文字中央1008.58 写真中央1021.38 差12.8
+  A11-7: el_accphoto.y=264.19 el_accinfotop.y=258.19 差6
+― 手動（自動照合できない行）―
+  A1-3: 『不透明度50%の線』の実効色は背景合成後になり、rgba の元値を computed から取り出せないため目視（色は #B0B0B0 として line で照合済み）
+  A1-4: セクション背景色の並びは A1-6 で照合。個別の帯/CONTACT/フッター #333 は box/line で担保
+  A2-10: FAQ の『Q.』と質問は accordion の summary 内 span。実装後に celtext 相当で照合（3.4 実装後に自動化予定）
+  A3-2: ヘッダー高さ 88/80 はヘッダー要素の box で担保。sec_header は sticky で高さ0扱いのため直接照合は手動
+  A3-4: ナビの右端 x1376・項目間隔24 は nav 内 a の配置で、要素単位の box では測れない（navtext で書体は照合）
+  A3-6: スクロール後のヘッダーの色替えは JS 動作。静的照合の対象外（check で目視）
+  A3-7: /privacy はヘッダーを重ねない＝本体が y88 から。ページ描画の差で、box では別ページのため手動確認
+  A3-8: SP メニューを開いた全面 #222 は details[open] の JS 状態。静的照合の対象外
+  A9-10toA9-14: 甘味処の表の行内（品名/説明/価格/縦罫線）は list セルの内部。cel 単位の実測を要し、3章の実装確認後に自動化予定
+  A10-3toA10-7: FAQ 行内（Q./質問/∨/答え/行の下線）は accordion 内部。3.4 実装後に自動化予定
+  A11-2: 縦書きの添え書きは writing-mode 固定箱。位置は box で近似できるが向きの照合は手動
