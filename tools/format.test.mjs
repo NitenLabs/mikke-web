@@ -123,9 +123,10 @@ test("あんみつ（お休み中）はどちらの日付でも非表示", () =>
   assert.ok(!menuNames("mnu_kanmi", "2026-09-22").includes("あんみつ"));
 });
 
-test("おすすめ（トップ）：店頭販売のうち recommended の品（jonama・monaka）", () => {
+test("おすすめ（トップ）：店頭販売の recommended 3件（括り順）", () => {
   const rows = resolveRepeater(shop, { kind: "catalog", menuId: "mnu_tento", labelIds: ["lbl_recommended"], limit: 3 }, makeRefDate("2026-09-22"));
-  assert.deepEqual(rows.map((r) => r.item.name), ["季節の上生菓子", "芦屋最中"]);
+  // 括り順：上生菓子(jonama)→餅菓子(warabi)→焼き菓子(monaka)
+  assert.deepEqual(rows.map((r) => r.item.name), ["季節の上生菓子", "わらび餅", "芦屋最中"]);
 });
 
 // ---------- 空になったセクションと背景の交互 ----------
