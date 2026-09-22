@@ -1797,7 +1797,8 @@
           "value": "pg_menu"
         },
         "lineHeight": 1.4,
-        "letterSpacing": 0
+        "letterSpacing": 0,
+        "arrowRight": true
       },
       "layout": {
         "pc": {
@@ -2352,21 +2353,22 @@
         "labelColumn": 6,
         "font": "font:body",
         "weight": 400,
-        "letterSpacing": 0
+        "letterSpacing": 0,
+        "paragraphGap": 16
       },
       "layout": {
         "pc": {
           "x": 50.9028,
           "y": 284,
           "w": 32.7083,
-          "h": 288,
+          "h": 467,
           "size": 16
         },
         "sp": {
           "x": 5.1282,
           "y": 669,
           "w": 90,
-          "h": 346,
+          "h": 525,
           "size": 16
         }
       }
@@ -2736,7 +2738,8 @@
           "value": "pg_contact"
         },
         "lineHeight": 1.4,
-        "letterSpacing": 0
+        "letterSpacing": 0,
+        "arrowRight": true
       },
       "layout": {
         "pc": {

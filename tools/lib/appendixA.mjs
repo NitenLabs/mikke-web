@@ -158,10 +158,22 @@ export const LINE_CHECKS = [
   ln("A12-4b", "el_ct_btnbg", 1, MU, { border: true, radius: 32, bg: ON }),
 ];
 
+// ---- 段落の間隔（gap）----
+export const GAP = [
+  { kind: "gap", id: "A11-6", target: "el_accinfo", gap: 16, dev: ["pc", "sp"], note: "ACCESS 情報の表の段落の間隔16" },
+];
+
+// ---- ピルの「›」を右端に（arrow）----
+export const ARROW = [
+  { kind: "arrow", id: "A9-16", btn: "el_itemsbtn", bg: "el_itemsbtnbg", rightGap: 24, note: "お品書きピルの › は右から24・縦中央" },
+  { kind: "arrow", id: "A12-4b", btn: "el_ct_btn", bg: "el_ct_btnbg", rightGap: 24, note: "お問い合わせピルの › は右から24・縦中央" },
+];
+
 // ---- 関係（2要素）----
 export const RELATION = [
-  { kind: "relation", id: "A8-8a", dev: "pc", rel: "vCenterEq", a: "el_featp1", b: "block1text", note: "ブロック1：文字の塊の縦中央＝写真の縦中央" },
-  { kind: "relation", id: "A8-8b", dev: "pc", rel: "vCenterEq", a: "el_featp2", b: "block2text", note: "ブロック2：同上" },
+  // A8-8（Claude.ai 決定・fix02）：文字の塊の縦中央 ＝ 写真の縦中央 −12（参照元の実測どおり）
+  { kind: "relation", id: "A8-8a", dev: "pc", rel: "vCenterEq", a: "el_featp1", b: "block1text", offset: -12, note: "ブロック1：文字の塊の縦中央＝写真の縦中央 −12" },
+  { kind: "relation", id: "A8-8b", dev: "pc", rel: "vCenterEq", a: "el_featp2", b: "block2text", offset: -12, note: "ブロック2：同上" },
   { kind: "relation", id: "A11-7", dev: "pc", rel: "topEq", a: "el_accphoto", b: "el_accinfotop", note: "表の上の線の y＝写真の上端の y" },
   { kind: "relation", id: "A9-cardtops", dev: "pc", rel: "cardPriceTopEq", a: "el_itemcards", note: "3枚のカードの価格の上端が揃う（または全カード同じだけ下がる）" },
 ];

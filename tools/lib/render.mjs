@@ -146,24 +146,31 @@ function runInner(r, linkResolver) {
   }
   return inner;
 }
-function runSpan(r, linkResolver) {
+function runSpan(r, linkResolver, cls) {
   const s = marksStyle(r.marks);
-  return `<span${s ? ` style="${s}"` : ""}>${runInner(r, linkResolver)}</span>`;
+  const c = cls ? ` class="${cls}"` : "";
+  return `<span${c}${s ? ` style="${s}"` : ""}>${runInner(r, linkResolver)}</span>`;
 }
 
 // 段落→HTML。linkResolver(link)→{href,target} があればリンクを張る。
+// style.paragraphGap（px）＝段落の間隔／style.arrowRight＝末尾の「›」をピルの右端へ寄せる。
 function paragraphsHtml(resolvedText, style, opts = {}) {
   const { linkResolver, labelColumn } = opts;
+  const gap = style?.paragraphGap, arrowRight = style?.arrowRight;
   return resolvedText.paragraphs
-    .map((p) => {
+    .map((p, idx) => {
+      const mt = idx > 0 && gap ? ` style="margin-top:${rem(gap)}"` : "";
       if (labelColumn) {
         // 先頭の自由な文字を項目名の列に、残りを右に流す
         const first = p.runs[0];
         const restRuns = p.runs.slice(1).map((r) => runSpan(r, linkResolver)).join("");
-        return `<span class="pg lc"><span class="lc-key" style="width:${labelColumn}em">${esc(first?.text ?? "")}</span><span class="lc-val">${restRuns}</span></span>`;
+        return `<span class="pg lc"${mt}><span class="lc-key" style="width:${labelColumn}em">${esc(first?.text ?? "")}</span><span class="lc-val">${restRuns}</span></span>`;
       }
-      const runsHtml = p.runs.map((r) => runSpan(r, linkResolver)).join("");
-      return `<span class="pg">${runsHtml}</span>`;
+      const runsHtml = p.runs.map((r, ri) => {
+        const isArrow = arrowRight && ri === p.runs.length - 1 && (r.text || "").trim() === "›";
+        return runSpan(r, linkResolver, isArrow ? "pill-arrow" : null);
+      }).join("");
+      return `<span class="pg"${mt}>${runsHtml}</span>`;
     })
     .join("");
 }

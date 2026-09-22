@@ -317,17 +317,17 @@
       "status": "pass",
       "details": []
     },
+    "A11-6": {
+      "status": "pass",
+      "details": []
+    },
     "A8-8a": {
-      "status": "fail",
-      "details": [
-        "A8-8a: 文字中央525.97 写真中央537.58 差11.61"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A8-8b": {
-      "status": "fail",
-      "details": [
-        "A8-8b: 文字中央1008.97 写真中央1021.77 差12.8"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A11-7": {
       "status": "pass",

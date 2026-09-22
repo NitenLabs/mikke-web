@@ -58,6 +58,19 @@ const MEASURE = (payload) => {
     if (s.all) out.sel[s.k] = nodes.map((n) => ({ ...boxOf(n), ...styleOf(n) }));
     else out.sel[s.k] = nodes[0] ? { ...boxOf(nodes[0]), ...styleOf(nodes[0]), count: nodes.length } : null;
   }
+  out.gap = {}; out.arrow = {};
+  for (const g of payload.gaps || []) {
+    const pgs = [...document.querySelectorAll(g.sel)].map((e) => e.getBoundingClientRect());
+    out.gap[g.k] = pgs.length < 2 ? null : pgs.slice(1).map((r, i) => Math.round((r.top - pgs[i].bottom) * 100) / 100);
+  }
+  for (const a of payload.arrows || []) {
+    const btn = document.querySelector(a.btnSel), bg = document.querySelector(a.bgSel);
+    if (!btn || !bg) { out.arrow[a.k] = null; continue; }
+    const spans = btn.querySelectorAll("span"); const last = spans[spans.length - 1];
+    const ar = last ? last.getBoundingClientRect() : btn.getBoundingClientRect();
+    const gr = bg.getBoundingClientRect();
+    out.arrow[a.k] = { arrowRight: ar.right, arrowMidY: ar.top + ar.height / 2, arrowText: (last?.textContent || "").trim(), pillRight: gr.right, pillLeft: gr.left, pillMidY: gr.top + gr.height / 2 };
+  }
   return out;
 };
 
@@ -69,7 +82,7 @@ const rec = (aid, status, detail) => { const r = results[aid] ??= { status: "pas
 // 各 (page,dev) で必要な測定対象を集め、1回で測る
 const work = []; // {page, dev, check}
 const need = {}; // `${page}:${dev}` -> {els:Set, secs:Set, sels:[]}
-const addNeed = (page, dev, { el, sec, sel }) => { const k = `${page}:${dev}`; const n = need[k] ??= { els: new Set(), secs: new Set(), sels: [] }; if (el) n.els.add(el); if (sec) n.secs.add(sec); if (sel) n.sels.push(sel); };
+const addNeed = (page, dev, { el, sec, sel, gap, arrow }) => { const k = `${page}:${dev}`; const n = need[k] ??= { els: new Set(), secs: new Set(), sels: [], gaps: [], arrows: [] }; if (el) n.els.add(el); if (sec) n.secs.add(sec); if (sel) n.sels.push(sel); if (gap) n.gaps.push(gap); if (arrow) n.arrows.push(arrow); };
 
 const devsOf = (c) => c.dev ? [c.dev] : ["pc", "sp"];
 
@@ -88,6 +101,10 @@ for (const c of A.CELTEXT) { const page = pageOfEl(c.rep); for (const dev of ["p
 for (const c of A.BOX) { const isSec = c.target.startsWith("sec_"); const page = isSec ? pageOfSec(c.target) : pageOfEl(c.target); work.push({ page, dev: c.dev, run: "box", c }); if (isSec) addNeed(page, c.dev, { sec: c.target }); else addNeed(page, c.dev, { el: c.target }); }
 // line
 for (const c of A.LINE_CHECKS) for (const dev of ["pc", "sp"]) { const page = pageOfEl(c.target); work.push({ page, dev, run: "line", c }); addNeed(page, dev, { el: c.target }); if (c.target) addNeed(page, dev, { sec: site.elements[c.target]?.section }); }
+// gap（段落の間隔）
+for (const c of A.GAP) for (const dev of c.dev) { const page = pageOfEl(c.target); const k = `${c.id}:${dev}`; work.push({ page, dev, run: "gap", c, k }); addNeed(page, dev, { gap: { k, sel: `[data-el="${c.target}"] .pg` } }); }
+// arrow（ピルの ›）
+for (const c of A.ARROW) for (const dev of ["pc", "sp"]) { const page = pageOfEl(c.btn); const k = `${c.id}:${dev}`; work.push({ page, dev, run: "arrow", c, k }); addNeed(page, dev, { arrow: { k, btnSel: `[data-el="${c.btn}"]`, bgSel: `[data-el="${c.bg}"]` } }); }
 // relation
 for (const c of A.RELATION) { const dev = c.dev; work.push({ page: "pg_home", dev, run: "relation", c });
   if (c.rel === "vCenterEq") { addNeed("pg_home", dev, { el: c.a }); const b = c.b === "block1text" ? ["el_feath1", "el_featb1"] : ["el_feath2", "el_featb2"]; b.forEach((e) => addNeed("pg_home", dev, { el: e })); }
@@ -112,7 +129,7 @@ for (const [key, n] of Object.entries(need)) {
   await p.goto(pathToFileURL(path.join(distDir, fileFor(page))).href, { waitUntil: "load" });
   for (let i = 0; i < 40; i++) { const ok = await p.evaluate(() => { document.body.offsetHeight; const rf = parseFloat(getComputedStyle(document.documentElement).fontSize); return rf > 0 && rf < 15 && (!document.fonts || document.fonts.status === "loaded"); }); if (ok) break; await p.waitForTimeout(120); }
   await p.waitForTimeout(150);
-  measured[key] = await p.evaluate(MEASURE, { els: [...n.els].filter(Boolean), secs: [...n.secs].filter(Boolean), sels: n.sels });
+  measured[key] = await p.evaluate(MEASURE, { els: [...n.els].filter(Boolean), secs: [...n.secs].filter(Boolean), sels: n.sels, gaps: n.gaps, arrows: n.arrows });
   await ctx.close();
 }
 await browser.close();
@@ -186,9 +203,17 @@ for (const w of work) {
     const c = w.c;
     if (c.rel === "vCenterEq") { const ph = M.el[c.a]; const h1 = M.el[c.b === "block1text" ? "el_feath1" : "el_feath2"]; const b1 = M.el[c.b === "block1text" ? "el_featb1" : "el_featb2"];
       if (!ph || !h1 || !b1) rec(c.id, "notfound", `${c.id}: 要素なし`);
-      else { const textC = (h1.y + (b1.y + b1.h)) / 2; const photoC = ph.y + ph.h / 2; near(textC, photoC, POS) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 文字中央${round(textC)} 写真中央${round(photoC)} 差${round(Math.abs(textC - photoC))}`); }
+      else { const textC = (h1.y + (b1.y + b1.h)) / 2; const photoC = ph.y + ph.h / 2 + (c.offset || 0); near(textC, photoC, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 文字中央${round(textC)} 目標(写真中央${c.offset ? c.offset : ""})${round(photoC)} 差${round(Math.abs(textC - photoC))}`); }
     } else if (c.rel === "topEq") { const a = M.el[c.a], bb = M.el[c.b]; if (!a || !bb) rec(c.id, "notfound", `${c.id}: 要素なし`); else near(a.y, bb.y, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: ${c.a}.y=${round(a.y)} ${c.b}.y=${round(bb.y)} 差${round(Math.abs(a.y - bb.y))}`); }
     else if (c.rel === "cardPriceTopEq") { const arr = M.sel.cardprices; if (!arr || !arr.length) rec(c.id, "notfound", `${c.id}: 価格セルなし`); else { const tops = arr.map((x) => x.pageY); const spread = Math.max(...tops) - Math.min(...tops); spread <= REL ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 価格の上端がずれ ${round(spread)}px（${tops.map(round).join(",")}）`); } }
+  }
+  else if (w.run === "gap") { const arr = M.gap[w.k]; if (!arr) { rec(w.c.id, "notfound", `${w.dev} ${w.c.id}: 段落が2つ未満`); continue; } const bad = arr.filter((g) => Math.abs(g - w.c.gap) > SIZE); bad.length ? rec(w.c.id, "fail", `${w.dev} ${w.c.id}: 段落の間隔 期待${w.c.gap} 実測[${arr.join(",")}]`) : rec(w.c.id, "pass"); }
+  else if (w.run === "arrow") { const m = M.arrow[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.dev} ${w.c.id}: ピルなし`); continue; }
+    const fails = []; const rightGap = m.pillRight - m.arrowRight;
+    if (m.arrowText !== "›") fails.push(`最後のspanが「›」でない（"${m.arrowText}"）`);
+    if (Math.abs(rightGap - w.c.rightGap) > POS) fails.push(`› 右からの距離 期待${w.c.rightGap} 実測${round(rightGap)}`);
+    if (Math.abs(m.arrowMidY - m.pillMidY) > POS) fails.push(`› 縦中央 ずれ${round(Math.abs(m.arrowMidY - m.pillMidY))}`);
+    fails.length ? rec(w.c.id, "fail", `${w.dev} ${w.c.id}: ${fails.join(" / ")}`) : rec(w.c.id, "pass");
   }
   else if (w.run === "global") { const arr = M.sel.alltext || []; const bad = arr.filter((n) => n.font && !w.c.allow.includes(n.font) && n.size > 0); bad.length ? rec(w.c.id, "fail", `${w.c.id}: 許可外の書体 ${[...new Set(bad.map((x) => x.font))].slice(0, 5).join(",")}`) : rec(w.c.id, "pass"); }
   else if (w.run === "globalAlign") { const m = M.el[w.id]; if (!m) rec(w.c.id, "notfound", `${w.id}なし`); else (m.align === "left" || m.align === "start") ? rec(w.c.id, "pass") : rec(w.c.id, "fail", `${w.c.id}: ${w.id} align=${m.align}`); }
@@ -199,7 +224,7 @@ for (const w of work) {
 for (const m of A.MANUAL) results[m.id] = { status: "manual", details: [m.reason] };
 
 // ---- 集計 ----
-const appendixIds = new Set([...A.TEXT, ...A.NAVTEXT, A.LABELKEY, ...A.CELTEXT, ...A.BOX, ...A.LINE_CHECKS, ...A.RELATION, ...A.GLOBAL].map((x) => x.id).concat(A.MANUAL.map((x) => x.id)));
+const appendixIds = new Set([...A.TEXT, ...A.NAVTEXT, A.LABELKEY, ...A.CELTEXT, ...A.BOX, ...A.LINE_CHECKS, ...A.GAP, ...A.ARROW, ...A.RELATION, ...A.GLOBAL].map((x) => x.id).concat(A.MANUAL.map((x) => x.id)));
 let pass = 0, fail = 0, notfound = 0, manual = 0;
 const failList = [];
 for (const aid of appendixIds) {

@@ -799,6 +799,16 @@
               "type": "boolean",
               "description": "折り返さない（white-space:nowrap）。短い札・ピルのボタン・ナビ・FAQ の「Q.」など、1行で見せる文字に使う。実測もこの設定で1行として測るので、端末や描画エンジンによる折り返しのばらつきが出ない"
             },
+            "paragraphGap": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "段落と段落の間隔（px）。住所・営業時間などの定義リストの行間に使う（labelColumn と併用）"
+            },
+            "arrowRight": {
+              "type": "boolean",
+              "description": "末尾の「›」をピルのボタンの右端（右から24・縦中央）へ寄せる。本文は中央、›だけ右端"
+            },
             "list": {
               "type": "string",
               "enum": [

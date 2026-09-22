@@ -45,6 +45,8 @@ main{display:block}
 .el-text .lc{display:flex}
 .el-text .lc-key{flex:none;color:var(--c-text);font-family:var(--f-heading);font-weight:700}
 .el-text .lc-val{flex:1}
+/* ピルの「›」を右端（右から24・縦中央）へ。本文は中央のまま（A9-16） */
+.el-text .pill-arrow{position:absolute;right:2.4rem;top:50%;transform:translateY(-50%)}
 .el-photo{overflow:hidden}
 .el-photo img{width:100%;height:100%;object-fit:cover}
 .bleed{position:absolute;z-index:0;overflow:hidden}
