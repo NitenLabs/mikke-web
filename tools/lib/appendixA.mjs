@@ -39,8 +39,7 @@ export const TEXT = [
   t("A2-17", GOT, [12, 16.8], [12, 16.8], 400, 0, [
     { id: "el_fpriv", c: ON }, { id: "el_fcopy", c: ON }, { id: "el_fmikke", c: ON }]),
   t("A2-19", MIN, [14, 22.4], [14, 22.4], 400, 0, [{ id: "el_kanmitime", c: MU }, { id: "el_mk_time", c: MU }]),
-  t("A2-21", MIN, [16, 22], [12, 17], 900, 0, ["el_ntlabel"]),
-  t("A2-22", MIN, [16, 22], [12, 17], 600, 0, [{ id: "el_nttext", c: ON }]),
+  // A2-21・A2-22（営業案内の帯の札・文字）は fix04 で削除（帯を外した）
   // A2-3 リード（ABOUT）／A2-2 見出し 等は上で網羅
 ];
 
@@ -79,10 +78,7 @@ export const BOX = [
   b("A4-2", "pc", "el_fvphoto", 0, 0, 1440, 720), b("A4-2", "sp", "el_fvphoto", 0, 0, 390, 600),
   b("A4-3", "pc", "el_fvh", 420, 294, 600, 101), b("A4-3", "sp", "el_fvh", 59, 250, 273, 72),
   b("A4-4", "pc", "el_fven", 420, 407, 600, 20), b("A4-4", "sp", "el_fven", 59, 334, 273, 17),
-  // A5 営業案内の帯
-  b("A5-2", "pc", "el_ntcard", 56, 0, 160, 38), b("A5-2", "sp", "el_ntcard", 0, 0, 80, null),
-  b("A5-3", "pc", "el_ntlabel", 72, 8, 128, 22), b("A5-3", "sp", "el_ntlabel", 16, 8, 48, 17),
-  b("A5-4", "pc", "el_nttext", 232, 8, 1152, 22), b("A5-4", "sp", "el_nttext", 92, 8, 290, null),
+  // A5 営業案内の帯（A5-1〜A5-4）は fix04 で削除（帯を外した）
   // A6 見出しの組（4.0）— 各セクション同じ値。ラベル/見出し/横棒
   ...[["el_about_lbl", 80], ["el_feat_lbl", 64], ["el_items_lbl", 64], ["el_faq_lbl", 64], ["el_acc_lbl", 64]].flatMap(([id, spy]) => [
     b("A6-1", "pc", id, 420, 120, 600, 22), b("A6-1", "sp", id, 20, spy, 351, 20)]),
@@ -187,7 +183,7 @@ export const RELATION = [
 export const GLOBAL = [
   { kind: "global", id: "A1-1", rule: "fontFamilyAll", allow: [MIN, GOT], note: "表示される全ての文字の書体" },
   { kind: "global", id: "A1-5", rule: "bodyAlignLeft", targets: ["el_aboutbody", "el_featb1", "el_featb2", "el_ct_body"], note: "本文は左揃え" },
-  { kind: "global", id: "A1-6", rule: "bgOrder", order: [["sec_hero", "photo"], ["sec_notice", "#333333"], ["sec_about", "#FFFFFF"], ["sec_feature", "#EEEEEE"], ["sec_items", "#FFFFFF"], ["sec_faqs", "#EEEEEE"], ["sec_access", "#FFFFFF"], ["sec_contact", "photo"], ["sec_footer", "#333333"]], note: "トップの背景の順番" },
+  { kind: "global", id: "A1-6", rule: "bgOrder", order: [["sec_hero", "photo"], ["sec_about", "#FFFFFF"], ["sec_feature", "#EEEEEE"], ["sec_items", "#FFFFFF"], ["sec_faqs", "#EEEEEE"], ["sec_access", "#FFFFFF"], ["sec_contact", "photo"], ["sec_footer", "#333333"]], note: "トップの背景の順番（fix04：営業案内の帯を外した）" },
 ];
 
 // ==== fix02 §3：旧「手動」の自動化 ====
@@ -197,7 +193,7 @@ export const ALPHA = [
 ];
 // A1-4 セクションの地の色（帯・フッター＝#333。CONTACTの地は写真＝A12で担保）
 export const SECBG = [
-  { kind: "secbg", id: "A1-4", targets: [["sec_notice", D], ["sec_footer", D], ["sec_feature", "#EEEEEE"], ["sec_about", "#FFFFFF"]], note: "帯/フッター#333・灰#EEE・白#FFF（CONTACTの地は写真）" },
+  { kind: "secbg", id: "A1-4", targets: [["sec_footer", D], ["sec_feature", "#EEEEEE"], ["sec_about", "#FFFFFF"]], note: "フッター#333・灰#EEE・白#FFF（CONTACTの地は写真。帯は fix04 で削除）" },
 ];
 // A3-4 ナビの右端 x1376・項目間隔24
 export const NAVGEOM = [

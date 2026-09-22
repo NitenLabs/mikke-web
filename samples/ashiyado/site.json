@@ -16,7 +16,6 @@
       "published": true,
       "sections": [
         "sec_hero",
-        "sec_notice",
         "sec_about",
         "sec_feature",
         "sec_items",
@@ -103,16 +102,6 @@
       "minHeight": {
         "pc": 720,
         "sp": 600
-      }
-    },
-    "sec_notice": {
-      "name": "営業案内",
-      "background": {
-        "color": "theme:dark"
-      },
-      "minHeight": {
-        "pc": 38,
-        "sp": 33
       }
     },
     "sec_about": {
@@ -454,120 +443,6 @@
           "y": 334,
           "w": 70,
           "h": 17,
-          "size": 12
-        }
-      }
-    },
-    "el_ntcard": {
-      "type": "shape",
-      "z": 2,
-      "kind": "rect",
-      "fill": "theme:background",
-      "section": "sec_notice",
-      "layout": {
-        "pc": {
-          "x": 3.8889,
-          "y": 0,
-          "w": 11.1111,
-          "h": 38
-        },
-        "sp": {
-          "x": 0,
-          "y": 0,
-          "w": 20.5128,
-          "h": 33
-        }
-      }
-    },
-    "el_ntlabel": {
-      "type": "text",
-      "z": 3,
-      "role": "body",
-      "section": "sec_notice",
-      "paragraphs": [
-        {
-          "runs": [
-            {
-              "text": "営業案内"
-            }
-          ]
-        }
-      ],
-      "style": {
-        "font": "font:heading",
-        "weight": 900,
-        "color": "theme:text",
-        "align": "center",
-        "noWrap": true,
-        "lineHeight": 1.375,
-        "letterSpacing": 0
-      },
-      "layout": {
-        "pc": {
-          "x": 5,
-          "y": 8,
-          "w": 8.8889,
-          "h": 22,
-          "size": 16
-        },
-        "sp": {
-          "x": 4.1026,
-          "y": 8,
-          "w": 12.3077,
-          "h": 17,
-          "size": 12
-        }
-      }
-    },
-    "el_nttext": {
-      "type": "text",
-      "z": 3,
-      "role": "body",
-      "section": "sec_notice",
-      "paragraphs": [
-        {
-          "runs": [
-            {
-              "bind": {
-                "scope": "shop",
-                "path": "/hours",
-                "format": "hoursShort"
-              }
-            },
-            {
-              "text": "　定休日 "
-            },
-            {
-              "bind": {
-                "scope": "shop",
-                "path": "/hours",
-                "format": "closedDays"
-              }
-            }
-          ]
-        }
-      ],
-      "style": {
-        "font": "font:heading",
-        "weight": 600,
-        "color": "theme:onDark",
-        "align": "left",
-        "lineHeight": 1.375,
-        "letterSpacing": 0
-      },
-      "layout": {
-        "pc": {
-          "x": 16.1111,
-          "y": 8,
-          "w": 80,
-          "h": 22,
-          "size": 16
-        },
-        "sp": {
-          "x": 23.5897,
-          "y": 8,
-          "w": 74.359,
-          "h": 33,
           "size": 12
         }
       }

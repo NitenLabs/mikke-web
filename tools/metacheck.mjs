@@ -23,7 +23,7 @@ const DATA_DEFECTS = [
   { id: "A8-8a", kind: "relation", fn: (s) => { s.elements.el_featp1.layout.pc.y = 300; } },
   { id: "A1-3", kind: "alpha", fn: (s) => { s.elements.el_itemsdiv.opacity = 100; } },
   { id: "A11-2", kind: "writing", fn: (s) => { delete s.elements.el_accsoe.layout.pc.writingMode; } },
-  { id: "A1-4", kind: "secbg", fn: (s) => { s.sections.sec_notice.background.color = "theme:background"; } },
+  { id: "A1-4", kind: "secbg", fn: (s) => { s.sections.sec_feature.background.color = "theme:background"; } },
   { id: "A12-5", kind: "screenshot（明るさ）", fn: (s) => { s.elements.el_ctphoto.darken = 90; } },
 ];
 // 書き出したHTML/CSSに入れる欠陥（データで壊せないCSS系）。replace で1か所だけ壊す
