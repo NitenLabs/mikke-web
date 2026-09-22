@@ -62,22 +62,20 @@ export function prepareAssets(data, dataDir, outDir) {
     const asset = data.assets.assets[id];
     if (!asset) { errors.push(`写真 ${id} が素材置き場（④）にありません`); continue; }
 
-    if (isSample) {
-      // サンプルの店：仮の写真（SVG）を作る
-      const label = asset.alt || id;
-      fs.writeFileSync(path.join(dir, `${id}.svg`), placeholderSvg(asset, label));
-      files[id] = `${id}.svg`;
-    } else {
-      // 実在の店：実ファイルが無ければエラー（仮の写真は使わない）
-      const key = asset.file?.key;
-      const real = findRealFile(dataDir, key);
-      if (!real) {
-        errors.push(`写真 ${id}（${key || "file.key 無し"}）の実ファイルが見つかりません。実在の店では仮の写真を使いません`);
-        continue;
-      }
+    // 実ファイルがあれば（サンプルでも）それを使う（ダウンロード済みの stock 写真など）
+    const key = asset.file?.key;
+    const real = findRealFile(dataDir, key);
+    if (real) {
       const ext = path.extname(real) || ".jpg";
       fs.copyFileSync(real, path.join(dir, `${id}${ext}`));
       files[id] = `${id}${ext}`;
+    } else if (isSample) {
+      // サンプルの店で実ファイルが無ければ仮の写真（SVG）
+      fs.writeFileSync(path.join(dir, `${id}.svg`), placeholderSvg(asset, asset.alt || id));
+      files[id] = `${id}.svg`;
+    } else {
+      // 実在の店：実ファイルが無ければエラー（仮の写真は使わない）
+      errors.push(`写真 ${id}（${key || "file.key 無し"}）の実ファイルが見つかりません。実在の店では仮の写真を使いません`);
     }
   }
   return { files, errors };

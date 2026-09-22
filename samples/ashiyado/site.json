@@ -291,7 +291,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_hero",
-      "asset": "ast_hero",
+      "asset": "ast_fvbg",
       "darken": 45,
       "crop": {
         "fx": 50,
@@ -604,7 +604,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_about",
-      "asset": "ast_wagashi",
+      "asset": "ast_story1",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -629,7 +629,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_about",
-      "asset": "ast_matcha",
+      "asset": "ast_story4",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -654,7 +654,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_about",
-      "asset": "ast_shop",
+      "asset": "ast_story1",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -679,7 +679,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_about",
-      "asset": "ast_hero",
+      "asset": "ast_story4",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -839,7 +839,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_feature",
-      "asset": "ast_matcha",
+      "asset": "ast_story1",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -864,7 +864,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_feature",
-      "asset": "ast_wagashi",
+      "asset": "ast_story4",
       "crop": {
         "fx": 50,
         "fy": 45,
@@ -1163,7 +1163,7 @@
           "x": 5,
           "y": 150,
           "w": 90,
-          "h": 695
+          "h": 726
         }
       }
     },
@@ -1482,10 +1482,10 @@
       "type": "photo",
       "z": 1,
       "section": "sec_info",
-      "asset": "ast_shop",
+      "asset": "ast_front",
       "crop": {
         "fx": 50,
-        "fy": 50,
+        "fy": 72,
         "zoom": 1
       },
       "layout": {
@@ -1749,7 +1749,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_contact",
-      "asset": "ast_hero",
+      "asset": "ast_garden",
       "darken": 55,
       "crop": {
         "fx": 50,
@@ -1974,7 +1974,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_menuhdr",
-      "asset": "ast_hero",
+      "asset": "ast_fvbg",
       "darken": 40,
       "crop": {
         "fx": 50,

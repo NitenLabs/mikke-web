@@ -1,139 +1,135 @@
 {
   "schemaVersion": 1,
   "assets": {
-    "ast_hero": {
+    "ast_fvbg": {
       "kind": "photo",
       "file": {
-        "key": "shp_ashiyado/hero.jpg",
+        "key": "ast_fvbg.jpg",
         "mime": "image/jpeg",
-        "width": 1600,
-        "height": 1000,
-        "bytes": 350000,
+        "width": 2600,
+        "height": 3466,
+        "bytes": 2001379,
         "exifStripped": true
       },
-      "uploadedAt": "2026-09-20T21:00:00+09:00",
-      "uploadedBy": "owner",
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
       "origin": {
-        "kind": "sample"
+        "kind": "stock",
+        "provider": "unsplash",
+        "credit": "Vicky Ng",
+        "pageUrl": "https://unsplash.com/photos/Ayy_K-y_dLA"
       },
       "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-20T21:05:00+09:00",
-        "confirmedBy": "owner"
+        "basis": "licensed",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
       },
       "slot": "signature",
-      "alt": "店頭に並ぶ上生菓子（サンプル写真）"
+      "alt": "木の器に並ぶ花の練り切り（季節の上生菓子）"
     },
-    "ast_wagashi": {
+    "ast_story1": {
       "kind": "photo",
       "file": {
-        "key": "shp_ashiyado/wagashi.jpg",
+        "key": "ast_story1.jpg",
         "mime": "image/jpeg",
-        "width": 1200,
-        "height": 1500,
-        "bytes": 350000,
+        "width": 1600,
+        "height": 2133,
+        "bytes": 466096,
         "exifStripped": true
       },
-      "uploadedAt": "2026-09-20T21:00:00+09:00",
-      "uploadedBy": "owner",
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
       "origin": {
-        "kind": "sample"
+        "kind": "stock",
+        "provider": "unsplash",
+        "credit": "Vicky Ng",
+        "pageUrl": "https://unsplash.com/photos/bcPzSVSpN7g"
       },
       "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-20T21:05:00+09:00",
-        "confirmedBy": "owner"
+        "basis": "licensed",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
       },
       "slot": "product",
-      "alt": "木箱に並ぶ和菓子（サンプル写真）"
+      "alt": "季節の和菓子の設え"
     },
-    "ast_shop": {
+    "ast_story4": {
       "kind": "photo",
       "file": {
-        "key": "shp_ashiyado/shop.jpg",
+        "key": "ast_story4.jpg",
         "mime": "image/jpeg",
-        "width": 1500,
-        "height": 1000,
-        "bytes": 350000,
+        "width": 1600,
+        "height": 1246,
+        "bytes": 237756,
         "exifStripped": true
       },
-      "uploadedAt": "2026-09-20T21:00:00+09:00",
-      "uploadedBy": "owner",
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
       "origin": {
-        "kind": "sample"
+        "kind": "stock",
+        "provider": "unsplash",
+        "credit": "Jelleke Vanooteghem",
+        "pageUrl": "https://unsplash.com/photos/HKCNiY23Hxw"
       },
       "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-20T21:05:00+09:00",
-        "confirmedBy": "owner"
+        "basis": "licensed",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
+      },
+      "slot": "product",
+      "alt": "皿に盛ったどら焼き"
+    },
+    "ast_front": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_front.jpg",
+        "mime": "image/jpeg",
+        "width": 1600,
+        "height": 1194,
+        "bytes": 401229,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "credit": "kai muro",
+        "pageUrl": "https://unsplash.com/photos/--5ImX4dVNo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
       },
       "slot": "exterior",
-      "alt": "のれんのかかった店構え（サンプル写真）"
+      "alt": "瓦屋根と板壁の店構え"
     },
-    "ast_matcha": {
+    "ast_garden": {
       "kind": "photo",
       "file": {
-        "key": "shp_ashiyado/tea.jpg",
+        "key": "ast_garden.jpg",
         "mime": "image/jpeg",
-        "width": 1400,
-        "height": 1000,
-        "bytes": 350000,
+        "width": 2600,
+        "height": 1736,
+        "bytes": 1148771,
         "exifStripped": true
       },
-      "uploadedAt": "2026-09-20T21:00:00+09:00",
-      "uploadedBy": "owner",
+      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "uploadedBy": "producer",
       "origin": {
-        "kind": "sample"
+        "kind": "stock",
+        "provider": "unsplash",
+        "credit": "Scott Osborn",
+        "pageUrl": "https://unsplash.com/photos/mLhXZulSzcA"
       },
       "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-20T21:05:00+09:00",
-        "confirmedBy": "owner"
+        "basis": "licensed",
+        "confirmedAt": "2026-09-22T18:00:00+09:00",
+        "confirmedBy": "producer"
       },
-      "slot": "product",
-      "alt": "抹茶と上生菓子（サンプル写真）"
-    },
-    "ast_menuphoto": {
-      "kind": "reference",
-      "file": {
-        "key": "shp_ashiyado/menuphoto.jpg",
-        "mime": "image/jpeg",
-        "width": 3024,
-        "height": 4032,
-        "bytes": 350000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-20T21:00:00+09:00",
-      "uploadedBy": "owner",
-      "origin": {
-        "kind": "ownerUpload"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-20T21:05:00+09:00",
-        "confirmedBy": "owner"
-      }
-    },
-    "ast_oldsite01": {
-      "kind": "photo",
-      "file": {
-        "key": "shp_ashiyado/oldsite01.jpg",
-        "mime": "image/jpeg",
-        "width": 800,
-        "height": 600,
-        "bytes": 350000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-20T21:00:00+09:00",
-      "uploadedBy": "owner",
-      "origin": {
-        "kind": "oldSite"
-      },
-      "rights": {
-        "basis": "unknown",
-        "note": "旧サイトの写真。撮影者を確認中"
-      },
-      "slot": "interior"
+      "slot": "other",
+      "alt": "苔むした庭石"
     }
   }
 }
