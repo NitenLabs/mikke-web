@@ -55,6 +55,9 @@ main{display:block}
 .rep-card,.rep-head{position:absolute}
 .rep-card{overflow:hidden}
 .site-header{position:sticky;top:0;z-index:1000}
+/* ヘッダーを重ねる（FVの暗い写真に透明で重ねる）：最初のセクションの上に絶対配置し、スクロールで流れる */
+.site-header.overlay{position:absolute;top:0;left:0;right:0;background:transparent!important}
+.site-header.overlay .el-text,.site-header.overlay .el-nav a,.site-header.overlay .nav-sp summary{color:var(--overlay-on,var(--c-onDark))!important}
 .el-nav .nav-row{display:flex;gap:1.6rem;justify-content:flex-end;align-items:center;height:100%;font-family:var(--nav-font,inherit)}
 .el-nav a{text-decoration:none;color:var(--nav,inherit);white-space:nowrap}
 .el-nav a[aria-current]{color:var(--nav-active,inherit)}
@@ -221,7 +224,11 @@ export function renderPage(resolved, pageId, opts) {
   }
 
   // HTML
-  const headerHtml = `<header class="sec site-header" data-sec="${headerId}">${sectionInner(headerId, site, resolved, linkResolver, readingOrder)}</header>`;
+  // ヘッダーを重ねるページ（headerOverlay.pages）では、ヘッダーを透明で最初のセクションに重ねる
+  const ov = site.regions.headerOverlay;
+  const overlay = (ov?.pages || []).includes(pageId);
+  const ovStyle = overlay && ov.textColor ? ` style="--overlay-on:${colorCss(ov.textColor)}"` : "";
+  const headerHtml = `<header class="sec site-header${overlay ? " overlay" : ""}" data-sec="${headerId}"${ovStyle}>${sectionInner(headerId, site, resolved, linkResolver, readingOrder)}</header>`;
   const footerHtml = `<footer class="sec" data-sec="${footerId}">${sectionInner(footerId, site, resolved, linkResolver, readingOrder)}</footer>`;
   const mainHtml = pageSecs.map((s) => renderSectionHtml(s, site, resolved, linkResolver, readingOrder)).join("\n");
 

@@ -79,7 +79,8 @@ export function resolveSite(data, refDate) {
       for (const it of items) {
         it.cels = {};
         for (const [cid, ce] of Object.entries(cardEls)) {
-          if (ce.type === "text") it.cels[cid] = resolveText(ce, { item: it.view }, ctx);
+          // スコープは品なら item、よくある質問なら faq、人なら person（it.scope）
+          if (ce.type === "text") it.cels[cid] = resolveText(ce, { [it.scope]: it.view }, ctx);
         }
       }
       let heading = null;

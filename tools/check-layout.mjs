@@ -56,8 +56,10 @@ const ANALYZE = ({ exclude, device }) => {
   const rect = (el) => el.getBoundingClientRect();
   const vis = (el) => { const r = rect(el), s = getComputedStyle(el); return r.width > 2 && r.height > 2 && s.visibility !== "hidden" && s.display !== "none"; };
 
-  // 重なり：配置の時点で重なっていない組が、表示で重なっていないか
-  const nodes = [...document.querySelectorAll("[data-el]")].filter(vis);
+  // 重なり：配置の時点で重なっていない組が、表示で重なっていないか。
+  // 全面の背景写真（.bleed）は下地なので、その上に何が重なっても意図どおり＝重なり判定から除く
+  // （ヘッダーを重ねる〔headerOverlay〕・FVの文字を写真に重ねる、などはすべて下地の上）。
+  const nodes = [...document.querySelectorAll("[data-el]")].filter((el) => vis(el) && !el.classList.contains("bleed"));
   const newOverlaps = [];
   for (let i = 0; i < nodes.length; i++) {
     for (let j = i + 1; j < nodes.length; j++) {
