@@ -58,7 +58,11 @@ const MEASURE = (payload) => {
     if (s.all) out.sel[s.k] = nodes.map((n) => ({ ...boxOf(n), ...styleOf(n) }));
     else out.sel[s.k] = nodes[0] ? { ...boxOf(nodes[0]), ...styleOf(nodes[0]), count: nodes.length } : null;
   }
-  out.gap = {}; out.arrow = {};
+  out.gap = {}; out.arrow = {}; out.iframe = {};
+  for (const f of payload.iframes || []) {
+    const fr = document.querySelector(f.sel);
+    out.iframe[f.k] = fr ? { src: fr.getAttribute("src") || "", loading: fr.getAttribute("loading") || "" } : null;
+  }
   for (const g of payload.gaps || []) {
     const pgs = [...document.querySelectorAll(g.sel)].map((e) => e.getBoundingClientRect());
     out.gap[g.k] = pgs.length < 2 ? null : pgs.slice(1).map((r, i) => Math.round((r.top - pgs[i].bottom) * 100) / 100);
@@ -82,7 +86,7 @@ const rec = (aid, status, detail) => { const r = results[aid] ??= { status: "pas
 // 各 (page,dev) で必要な測定対象を集め、1回で測る
 const work = []; // {page, dev, check}
 const need = {}; // `${page}:${dev}` -> {els:Set, secs:Set, sels:[]}
-const addNeed = (page, dev, { el, sec, sel, gap, arrow }) => { const k = `${page}:${dev}`; const n = need[k] ??= { els: new Set(), secs: new Set(), sels: [], gaps: [], arrows: [] }; if (el) n.els.add(el); if (sec) n.secs.add(sec); if (sel) n.sels.push(sel); if (gap) n.gaps.push(gap); if (arrow) n.arrows.push(arrow); };
+const addNeed = (page, dev, { el, sec, sel, gap, arrow, iframe }) => { const k = `${page}:${dev}`; const n = need[k] ??= { els: new Set(), secs: new Set(), sels: [], gaps: [], arrows: [], iframes: [] }; if (el) n.els.add(el); if (sec) n.secs.add(sec); if (sel) n.sels.push(sel); if (gap) n.gaps.push(gap); if (arrow) n.arrows.push(arrow); if (iframe) n.iframes.push(iframe); };
 
 const devsOf = (c) => c.dev ? [c.dev] : ["pc", "sp"];
 
@@ -101,6 +105,8 @@ for (const c of A.CELTEXT) { const page = pageOfEl(c.rep); for (const dev of ["p
 for (const c of A.BOX) { const isSec = c.target.startsWith("sec_"); const page = isSec ? pageOfSec(c.target) : pageOfEl(c.target); work.push({ page, dev: c.dev, run: "box", c }); if (isSec) addNeed(page, c.dev, { sec: c.target }); else addNeed(page, c.dev, { el: c.target }); }
 // line
 for (const c of A.LINE_CHECKS) for (const dev of ["pc", "sp"]) { const page = pageOfEl(c.target); work.push({ page, dev, run: "line", c }); addNeed(page, dev, { el: c.target }); if (c.target) addNeed(page, dev, { sec: site.elements[c.target]?.section }); }
+// iframe（地図の読み込み）
+for (const c of A.IFRAME) { const page = pageOfEl(c.target); const dev = "pc"; const k = `${c.id}`; work.push({ page, dev, run: "iframe", c, k }); addNeed(page, dev, { iframe: { k, sel: `[data-el="${c.target}"] iframe` } }); }
 // gap（段落の間隔）
 for (const c of A.GAP) for (const dev of c.dev) { const page = pageOfEl(c.target); const k = `${c.id}:${dev}`; work.push({ page, dev, run: "gap", c, k }); addNeed(page, dev, { gap: { k, sel: `[data-el="${c.target}"] .pg` } }); }
 // arrow（ピルの ›）
@@ -129,7 +135,7 @@ for (const [key, n] of Object.entries(need)) {
   await p.goto(pathToFileURL(path.join(distDir, fileFor(page))).href, { waitUntil: "load" });
   for (let i = 0; i < 40; i++) { const ok = await p.evaluate(() => { document.body.offsetHeight; const rf = parseFloat(getComputedStyle(document.documentElement).fontSize); return rf > 0 && rf < 15 && (!document.fonts || document.fonts.status === "loaded"); }); if (ok) break; await p.waitForTimeout(120); }
   await p.waitForTimeout(150);
-  measured[key] = await p.evaluate(MEASURE, { els: [...n.els].filter(Boolean), secs: [...n.secs].filter(Boolean), sels: n.sels, gaps: n.gaps, arrows: n.arrows });
+  measured[key] = await p.evaluate(MEASURE, { els: [...n.els].filter(Boolean), secs: [...n.secs].filter(Boolean), sels: n.sels, gaps: n.gaps, arrows: n.arrows, iframes: n.iframes });
   await ctx.close();
 }
 await browser.close();
@@ -207,6 +213,12 @@ for (const w of work) {
     } else if (c.rel === "topEq") { const a = M.el[c.a], bb = M.el[c.b]; if (!a || !bb) rec(c.id, "notfound", `${c.id}: 要素なし`); else near(a.y, bb.y, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: ${c.a}.y=${round(a.y)} ${c.b}.y=${round(bb.y)} 差${round(Math.abs(a.y - bb.y))}`); }
     else if (c.rel === "cardPriceTopEq") { const arr = M.sel.cardprices; if (!arr || !arr.length) rec(c.id, "notfound", `${c.id}: 価格セルなし`); else { const tops = arr.map((x) => x.pageY); const spread = Math.max(...tops) - Math.min(...tops); spread <= REL ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 価格の上端がずれ ${round(spread)}px（${tops.map(round).join(",")}）`); } }
   }
+  else if (w.run === "iframe") { const m = M.iframe[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.c.id}: iframe なし`); continue; }
+    const fails = [];
+    if (w.c.srcIncludes && !m.src.includes(w.c.srcIncludes)) fails.push(`src に ${w.c.srcIncludes} が無い`);
+    if (w.c.noLazy && m.loading === "lazy") fails.push(`loading=lazy（実ブラウザで読み込まれない）`);
+    fails.length ? rec(w.c.id, "fail", `${w.c.id}: ${fails.join(" / ")}`) : rec(w.c.id, "pass");
+  }
   else if (w.run === "gap") { const arr = M.gap[w.k]; if (!arr) { rec(w.c.id, "notfound", `${w.dev} ${w.c.id}: 段落が2つ未満`); continue; } const bad = arr.filter((g) => Math.abs(g - w.c.gap) > SIZE); bad.length ? rec(w.c.id, "fail", `${w.dev} ${w.c.id}: 段落の間隔 期待${w.c.gap} 実測[${arr.join(",")}]`) : rec(w.c.id, "pass"); }
   else if (w.run === "arrow") { const m = M.arrow[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.dev} ${w.c.id}: ピルなし`); continue; }
     const fails = []; const rightGap = m.pillRight - m.arrowRight;
@@ -224,7 +236,7 @@ for (const w of work) {
 for (const m of A.MANUAL) results[m.id] = { status: "manual", details: [m.reason] };
 
 // ---- 集計 ----
-const appendixIds = new Set([...A.TEXT, ...A.NAVTEXT, A.LABELKEY, ...A.CELTEXT, ...A.BOX, ...A.LINE_CHECKS, ...A.GAP, ...A.ARROW, ...A.RELATION, ...A.GLOBAL].map((x) => x.id).concat(A.MANUAL.map((x) => x.id)));
+const appendixIds = new Set([...A.TEXT, ...A.NAVTEXT, A.LABELKEY, ...A.CELTEXT, ...A.BOX, ...A.LINE_CHECKS, ...A.GAP, ...A.ARROW, ...A.IFRAME, ...A.RELATION, ...A.GLOBAL].map((x) => x.id).concat(A.MANUAL.map((x) => x.id)));
 let pass = 0, fail = 0, notfound = 0, manual = 0;
 const failList = [];
 for (const aid of appendixIds) {

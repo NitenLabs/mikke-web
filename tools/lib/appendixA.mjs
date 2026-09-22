@@ -169,6 +169,11 @@ export const ARROW = [
   { kind: "arrow", id: "A12-4b", btn: "el_ct_btn", bg: "el_ct_btnbg", rightGap: 24, note: "お問い合わせピルの › は右から24・縦中央" },
 ];
 
+// ---- 地図の iframe（読み込まれること）----
+export const IFRAME = [
+  { kind: "iframe", id: "A11-8b", target: "el_accmap", srcIncludes: "google.com/maps", noLazy: true, note: "地図の iframe に src があり loading=lazy でない（実ブラウザで読み込まれる・§9）" },
+];
+
 // ---- 関係（2要素）----
 export const RELATION = [
   // A8-8（Claude.ai 決定・fix02）：文字の塊の縦中央 ＝ 写真の縦中央 −12（参照元の実測どおり）

@@ -123,7 +123,8 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
       const g = resolved.shop.location?.geo;
       const src = g ? `https://www.google.com/maps?q=${g.lat},${g.lng}&z=16&hl=ja&output=embed` : "";
       const label = esc(`${resolved.shop.basic.name}の地図`);
-      return `<div data-el="${el.id}" class="el el-embed map-gray"><iframe title="${label}" src="${src}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`;
+      // loading="lazy" は外す：地図はページ下部にあり、実ブラウザで遅延読み込みが発火せず灰色のままになるため（§9）
+      return `<div data-el="${el.id}" class="el el-embed map-gray"><iframe title="${label}" src="${src}" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`;
     }
     return `<div data-el="${el.id}" class="el el-embed"></div>`;
   }
