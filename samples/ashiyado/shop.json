@@ -285,7 +285,7 @@
         "name": "季節の上生菓子",
         "description": "月ごとに意匠が変わる、練り切りときんとん。",
         "photos": [
-          "ast_story1"
+          "ast_jonama"
         ],
         "labels": [
           "lbl_recommended",
@@ -326,10 +326,7 @@
           "serviceId": "svc_base0001",
           "url": "https://ashiyado-sample.example.com/items/0001",
           "externalId": "0001"
-        },
-        "photos": [
-          "ast_story4"
-        ]
+        }
       },
       "itm_dorayaki": {
         "name": "どら焼き",
@@ -337,7 +334,10 @@
           "lbl_gift"
         ],
         "prices": [],
-        "status": "onSale"
+        "status": "onSale",
+        "photos": [
+          "ast_band3"
+        ]
       },
       "itm_warabi": {
         "name": "わらび餅",
@@ -350,10 +350,7 @@
           }
         ],
         "status": "onSale",
-        "note": "お持ち帰りは当日中にお召し上がりください",
-        "photos": [
-          "ast_story1"
-        ]
+        "note": "お持ち帰りは当日中にお召し上がりください"
       },
       "itm_sakura": {
         "name": "桜餅",

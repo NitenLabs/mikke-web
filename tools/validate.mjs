@@ -241,6 +241,35 @@ for (const [sid, s] of Object.entries(secs)) {
   if (s.nav && !s.anchor) err(`[ナビ] セクション ${sid}: nav を持つセクションには anchor（ページ内リンクの行き先）が必要です`);
 }
 
+// ---------- 2e. 写真の割り当ての規則（警告） ----------
+// (a) 1つのページの中で同じ素材が2回使われていたら警告
+const secToPage = {};
+for (const [pid, pg] of Object.entries(pages)) for (const sc of pg.sections) secToPage[sc] = pid;
+const pageAssets = {}; // pageId -> assetId -> [使われている場所]
+const addPA = (pid, aid, where) => { if (!pid || !aid) return; (pageAssets[pid] ??= {}); (pageAssets[pid][aid] ??= []).push(where); };
+for (const [eid, e] of Object.entries(els)) {
+  const pid = secToPage[e.section];
+  if (e.type === "photo" && e.asset) addPA(pid, e.asset, eid);
+  if (e.type === "repeater" && e.source?.kind === "catalog" && Object.values(e.card?.elements || {}).some((c) => c.type === "photo")) {
+    const s = e.source;
+    for (const p of Object.values(plcs)) {
+      if (p.menuId !== s.menuId) continue;
+      if (s.pick && !s.pick.includes(p.itemId)) continue;
+      if (s.categoryIds && !s.categoryIds.includes(p.categoryId)) continue;
+      if (s.labelIds && !(items[p.itemId]?.labels || []).some((l) => s.labelIds.includes(l))) continue;
+      const it = items[p.itemId];
+      if (it?.photos?.[0]) addPA(pid, it.photos[0], `${eid}（品 ${it.name}）`);
+    }
+  }
+}
+for (const [sid, s] of Object.entries(secs)) if (s.background?.photo?.asset) addPA(secToPage[sid], s.background.photo.asset, `セクション ${sid} の背景`);
+for (const [pid, m] of Object.entries(pageAssets)) for (const [aid, wheres] of Object.entries(m)) if (wheres.length > 1) warn(`[写真] ページ ${pid} で同じ素材 ${aid} が ${wheres.length} 回使われています（${wheres.join(" , ")}）。1ページ内で同じ写真を使い回さない`);
+// (b) 品の写真の説明文に品名が含まれていなければ警告（写真と品の取り違えの手がかり）
+for (const it of Object.values(items)) for (const a of it.photos || []) {
+  const alt = assets.assets[a]?.alt;
+  if (alt && !alt.includes(it.name)) warn(`[写真] 品「${it.name}」の写真 ${a} の説明文に品名が含まれていません（「${alt}」）＝写真の取り違えの可能性`);
+}
+
 // 連動（binding）の検査
 const ITEM_FIELDS = new Set(["name", "nameKana", "description", "photos", "prices", "labels", "note", "season", "status", "durationMinutes", "schedule", "target", "coverage", "orderLink", "category", "menu"]);
 const PERSON_FIELDS = new Set(["name", "nameKana", "role", "bio", "photo", "qualifications", "specialties"]);

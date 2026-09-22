@@ -604,7 +604,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_about",
-      "asset": "ast_story1",
+      "asset": "ast_band1",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -629,7 +629,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_about",
-      "asset": "ast_story4",
+      "asset": "ast_band2",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -654,7 +654,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_about",
-      "asset": "ast_story1",
+      "asset": "ast_band3",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -679,7 +679,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_about",
-      "asset": "ast_story4",
+      "asset": "ast_band4",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -839,7 +839,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_feature",
-      "asset": "ast_story1",
+      "asset": "ast_feat1",
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -864,7 +864,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_feature",
-      "asset": "ast_story4",
+      "asset": "ast_feat2",
       "crop": {
         "fx": 50,
         "fy": 45,
@@ -1163,7 +1163,7 @@
           "x": 5,
           "y": 150,
           "w": 90,
-          "h": 726
+          "h": 695
         }
       }
     },
@@ -1974,7 +1974,7 @@
       "type": "photo",
       "z": 1,
       "section": "sec_menuhdr",
-      "asset": "ast_fvbg",
+      "asset": "ast_jonama",
       "darken": 40,
       "crop": {
         "fx": 50,
