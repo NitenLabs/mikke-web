@@ -65,7 +65,8 @@ main{display:block}
 .el-acc summary::-webkit-details-marker{display:none}
 .el-acc .acc-q{position:relative;padding-left:2.9rem}
 .el-acc .acc-q::before{content:"Q.";position:absolute;left:0;top:0;font-family:var(--f-heading);font-weight:700}
-.el-acc summary::after{content:"∨";position:absolute;right:0;top:2.4rem;font-size:2.4rem;line-height:1;color:var(--c-text);display:inline-block;transition:transform .2s}
+/* 開閉の印：参照元の実測（幅12・高さ6・線2px・#333・右から24・縦中央）の下向きシェブロンを図形で描く（A10-6） */
+.el-acc summary::after{content:"";position:absolute;right:2.4rem;top:50%;width:1.2rem;height:.6rem;margin-top:-.3rem;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='6' viewBox='0 0 12 6'%3E%3Cpath d='M1 1L6 5L11 1' fill='none' stroke='%23333333' stroke-width='2'/%3E%3C/svg%3E") center/contain no-repeat;transition:transform .2s}
 .el-acc details[open] summary::after{transform:rotate(180deg)}
 .el-acc .acc-a{padding:0 0 2.4rem;font-family:var(--f-body);color:var(--c-text);line-height:1.8}
 .el-acc details:not([open]) .acc-a{display:none}
