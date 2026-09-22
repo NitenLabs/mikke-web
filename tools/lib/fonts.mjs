@@ -18,11 +18,13 @@ export function fontStack(id) {
 }
 
 // 使っているフォントIDの集合から Google Fonts の <link> URL を作る。
+// display=block：Webフォントが来るまで文字を出さない（代替書体で先に出すと、Webフォント前提で
+// 焼いた位置と合わず一瞬重なる／ずれるため）。preconnect と合わせて待ち時間を詰める。
 export function googleFontsUrl(ids) {
   const params = [...new Set(ids)]
     .map((id) => FONT_REGISTRY[id]?.param)
     .filter(Boolean)
     .map((p) => `family=${p}`);
   if (!params.length) return null;
-  return `https://fonts.googleapis.com/css2?${params.join("&")}&display=swap`;
+  return `https://fonts.googleapis.com/css2?${params.join("&")}&display=block`;
 }
