@@ -1,8 +1,35 @@
 #!/usr/bin/env python3
-# 選んだ候補を各枠の形に切り出し、EXIF/位置情報を落として media/ に保存する。
+# 選んだ候補を各枠の形に切り出し、トーンを参照元にそろえ、EXIF/位置情報を落として media/ に保存する。
 # PIL は明示的に渡さない限り EXIF を保存しないので、save() で GPS は落ちる。
+#
+# トーン調整（grade）は全12枚に同一のパラメータで掛ける（1枚ずつ別々にしない）。
+# 参照元（studio テンプレート）の5枚の写真の実測レンジに合わせて決めた固定値。
+#   参照元 平均: brightness=80 / saturation=36 / temp(R-B)=+13
+#   目的  : 芦屋堂の写真（平均 bright=103・temp=+29＝明るく暖かすぎ）を暗く・やや寒色へ寄せ、
+#           ハイライトの緩い圧縮で C/H/I（白背景・明るい外れ値）を範囲側へ引き下げる。
 import sys
+import numpy as np
 from PIL import Image
+
+# --- トーン調整パラメータ（全枚共通・固定＝毎回同じ結果） ---
+WB_R  = 0.955   # 白の色温度：赤を下げ
+WB_B  = 1.075   # 青を上げて暖色を弱める
+GAIN  = 0.80    # 露出：全体を暗く（明るすぎを補正）
+KNEE  = 0.44    # ハイライト圧縮の膝：これ以上明るい画素を tanh で丸める（白背景を範囲側へ）
+SAT   = 1.16    # 彩度：わずかに上げて参照元(36)へ
+
+def grade(im):
+    a = np.asarray(im, dtype=np.float64) / 255.0
+    a[..., 0] *= WB_R
+    a[..., 2] *= WB_B
+    a *= GAIN
+    k = KNEE
+    hi = a > k
+    a[hi] = k + (1.0 - k) * np.tanh((a[hi] - k) / (1.0 - k))
+    luma = (0.2126 * a[..., 0] + 0.7152 * a[..., 1] + 0.0722 * a[..., 2])[..., None]
+    a = luma + (a - luma) * SAT
+    a = np.clip(a, 0.0, 1.0)
+    return Image.fromarray((a * 255.0 + 0.5).astype(np.uint8), "RGB")
 
 MEDIA = "samples/ashiyado/media"
 CAND = "refs/candidates"
@@ -39,6 +66,7 @@ rows = []
 for key, src, tw, th, fx, fy in JOBS:
     im = Image.open(f"{CAND}/{src}").convert("RGB")
     out = cover_crop(im, tw, th, fx, fy)
+    out = grade(out)
     dst = f"{MEDIA}/{key}"
     out.save(dst, "JPEG", quality=82, optimize=True)  # 新規JPEG＝元EXIF/GPSは付かない
     import os
