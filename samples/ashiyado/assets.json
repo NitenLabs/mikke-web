@@ -3,279 +3,123 @@
   "assets": {
     "ast_frma": {
       "kind": "photo",
-      "file": {
-        "key": "ast_A.jpg",
-        "mime": "image/jpeg",
-        "width": 1440,
-        "height": 720,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_A.jpg", "mime": "image/jpeg", "width": 1600, "height": 800, "bytes": 310711, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Vicky Ng", "pageUrl": "https://unsplash.com/photos/Ayy_K-y_dLA" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
       "slot": "other",
-      "alt": "FV背景"
+      "alt": "暗い卓上に並ぶ季節の上生菓子（ファーストビュー背景）"
     },
     "ast_frmb": {
       "kind": "photo",
-      "file": {
-        "key": "ast_B.jpg",
-        "mime": "image/jpeg",
-        "width": 566,
-        "height": 420,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_B.jpg", "mime": "image/jpeg", "width": 1132, "height": 840, "bytes": 121678, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "other",
-      "alt": "物語 手元"
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Haley Truong", "pageUrl": "https://unsplash.com/photos/NO6rghk3yyc" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
+      "slot": "work",
+      "alt": "和菓子を手にとる手元"
     },
     "ast_frmc": {
       "kind": "photo",
-      "file": {
-        "key": "ast_C.jpg",
-        "mime": "image/jpeg",
-        "width": 566,
-        "height": 420,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_C.jpg", "mime": "image/jpeg", "width": 1132, "height": 840, "bytes": 211067, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "other",
-      "alt": "物語 上生菓子"
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Andreas Haubold", "pageUrl": "https://unsplash.com/photos/OTmHU9HdkHo" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
+      "slot": "signature",
+      "alt": "皿に盛られた和菓子と茶"
     },
     "ast_frmd": {
       "kind": "photo",
-      "file": {
-        "key": "ast_D.jpg",
-        "mime": "image/jpeg",
-        "width": 566,
-        "height": 420,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_D.jpg", "mime": "image/jpeg", "width": 1132, "height": 840, "bytes": 129479, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "other",
-      "alt": "物語 設え"
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Vicky Ng", "pageUrl": "https://unsplash.com/photos/bcPzSVSpN7g" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
+      "slot": "interior",
+      "alt": "茶器と上生菓子の設え"
     },
     "ast_frme": {
       "kind": "photo",
-      "file": {
-        "key": "ast_E.jpg",
-        "mime": "image/jpeg",
-        "width": 549,
-        "height": 404,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_E.jpg", "mime": "image/jpeg", "width": 1098, "height": 808, "bytes": 198253, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "other",
-      "alt": "季節の上生菓子"
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Christian Laborde", "pageUrl": "https://unsplash.com/photos/Gm03YomE8E4" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
+      "slot": "signature",
+      "alt": "季節の上生菓子の盛り合わせ"
     },
     "ast_frmf": {
       "kind": "photo",
-      "file": {
-        "key": "ast_F.jpg",
-        "mime": "image/jpeg",
-        "width": 549,
-        "height": 404,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_F.jpg", "mime": "image/jpeg", "width": 1098, "height": 808, "bytes": 83147, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Yosuke Ota", "pageUrl": "https://unsplash.com/photos/g3GmbZw10Cw" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
       "slot": "other",
-      "alt": "甘味処の情景"
+      "alt": "甘味処のあんみつ"
     },
     "ast_frmg": {
       "kind": "photo",
-      "file": {
-        "key": "ast_G.jpg",
-        "mime": "image/jpeg",
-        "width": 426,
-        "height": 426,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_G.jpg", "mime": "image/jpeg", "width": 852, "height": 852, "bytes": 201733, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "other",
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Stephen Pontes", "pageUrl": "https://unsplash.com/photos/PbMdA9CegYo" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
+      "slot": "product",
       "alt": "季節の上生菓子"
     },
     "ast_frmh": {
       "kind": "photo",
-      "file": {
-        "key": "ast_H.jpg",
-        "mime": "image/jpeg",
-        "width": 426,
-        "height": 426,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_H.jpg", "mime": "image/jpeg", "width": 852, "height": 852, "bytes": 95780, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "other",
-      "alt": "芦屋最中"
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "M. Ghufanil Muta Ali", "pageUrl": "https://unsplash.com/photos/EsEU5UeMN6s" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
+      "slot": "product",
+      "alt": "どら焼き"
     },
     "ast_frmi": {
       "kind": "photo",
-      "file": {
-        "key": "ast_I.jpg",
-        "mime": "image/jpeg",
-        "width": 426,
-        "height": 426,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_I.jpg", "mime": "image/jpeg", "width": 852, "height": 852, "bytes": 53721, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "other",
-      "alt": "わらび餅"
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Chatathorn Wechkunanukool", "pageUrl": "https://unsplash.com/photos/QlvRdT2H9VU" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
+      "slot": "product",
+      "alt": "黒蜜をかけたわらび餅"
     },
     "ast_frmj": {
       "kind": "photo",
-      "file": {
-        "key": "ast_J.jpg",
-        "mime": "image/jpeg",
-        "width": 473,
-        "height": 560,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_J.jpg", "mime": "image/jpeg", "width": 946, "height": 1120, "bytes": 114127, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
-      "slot": "other",
-      "alt": "店構え"
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Chrishaun Byrom", "pageUrl": "https://unsplash.com/photos/2mvdRQXQTd4" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
+      "slot": "exterior",
+      "alt": "夜の木の店構え・格子と軒先"
     },
     "ast_frmk": {
       "kind": "photo",
-      "file": {
-        "key": "ast_K.jpg",
-        "mime": "image/jpeg",
-        "width": 1440,
-        "height": 590,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_K.jpg", "mime": "image/jpeg", "width": 1600, "height": 656, "bytes": 98259, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Peter Gargiulo", "pageUrl": "https://unsplash.com/photos/cGNCepznaV8" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
       "slot": "other",
-      "alt": "お問い合わせ背景"
+      "alt": "暗い壁の質感（お問い合わせ背景）"
     },
     "ast_frml": {
       "kind": "photo",
-      "file": {
-        "key": "ast_L.jpg",
-        "mime": "image/jpeg",
-        "width": 1440,
-        "height": 400,
-        "bytes": 100000,
-        "exifStripped": true
-      },
-      "uploadedAt": "2026-09-22T18:00:00+09:00",
+      "file": { "key": "ast_L.jpg", "mime": "image/jpeg", "width": 1600, "height": 445, "bytes": 162807, "exifStripped": true },
+      "uploadedAt": "2026-09-22T21:40:00+09:00",
       "uploadedBy": "producer",
-      "origin": {
-        "kind": "sample"
-      },
-      "rights": {
-        "basis": "ownWork",
-        "confirmedAt": "2026-09-22T18:00:00+09:00",
-        "confirmedBy": "producer"
-      },
+      "origin": { "kind": "stock", "provider": "unsplash", "credit": "Christian Laborde", "pageUrl": "https://unsplash.com/photos/Gm03YomE8E4" },
+      "rights": { "basis": "licensed", "confirmedAt": "2026-09-22T21:40:00+09:00", "confirmedBy": "producer", "note": "Unsplash License" },
       "slot": "other",
-      "alt": "お品書きの帯"
+      "alt": "和菓子の盛り合わせ（お品書きの帯）"
     }
   }
 }

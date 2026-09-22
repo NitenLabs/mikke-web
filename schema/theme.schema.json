@@ -10,8 +10,8 @@
     "schemaVersion": { "$ref": "common.schema.json#/$defs/schemaVersion" },
     "colors": {
       "type": "object",
-      "description": "テーマ色。必須の6色＋任意の追加色（最大10色）。キーがトークン名",
-      "required": ["background", "surface", "text", "textMuted", "primary", "accent"],
+      "description": "テーマ色。必須の4色（背景・面・文字・薄い文字）＋任意の追加色（最大10色）。キーがトークン名。primary/accent などは使うテンプレートだけが足す",
+      "required": ["background", "surface", "text", "textMuted"],
       "propertyNames": { "pattern": "^[a-z][a-zA-Z0-9]{1,23}$" },
       "maxProperties": 10,
       "additionalProperties": {

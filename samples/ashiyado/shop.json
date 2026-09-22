@@ -309,7 +309,6 @@
         "name": "芦屋最中",
         "description": "香ばしい皮に、つぶ餡をたっぷり。",
         "labels": [
-          "lbl_recommended",
           "lbl_gift"
         ],
         "prices": [
@@ -331,19 +330,26 @@
           "serviceId": "svc_base0001",
           "url": "https://ashiyado-sample.example.com/items/0001",
           "externalId": "0001"
-        },
-        "photos": [
-          "ast_frmh"
-        ]
+        }
       },
       "itm_dorayaki": {
         "name": "どら焼き",
         "labels": [
+          "lbl_recommended",
           "lbl_gift"
         ],
-        "prices": [],
+        "prices": [
+          {
+            "id": "prc_dorayaki1",
+            "type": "fixed",
+            "amount": 250
+          }
+        ],
         "status": "onSale",
-        "description": "ふっくら焼いた皮に、自家製の粒餡をはさみました。"
+        "description": "ふっくら焼いた皮に、自家製の粒餡をはさみました。",
+        "photos": [
+          "ast_frmh"
+        ]
       },
       "itm_warabi": {
         "name": "わらび餅",

@@ -5,8 +5,6 @@
     "surface": { "value": "#EEEEEE", "label": "灰" },
     "text": { "value": "#333333", "label": "墨" },
     "textMuted": { "value": "#7B7B7B", "label": "薄墨" },
-    "primary": { "value": "#333333", "label": "濃墨" },
-    "accent": { "value": "#7B7B7B", "label": "灰" },
     "line": { "value": "#B0B0B0", "label": "罫線" },
     "dark": { "value": "#333333", "label": "濃い面" },
     "deep": { "value": "#222222", "label": "最暗" },
