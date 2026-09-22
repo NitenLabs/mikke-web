@@ -221,9 +221,11 @@ function elementCss(el, resolved, positions, device, rules) {
   const sel = `[data-el="${el.id}"]`;
   const lines = [];
 
-  // 全面写真・背景は cbox の外（セクション全面）に置く
-  if (el.type === "photo" && box.fullBleed) {
-    rules.push(`${mq[device]}{${sel}{position:absolute;inset:0;width:100%;height:100%;z-index:${el.z}}}`);
+  // 全面写真（どちらかの端末で fullBleed）は bleed 層（セクション全面）に置く。
+  // 片方の端末だけ fullBleed でも、bleed 層に描くので両端末とも inset:0（セクションを覆う）にする。
+  const isBleed = el.type === "photo" && (el.box.pc?.fullBleed || el.box.sp?.fullBleed);
+  if (isBleed) {
+    rules.push(`${mq[device]}{${sel}{position:absolute;inset:0;z-index:${el.z}}}`);
     return;
   }
 

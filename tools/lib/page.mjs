@@ -42,6 +42,8 @@ main{display:block}
 .el-text .lc-val{flex:1}
 .el-photo{overflow:hidden}
 .el-photo img{width:100%;height:100%;object-fit:cover}
+.bleed{position:absolute;inset:0;z-index:0;overflow:hidden}
+.bleed img{width:100%;height:100%;object-fit:cover}
 .darken{position:absolute;inset:0;background:#000;pointer-events:none}
 .el-embed iframe{width:100%;height:100%;border:0;display:block}
 .el-shape-line{height:1px}

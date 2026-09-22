@@ -40,9 +40,10 @@ function boxWidthPx(box, device, site) {
 }
 
 // 飾りかどうか（reflow の規則8）。図形・背景写真・全面写真＝飾り。
+// 全面写真は片方の端末だけ fullBleed でも bleed 層（セクション背景）に描くので、両端末とも飾り扱い。
 function isDecorative(el, device) {
   if (el.type === "shape") return true;
-  if (el.type === "photo") return !!el.box[device]?.fullBleed;
+  if (el.type === "photo") return !!(el.box.pc?.fullBleed || el.box.sp?.fullBleed);
   return false;
 }
 

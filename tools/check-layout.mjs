@@ -103,52 +103,66 @@ const ANALYZE = ({ exclude, device }) => {
 };
 
 const pages = findPages(dirAbs);
-const rows = [];
 let problems = 0;
 const unavailable = [];
+const allNewOverlaps = [];
+
+console.log("レイアウト検査（JavaScript 無効＝静的な位置のまま／chromium・webkit・firefox）");
+console.log("列: 実測ずれ最大（実際の高さ − build時の実測値, design px）／補正JS発火／横はみ出し／想定外の重なり\n");
+const head = "  ページ  幅       実測ずれ最大               補正JS  はみ出し  想定外の重なり";
 
 for (const [engineName, engine] of ENGINES) {
   let browser;
   try { browser = await engine.launch(process.env.CHROME_PATH && engineName === "chromium" ? { executablePath: process.env.CHROME_PATH } : {}); }
   catch (e) { unavailable.push(`${engineName}（未インストール：npx playwright install ${engineName}）`); continue; }
+  console.log(`【${engineName}】`);
+  console.log(head);
+  // context・page を1つだけ作り、幅は setViewportSize で変える（フォントをキャッシュして使い回す＝速い）。
+  // ※ isMobile は使わない（firefox は mobile 端末エミュレーション非対応で setViewportSize が固まる。
+  //   レイアウトは幅で決まる〔メディアクエリ〕ので isMobile は不要）。
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 900 }, deviceScaleFactor: 1, locale: "ja-JP", javaScriptEnabled: false });
+  // 地図の埋め込み（Google Maps iframe）は外部で、レイアウト検査には不要。読み込むと firefox が
+  // 再ナビゲーションで固まるので遮断する（フォントは通す＝実測との突き合わせに必要）。
+  await ctx.route(/google\.com\/maps/, (route) => route.abort());
+  const page = await ctx.newPage();
   for (const file of pages) {
     const name = pageName(file);
     const excl = layout.pages?.[name] || { pc: [], sp: [] };
     for (const width of WIDTHS) {
       const device = width < 768 ? "sp" : "pc";
-      const ctx = await browser.newContext({ viewport: { width, height: 900 }, deviceScaleFactor: 1, isMobile: width < 768, hasTouch: width < 768, locale: "ja-JP", javaScriptEnabled: false });
-      const page = await ctx.newPage();
-      await page.goto(pathToFileURL(file).href, { waitUntil: "networkidle" });
-      await page.evaluate(() => (document.fonts && document.fonts.ready ? document.fonts.ready.then(() => 1) : 1)).catch(() => {});
-      await page.waitForTimeout(150);
-      const r = await page.evaluate(ANALYZE, { exclude: excl[device], device });
-      await ctx.close();
-      const issues = [];
-      if (r.overflowPx > 2) issues.push(`はみ出し${r.overflowPx}px`);
-      if (r.newOverlaps.length) issues.push(`重なり${r.newOverlaps.length}件（${r.newOverlaps.slice(0, 5).map((o) => `${o.a}×${o.b}:${o.ox}×${o.oy}`).join(", ")}）`);
-      if (issues.length) problems++;
-      rows.push({ engine: engineName, name, width, dev: r.maxDev, devEl: r.maxDevEl, fires: r.fires, overflow: r.overflowPx, overlaps: r.newOverlaps.length, issues });
+      // 1回の測定（goto→フォント猶予→計測）。firefox は同一URLへの再ナビゲーションで稀に固まるので
+      // 1回だけリトライし、それでも失敗したら「測定失敗」として続行する（1件で全体を止めない）。
+      let r = null;
+      for (let attempt = 0; attempt < 2 && !r; attempt++) {
+        try {
+          await page.setViewportSize({ width, height: 900 });
+          // 幅ごとに URL を変える（キャッシュ回避）と firefox の同一URL再ナビゲーションの固まりを避けられる
+          await page.goto(`${pathToFileURL(file).href}?w=${width}`, { waitUntil: "domcontentloaded", timeout: 20000 });
+          // フォントの読み込みの猶予（node 側の待ち。JS無効の firefox では in-page の async evaluate が
+          // 解決しないため使わない）。
+          await page.waitForTimeout(1200);
+          r = await page.evaluate(ANALYZE, { exclude: excl[device], device });
+        } catch (e) {
+          if (attempt === 1) { console.log(`  ${name.padEnd(6)} ${String(width).padStart(4)}px  測定失敗（${e.name || "error"}）`); }
+        }
+      }
+      if (!r) { problems++; continue; }
+      if (r.overflowPx > 2 || r.newOverlaps.length) problems++;
+      if (r.newOverlaps.length) allNewOverlaps.push({ engine: engineName, name, width, list: r.newOverlaps });
+      const dev = `${r.maxDev}px${r.maxDevEl ? `（${r.maxDevEl}）` : ""}`;
+      console.log(
+        `  ${name.padEnd(6)} ${String(width).padStart(4)}px  ${dev.padEnd(24)} ${(r.fires ? "発火" : "しない").padEnd(6)} ${(r.overflowPx > 2 ? r.overflowPx + "px" : "なし").padEnd(7)} ${r.newOverlaps.length ? "⚠ " + r.newOverlaps.map((o) => `${o.a}×${o.b}`).join(", ") : "なし"}`
+      );
     }
   }
+  console.log("");
   await browser.close();
 }
 
-// ---------- 報告 ----------
-console.log("レイアウト検査（JavaScript 無効＝静的な位置のまま／chromium・webkit・firefox）\n");
-const head = "  エンジン    ページ  幅     実測ずれ最大   補正JS発火  はみ出し  想定外の重なり";
-for (const engineName of ENGINES.map((e) => e[0])) {
-  const er = rows.filter((r) => r.engine === engineName);
-  if (!er.length) continue;
-  console.log(`【${engineName}】`);
-  console.log(head);
-  for (const r of er) {
-    const dev = `${r.dev}px${r.devEl ? `（${r.devEl}）` : ""}`;
-    console.log(
-      `  ${engineName.padEnd(9)} ${r.name.padEnd(5)} ${String(r.width).padStart(4)}px  ${dev.padEnd(20)} ${(r.fires ? "発火" : "しない").padEnd(6)} ${(r.overflow > 2 ? r.overflow + "px" : "なし").padEnd(6)} ${r.overlaps ? "⚠ " + r.overlaps + "件" : "なし"}`
-    );
-  }
-  console.log("");
-}
 if (unavailable.length) console.log("未実施のエンジン: " + unavailable.join(" 、 ") + "\n");
-console.log(problems ? `⚠ 問題のある組み合わせ: ${problems} 件` : "✓ すべての エンジン×ページ×幅 で 想定外の重なり・はみ出しなし");
+if (allNewOverlaps.length) {
+  console.log("想定外の重なり（配置の時点で重なっていない組が表示で重なった）:");
+  for (const o of allNewOverlaps) console.log(`  ${o.engine} ${o.name} ${o.width}px: ${o.list.map((x) => `${x.a}×${x.b}(${x.ox}×${x.oy}px)`).join(", ")}`);
+}
+console.log(problems ? `\n⚠ 問題のある組み合わせ: ${problems} 件` : "\n✓ すべての エンジン×ページ×幅 で 想定外の重なり・はみ出しなし");
 process.exit(0);
