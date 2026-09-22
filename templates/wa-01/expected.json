@@ -1,0 +1,1680 @@
+{
+  "el_logo": {
+    "page": "pg_home",
+    "section": "sec_header",
+    "type": "text",
+    "pc": {
+      "x": 88,
+      "y": 27,
+      "w": 340,
+      "h": 43,
+      "size": 24,
+      "weight": 500,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 23,
+      "w": 195,
+      "h": 43,
+      "size": 24,
+      "weight": 500,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_nav": {
+    "page": "pg_home",
+    "section": "sec_header",
+    "type": "nav",
+    "pc": {
+      "x": 720,
+      "y": 33,
+      "w": 656,
+      "h": 22
+    },
+    "sp": {
+      "x": 324,
+      "y": 12,
+      "w": 56,
+      "h": 56
+    }
+  },
+  "el_hline": {
+    "page": "pg_home",
+    "section": "sec_header",
+    "type": "shape",
+    "pc": {
+      "x": 56,
+      "y": 87,
+      "w": 1328,
+      "h": 1
+    },
+    "sp": {
+      "x": 10,
+      "y": 79,
+      "w": 371,
+      "h": 1
+    }
+  },
+  "el_fvphoto": {
+    "page": "pg_home",
+    "section": "sec_hero",
+    "type": "photo",
+    "pc": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 720
+    },
+    "sp": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 600
+    }
+  },
+  "el_fvh": {
+    "page": "pg_home",
+    "section": "sec_hero",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 294,
+      "w": 600,
+      "h": 101,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 59,
+      "y": 250,
+      "w": 273,
+      "h": 72,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_fven": {
+    "page": "pg_home",
+    "section": "sec_hero",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 407,
+      "w": 600,
+      "h": 22,
+      "size": 14,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 59,
+      "y": 334,
+      "w": 273,
+      "h": 19,
+      "size": 12,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_ntcard": {
+    "page": "pg_home",
+    "section": "sec_notice",
+    "type": "shape",
+    "pc": {
+      "x": 56,
+      "y": 0,
+      "w": 160,
+      "h": 38
+    },
+    "sp": {
+      "x": 0,
+      "y": 0,
+      "w": 80,
+      "h": 33
+    }
+  },
+  "el_ntlabel": {
+    "page": "pg_home",
+    "section": "sec_notice",
+    "type": "text",
+    "pc": {
+      "x": 72,
+      "y": 8,
+      "w": 128,
+      "h": 29,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 16,
+      "y": 8,
+      "w": 48,
+      "h": 22,
+      "size": 12,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_nttext": {
+    "page": "pg_home",
+    "section": "sec_notice",
+    "type": "text",
+    "pc": {
+      "x": 232,
+      "y": 8,
+      "w": 1152,
+      "h": 29,
+      "size": 16,
+      "weight": 600,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 92,
+      "y": 8,
+      "w": 290,
+      "h": 43,
+      "size": 12,
+      "weight": 600,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_about_lbl": {
+    "page": "pg_home",
+    "section": "sec_about",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 120,
+      "w": 600,
+      "h": 26,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 80,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_about_h": {
+    "page": "pg_home",
+    "section": "sec_about",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 151,
+      "w": 600,
+      "h": 39,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 107,
+      "w": 351,
+      "h": 28,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_about_rule": {
+    "page": "pg_home",
+    "section": "sec_about",
+    "type": "shape",
+    "pc": {
+      "x": 708,
+      "y": 214,
+      "w": 24,
+      "h": 2
+    },
+    "sp": {
+      "x": 183,
+      "y": 159,
+      "w": 24,
+      "h": 2
+    }
+  },
+  "el_aboutlead": {
+    "page": "pg_home",
+    "section": "sec_about",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 248,
+      "w": 600,
+      "h": 50,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 185,
+      "w": 351,
+      "h": 36,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_aboutbody": {
+    "page": "pg_home",
+    "section": "sec_about",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 330,
+      "w": 600,
+      "h": 115,
+      "size": 16,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 245,
+      "w": 351,
+      "h": 126,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#333333"
+    }
+  },
+  "el_aboutp1": {
+    "page": "pg_home",
+    "section": "sec_about",
+    "type": "photo",
+    "pc": {
+      "x": -146,
+      "y": 622,
+      "w": 566,
+      "h": 420
+    },
+    "sp": {
+      "x": -159,
+      "y": 493,
+      "w": 231,
+      "h": 280
+    }
+  },
+  "el_aboutp2": {
+    "page": "pg_home",
+    "section": "sec_about",
+    "type": "photo",
+    "pc": {
+      "x": 437,
+      "y": 622,
+      "w": 566,
+      "h": 420
+    },
+    "sp": {
+      "x": 80,
+      "y": 493,
+      "w": 231,
+      "h": 280
+    }
+  },
+  "el_aboutp3": {
+    "page": "pg_home",
+    "section": "sec_about",
+    "type": "photo",
+    "pc": {
+      "x": 1019,
+      "y": 622,
+      "w": 566,
+      "h": 420
+    },
+    "sp": {
+      "x": 318,
+      "y": 493,
+      "w": 231,
+      "h": 280
+    }
+  },
+  "el_feat_lbl": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 120,
+      "w": 600,
+      "h": 26,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 64,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_feat_h": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 151,
+      "w": 600,
+      "h": 39,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 92,
+      "w": 351,
+      "h": 28,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_feat_rule": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "shape",
+    "pc": {
+      "x": 708,
+      "y": 214,
+      "w": 24,
+      "h": 2
+    },
+    "sp": {
+      "x": 183,
+      "y": 144,
+      "w": 24,
+      "h": 2
+    }
+  },
+  "el_featp1": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "photo",
+    "pc": {
+      "x": 755,
+      "y": 335,
+      "w": 549,
+      "h": 404
+    },
+    "sp": {
+      "x": 20,
+      "y": 201,
+      "w": 351,
+      "h": 258
+    }
+  },
+  "el_feath1": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "text",
+    "pc": {
+      "x": 160,
+      "y": 467,
+      "w": 501,
+      "h": 43,
+      "size": 24,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 28,
+      "y": 483,
+      "w": 333,
+      "h": 29,
+      "size": 16,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_featb1": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "text",
+    "pc": {
+      "x": 160,
+      "y": 526,
+      "w": 501,
+      "h": 58,
+      "size": 16,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 28,
+      "y": 520,
+      "w": 333,
+      "h": 76,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#333333"
+    }
+  },
+  "el_featp2": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "photo",
+    "pc": {
+      "x": 136,
+      "y": 819,
+      "w": 549,
+      "h": 404
+    },
+    "sp": {
+      "x": 20,
+      "y": 660,
+      "w": 351,
+      "h": 258
+    }
+  },
+  "el_feath2": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "text",
+    "pc": {
+      "x": 779,
+      "y": 950,
+      "w": 501,
+      "h": 43,
+      "size": 24,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 28,
+      "y": 942,
+      "w": 333,
+      "h": 29,
+      "size": 16,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_featb2": {
+    "page": "pg_home",
+    "section": "sec_feature",
+    "type": "text",
+    "pc": {
+      "x": 779,
+      "y": 1009,
+      "w": 501,
+      "h": 58,
+      "size": 16,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 28,
+      "y": 979,
+      "w": 333,
+      "h": 76,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#333333"
+    }
+  },
+  "el_items_lbl": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 120,
+      "w": 600,
+      "h": 26,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 64,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_items_h": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 151,
+      "w": 600,
+      "h": 39,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 92,
+      "w": 351,
+      "h": 28,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_items_rule": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "shape",
+    "pc": {
+      "x": 708,
+      "y": 214,
+      "w": 24,
+      "h": 2
+    },
+    "sp": {
+      "x": 183,
+      "y": 144,
+      "w": 24,
+      "h": 2
+    }
+  },
+  "el_itemcards": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "repeater",
+    "pc": {
+      "x": 57,
+      "y": 296,
+      "w": 1326,
+      "h": 583
+    },
+    "sp": {
+      "x": 20,
+      "y": 186,
+      "w": 351,
+      "h": 1516
+    }
+  },
+  "el_itemsdiv": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "shape",
+    "pc": {
+      "x": 56,
+      "y": 964,
+      "w": 1328,
+      "h": 1
+    },
+    "sp": {
+      "x": 20,
+      "y": 1703,
+      "w": 351,
+      "h": 1
+    }
+  },
+  "el_kanmilbl": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 1085,
+      "w": 600,
+      "h": 43,
+      "size": 24,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 1768,
+      "w": 351,
+      "h": 32,
+      "size": 18,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_kanmitime": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 1123,
+      "w": 600,
+      "h": 22,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#7B7B7B"
+    },
+    "sp": {
+      "x": 20,
+      "y": 1798,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#7B7B7B"
+    }
+  },
+  "el_kanmitable": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "repeater",
+    "pc": {
+      "x": 236,
+      "y": 1158,
+      "w": 968,
+      "h": 218
+    },
+    "sp": {
+      "x": 20,
+      "y": 1833,
+      "w": 351,
+      "h": 251
+    }
+  },
+  "el_itemsbtnbg": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "shape",
+    "pc": {
+      "x": 480,
+      "y": 1440,
+      "w": 480,
+      "h": 56
+    },
+    "sp": {
+      "x": 20,
+      "y": 2151,
+      "w": 351,
+      "h": 56
+    }
+  },
+  "el_itemsbtn": {
+    "page": "pg_home",
+    "section": "sec_items",
+    "type": "text",
+    "pc": {
+      "x": 480,
+      "y": 1457,
+      "w": 480,
+      "h": 29,
+      "size": 16,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 2168,
+      "w": 351,
+      "h": 29,
+      "size": 16,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_faq_lbl": {
+    "page": "pg_home",
+    "section": "sec_faqs",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 120,
+      "w": 600,
+      "h": 26,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 64,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_faq_h": {
+    "page": "pg_home",
+    "section": "sec_faqs",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 151,
+      "w": 600,
+      "h": 39,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 92,
+      "w": 351,
+      "h": 28,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_faq_rule": {
+    "page": "pg_home",
+    "section": "sec_faqs",
+    "type": "shape",
+    "pc": {
+      "x": 708,
+      "y": 214,
+      "w": 24,
+      "h": 2
+    },
+    "sp": {
+      "x": 183,
+      "y": 144,
+      "w": 24,
+      "h": 2
+    }
+  },
+  "el_faqlist": {
+    "page": "pg_home",
+    "section": "sec_faqs",
+    "type": "repeater",
+    "pc": {
+      "x": 236,
+      "y": 264,
+      "w": 968,
+      "h": 184
+    },
+    "sp": {
+      "x": 20,
+      "y": 186,
+      "w": 351,
+      "h": 173
+    }
+  },
+  "el_acc_lbl": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 120,
+      "w": 600,
+      "h": 26,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 64,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_acc_h": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 151,
+      "w": 600,
+      "h": 39,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 92,
+      "w": 351,
+      "h": 28,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_acc_rule": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "shape",
+    "pc": {
+      "x": 708,
+      "y": 214,
+      "w": 24,
+      "h": 2
+    },
+    "sp": {
+      "x": 183,
+      "y": 144,
+      "w": 24,
+      "h": 2
+    }
+  },
+  "el_accphoto": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "photo",
+    "pc": {
+      "x": 236,
+      "y": 264,
+      "w": 473,
+      "h": 560
+    },
+    "sp": {
+      "x": 20,
+      "y": 186,
+      "w": 351,
+      "h": 439
+    }
+  },
+  "el_accsoe": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "text",
+    "pc": {
+      "x": 645,
+      "y": 288,
+      "w": 40,
+      "h": 200,
+      "size": 14,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 36,
+      "y": 600,
+      "w": 200,
+      "h": 25,
+      "size": 14,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_accinfo": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "text",
+    "pc": {
+      "x": 733,
+      "y": 264,
+      "w": 471,
+      "h": 288,
+      "size": 16,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 655,
+      "w": 351,
+      "h": 346,
+      "size": 16,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#333333"
+    }
+  },
+  "el_accinfotop": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "shape",
+    "pc": {
+      "x": 733,
+      "y": 258,
+      "w": 471,
+      "h": 1
+    },
+    "sp": {
+      "x": 20,
+      "y": 649,
+      "w": 351,
+      "h": 1
+    }
+  },
+  "el_accinfobot": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "shape",
+    "pc": {
+      "x": 733,
+      "y": 600,
+      "w": 471,
+      "h": 1
+    },
+    "sp": {
+      "x": 20,
+      "y": 1010,
+      "w": 351,
+      "h": 1
+    }
+  },
+  "el_accmap": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "embed",
+    "pc": {
+      "x": 236,
+      "y": 864,
+      "w": 968,
+      "h": 360
+    },
+    "sp": {
+      "x": 20,
+      "y": 1050,
+      "w": 351,
+      "h": 260
+    }
+  },
+  "el_acctelbg": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "shape",
+    "pc": {
+      "x": 480,
+      "y": 1264,
+      "w": 480,
+      "h": 56
+    },
+    "sp": {
+      "x": 20,
+      "y": 1342,
+      "w": 351,
+      "h": 56
+    }
+  },
+  "el_acctel": {
+    "page": "pg_home",
+    "section": "sec_access",
+    "type": "text",
+    "pc": {
+      "x": 480,
+      "y": 1281,
+      "w": 480,
+      "h": 29,
+      "size": 16,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 1359,
+      "w": 351,
+      "h": 29,
+      "size": 16,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_ctphoto": {
+    "page": "pg_home",
+    "section": "sec_contact",
+    "type": "photo",
+    "pc": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 590
+    },
+    "sp": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 479
+    }
+  },
+  "el_ct_lbl": {
+    "page": "pg_home",
+    "section": "sec_contact",
+    "type": "text",
+    "pc": {
+      "x": 480,
+      "y": 120,
+      "w": 480,
+      "h": 26,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 80,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_ct_h": {
+    "page": "pg_home",
+    "section": "sec_contact",
+    "type": "text",
+    "pc": {
+      "x": 480,
+      "y": 150,
+      "w": 480,
+      "h": 39,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 107,
+      "w": 351,
+      "h": 28,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_ct_rule": {
+    "page": "pg_home",
+    "section": "sec_contact",
+    "type": "shape",
+    "pc": {
+      "x": 708,
+      "y": 213,
+      "w": 24,
+      "h": 2
+    },
+    "sp": {
+      "x": 183,
+      "y": 159,
+      "w": 24,
+      "h": 2
+    }
+  },
+  "el_ct_body": {
+    "page": "pg_home",
+    "section": "sec_contact",
+    "type": "text",
+    "pc": {
+      "x": 480,
+      "y": 247,
+      "w": 480,
+      "h": 58,
+      "size": 16,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 39,
+      "y": 194,
+      "w": 312,
+      "h": 76,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_ct_btnbg": {
+    "page": "pg_home",
+    "section": "sec_contact",
+    "type": "shape",
+    "pc": {
+      "x": 480,
+      "y": 374,
+      "w": 480,
+      "h": 56
+    },
+    "sp": {
+      "x": 39,
+      "y": 335,
+      "w": 312,
+      "h": 56
+    }
+  },
+  "el_ct_btn": {
+    "page": "pg_home",
+    "section": "sec_contact",
+    "type": "text",
+    "pc": {
+      "x": 480,
+      "y": 391,
+      "w": 480,
+      "h": 29,
+      "size": 16,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 39,
+      "y": 352,
+      "w": 312,
+      "h": 29,
+      "size": 16,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_fname": {
+    "page": "pg_home",
+    "section": "sec_footer",
+    "type": "text",
+    "pc": {
+      "x": 440,
+      "y": 92,
+      "w": 560,
+      "h": 45,
+      "size": 32,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 39,
+      "y": 92,
+      "w": 312,
+      "h": 45,
+      "size": 32,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_faddr": {
+    "page": "pg_home",
+    "section": "sec_footer",
+    "type": "text",
+    "pc": {
+      "x": 440,
+      "y": 145,
+      "w": 560,
+      "h": 29,
+      "size": 16,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 39,
+      "y": 145,
+      "w": 312,
+      "h": 25,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_fdiv": {
+    "page": "pg_home",
+    "section": "sec_footer",
+    "type": "shape",
+    "pc": {
+      "x": 56,
+      "y": 290,
+      "w": 1328,
+      "h": 1
+    },
+    "sp": {
+      "x": 20,
+      "y": 286,
+      "w": 351,
+      "h": 1
+    }
+  },
+  "el_fnav": {
+    "page": "pg_home",
+    "section": "sec_footer",
+    "type": "nav",
+    "pc": {
+      "x": 420,
+      "y": 315,
+      "w": 600,
+      "h": 22
+    },
+    "sp": {
+      "x": 20,
+      "y": 311,
+      "w": 351,
+      "h": 120
+    }
+  },
+  "el_fpriv": {
+    "page": "pg_home",
+    "section": "sec_footer",
+    "type": "text",
+    "pc": {
+      "x": 56,
+      "y": 410,
+      "w": 200,
+      "h": 19,
+      "size": 12,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 470,
+      "w": 200,
+      "h": 19,
+      "size": 12,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_fcopy": {
+    "page": "pg_home",
+    "section": "sec_footer",
+    "type": "text",
+    "pc": {
+      "x": 216,
+      "y": 410,
+      "w": 400,
+      "h": 19,
+      "size": 12,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 494,
+      "w": 351,
+      "h": 19,
+      "size": 12,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_fmikke": {
+    "page": "pg_home",
+    "section": "sec_footer",
+    "type": "text",
+    "pc": {
+      "x": 984,
+      "y": 410,
+      "w": 400,
+      "h": 19,
+      "size": 12,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 518,
+      "w": 351,
+      "h": 19,
+      "size": 12,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_mhphoto": {
+    "page": "pg_menu",
+    "section": "sec_menuhdr",
+    "type": "photo",
+    "pc": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 400
+    },
+    "sp": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 320
+    }
+  },
+  "el_mhlbl": {
+    "page": "pg_menu",
+    "section": "sec_menuhdr",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 170,
+      "w": 600,
+      "h": 26,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 132,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_mhh": {
+    "page": "pg_menu",
+    "section": "sec_menuhdr",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 201,
+      "w": 600,
+      "h": 50,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 159,
+      "w": 351,
+      "h": 36,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_mhsoe": {
+    "page": "pg_menu",
+    "section": "sec_menuhdr",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 260,
+      "w": 600,
+      "h": 29,
+      "size": 16,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 207,
+      "w": 351,
+      "h": 50,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_mt_lbl": {
+    "page": "pg_menu",
+    "section": "sec_menubody",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 120,
+      "w": 600,
+      "h": 43,
+      "size": 24,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 64,
+      "w": 351,
+      "h": 32,
+      "size": 18,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_mt_tbl": {
+    "page": "pg_menu",
+    "section": "sec_menubody",
+    "type": "repeater",
+    "pc": {
+      "x": 236,
+      "y": 180,
+      "w": 968,
+      "h": 875
+    },
+    "sp": {
+      "x": 20,
+      "y": 120,
+      "w": 351,
+      "h": 1023
+    }
+  },
+  "el_mk_lbl": {
+    "page": "pg_menu",
+    "section": "sec_menubody",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 900,
+      "w": 600,
+      "h": 43,
+      "size": 24,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    },
+    "sp": {
+      "x": 20,
+      "y": 760,
+      "w": 351,
+      "h": 32,
+      "size": 18,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#333333"
+    }
+  },
+  "el_mk_time": {
+    "page": "pg_menu",
+    "section": "sec_menubody",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 938,
+      "w": 600,
+      "h": 22,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#7B7B7B"
+    },
+    "sp": {
+      "x": 20,
+      "y": 790,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 400,
+      "font": "Zen Kaku Gothic New",
+      "color": "#7B7B7B"
+    }
+  },
+  "el_mk_tbl": {
+    "page": "pg_menu",
+    "section": "sec_menubody",
+    "type": "repeater",
+    "pc": {
+      "x": 236,
+      "y": 1000,
+      "w": 968,
+      "h": 316
+    },
+    "sp": {
+      "x": 20,
+      "y": 830,
+      "w": 351,
+      "h": 349
+    }
+  },
+  "el_chphoto": {
+    "page": "pg_contact",
+    "section": "sec_contacthdr",
+    "type": "photo",
+    "pc": {
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 320
+    },
+    "sp": {
+      "x": 0,
+      "y": 0,
+      "w": 390,
+      "h": 240
+    }
+  },
+  "el_chlbl": {
+    "page": "pg_contact",
+    "section": "sec_contacthdr",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 130,
+      "w": 600,
+      "h": 26,
+      "size": 16,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 100,
+      "w": 351,
+      "h": 22,
+      "size": 14,
+      "weight": 900,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_chh": {
+    "page": "pg_contact",
+    "section": "sec_contacthdr",
+    "type": "text",
+    "pc": {
+      "x": 420,
+      "y": 161,
+      "w": 600,
+      "h": 50,
+      "size": 28,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    },
+    "sp": {
+      "x": 20,
+      "y": 127,
+      "w": 351,
+      "h": 36,
+      "size": 20,
+      "weight": 700,
+      "font": "Zen Old Mincho",
+      "color": "#FFFFFF"
+    }
+  },
+  "el_cform": {
+    "page": "pg_contact",
+    "section": "sec_contactform",
+    "type": "form",
+    "pc": {
+      "x": 420,
+      "y": 120,
+      "w": 600,
+      "h": 560
+    },
+    "sp": {
+      "x": 20,
+      "y": 64,
+      "w": 351,
+      "h": 640
+    }
+  }
+}
