@@ -43,7 +43,7 @@ main{display:block}
 .el-text .pg{display:block}
 .el-text .nowrap{white-space:nowrap}
 .el-text .lc{display:flex}
-.el-text .lc-key{flex:none;color:var(--c-textMuted)}
+.el-text .lc-key{flex:none;color:var(--c-text);font-family:var(--f-heading);font-weight:700}
 .el-text .lc-val{flex:1}
 .el-photo{overflow:hidden}
 .el-photo img{width:100%;height:100%;object-fit:cover}
@@ -56,13 +56,16 @@ main{display:block}
 .el-rep{position:absolute}
 .rep-card,.rep-head{position:absolute}
 /* 開閉式（accordion）：details/summary。JSなしでも開閉でき、開くと下がずれる（reflow） */
-.el-acc .acc-item{border-top:1px solid var(--c-surface)}
-.el-acc .acc-item:last-child{border-bottom:1px solid var(--c-surface)}
-.el-acc summary{list-style:none;cursor:pointer;padding:1.4rem 0;position:relative;font-family:var(--f-heading);font-weight:500;color:var(--c-text);line-height:1.4;letter-spacing:.1em}
+/* FAQ の罫線は表と同じ line（#B0B0B0）。行の高さ74・「Q.」・開閉の印「∨」（SPEC 4.7 / A10） */
+.el-acc .acc-item{border-top:1px solid var(--c-line)}
+.el-acc .acc-item:last-child{border-bottom:1px solid var(--c-line)}
+.el-acc summary{list-style:none;cursor:pointer;padding:2.4rem 0;position:relative;font-family:var(--f-heading);font-weight:700;color:var(--c-text);line-height:1.4;letter-spacing:0}
 .el-acc summary::-webkit-details-marker{display:none}
-.el-acc summary::after{content:"＋";position:absolute;right:0;top:1.4rem;color:var(--c-accent)}
-.el-acc details[open] summary::after{content:"−"}
-.el-acc .acc-a{padding:0 0 1.4rem;font-family:var(--f-body);color:var(--c-text);line-height:1.8}
+.el-acc .acc-q{position:relative;padding-left:2.9rem}
+.el-acc .acc-q::before{content:"Q.";position:absolute;left:0;top:0;font-family:var(--f-heading);font-weight:700}
+.el-acc summary::after{content:"∨";position:absolute;right:0;top:2.4rem;font-size:2.4rem;line-height:1;color:var(--c-text);display:inline-block;transition:transform .2s}
+.el-acc details[open] summary::after{transform:rotate(180deg)}
+.el-acc .acc-a{padding:0 0 2.4rem;font-family:var(--f-body);color:var(--c-text);line-height:1.8}
 .el-acc details:not([open]) .acc-a{display:none}
 ${mq.pc}{.el-acc summary{font-size:1.8rem}.el-acc .acc-a{font-size:1.6rem}}
 ${mq.sp}{.el-acc summary{font-size:1.6rem}.el-acc .acc-a{font-size:1.4rem}}
@@ -73,9 +76,11 @@ ${mq.sp}{.el-acc summary{font-size:1.6rem}.el-acc .acc-a{font-size:1.4rem}}
 .site-header.overlay.scrolled{background:var(--c-background)}
 .site-header.overlay.scrolled .el-text,.site-header.overlay.scrolled .el-nav a,.site-header.overlay.scrolled .nav-sp summary{color:var(--c-text)}
 .site-header.overlay.scrolled .el-shape{background:var(--c-line)!important;opacity:1!important}
-.el-nav .nav-row{display:flex;gap:1.6rem;justify-content:flex-end;align-items:center;height:100%;font-family:var(--nav-font,inherit)}
+.el-nav .nav-row{display:flex;gap:2.4rem;justify-content:flex-end;align-items:center;height:100%;font-family:var(--nav-font,inherit)}
 .el-nav a{text-decoration:none;color:var(--nav,inherit);white-space:nowrap}
-.el-nav a[aria-current]{color:var(--nav-active,inherit)}
+/* ナビの文字（SPEC 2章・A2-12/A2-18）：明朝 16／行送り22.4／w600。フッターは SP 14 */
+.el-nav .nav-row a{font-family:var(--nav-font,var(--f-heading));font-weight:600;line-height:1.4}
+.el-nav a[aria-current]{color:var(--nav-active,var(--nav,inherit))}
 .el-nav .nav-sp{height:100%;position:relative;z-index:1002}
 .el-nav .nav-sp summary{list-style:none;cursor:pointer;font-size:2.2rem;line-height:1;text-align:right;color:var(--nav,inherit)}
 .el-nav .nav-sp summary::-webkit-details-marker{display:none}
@@ -100,6 +105,9 @@ ${mq.sp}{.el-acc summary{font-size:1.6rem}.el-acc .acc-a{font-size:1.4rem}}
 .privacy h1{font-family:var(--f-heading);font-size:2.6rem;margin-bottom:2rem}
 .privacy h2{font-family:var(--f-heading);font-size:1.8rem;margin:2.4rem 0 .8rem}
 .privacy p{margin-bottom:1rem;font-size:1.5rem}
+/* ヘッダーを重ねるページ：ヘッダーの高さぶん負のマージンで、FV をページ y0 から始める（重ねる・A3-1） */
+${mq.pc}{.el-nav .nav-row a{font-size:1.6rem}.site-header.overlay{margin-bottom:-8.8rem}}
+${mq.sp}{.el-nav .nav-row a{font-size:1.4rem}.site-header.overlay{margin-bottom:-8rem}}
 ${mq.pc}{:root{font-size:clamp(7px,calc(100vw/${pcDiv}),10px)}.cbox{width:${site.canvas.pcContentWidth / 10}rem}.only-sp{display:none!important}}
 ${mq.sp}{:root{font-size:clamp(8.2px,calc(100vw/${spDiv}),11.5px)}.cbox{width:${site.canvas.spDesignWidth / 10}rem}.only-pc{display:none!important}}
 `.trim();

@@ -65,7 +65,7 @@ export function resolveSite(data, refDate) {
     } else if (el.type === "photo") {
       elements.set(id, { ...base, photo: { asset: el.asset, bind: el.bind, crop: el.crop, darken: el.darken, radius: el.radius, alt: el.alt, link: el.link } });
     } else if (el.type === "shape") {
-      elements.set(id, { ...base, shape: { kind: el.kind, fill: el.fill, radius: el.radius, opacity: el.opacity, link: el.link } });
+      elements.set(id, { ...base, shape: { kind: el.kind, fill: el.fill, radius: el.radius, opacity: el.opacity, stroke: el.stroke, link: el.link } });
     } else if (el.type === "embed") {
       elements.set(id, { ...base, embed: { kind: el.kind, config: el.config } });
     } else if (el.type === "nav") {

@@ -304,6 +304,7 @@ function elementCss(el, resolved, positions, device, rules) {
     lines.push(`height:${rem(box.h)}`);
     const fill = colorCss(el.shape.fill); if (fill) lines.push(el.shape.kind === "line" ? `background:${fill}` : `background:${fill}`);
     if (el.shape.radius != null) lines.push(`border-radius:${el.shape.radius}px`);
+    if (el.shape.stroke) lines.push(`border:${el.shape.stroke.width}px solid ${colorCss(el.shape.stroke.color)}`);
     if (el.shape.opacity != null) lines.push(`opacity:${el.shape.opacity / 100}`);
   } else if (el.type === "repeater") {
     // 開閉式は中身なりに伸びる（height:auto）＝開いたら箱が伸び、クライアントJSが下をずらせる。

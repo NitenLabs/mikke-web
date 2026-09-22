@@ -2,34 +2,12 @@
   "note": "付録 A（appendixA.mjs）を種類ごとの仕組みで照合。旧来の自動生成（site.json 由来）は baseline として下に残すが、重複は付録 A を優先する。",
   "appendixResults": {
     "A2-1": {
-      "status": "fail",
-      "details": [
-        "pc el_about_lbl: 行送り 期待22.4 実測25.6",
-        "pc el_feat_lbl: 行送り 期待22.4 実測25.6",
-        "pc el_items_lbl: 行送り 期待22.4 実測25.6",
-        "pc el_faq_lbl: 行送り 期待22.4 実測25.6",
-        "pc el_acc_lbl: 行送り 期待22.4 実測25.6",
-        "pc el_ct_lbl: 行送り 期待22.4 実測25.6 / 字間 期待0px 実測1.6px",
-        "pc el_mhlbl: 行送り 期待22.4 実測25.6 / 字間 期待0px 実測1.6px",
-        "pc el_chlbl: 行送り 期待22.4 実測25.6 / 字間 期待0px 実測1.6px",
-        "sp el_about_lbl: 行送り 期待19.6 実測22.4",
-        "sp el_feat_lbl: 行送り 期待19.6 実測22.4",
-        "sp el_items_lbl: 行送り 期待19.6 実測22.4",
-        "sp el_faq_lbl: 行送り 期待19.6 実測22.4",
-        "sp el_acc_lbl: 行送り 期待19.6 実測22.4",
-        "sp el_ct_lbl: 行送り 期待19.6 実測22.4 / 字間 期待0px 実測1.4px",
-        "sp el_mhlbl: 行送り 期待19.6 実測22.4 / 字間 期待0px 実測1.4px",
-        "sp el_chlbl: 行送り 期待19.6 実測22.4 / 字間 期待0px 実測1.4px"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-2": {
-      "status": "fail",
-      "details": [
-        "pc el_mhh: 行送り 期待39.2 実測50.4",
-        "pc el_chh: 行送り 期待39.2 実測50.4",
-        "sp el_mhh: 行送り 期待28 実測36",
-        "sp el_chh: 行送り 期待28 実測36"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-3": {
       "status": "pass",
@@ -40,111 +18,64 @@
       "details": []
     },
     "A2-5": {
-      "status": "fail",
-      "details": [
-        "sp el_accinfo: 大きさ 期待14 実測16 / 行送り 期待25.2 実測28.8"
-      ]
+      "status": "pass",
+      "details": []
+    },
+    "A2-5b": {
+      "status": "pass",
+      "details": []
     },
     "A2-9": {
-      "status": "fail",
-      "details": [
-        "pc el_kanmilbl: 行送り 期待33.6 実測43.2",
-        "pc el_mt_lbl: 行送り 期待33.6 実測43.2",
-        "pc el_mk_lbl: 行送り 期待33.6 実測43.2",
-        "sp el_kanmilbl: 行送り 期待25.2 実測32.4",
-        "sp el_mt_lbl: 行送り 期待25.2 実測32.4",
-        "sp el_mk_lbl: 行送り 期待25.2 実測32.4"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-11": {
-      "status": "fail",
-      "details": [
-        "pc el_itemsbtn: 行送り 期待22.4 実測28.8",
-        "pc el_acctel: 行送り 期待22.4 実測28.8",
-        "pc el_ct_btn: 行送り 期待22.4 実測28.8",
-        "sp el_itemsbtn: 行送り 期待22.4 実測28.8",
-        "sp el_acctel: 行送り 期待22.4 実測28.8",
-        "sp el_ct_btn: 行送り 期待22.4 実測28.8"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-13": {
-      "status": "fail",
-      "details": [
-        "pc el_logo: 行送り 期待33.6 実測43.2",
-        "sp el_logo: 行送り 期待33.6 実測43.2"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-14": {
       "status": "pass",
       "details": []
     },
     "A2-15": {
-      "status": "fail",
-      "details": [
-        "pc el_fven: 行送り 期待19.6 実測22.4",
-        "sp el_fven: 行送り 期待16.8 実測19.2"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-16": {
-      "status": "fail",
-      "details": [
-        "pc el_fname: 字間 期待0px 実測3.2px",
-        "sp el_fname: 字間 期待0px 実測3.2px"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-17": {
-      "status": "fail",
-      "details": [
-        "pc el_fpriv: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px",
-        "pc el_fcopy: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px",
-        "pc el_fmikke: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px",
-        "sp el_fpriv: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px",
-        "sp el_fcopy: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px",
-        "sp el_fmikke: 行送り 期待16.8 実測19.2 / 字間 期待0px 実測1.2px"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-19": {
-      "status": "fail",
-      "details": [
-        "pc el_kanmitime: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 字間 期待0px 実測1.4px",
-        "pc el_mk_time: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 字間 期待0px 実測1.4px",
-        "sp el_kanmitime: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 字間 期待0px 実測1.4px",
-        "sp el_mk_time: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 字間 期待0px 実測1.4px"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-21": {
-      "status": "fail",
-      "details": [
-        "pc el_ntlabel: 行送り 期待22 実測28.8",
-        "sp el_ntlabel: 行送り 期待17 実測21.6"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-22": {
-      "status": "fail",
-      "details": [
-        "pc el_nttext: 行送り 期待22 実測28.8",
-        "sp el_nttext: 行送り 期待17 実測21.6"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-12": {
-      "status": "fail",
-      "details": [
-        "pc A2-12: 大きさ 期待16 実測10 / 行送り 期待22.4 実測17 / 太さ 期待600 実測400 / 色 期待#FFFFFF 実測#333333"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-18": {
-      "status": "fail",
-      "details": [
-        "pc A2-18: 大きさ 期待16 実測10 / 行送り 期待22.4 実測17 / 太さ 期待600 実測400",
-        "sp A2-18: 大きさ 期待14 実測10 / 行送り 期待19.6 実測17 / 太さ 期待600 実測400"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-20": {
-      "status": "fail",
-      "details": [
-        "pc A2-20: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 太さ 期待700 実測400 / 色 期待#333333 実測#7B7B7B",
-        "sp A2-20: 書体 期待Zen Old Mincho 実測Zen Kaku Gothic New / 太さ 期待700 実測400 / 色 期待#333333 実測#7B7B7B"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A2-6": {
       "status": "pass",
@@ -155,36 +86,24 @@
       "details": []
     },
     "A2-8": {
-      "status": "fail",
-      "details": [
-        "pc A2-8: 行送り 期待22.4 実測28.8",
-        "sp A2-8: 行送り 期待19.6 実測25.2"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A3-1": {
-      "status": "fail",
-      "details": [
-        "pc sec_hero: ページy 期待0 実測88.19",
-        "sp sec_hero: ページy 期待0 実測80.19"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A3-3": {
-      "status": "fail",
-      "details": [
-        "pc el_logo: 高さ 期待34 実測43.19",
-        "sp el_logo: 高さ 期待34 実測43.19"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A3-5": {
       "status": "pass",
       "details": []
     },
     "A4-1": {
-      "status": "fail",
-      "details": [
-        "pc sec_hero: y 期待0 実測NaN",
-        "sp sec_hero: y 期待0 実測NaN"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A4-2": {
       "status": "pass",
@@ -195,43 +114,24 @@
       "details": []
     },
     "A4-4": {
-      "status": "fail",
-      "details": [
-        "pc el_fven: 高さ 期待20 実測22.39",
-        "sp el_fven: 高さ 期待17 実測19.19"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A5-2": {
       "status": "pass",
       "details": []
     },
     "A5-3": {
-      "status": "fail",
-      "details": [
-        "pc el_ntlabel: 高さ 期待22 実測28.8",
-        "sp el_ntlabel: 高さ 期待17 実測21.59"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A5-4": {
-      "status": "fail",
-      "details": [
-        "pc el_nttext: 高さ 期待22 実測28.8"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A6-1": {
-      "status": "fail",
-      "details": [
-        "pc el_about_lbl: 高さ 期待22 実測25.59",
-        "sp el_about_lbl: 高さ 期待20 実測22.39",
-        "pc el_feat_lbl: 高さ 期待22 実測25.59",
-        "sp el_feat_lbl: 高さ 期待20 実測22.39",
-        "pc el_items_lbl: 高さ 期待22 実測25.59",
-        "sp el_items_lbl: 高さ 期待20 実測22.39",
-        "pc el_faq_lbl: 高さ 期待22 実測25.59",
-        "sp el_faq_lbl: 高さ 期待20 実測22.39",
-        "pc el_acc_lbl: 高さ 期待22 実測25.59",
-        "sp el_acc_lbl: 高さ 期待20 実測22.39"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A6-2": {
       "status": "pass",
@@ -242,11 +142,8 @@
       "details": []
     },
     "A6-4": {
-      "status": "fail",
-      "details": [
-        "pc el_ct_lbl: 高さ 期待22 実測25.59",
-        "sp el_ct_lbl: 高さ 期待20 実測22.39"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A7-1": {
       "status": "pass",
@@ -257,10 +154,8 @@
       "details": []
     },
     "A7-3": {
-      "status": "fail",
-      "details": [
-        "sp el_aboutbody: 高さ 期待151 実測125.94"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A7-4": {
       "status": "pass",
@@ -303,11 +198,8 @@
       "details": []
     },
     "A9-7": {
-      "status": "fail",
-      "details": [
-        "pc el_kanmilbl: 高さ 期待34 実測43.19",
-        "sp el_kanmilbl: 高さ 期待25 実測32.39"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A9-9": {
       "status": "pass",
@@ -330,10 +222,8 @@
       "details": []
     },
     "A11-4": {
-      "status": "fail",
-      "details": [
-        "pc el_accinfotop: y 期待264 実測258.19"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A11-8": {
       "status": "pass",
@@ -352,11 +242,8 @@
       "details": []
     },
     "A12-3": {
-      "status": "fail",
-      "details": [
-        "pc el_ct_body: 高さ 期待86 実測57.59",
-        "sp el_ct_body: 高さ 期待101 実測75.56"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A12-4": {
       "status": "pass",
@@ -383,18 +270,12 @@
       "details": []
     },
     "A14-2": {
-      "status": "fail",
-      "details": [
-        "pc el_mhlbl: 高さ 期待22 実測25.59",
-        "sp el_mhlbl: 高さ 期待20 実測22.39"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A14-3": {
-      "status": "fail",
-      "details": [
-        "pc el_mhh: 高さ 期待39 実測50.39",
-        "sp el_mhh: 高さ 期待28 実測36"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A14-4": {
       "status": "pass",
@@ -405,18 +286,12 @@
       "details": []
     },
     "A15-2": {
-      "status": "fail",
-      "details": [
-        "pc el_chlbl: y 期待170 実測130 / 高さ 期待22 実測25.59",
-        "sp el_chlbl: y 期待132 実測100 / 高さ 期待20 実測22.39"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A15-2b": {
-      "status": "fail",
-      "details": [
-        "pc el_chh: y 期待201 実測161 / 高さ 期待39 実測50.39",
-        "sp el_chh: y 期待159 実測127.38 / 高さ 期待28 実測36"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A1-2a": {
       "status": "pass",
@@ -431,43 +306,32 @@
       "details": []
     },
     "A9-16": {
-      "status": "fail",
-      "details": [
-        "el_itemsbtnbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333",
-        "el_itemsbtnbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A11-9b": {
-      "status": "fail",
-      "details": [
-        "el_acctelbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333",
-        "el_acctelbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A12-4b": {
-      "status": "fail",
-      "details": [
-        "el_ct_btnbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333",
-        "el_ct_btnbg: 枠線の太さ 期待1 実測0 / 枠線の色 期待#7B7B7B 実測#333333"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A8-8a": {
       "status": "fail",
       "details": [
-        "A8-8a: 文字中央525.58 写真中央537.19 差11.61"
+        "A8-8a: 文字中央525.97 写真中央537.58 差11.61"
       ]
     },
     "A8-8b": {
       "status": "fail",
       "details": [
-        "A8-8b: 文字中央1008.58 写真中央1021.38 差12.8"
+        "A8-8b: 文字中央1008.97 写真中央1021.77 差12.8"
       ]
     },
     "A11-7": {
-      "status": "fail",
-      "details": [
-        "A11-7: el_accphoto.y=264.19 el_accinfotop.y=258.19 差6"
-      ]
+      "status": "pass",
+      "details": []
     },
     "A9-cardtops": {
       "status": "pass",

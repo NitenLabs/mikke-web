@@ -949,6 +949,16 @@
           "minimum": 0,
           "maximum": 100
         },
+        "stroke": {
+          "type": "object",
+          "required": ["color", "width"],
+          "additionalProperties": false,
+          "description": "枠線（色と太さ px）。ピルのボタンの枠など。box-sizing は border-box なので外寸は変わらない",
+          "properties": {
+            "color": { "$ref": "common.schema.json#/$defs/color" },
+            "width": { "type": "number", "minimum": 0, "maximum": 10 }
+          }
+        },
         "link": {
           "$ref": "#/$defs/link",
           "description": "図形＋文字＋リンクでボタンを作る（ボタン専用の部品は作らない）"

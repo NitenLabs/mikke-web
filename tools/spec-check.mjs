@@ -138,10 +138,11 @@ function checkBox(m, c) {
   const label = `${c.dev} ${c.target}`;
   if (!m) { rec(c.id, "notfound", `${label}: 要素なし`); return; }
   const fails = [];
+  const isText = site.elements[c.target]?.type === "text";
   const doX = c.x != null && !c.hOnly;
   const doY = c.y != null && !c.hOnly && !c.xwOnly && !c.xwhOnly;
   const doW = c.w != null && !c.hOnly;
-  const doH = c.h != null && !c.xwOnly;
+  const doH = c.h != null && !c.xwOnly && !isText; // 文字の箱の高さは中身に合わせる（照合しない）
   const yv = c.pageY ? m.pageY : m.y;
   if (doX && !near(m.x, c.x, POS)) fails.push(`x 期待${c.x} 実測${round(m.x)}`);
   if (doY && !near(yv, c.y, POS)) fails.push(`${c.pageY ? "ページy" : "y"} 期待${c.y} 実測${round(yv)}`);

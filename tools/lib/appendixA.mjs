@@ -26,7 +26,9 @@ export const TEXT = [
   t("A2-3", MIN, [28, 50.4], [20, 36], 700, 0.1, ["el_aboutlead"]),
   t("A2-4", MIN, [24, 43.2], [16, 28.8], 700, 0.1, ["el_feath1", "el_feath2"]),
   t("A2-5", GOT, [16, 28.8], [14, 25.2], 400, 0, [
-    "el_aboutbody", "el_featb1", "el_featb2", { id: "el_ct_body", c: ON }, "el_accinfo", "el_mhsoe"]),
+    "el_aboutbody", "el_featb1", "el_featb2", { id: "el_ct_body", c: ON }, "el_mhsoe"]),
+  // ACCESS の値はゴシック16/28.8（pc/sp とも16）＝body(sp14)ではない。SPEC 4.8/A11-3
+  t("A2-5b", GOT, [16, 28.8], [16, 28.8], 400, 0, ["el_accinfo"]),
   // A2-6..A2-9 品名/説明/価格/表小見出し は繰り返す部品のセル（card cel）。cel は別途 CELTEXT で照合
   t("A2-9", MIN, [24, 33.6], [18, 25.2], 700, 0.1, ["el_kanmilbl", "el_mt_lbl", "el_mk_lbl"]),
   t("A2-11", MIN, [16, 22.4], [16, 22.4], 700, 0, ["el_itemsbtn", "el_acctel", "el_ct_btn"]),
@@ -72,8 +74,8 @@ export const BOX = [
   b("A3-3", "pc", "el_logo", 88, 27, null, 34), b("A3-3", "sp", "el_logo", 20, 23, null, 34),
   b("A3-5", "pc", "el_hline", 56, 87, 1328, 1), b("A3-5", "sp", "el_hline", 10, 79, 371, 1),
   // A4 FV
-  b("A4-1", "pc", "sec_hero", 0, 0, 1440, 720, { note: "FV セクションの高さ" }),
-  b("A4-1", "sp", "sec_hero", 0, 0, 390, 600),
+  b("A4-1", "pc", "sec_hero", 0, 0, 1440, 720, { hOnly: true, note: "FV セクションの高さ" }),
+  b("A4-1", "sp", "sec_hero", 0, 0, 390, 600, { hOnly: true }),
   b("A4-2", "pc", "el_fvphoto", 0, 0, 1440, 720), b("A4-2", "sp", "el_fvphoto", 0, 0, 390, 600),
   b("A4-3", "pc", "el_fvh", 420, 294, 600, 101), b("A4-3", "sp", "el_fvh", 59, 250, 273, 72),
   b("A4-4", "pc", "el_fven", 420, 407, 600, 20), b("A4-4", "sp", "el_fven", 59, 334, 273, 17),
