@@ -207,6 +207,11 @@
       "question": "のしは付けられますか？",
       "answer": "はい、無料でお付けします。",
       "order": 2
+    },
+    "faq_yoyaku01": {
+      "question": "予約はできますか？",
+      "answer": "上生菓子は前日の17時までにお電話でご予約いただけます。",
+      "order": 3
     }
   },
   "catalog": {
@@ -337,7 +342,8 @@
         "status": "onSale",
         "photos": [
           "ast_band3"
-        ]
+        ],
+        "description": "ふっくら焼いた皮に、自家製の粒餡をはさみました。"
       },
       "itm_warabi": {
         "name": "わらび餅",
