@@ -15,6 +15,7 @@ export function emitPrimitive(p, device) {
     return `<div data-el="${p.id}" data-kind="text" class="t${lb}" style="${base};width:${px(p.w)};${textStyleInline(p.styleName, device)}">${p.html}</div>`;
   }
   if (p.kind === "photo") {
+    if (p.empty) return `<div data-el="${p.id}" data-kind="photo" class="photo empty" style="${base};width:${px(p.w)};height:${px(p.h)}">ここに写真を入れてください</div>`;
     return `<div data-el="${p.id}" data-kind="photo" class="photo" style="${base};width:${px(p.w)};height:${px(p.h)}">${p.asset || ""}</div>`;
   }
   if (p.kind === "line" || p.kind === "rule") {

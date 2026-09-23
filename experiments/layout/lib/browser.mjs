@@ -13,6 +13,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 .t.lb{word-break:keep-all;overflow-wrap:anywhere}
 .t .nowrap{white-space:nowrap}
 .photo{display:flex;align-items:center;justify-content:center;color:#fff;font:12px/1.4 monospace;text-align:center;background:#8a8a8a}
+.photo.empty{background:#f2f2f2;color:#999;border:1px dashed #bbb}
 .line{background:var(--c-line)}
 /* 甘味処の表：行の線は box-shadow（高さに入らない＝本線と同じ） */
 .row-lines{box-shadow:inset 0 1px 0 var(--c-line)}

@@ -270,6 +270,12 @@ async function evalOp(name, op, device, r, mkey) {
     req(near(ph.h, op.edits(device).template.cardPhotoH[device], 2), `写真高さ=${ph.h}`);
     const ys = ["card_price_c_jonama", "card_price_c_warabi", "card_price_c_dora"].map((i) => n[i]?.y);
     if (device === "pc") req(Math.max(...ys) - Math.min(...ys) <= TOL.rel, `価格そろい(${ys})`);
+  } else if (name === "E5b") {
+    const base = await render(mkey, "feature", device, baseContent());
+    const bp = base.byId.F_p1, np = n.F_p1;
+    req(np && near(np.x, bp.x, 0.5) && near(np.y, bp.y, 0.5) && near(np.w, bp.w, 0.5) && near(np.h, bp.h, 0.5), `枠の位置・大きさ不変（枠=(${np?.x},${np?.y},${np?.w},${np?.h})）`);
+    let still = true; for (const id of ["F_h1", "F_b1", "F_p0", "F_h0", "F_b0", "F_lbl", "F_h"]) if (n[id] && !near(n[id].y, base.byId[id].y, 0.5)) still = false;
+    req(still, "周りの部品が動かない");
   } else if (name === "E6") {
     // SP は base と同じ（この device が sp のとき edits 空→base）
     if (device === "sp") { const base = await render(mkey, "feature", "sp", baseContent()); req(near(n.F_h0.y, base.byId.F_h0.y, TOL.same), `SP不変(F_h0 ${n.F_h0.y} vs ${base.byId.F_h0.y})`); }

@@ -929,6 +929,72 @@
         "overflows": 0
       }
     },
+    "E5b-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:枠の位置・大きさ不変（枠=(136,819.58,549,404)）",
+        "OK:周りの部品が動かない"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E5b-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:枠の位置・大きさ不変（枠=(136,819.58,549,404)）",
+        "OK:周りの部品が動かない"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E5b-C-pc": {
+      "pass": true,
+      "notes": [
+        "OK:枠の位置・大きさ不変（枠=(136,819.58,549,404)）",
+        "OK:周りの部品が動かない"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E5b-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:枠の位置・大きさ不変（枠=(19.5,658.95,351,258)）",
+        "OK:周りの部品が動かない"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E5b-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:枠の位置・大きさ不変（枠=(20,658.94,351,258)）",
+        "OK:周りの部品が動かない"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E5b-C-sp": {
+      "pass": true,
+      "notes": [
+        "OK:枠の位置・大きさ不変（枠=(19.5,658.95,351,258)）",
+        "OK:周りの部品が動かない"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
     "E6-A-pc": {
       "pass": true,
       "notes": [

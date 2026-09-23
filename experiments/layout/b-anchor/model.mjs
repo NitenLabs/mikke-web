@@ -96,7 +96,7 @@ export function buildFeature(content, device, H, edits = {}) {
   const nodes = [];
   const txt = (id, x, w, key, style, anchor, group) =>
     nodes.push({ id, kind: "text", x, w, h: th(H, key), html: thtml(H, key), styleName: style, anchor, group });
-  const photo = (id, x, anchor) => nodes.push({ id, kind: "photo", x, w: c.pW, h: c.pH, fill: null, anchor, asset: true });
+  const photo = (id, x, anchor) => nodes.push({ id, kind: "photo", x, w: c.pW, h: c.pH, fill: null, anchor, asset: true, empty: edits.clear?.includes(id) });
   const rule = (id, anchor, group) => nodes.push({ id, kind: "rule", x: c.ruleX, w: c.ruleW, h: 2, anchor, group });
 
   // 見出しの組（グループ）
@@ -239,7 +239,7 @@ export function buildItems(content, device, H, edits = {}) {
   const cardsNode = nodes.find((n) => n.id === "I_cards");
   const cy = cardsNode._y;
   for (const cc of cardsNode._cardCells) {
-    prims.push({ id: `card_photo_${cc.card.id}`, kind: "photo", dataKind: "photo", x: cc.cx, y: cy + cc.relPhoto, w: cc.cardW, h: cardsNode._photoH, asset: cc.card.photo.asset });
+    prims.push({ id: `card_photo_${cc.card.id}`, kind: "photo", dataKind: "photo", x: cc.cx, y: cy + cc.relPhoto, w: cc.cardW, h: cardsNode._photoH, asset: cc.card.photo.asset, empty: edits.clear?.includes(`card_photo_${cc.card.id}`) });
     prims.push({ id: `card_name_${cc.card.id}`, kind: "text", dataKind: "text", x: cc.cx + c.cardTxtOff, y: cy + cc.relName, w: c.cardTxtW, styleName: "cardName", html: thtml(H, `I_cn_${cc.card.id}`) });
     prims.push({ id: `card_desc_${cc.card.id}`, kind: "text", dataKind: "text", x: cc.cx + c.cardTxtOff, y: cy + cc.relDesc, w: c.cardTxtW, styleName: "cardDesc", html: thtml(H, `I_cd_${cc.card.id}`) });
     prims.push({ id: `card_price_${cc.card.id}`, kind: "text", dataKind: "text", x: cc.cx + c.cardTxtOff, y: cy + cc.relPrice, w: c.cardTxtW, styleName: "cardPrice", html: thtml(H, `I_cp_${cc.card.id}`) });
@@ -270,7 +270,7 @@ export function buildItems(content, device, H, edits = {}) {
 function toPrimitives(nodes) {
   return nodes.filter((n) => n.kind !== "group").map((n) => ({
     id: n.id, kind: n.kind, dataKind: dataKindOf(n), x: n.x, y: n._y, w: n.w, h: n.h,
-    html: n.html, styleName: n.styleName, fill: n.fill, asset: n.asset, opacity: n.opacity,
+    html: n.html, styleName: n.styleName, fill: n.fill, asset: n.asset, opacity: n.opacity, empty: n.empty,
   }));
 }
 function dataKindOf(n) {

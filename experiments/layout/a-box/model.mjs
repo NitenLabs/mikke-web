@@ -41,6 +41,10 @@ const PHOTO = (id, w, h, asset, extra = "") =>
   `<div data-el="${id}" data-kind="photo" class="photo" style="width:${px(w)};height:${px(h)};flex:none;${extra}">${asset}</div>`;
 const CARDPHOTO = (id, asset) =>
   `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;aspect-ratio:1/1">${asset}</div>`;
+// 写真を外した空の枠（同じ大きさ・周りは動かない）。data-kind は photo のまま＝枠として位置を追える。
+const EMPTYFRAME = (id, w, h, extra = "", card = false) =>
+  `<div data-el="${id}" data-kind="photo" class="photo empty" style="${card ? "width:100%;aspect-ratio:1/1" : `width:${px(w)};height:${px(h)};flex:none`};${extra}">ここに写真を入れてください</div>`;
+const cleared = (edits, id) => edits?.clear?.includes(id);
 const RULE = (id) => `<div data-el="${id}" data-kind="line" style="width:24px;height:2px;background:${COLORS.text}"></div>`;
 const LINE = (id, w, h, op) => `<div data-el="${id}" data-kind="line" style="width:${px(w)};height:${px(h)};background:${COLORS.line}${op ? `;opacity:${op}` : ""}"></div>`;
 
@@ -81,7 +85,7 @@ export function buildFeature(content, device, H, edits = {}) {
     const block = (b, i, reversed) => {
       const hEl = T(`F_h${i}`, "featHead", device, c.tW, thtml(H, `F_h${i}`), mv(edits, `F_h${i}`));
       const tg = `<div class="tg" style="position:relative;top:${px(c.centerOff)};width:${px(c.tW)};flex:none">${hEl}${bodyEl(i, `margin-top:${px(headBody)}`)}</div>`;
-      const photo = removed(edits, `F_p${i}`) ? "" : PHOTO(`F_p${i}`, c.pW, c.pH, b.photo.asset);
+      const photo = removed(edits, `F_p${i}`) ? "" : cleared(edits, `F_p${i}`) ? EMPTYFRAME(`F_p${i}`, c.pW, c.pH) : PHOTO(`F_p${i}`, c.pW, c.pH, b.photo.asset);
       const padL = reversed ? c.b2PadL : c.b1PadL;
       const kids = reversed ? photo + tg : tg + photo;
       return `<div class="row" style="display:flex;align-items:center;padding-left:${px(padL)};gap:${px(c.b1Gap)};margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}">${kids}</div>`;
@@ -89,7 +93,7 @@ export function buildFeature(content, device, H, edits = {}) {
     blocks = block(content.feature.blocks[0], 0, false) + block(content.feature.blocks[1], 1, true);
   } else {
     const block = (b, i) => `
-      ${removed(edits, `F_p${i}`) ? "" : PHOTO(`F_p${i}`, c.pW, c.pH, b.photo.asset, `margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}`)}
+      ${removed(edits, `F_p${i}`) ? "" : cleared(edits, `F_p${i}`) ? EMPTYFRAME(`F_p${i}`, c.pW, c.pH, `margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}`) : PHOTO(`F_p${i}`, c.pW, c.pH, b.photo.asset, `margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}`)}
       ${T(`F_h${i}`, "featHead", device, c.tW, thtml(H, `F_h${i}`), `margin-top:${px(c.photoHead)}` + mv(edits, `F_h${i}`))}
       ${bodyEl(i, `margin-top:${px(headBody)}`)}`;
     blocks = block(content.feature.blocks[0], 0) + block(content.feature.blocks[1], 1);
@@ -104,9 +108,11 @@ export function buildFeature(content, device, H, edits = {}) {
 export function buildItems(content, device, H, edits = {}) {
   const c = { ...G.items[device], ...(edits.geom?.[device] || {}) }; // geom で幾何定数を差し替え可（G2 の参照元プロファイル）
   const photoH = edits.template?.cardPhotoH?.[device]; // editRow（E3）で写真高さを固定
-  const cph = (id, asset) => photoH
-    ? `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;height:${px(photoH)}">${asset}</div>`
-    : CARDPHOTO(id, asset);
+  const cph = (id, asset) => cleared(edits, id)
+    ? EMPTYFRAME(id, 0, 0, "", !photoH)
+    : photoH
+      ? `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;height:${px(photoH)}">${asset}</div>`
+      : CARDPHOTO(id, asset);
   const addAfterDivider = edits.addText; // E4
   const hg = headingGroup("I", content.items, device, c);
 

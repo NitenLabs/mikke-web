@@ -42,6 +42,9 @@ const PHOTO = (id, w, h, asset, extra = "") =>
   `<div data-el="${id}" data-kind="photo" class="photo" style="width:${px(w)};height:${px(h)};flex:none;${extra}">${asset}</div>`;
 const CARDPHOTO = (id, asset) =>
   `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;aspect-ratio:1/1">${asset}</div>`;
+const EMPTYFRAME = (id, w, h, extra = "", card = false) =>
+  `<div data-el="${id}" data-kind="photo" class="photo empty" style="${card ? "width:100%;aspect-ratio:1/1" : `width:${px(w)};height:${px(h)};flex:none`};${extra}">ここに写真を入れてください</div>`;
+const cleared = (edits, id) => edits?.clear?.includes(id);
 const RULE = (id) => `<div data-el="${id}" data-kind="line" style="width:24px;height:2px;background:${COLORS.text}"></div>`;
 const LINE = (id, w, h, op) => `<div data-el="${id}" data-kind="line" style="width:${px(w)};height:${px(h)};background:${COLORS.line}${op ? `;opacity:${op}` : ""}"></div>`;
 const thtml = (H, k) => H.get(k)?.html ?? "";
@@ -80,6 +83,7 @@ export function buildFeature(content, device, H, edits = {}) {
   const isMovedOut = (id) => edits.moveOut && edits.moveOut[id];
   const bodyEl = (i, base) => (removed(edits, `F_b${i}`) || isMovedOut(`F_b${i}`)) ? "" : T(`F_b${i}`, "featBody", device, c.tW, thtml(H, `F_b${i}`), moveIn(edits, `F_b${i}`, base));
 
+  const photoOf = (i, extra = "") => cleared(edits, `F_p${i}`) ? EMPTYFRAME(`F_p${i}`, c.pW, c.pH, extra) : PHOTO(`F_p${i}`, c.pW, c.pH, content.feature.blocks[i].photo.asset, extra);
   const wrapPhoto = (i, photoHtml) => {
     const child = floatFor(`F_p${i}`);
     return child ? `<div style="position:relative;flex:none">${photoHtml}${child}</div>` : photoHtml;
@@ -89,7 +93,7 @@ export function buildFeature(content, device, H, edits = {}) {
     const block = (b, i, reversed) => {
       const hEl = T(`F_h${i}`, "featHead", device, c.tW, thtml(H, `F_h${i}`), moveIn(edits, `F_h${i}`, 0));
       const tg = `<div class="tg" style="position:relative;top:${px(c.centerOff)};width:${px(c.tW)};flex:none">${hEl}${bodyEl(i, headBody)}</div>`;
-      const photo = removed(edits, `F_p${i}`) ? "" : wrapPhoto(i, PHOTO(`F_p${i}`, c.pW, c.pH, b.photo.asset));
+      const photo = removed(edits, `F_p${i}`) ? "" : wrapPhoto(i, photoOf(i));
       const padL = reversed ? c.b2PadL : c.b1PadL;
       const kids = reversed ? photo + tg : tg + photo;
       return `<div class="row" style="display:flex;align-items:center;padding-left:${px(padL)};gap:${px(c.b1Gap)};margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}">${kids}</div>`;
@@ -97,7 +101,7 @@ export function buildFeature(content, device, H, edits = {}) {
     blocks = block(content.feature.blocks[0], 0, false) + block(content.feature.blocks[1], 1, true);
   } else {
     const block = (b, i) => `
-      ${removed(edits, `F_p${i}`) ? "" : wrapPhoto(i, PHOTO(`F_p${i}`, c.pW, c.pH, b.photo.asset, `margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}`))}
+      ${removed(edits, `F_p${i}`) ? "" : wrapPhoto(i, photoOf(i, `margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}`))}
       ${T(`F_h${i}`, "featHead", device, c.tW, thtml(H, `F_h${i}`), `margin-top:${px(c.photoHead)};` + moveIn(edits, `F_h${i}`, 0))}
       ${bodyEl(i, headBody)}`;
     blocks = block(content.feature.blocks[0], 0) + block(content.feature.blocks[1], 1);
@@ -114,9 +118,11 @@ export function buildFeature(content, device, H, edits = {}) {
 export function buildItems(content, device, H, edits = {}) {
   const c = { ...G.items[device], ...(edits.geom?.[device] || {}) };
   const photoH = edits.template?.cardPhotoH?.[device];
-  const cph = (id, asset) => photoH
-    ? `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;height:${px(photoH)}">${asset}</div>`
-    : CARDPHOTO(id, asset);
+  const cph = (id, asset) => cleared(edits, id)
+    ? EMPTYFRAME(id, 0, 0, "", !photoH)
+    : photoH
+      ? `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;height:${px(photoH)}">${asset}</div>`
+      : CARDPHOTO(id, asset);
   const addText = edits.addText;
   const hg = headingGroup("I", content.items, device, c);
 
