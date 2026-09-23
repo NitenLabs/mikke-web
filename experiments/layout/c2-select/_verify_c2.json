@@ -1,0 +1,144 @@
+{
+  "g1": {
+    "feature-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "items-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "feature-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "items-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    }
+  },
+  "g2": {
+    "feature-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "items-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "feature-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "items-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    }
+  },
+  "scenarios": {
+    "S1-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S1-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S1b-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S1b-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S2-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S2-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S3-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S3-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S4-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S4-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S6b-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S6b-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S7-pc": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    },
+    "S7-sp": {
+      "md": 0,
+      "worst": "",
+      "warnC2": 0
+    }
+  },
+  "g3": {
+    "feature-pc": {
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.02,
+      "pass": true
+    },
+    "items-pc": {
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.28,
+      "pass": true
+    },
+    "feature-sp": {
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.05,
+      "pass": true
+    },
+    "items-sp": {
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.12,
+      "pass": true
+    }
+  }
+}
