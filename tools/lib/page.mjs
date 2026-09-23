@@ -40,6 +40,9 @@ main{display:block}
 .el{position:absolute}
 /* 改行の規則を明示的に固定する（エンジンごとの既定値の違いで折り返しがゆれないように） */
 .el-text{line-break:strict;word-break:normal;overflow-wrap:anywhere;white-space:normal}
+/* 改行の規則（fix04 §1）：lb＝文節でだけ折る（word-break:keep-all、<wbr>が改行位置）／lbh＝見出しの行の長さをそろえる */
+.lb{word-break:keep-all;overflow-wrap:anywhere}
+.lbh{text-wrap:balance}
 .el-text .pg{display:block}
 .el-text .nowrap{white-space:nowrap}
 .el-text .lc{display:flex}

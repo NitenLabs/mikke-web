@@ -16,6 +16,7 @@ const MEASURE_CSS = `
 *{margin:0;padding:0;box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;text-size-adjust:100%}
 .m{position:absolute;left:0;top:0;visibility:hidden;line-break:strict;word-break:normal;overflow-wrap:anywhere;white-space:normal}
+.m.lb{word-break:keep-all;overflow-wrap:anywhere}
 .m .pg{display:block}
 .m .nowrap{white-space:nowrap}
 .m .lc{display:flex}
@@ -31,7 +32,7 @@ async function measureInBrowser(browserType, reqs, fontUrl, rootVars) {
       // 幅は丸めない（0.2px 狭めるだけで境界の1文字が次行に落ち、折り返しが本番とずれる）。
       // 本番の箱は w%×中身の幅＝この widthPx なので、同じ小数の px で実測する。
       const style = [...r.style, `width:${Math.max(1, r.widthPx)}px`].join(";");
-      return `<div class="m" data-key="${r.key}" style="${style}">${r.html}</div>`;
+      return `<div class="m${r.lb ? " lb" : ""}" data-key="${r.key}" style="${style}">${r.html}</div>`;
     })
     .join("\n");
   const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8">

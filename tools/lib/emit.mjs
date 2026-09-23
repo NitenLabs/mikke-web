@@ -10,8 +10,15 @@ import {
   textBoxStyle, paragraphsHtml, esc, rem, pct, round, repeaterLayout, accCels,
 } from "./render.mjs";
 import { colorCss, fontCss, textStyle, ROLE_TAG, themeRootVars } from "./theme.mjs";
+import { lbEnabled, lbHeading } from "./linebreak.mjs";
 
 const mq = { pc: "@media (min-width:768px)", sp: "@media (max-width:767.98px)" };
+
+// 改行の規則のクラス（lb＝word-break:keep-all／lbh＝text-wrap:balance）
+function lbCls(styleObj, boxByDev, role, site) {
+  if (!lbEnabled(styleObj, boxByDev, site)) return "";
+  return lbHeading(role) ? " lb lbh" : " lb";
+}
 
 // 素材のファイル名（サンプルは .svg、実在の店は実ファイル）
 function assetSrc(resolved, id) {
@@ -107,9 +114,10 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
   const { theme } = resolved;
   if (el.type === "text") {
     const tag = ROLE_TAG[el.role] || "div";
-    const inner = paragraphsHtml(el.text, el.style, { linkResolver: (l) => linkResolver(l), labelColumn: el.style?.labelColumn });
+    const lb = lbEnabled(el.style, el.box, resolved.site);
+    const inner = paragraphsHtml(el.text, el.style, { linkResolver: (l) => linkResolver(l), labelColumn: el.style?.labelColumn, lb, lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep });
     const mh = mhAttr(resolved, `t:pc:${el.id}`, `t:sp:${el.id}`);
-    return `<${tag} data-el="${el.id}" class="el el-text"${mh}>${inner}</${tag}>`;
+    return `<${tag} data-el="${el.id}" class="el el-text${lbCls(el.style, el.box, el.role, resolved.site)}"${mh}>${inner}</${tag}>`;
   }
   if (el.type === "photo") return photoHtml(el, resolved);
   if (el.type === "shape") {
@@ -213,11 +221,13 @@ function repeaterHtml(el, resolved, linkResolver) {
   // 開閉式（accordion）：details/summary で作る（JS なしでも開閉できる）
   if (rp.display.mode === "accordion") {
     const { qCid, aCid } = accCels(rp);
-    const qStyle = rp.card.elements[qCid].style, aStyle = rp.card.elements[aCid].style;
+    const qCe = rp.card.elements[qCid], aCe = rp.card.elements[aCid];
+    const qStyle = qCe.style, aStyle = aCe.style;
+    const qLb = lbEnabled(qStyle, qCe.layout, resolved.site), aLb = lbEnabled(aStyle, aCe.layout, resolved.site);
     const parts = rp.items.map((it) => {
-      const q = paragraphsHtml(it.cels[qCid], qStyle, {});
-      const a = paragraphsHtml(it.cels[aCid], aStyle, { linkResolver: (l) => linkResolver(l) });
-      return `<details class="acc-item"><summary><span class="acc-q">${q}</span></summary><div class="acc-a">${a}</div></details>`;
+      const q = paragraphsHtml(it.cels[qCid], qStyle, { lb: qLb, lbKey: `c:${el.id}:${it.id}:${qCid}`, keep: resolved.lineBreakKeep });
+      const a = paragraphsHtml(it.cels[aCid], aStyle, { linkResolver: (l) => linkResolver(l), lb: aLb, lbKey: `c:${el.id}:${it.id}:${aCid}`, keep: resolved.lineBreakKeep });
+      return `<details class="acc-item"><summary><span class="acc-q${qLb ? " lb" : ""}">${q}</span></summary><div class="acc-a${aLb ? " lb" : ""}">${a}</div></details>`;
     }).join("");
     return `<div data-el="${el.id}" class="el el-rep el-acc">${parts}</div>`;
   }
@@ -232,7 +242,8 @@ function repeaterHtml(el, resolved, linkResolver) {
       const tag = ROLE_TAG[gh.role] || "h3";
       const rt = resolveText(gh, { item: it.view }, { refYear: resolved.refDate.year });
       const mh = mhAttr(resolved, `g:pc:${el.id}:${pl.catId}`, `g:sp:${el.id}:${pl.catId}`);
-      parts.push(`<${tag} data-head="${pl.catId}" class="rep-head el-text"${mh}>${paragraphsHtml(rt, gh.style, {})}</${tag}>`);
+      const ghLb = lbEnabled(gh.style, gh.layout, resolved.site);
+      parts.push(`<${tag} data-head="${pl.catId}" class="rep-head el-text${lbCls(gh.style, gh.layout, gh.role, resolved.site)}"${mh}>${paragraphsHtml(rt, gh.style, { lb: ghLb, lbKey: `g:${el.id}:${pl.catId}`, keep: resolved.lineBreakKeep })}</${tag}>`);
     } else {
       const it = rp.items.find((x) => x.id === pl.id);
       parts.push(cardHtml(el, it, resolved, linkResolver));
@@ -252,7 +263,8 @@ function cardHtml(el, it, resolved, linkResolver) {
       if (!rt || !rt.visible) return "";
       const tag = ROLE_TAG[ce.role] || "div";
       const mh = mhAttr(resolved, `c:pc:${el.id}:${it.id}:${cid}`, `c:sp:${el.id}:${it.id}:${cid}`);
-      return `<${tag} data-cel="${cid}" class="el el-text"${mh}>${paragraphsHtml(rt, ce.style, { linkResolver: (l) => linkResolver(l, it) })}</${tag}>`;
+      const lb = lbEnabled(ce.style, ce.layout, resolved.site);
+      return `<${tag} data-cel="${cid}" class="el el-text${lbCls(ce.style, ce.layout, ce.role, resolved.site)}"${mh}>${paragraphsHtml(rt, ce.style, { linkResolver: (l) => linkResolver(l, it), lb, lbKey: `c:${el.id}:${it.id}:${cid}`, keep: resolved.lineBreakKeep })}</${tag}>`;
     }
     if (ce.type === "photo") {
       if (!it.hasPhoto) return "";

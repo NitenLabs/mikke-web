@@ -10,6 +10,7 @@
 
 import { reflow } from "../reflow.mjs";
 import { resolveText } from "./text.mjs";
+import { tokenize, joinTokens, lbEnabled } from "./linebreak.mjs";
 import { resolveRepeater } from "./catalog.mjs";
 import { colorCss, fontCss, textStyle, ROLE_TAG } from "./theme.mjs";
 
@@ -155,7 +156,7 @@ function runSpan(r, linkResolver, cls) {
 // 段落→HTML。linkResolver(link)→{href,target} があればリンクを張る。
 // style.paragraphGap（px）＝段落の間隔／style.arrowRight＝末尾の「›」をピルの右端へ寄せる。
 function paragraphsHtml(resolvedText, style, opts = {}) {
-  const { linkResolver, labelColumn } = opts;
+  const { linkResolver, labelColumn, lb, lbKey, keep } = opts;
   const gap = style?.paragraphGap, arrowRight = style?.arrowRight;
   return resolvedText.paragraphs
     .map((p, idx) => {
@@ -166,6 +167,12 @@ function paragraphsHtml(resolvedText, style, opts = {}) {
         const restRuns = p.runs.slice(1).map((r) => runSpan(r, linkResolver)).join("");
         return `<span class="pg lc"${mt}><span class="lc-key" style="width:${labelColumn}em">${esc(first?.text ?? "")}</span><span class="lc-val">${restRuns}</span></span>`;
       }
+      if (lb) {
+        // 改行の規則（R1/R2）：文節を <wbr> で連結し、末尾 keep 文節を nowrap の塊に
+        const toks = tokenize(p.runs, true, { arrowRight, linkResolver });
+        const k = (keep && lbKey) ? (keep[`${lbKey}#${idx}`] || 0) : 0;
+        return `<span class="pg"${mt}>${joinTokens(toks, k)}</span>`;
+      }
       const runsHtml = p.runs.map((r, ri) => {
         const isArrow = arrowRight && ri === p.runs.length - 1 && (r.text || "").trim() === "›";
         return runSpan(r, linkResolver, isArrow ? "pill-arrow" : null);
@@ -173,6 +180,51 @@ function paragraphsHtml(resolvedText, style, opts = {}) {
       return `<span class="pg"${mt}>${runsHtml}</span>`;
     })
     .join("");
+}
+
+// 改行の規則（R2）の keep を測るための要求一覧（段落ごと・文節が2つ以上のもの）
+export function lineBreakRequests(resolved) {
+  const { site, theme, elements } = resolved;
+  const out = [];
+  const addPara = (baseKey, device, widthPx, style, rt, styleObj) => {
+    rt.paragraphs.forEach((p, idx) => {
+      const toks = tokenize(p.runs, true, { arrowRight: styleObj?.arrowRight });
+      if (toks.length < 2) return;
+      out.push({ key: `${baseKey}#${idx}`, device, widthPx, style, tokens: toks });
+    });
+  };
+  for (const el of elements.values()) {
+    if (el.type === "text" && el.text.visible && lbEnabled(el.style, el.box, site)) {
+      for (const device of DEVICES) addPara(`t:${el.id}`, device, boxWidthPx(el.box[device], device, site), textBoxStyle(el, device, theme, "px"), el.text, el.style);
+    }
+    if (el.type === "repeater") {
+      const rp = el.repeater;
+      for (const device of DEVICES) {
+        const repW = boxWidthPx(el.box[device], device, site);
+        const cols = rp.display.columns[device] || 1;
+        const gap = rp.display.gap?.[device] || 0;
+        const cardW = cols > 1 ? (repW - gap * (cols - 1)) / cols : repW;
+        for (const it of rp.items) {
+          for (const [cid, ce] of Object.entries(rp.card.elements)) {
+            if (ce.type !== "text") continue;
+            const rt = it.cels[cid]; if (!rt || !rt.visible) continue;
+            if (!lbEnabled(ce.style, ce.layout, site)) continue;
+            addPara(`c:${el.id}:${it.id}:${cid}`, device, (ce.layout[device].w / 100) * cardW, textBoxStyle({ role: ce.role, style: ce.style, box: ce.layout }, device, theme, "px"), rt, ce.style);
+          }
+        }
+        if (rp.groupHeading && rp.source.groupByCategory) {
+          const gh = rp.groupHeading; const seen = new Set();
+          for (const it of rp.items) {
+            if (seen.has(it.categoryId)) continue; seen.add(it.categoryId);
+            if (!lbEnabled(gh.style, gh.layout, site)) continue;
+            const rt = resolveText(gh, { item: it.view }, { refYear: resolved.refDate.year });
+            addPara(`g:${el.id}:${it.categoryId}`, device, (gh.layout[device].w / 100) * repW, textBoxStyle({ role: gh.role, style: gh.style, box: gh.layout }, device, theme, "px"), rt, gh.style);
+          }
+        }
+      }
+    }
+  }
+  return out;
 }
 
 // ---------- 実測すべき文字の箱の一覧 ----------
@@ -190,7 +242,8 @@ export function measurementRequests(resolved) {
           style: textBoxStyle(el, device, theme, "px"),
           labelColumn: el.style?.labelColumn,
           vertical: box.writingMode === "vertical", fixedH: box.h,
-          html: paragraphsHtml(el.text, el.style, { labelColumn: el.style?.labelColumn }),
+          lb: lbEnabled(el.style, el.box, site),
+          html: paragraphsHtml(el.text, el.style, { labelColumn: el.style?.labelColumn, lb: lbEnabled(el.style, el.box, site), lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep }),
         });
       }
     }
@@ -212,7 +265,8 @@ export function measurementRequests(resolved) {
               key: `c:${device}:${el.id}:${it.id}:${cid}`, device, widthPx: celW,
               style: textBoxStyle({ role: ce.role, style: ce.style, box: ce.layout }, device, theme, "px"),
               vertical: ce.layout[device].writingMode === "vertical", fixedH: ce.layout[device].h,
-              html: paragraphsHtml(rt, ce.style, {}),
+              lb: lbEnabled(ce.style, ce.layout, site),
+              html: paragraphsHtml(rt, ce.style, { lb: lbEnabled(ce.style, ce.layout, site), lbKey: `c:${el.id}:${it.id}:${cid}`, keep: resolved.lineBreakKeep }),
             });
           }
         }
@@ -229,7 +283,8 @@ export function measurementRequests(resolved) {
               key: `g:${device}:${el.id}:${it.categoryId}`, device, widthPx: ghW,
               style: textBoxStyle({ role: gh.role, style: gh.style, box: gh.layout }, device, theme, "px"),
               vertical: false, fixedH: gh.layout[device].h,
-              html: paragraphsHtml(rt, gh.style, {}),
+              lb: lbEnabled(gh.style, gh.layout, site),
+              html: paragraphsHtml(rt, gh.style, { lb: lbEnabled(gh.style, gh.layout, site), lbKey: `g:${el.id}:${it.categoryId}`, keep: resolved.lineBreakKeep }),
             });
           }
         }

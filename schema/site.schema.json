@@ -25,6 +25,10 @@
       "type": "string",
       "description": "元にしたテンプレート（オーダーメイドなら書かない）。「テンプレートの初期状態に戻す」に使う"
     },
+    "lineBreakRules": {
+      "type": "boolean",
+      "description": "改行の規則（文節単位・最後の行4文字以上・見出しの行そろえ）を効かせるか。既定 true。第2部（clone）の検証で参照元の素の折り返しを見たいときだけ false にする（fix04 §1）"
+    },
     "canvas": {
       "type": "object",
       "required": [

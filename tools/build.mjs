@@ -11,9 +11,11 @@ import path from "node:path";
 import { spawnSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
+import { chromium, webkit } from "playwright";
 import { makeRefDate } from "./lib/catalog.mjs";
-import { resolveSite, measurementRequests } from "./lib/render.mjs";
+import { resolveSite, measurementRequests, lineBreakRequests } from "./lib/render.mjs";
 import { measureHeights } from "./lib/measure.mjs";
+import { computeLineBreakKeep } from "./lib/linebreak.mjs";
 import { buildRepLayouts, renderPage, render404, renderPrivacy } from "./lib/page.mjs";
 import { prepareAssets } from "./lib/assets.mjs";
 import { pageDesignOverlaps } from "./lib/overlap.mjs";
@@ -53,9 +55,18 @@ const resolved = resolveSite(data, refDate);
 resolved.fontIds = themeFontIds(data.theme);
 const fontUrl = googleFontsUrl(resolved.fontIds);
 
+const rootVars = themeRootVars(data.theme);
+console.log("▸ 改行の規則（文節分け・最後の行）を決める…");
+const lbResult = await computeLineBreakKeep(lineBreakRequests(resolved), fontUrl, rootVars, { chromium, webkit });
+resolved.lineBreakKeep = lbResult.keep;
+const keepN = Object.values(lbResult.keep).filter((v) => v > 0).length;
+console.log(`  最後の行をまとめた段落: ${keepN} 件／文節が箱より長い: ${lbResult.longPhrases.length} 件／4文節でも直らない: ${lbResult.unresolved.length} 件`);
+if (lbResult.longPhrases.length) console.log("   長い文節: " + lbResult.longPhrases.join(" 、 "));
+if (lbResult.unresolved.length) console.log("   未解決(R2): " + lbResult.unresolved.join(" 、 "));
+
 console.log("▸ 文字の高さを実測（ヘッドレスブラウザ）…");
 const requests = measurementRequests(resolved);
-resolved.heights = await measureHeights(requests, fontUrl, themeRootVars(data.theme));
+resolved.heights = await measureHeights(requests, fontUrl, rootVars);
 console.log(`  実測: ${Object.keys(resolved.heights).length} 箇所（要求 ${requests.length}）`);
 
 buildRepLayouts(resolved);

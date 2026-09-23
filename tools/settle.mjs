@@ -11,9 +11,11 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import { chromium, webkit } from "playwright";
 import { makeRefDate } from "./lib/catalog.mjs";
-import { resolveSite, measurementRequests } from "./lib/render.mjs";
+import { resolveSite, measurementRequests, lineBreakRequests } from "./lib/render.mjs";
 import { measureHeights } from "./lib/measure.mjs";
+import { computeLineBreakKeep } from "./lib/linebreak.mjs";
 import { buildRepLayouts } from "./lib/page.mjs";
 import { themeFontIds, themeRootVars } from "./lib/theme.mjs";
 import { googleFontsUrl } from "./lib/fonts.mjs";
@@ -41,7 +43,10 @@ const DEVICES = ["pc", "sp"];
 console.log("▸ 高さを実測（スマホ=webkit／PC=chromium、フォント読み込み後）…");
 const resolved = resolveSite(data, refDate);
 resolved.fontIds = themeFontIds(data.theme);
-const heights = await measureHeights(measurementRequests(resolved), googleFontsUrl(resolved.fontIds), themeRootVars(data.theme));
+const fontUrl = googleFontsUrl(resolved.fontIds), rootVars = themeRootVars(data.theme);
+// 改行の規則（R2）の keep を先に決める（build と同じ手順＝結果が一致する）
+resolved.lineBreakKeep = (await computeLineBreakKeep(lineBreakRequests(resolved), fontUrl, rootVars, { chromium, webkit })).keep;
+const heights = await measureHeights(measurementRequests(resolved), fontUrl, rootVars);
 resolved.heights = heights;
 buildRepLayouts(resolved);
 
