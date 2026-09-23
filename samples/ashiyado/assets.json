@@ -62,7 +62,7 @@
         "mime": "image/jpeg",
         "width": 1132,
         "height": 840,
-        "bytes": 211067,
+        "bytes": 124946,
         "exifStripped": true
       },
       "uploadedAt": "2026-09-22T21:40:00+09:00",
@@ -70,8 +70,8 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "credit": "Andreas Haubold",
-        "pageUrl": "https://unsplash.com/photos/OTmHU9HdkHo"
+        "credit": "Igal Ness",
+        "pageUrl": "https://unsplash.com/photos/iJ7a6JLmAUI"
       },
       "rights": {
         "basis": "licensed",
@@ -80,7 +80,7 @@
         "note": "Unsplash License"
       },
       "slot": "signature",
-      "alt": "皿に盛られた和菓子と茶"
+      "alt": "上生菓子の寄り（食用花を添えて）"
     },
     "ast_frmd": {
       "kind": "photo",
@@ -89,7 +89,7 @@
         "mime": "image/jpeg",
         "width": 1132,
         "height": 840,
-        "bytes": 129479,
+        "bytes": 73811,
         "exifStripped": true
       },
       "uploadedAt": "2026-09-22T21:40:00+09:00",
@@ -97,8 +97,8 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "credit": "Vicky Ng",
-        "pageUrl": "https://unsplash.com/photos/bcPzSVSpN7g"
+        "credit": "Hoyoun Lee",
+        "pageUrl": "https://unsplash.com/photos/mZd0EO0F9ro"
       },
       "rights": {
         "basis": "licensed",
@@ -107,7 +107,7 @@
         "note": "Unsplash License"
       },
       "slot": "interior",
-      "alt": "茶器と上生菓子の設え"
+      "alt": "急須と茶碗の設え"
     },
     "ast_frme": {
       "kind": "photo",
@@ -116,7 +116,7 @@
         "mime": "image/jpeg",
         "width": 1098,
         "height": 808,
-        "bytes": 198253,
+        "bytes": 121529,
         "exifStripped": true
       },
       "uploadedAt": "2026-09-22T21:40:00+09:00",
@@ -124,8 +124,8 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "credit": "Christian Laborde",
-        "pageUrl": "https://unsplash.com/photos/Gm03YomE8E4"
+        "credit": "Tianhao Zhang",
+        "pageUrl": "https://unsplash.com/photos/qMzLQ6Z1uBU"
       },
       "rights": {
         "basis": "licensed",
@@ -134,7 +134,7 @@
         "note": "Unsplash License"
       },
       "slot": "signature",
-      "alt": "季節の上生菓子の盛り合わせ"
+      "alt": "黒皿の桃色の生菓子"
     },
     "ast_frmf": {
       "kind": "photo",
@@ -197,7 +197,7 @@
         "mime": "image/jpeg",
         "width": 852,
         "height": 852,
-        "bytes": 95780,
+        "bytes": 55578,
         "exifStripped": true
       },
       "uploadedAt": "2026-09-22T21:40:00+09:00",
@@ -224,7 +224,7 @@
         "mime": "image/jpeg",
         "width": 852,
         "height": 852,
-        "bytes": 53721,
+        "bytes": 35922,
         "exifStripped": true
       },
       "uploadedAt": "2026-09-22T21:40:00+09:00",

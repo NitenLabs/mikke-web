@@ -17,7 +17,15 @@ WB_B  = 1.075   # 青を上げて暖色を弱める
 GAIN  = 0.80    # 露出：全体を暗く（明るすぎを補正）
 KNEE  = 0.44    # ハイライト圧縮の膝：これ以上明るい画素を tanh で丸める（白背景を範囲側へ）
 SAT   = 1.16    # 彩度：わずかに上げて参照元(36)へ
-KGAIN_K = 2.6   # 枠Kだけの露出（§3.8。CONTACT背景を参照元の明るさ≈46に近づける）
+# 枚ごとの追加の露出（grade の後にかける。全体の調整とは別＝再現できる形で持つ）
+#   ast_K: CONTACT背景を参照元CONTACTの明るさ≈46へ引き上げ（fix04 §3.8）
+#   ast_H/ast_I: どら焼き（白背景）・わらび餅（日中光）が明るすぎるので、この2枚だけ暗くして
+#                参照元の明るさレンジ 66〜87 に入れる（fix05 §2。全体調整とは別の枚別調整）
+PER_KEY_GAIN = {
+    "ast_K.jpg": 2.6,
+    "ast_H.jpg": 0.56,
+    "ast_I.jpg": 0.66,
+}
 
 def grade(im):
     a = np.asarray(im, dtype=np.float64) / 255.0
@@ -40,9 +48,9 @@ CAND = "refs/candidates"
 JOBS = [
     ("ast_A.jpg",  "A-1.jpg",     1600, 800,  0.50, 0.42),  # FV 背景（暗いnerikiriトレイ）
     ("ast_B.jpg",  "B-1.jpg",     1132, 840,  0.50, 0.50),  # ABOUT 手元
-    ("ast_C.jpg",  "C-1.jpg",     1132, 840,  0.50, 0.55),  # ABOUT 中央 上生菓子
-    ("ast_D.jpg",  "D-1.jpg",     1132, 840,  0.50, 0.50),  # ABOUT 設え
-    ("ast_E.jpg",  "F-2.jpg",     1098, 808,  0.50, 0.40),  # FEATURE1 季節の上生菓子（集合・上寄せで下の箱を避ける）
+    ("ast_C.jpg",  "C8.jpg",      1132, 840,  0.50, 0.50),  # ABOUT 中央 水信玄菓子の寄り（fix05：fix01-C #8）
+    ("ast_D.jpg",  "D4.jpg",      1132, 840,  0.50, 0.50),  # ABOUT 設え 急須と二客（fix05：fix01-D #4）
+    ("ast_E.jpg",  "E4.jpg",      1098, 808,  0.50, 0.50),  # FEATURE1 黒皿の桃色の生菓子（fix05：fix01-E #4）
     ("ast_F.jpg",  "F-3.jpg",     1098, 808,  0.46, 0.52),  # FEATURE2 甘味処（あんみつ）
     ("ast_G.jpg",  "E-1.jpg",     852,  852,  0.50, 0.50),  # カード 上生菓子（黒盆）
     ("ast_H.jpg",  "DORA-2.jpg",  852,  852,  0.50, 0.50),  # カード どら焼き
@@ -68,10 +76,9 @@ for key, src, tw, th, fx, fy in JOBS:
     im = Image.open(f"{CAND}/{src}").convert("RGB")
     out = cover_crop(im, tw, th, fx, fy)
     out = grade(out)
-    # 枠K（CONTACT背景・お問い合わせ帯）は暗すぎて参照元CONTACTの明るさ(≈46)に届かないため、
-    # K だけ露出を上げる（§3.8。暗化%と合わせて背景の明るさを参照元±10に入れる）。
-    if key == "ast_K.jpg":
-        a = np.asarray(out, dtype=np.float64) * KGAIN_K
+    # 枚ごとの追加の露出（K は上げ、H・I は下げ）
+    if key in PER_KEY_GAIN:
+        a = np.asarray(out, dtype=np.float64) * PER_KEY_GAIN[key]
         out = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8), "RGB")
     dst = f"{MEDIA}/{key}"
     out.save(dst, "JPEG", quality=82, optimize=True)  # 新規JPEG＝元EXIF/GPSは付かない
