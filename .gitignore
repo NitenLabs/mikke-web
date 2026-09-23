@@ -10,3 +10,5 @@ refs/compare/_speccheck_*
 refs/studio-Q65qmmvqVR/masked/*.jpg
 refs/compare/clone-*.png
 templates/wa-01/spec-check-result.json
+experiments/layout/playground/index.html
+experiments/layout/playground/_bundle_test.html

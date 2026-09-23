@@ -254,6 +254,54 @@ experiments/layout/
 
 ---
 
+---
+
+# 追補：wa-01 layout-playground（A と C を触って比べるページ）
+
+作業票：`wa-01_layout_playground_workorder.md`。方式Bは含めない。どちらが良いかはページに書かない。
+
+## P1. 場所と大きさ（§6-2）
+
+- 渡す用：**`refs/compare/layout/playground_single.html`（0.74MB。16MB未満）**（1ファイル・外部は Google Fonts のみ）
+- 作業用：`experiments/layout/playground/`（`build.mjs`＝組み立て、`app.js`＝操作の記録→描画→計測、`textlayer.js`＝改行、`_content.json`、`_verify_pg.mjs`＝§5確認）
+
+## P2. A・C のコードをページとどう共有したか（§6-3）
+
+- ページは**本線の a-box/c-hybrid のコードをそのまま実行**する。`build.mjs` が `lib/spec.mjs`・`b-anchor/resolve.mjs`・`b-anchor/model.mjs`（collectTextBoxes 用）・`a-box/model.mjs`・`c-hybrid/model.mjs` を読み、各モジュールを**関数で包む**（import 行を除去し `export` を外し、依存を prelude で注入）だけで、ロジックは1行も書き換えていない。名前衝突（A と C が同じ `G`/`px`/`buildFeature` 等）は各モジュールを別スコープの factory にして回避。
+- 改行（R1 文節＝BudouX、R2 最終行4字＝DOM実測）は `textlayer.js` が本線 `linebreak.mjs` と同じ手順を**ブラウザの DOM で**再現。BudouX は `node_modules/budoux/module` の Parser＋ja モデルを埋め込み。
+- **ページのために A・C のコードに入れた変更は clear/unclear（写真を外す→空枠）と E5b の1点のみ**（compare2 の後段・lc3-1）。比較の試験（G1〜G3・付録B・C）は E5b 以外すべて前回と同じ結果であることを確認済み。
+
+## P3. 書体（§6-4）
+
+- **Google Fonts を使用**（Zen Old Mincho / Zen Kaku Gothic New。`fonts.googleapis.com`＝許可された外部）。同じ書体が取れるため埋め込みはしていない。写真だけをページ内に JPEG（幅≤1200・品質0.8）で埋め込んだ。
+
+## P4. §5 の確認結果（§6-5）
+
+1. **比較の試験（G1〜G3・付録B・C、E5b含む）**：E5b 以外は前回の記録と同じ結果（`_verify_all.txt`：compare の FAIL 数 0）。
+2. **headless で __playground から E1・E2・E4・E5・E8 を A・C 流し込み → geometry() と本線モデル実測の一致**：**全試験・A/C・PC/SP で最大ずれ 0px**（±0.5 以内）。＝ページが比較の試験と同じコードで動いている確認。
+3. **スマホ（幅390・webkit）**：ページはスクロール可能。特集の見出しを「押して選ぶ→押したまま動かす」でドラッグでき move が記録される。ラベル等の非ドラッグ部品を押してもドラッグは始まらず（move 0件＝スクロールを妨げない）。狭い画面では操作パネルを下に畳み、セクションを全幅で表示。
+4. **外部読み込み**：許可外は 0（Google Fonts のみ）。
+
+## P5. E5b の結果（§6-6）
+
+「特集2の写真を外す（clear）」→ 空枠が残り、枠の位置・大きさ不変・周りの部品が動かない。
+
+| | 方式A | 方式B | 方式C |
+|---|---|---|---|
+| E5b PC（枠 136,819.58,549,404） | PASS | PASS | PASS |
+| E5b SP（枠 19.5,658.95,351,258） | PASS | PASS | PASS |
+
+（B は方式として扱わないが、compare は3方式で回すため参考掲載。ページは A/C のみ。）
+
+## P6. 所見（判定ではない・追補）
+
+1. **「ページ＝比較の試験と同じコード」を数値で担保できた**：__playground.geometry() が本線モデルの実測と 0px 一致。静止画の比較では見えない「動かしたときの手触り」を、同じ土台の上で触って確かめられる。
+2. **A と C の差は触ると分かりやすい**：特集の見出しをドラッグすると、A は見出しだけが動いて本文が付いてこない（重なりが出やすい）／C は本文が付いてくる。E8（間隔変更）や E4（文字を足す）でも同じ傾向。ただし本作業票では「どちらが良いか」は書かない。
+3. **本線コードを関数で包むだけでブラウザに載せられた**のは、a-box/c-hybrid が「H（改行済み文字）＋content＋edits → HTML文字列」の純関数で、座標計算をブラウザ（CSS）に委ねているため。方式B（自前で座標計算）だったらブラウザ移植はもっと重かったはず。
+4. 触れる範囲は「特集の見出し・本文」のドラッグに絞った（move が効く要素）。写真や品カードの自由移動まで広げるには a-box/c-hybrid 側に move の適用範囲を足す必要があり、それは別途（本作業票では見送り、選択・写真外す・消すは全要素で可能）。
+
+---
+
 ## コミット
 
 - `lc-1` 実験の土台（作業票の写し・共有lib・付録の書き起こし）
@@ -269,3 +317,8 @@ experiments/layout/
 - `lc2-2` G2 の SP 穴埋め：参照元 masked を正に・geom で寸法差し替え
 - `lc2-3` 方式C（A+B のいいとこ取り）を c-hybrid/ に追加
 - `lc2-4` 3方式の試験・見比べページ・記録（E8→見せる／S6b・S3 前提差）
+- `lc2-5` 見比べを単一ファイル化（layout_compare_view.html・画像埋め込み）
+
+**追補（playground）：**
+- `lc3-1` clear/unclear（写真を外す）＋E5b を a-box/c-hybrid/b-anchor に追加
+- `lc3-2` 触って比べるページ playground_single.html（方式A/C）
