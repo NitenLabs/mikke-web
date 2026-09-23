@@ -25,20 +25,25 @@ html{-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;text-size-adjust:1
 `;
 
 // 1つのブラウザで一群の box を実測する。
-async function measureInBrowser(browserType, reqs, fontUrl, rootVars) {
+async function measureInBrowser(browserType, reqs, fontUrl, rootVars, device = "pc") {
   if (!reqs.length) return {};
   const boxes = reqs
     .map((r) => {
       // 幅は丸めない（0.2px 狭めるだけで境界の1文字が次行に落ち、折り返しが本番とずれる）。
       // 本番の箱は w%×中身の幅＝この widthPx なので、同じ小数の px で実測する。
       const style = [...r.style, `width:${Math.max(1, r.widthPx)}px`].join(";");
-      return `<div class="m${r.lb ? " lb" : ""}" data-key="${r.key}" style="${style}">${r.html}</div>`;
+      const cls = "m" + (r.lb ? " lb" : "") + (r.rowLines ? " row-table" : "");
+      return `<div class="${cls}" data-key="${r.key}" style="${style}">${r.html}</div>`;
     })
     .join("\n");
+  // row-table（ACCESS 情報の表）は @media でなく端末別に注入（実測は端末ごとに別ページのため）
+  const rowCss = device === "sp"
+    ? ".row-table{border-top:1px solid #B0B0B0}.row-table .lc{display:block;padding:1.6rem 0;border-bottom:1px solid #B0B0B0}.row-table .lc-key{display:block;line-height:1.4;margin-bottom:.4rem;width:auto!important}"
+    : ".row-table{border-top:1px solid #B0B0B0}.row-table .lc{display:flex;gap:2.4rem;padding:1.6rem 0;border-bottom:1px solid #B0B0B0;align-items:baseline}.row-table .lc-key{line-height:1.8}";
   const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8">
 ${fontUrl ? `<link rel="stylesheet" href="${fontUrl}">` : ""}
 <style>:root{font-size:10px;${rootVars.join("")}}
-${MEASURE_CSS}</style></head><body>${boxes}</body></html>`;
+${MEASURE_CSS}${rowCss}</style></head><body>${boxes}</body></html>`;
 
   const launchOpts = browserType === chromium && process.env.CHROME_PATH ? { executablePath: process.env.CHROME_PATH } : {};
   const browser = await browserType.launch(launchOpts);
@@ -71,8 +76,8 @@ export async function measureHeights(requests, fontUrl, rootVars = []) {
   const spReqs = toMeasure.filter((r) => r.device === "sp");
   // PC＝chromium、スマホ＝webkit で並行して実測する
   const [pcRes, spRes] = await Promise.all([
-    measureInBrowser(chromium, pcReqs, fontUrl, rootVars),
-    measureInBrowser(webkit, spReqs, fontUrl, rootVars),
+    measureInBrowser(chromium, pcReqs, fontUrl, rootVars, "pc"),
+    measureInBrowser(webkit, spReqs, fontUrl, rootVars, "sp"),
   ]);
   return { ...pcRes, ...spRes };
 }

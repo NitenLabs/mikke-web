@@ -1,3 +1,15 @@
+# 付録 A / B と 照合の項目 の対応表（fix02 §4／fix04 で更新）
+
+## fix04 の差分（付録B）
+- **削除（fix04 で照合から外した）**：A5-1〜A5-4（営業案内の帯）、A2-21・A2-22（帯の札・文字）、A2-20→B4-5に置換、A11-1〜A11-9（旧ACCESS）、A2-5b（旧ACCES値）、A1-6 は帯を除いた順番に書き換え。
+- **追加（新ACCESS・付録B B4）**：B4-1（写真 box）、B4-3（表 x/w）、B4-4（行の線 rowline）、B4-5（項目名 labelkey）、B4-6（値 seltext pc/sp）、B4-8（項目の順番 rowsorder）、B4-9-10（表≤404縦中央/＞404上端そろえ relation）、B4-11（SP 表の上端＝写真下＋32 relation）、B4-12（地図 box）＋B4-12b（iframe読み込み）＋B4-12y（地図が下端＋80に追従 relation）、B4-13（地図 filter=none）、B4-14（ピル box）＋B4-14b（ピル枠線）、B4-16（住所にサンプル無し notext）、B4-2（写真に文字を重ねない notextover）。
+- **追加（改行 B3）**：B3-1（文節境界 nobreak）、B3-2（最後の行4文字 lastline）、B3-3（見出し text-wrap:balance）、B3-4（word-break:keep-all）、B3-5（noWrapに規則なし）。
+- **追加（B2 写真差し替え）**：A12-2b（CONTACT背景＝ast_frmk）、A15-1b（お問い合わせ帯＝同じ写真）。
+- **手動（自動照合できない・理由つき）**：B3-6（clone は第2部未着手で対象物なし）、B4-7（行の高さの数式＝行の要素で担保）、B4-15（セクション下端＝check で担保）。
+- **合計：照合ID 115／合格 112／手動 3。**
+
+---
+
 # 付録 A（A1-1〜A15-9）と 照合の項目 の対応表（fix02 §4）
 
 - 左＝設計書の付録 A の行番号。右＝`tools/lib/appendixA.mjs` の照合ID（spec-check の「総数」に数える単位）。

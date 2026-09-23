@@ -166,8 +166,8 @@
         "color": "theme:background"
       },
       "minHeight": {
-        "pc": 1440,
-        "sp": 2000
+        "pc": 1409,
+        "sp": 1471
       },
       "anchor": "access",
       "nav": {
@@ -2013,61 +2013,22 @@
       "asset": "ast_frmj",
       "layout": {
         "pc": {
-          "x": 16.3889,
+          "x": 9.4444,
           "y": 264,
-          "w": 32.8472,
-          "h": 560
+          "w": 38.125,
+          "h": 404
         },
         "sp": {
           "x": 5.1282,
           "y": 186,
           "w": 90,
-          "h": 439
+          "h": 258
         }
       },
       "crop": {
         "fx": 50,
         "fy": 50,
         "zoom": 1
-      }
-    },
-    "el_accsoe": {
-      "type": "text",
-      "z": 3,
-      "role": "body",
-      "section": "sec_access",
-      "paragraphs": [
-        {
-          "runs": [
-            {
-              "text": "芦屋・大原町"
-            }
-          ]
-        }
-      ],
-      "style": {
-        "font": "font:heading",
-        "weight": 700,
-        "letterSpacing": 0.3,
-        "color": "theme:onDark"
-      },
-      "layout": {
-        "pc": {
-          "x": 44.7917,
-          "y": 288,
-          "w": 2.7778,
-          "h": 200,
-          "size": 14,
-          "writingMode": "vertical"
-        },
-        "sp": {
-          "x": 9.2308,
-          "y": 600,
-          "w": 51.2821,
-          "h": 25,
-          "size": 14,
-          "writingMode": "horizontal"
-        }
       }
     },
     "el_accinfo": {
@@ -2106,6 +2067,23 @@
                 "scope": "shop",
                 "path": "/location/access",
                 "format": "access"
+              }
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "駐車場",
+              "marks": {
+                "color": "theme:text"
+              }
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location/parking/note",
+                "format": "plain"
               }
             }
           ]
@@ -2165,63 +2143,6 @@
               }
             }
           ]
-        },
-        {
-          "runs": [
-            {
-              "text": "駐車場",
-              "marks": {
-                "color": "theme:text"
-              }
-            },
-            {
-              "bind": {
-                "scope": "shop",
-                "path": "/location/parking/note",
-                "format": "plain"
-              }
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "包装",
-              "marks": {
-                "color": "theme:text"
-              }
-            },
-            {
-              "text": "のし・手土産包装 承ります"
-            },
-            {
-              "bind": {
-                "scope": "shop",
-                "path": "/genreInfo/giftWrapping",
-                "format": "flag"
-              }
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "取り置き",
-              "marks": {
-                "color": "theme:text"
-              }
-            },
-            {
-              "text": "お取り置き 承ります"
-            },
-            {
-              "bind": {
-                "scope": "shop",
-                "path": "/genreInfo/holdForPickup",
-                "format": "flag"
-              }
-            }
-          ]
         }
       ],
       "style": {
@@ -2230,68 +2151,22 @@
         "font": "font:body",
         "weight": 400,
         "letterSpacing": 0,
-        "paragraphGap": 16
+        "rowLines": true
       },
       "layout": {
         "pc": {
-          "x": 50.9028,
-          "y": 284,
-          "w": 32.7083,
-          "h": 429,
+          "x": 54.0972,
+          "y": 266,
+          "w": 34.7917,
+          "h": 401,
           "size": 16
         },
         "sp": {
           "x": 5.1282,
-          "y": 669,
+          "y": 476,
           "w": 90,
-          "h": 458,
-          "size": 16
-        }
-      }
-    },
-    "el_accinfotop": {
-      "type": "shape",
-      "z": 2,
-      "kind": "line",
-      "fill": "theme:line",
-      "section": "sec_access",
-      "layout": {
-        "pc": {
-          "x": 50.9028,
-          "y": 264,
-          "w": 32.7083,
-          "h": 1,
-          "strokeWidth": 1
-        },
-        "sp": {
-          "x": 5.1282,
-          "y": 649,
-          "w": 90,
-          "h": 1,
-          "strokeWidth": 1
-        }
-      }
-    },
-    "el_accinfobot": {
-      "type": "shape",
-      "z": 2,
-      "kind": "line",
-      "fill": "theme:line",
-      "section": "sec_access",
-      "layout": {
-        "pc": {
-          "x": 50.9028,
-          "y": 600,
-          "w": 32.7083,
-          "h": 1,
-          "strokeWidth": 1
-        },
-        "sp": {
-          "x": 5.1282,
-          "y": 1010,
-          "w": 90,
-          "h": 1,
-          "strokeWidth": 1
+          "h": 517,
+          "size": 14
         }
       }
     },
@@ -2302,18 +2177,19 @@
       "section": "sec_access",
       "layout": {
         "pc": {
-          "x": 16.3889,
-          "y": 864,
-          "w": 67.2222,
-          "h": 360
+          "x": 9.4444,
+          "y": 748,
+          "w": 81.1111,
+          "h": 400
         },
         "sp": {
           "x": 5.1282,
-          "y": 1050,
+          "y": 1033,
           "w": 90,
           "h": 260
         }
-      }
+      },
+      "grayscale": false
     },
     "el_acctelbg": {
       "type": "shape",
@@ -2324,13 +2200,13 @@
       "layout": {
         "pc": {
           "x": 33.3333,
-          "y": 1264,
+          "y": 1212,
           "w": 33.3333,
           "h": 56
         },
         "sp": {
           "x": 5.1282,
-          "y": 1342,
+          "y": 1325,
           "w": 90,
           "h": 56
         }
@@ -2373,14 +2249,14 @@
       "layout": {
         "pc": {
           "x": 33.3333,
-          "y": 1281,
+          "y": 1229,
           "w": 33.3333,
           "h": 22,
           "size": 16
         },
         "sp": {
           "x": 5.1282,
-          "y": 1359,
+          "y": 1342,
           "w": 90,
           "h": 22,
           "size": 16
@@ -2408,7 +2284,7 @@
           "fullBleed": true
         }
       },
-      "darken": 10,
+      "darken": 27,
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -3668,7 +3544,7 @@
           "fullBleed": true
         }
       },
-      "darken": 10,
+      "darken": 27,
       "crop": {
         "fx": 50,
         "fy": 50,

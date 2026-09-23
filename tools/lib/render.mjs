@@ -68,7 +68,7 @@ export function resolveSite(data, refDate) {
     } else if (el.type === "shape") {
       elements.set(id, { ...base, shape: { kind: el.kind, fill: el.fill, radius: el.radius, opacity: el.opacity, stroke: el.stroke, link: el.link } });
     } else if (el.type === "embed") {
-      elements.set(id, { ...base, embed: { kind: el.kind, config: el.config } });
+      elements.set(id, { ...base, embed: { kind: el.kind, config: el.config, grayscale: el.grayscale } });
     } else if (el.type === "nav") {
       elements.set(id, { ...base, nav: { style: el.style || {} } });
     } else if (el.type === "form") {
@@ -162,9 +162,11 @@ function paragraphsHtml(resolvedText, style, opts = {}) {
     .map((p, idx) => {
       const mt = idx > 0 && gap ? ` style="margin-top:${rem(gap)}"` : "";
       if (labelColumn) {
-        // 先頭の自由な文字を項目名の列に、残りを右に流す
+        // 先頭の自由な文字を項目名の列に、残りを右に流す。lb のとき値は文節（<wbr>）で折る（R1）
         const first = p.runs[0];
-        const restRuns = p.runs.slice(1).map((r) => runSpan(r, linkResolver)).join("");
+        const restRuns = lb
+          ? joinTokens(tokenize(p.runs.slice(1), true, { linkResolver }), 0)
+          : p.runs.slice(1).map((r) => runSpan(r, linkResolver)).join("");
         return `<span class="pg lc"${mt}><span class="lc-key" style="width:${labelColumn}em">${esc(first?.text ?? "")}</span><span class="lc-val">${restRuns}</span></span>`;
       }
       if (lb) {
@@ -194,7 +196,8 @@ export function lineBreakRequests(resolved) {
     });
   };
   for (const el of elements.values()) {
-    if (el.type === "text" && el.text.visible && lbEnabled(el.style, el.box, site)) {
+    // labelColumn（表）は R2 の対象外（R1 の <wbr> だけ効かせる）
+    if (el.type === "text" && el.text.visible && lbEnabled(el.style, el.box, site) && !el.style?.labelColumn) {
       for (const device of DEVICES) addPara(`t:${el.id}`, device, boxWidthPx(el.box[device], device, site), textBoxStyle(el, device, theme, "px"), el.text, el.style);
     }
     if (el.type === "repeater") {
@@ -242,7 +245,7 @@ export function measurementRequests(resolved) {
           style: textBoxStyle(el, device, theme, "px"),
           labelColumn: el.style?.labelColumn,
           vertical: box.writingMode === "vertical", fixedH: box.h,
-          lb: lbEnabled(el.style, el.box, site),
+          lb: lbEnabled(el.style, el.box, site), rowLines: el.style?.rowLines,
           html: paragraphsHtml(el.text, el.style, { labelColumn: el.style?.labelColumn, lb: lbEnabled(el.style, el.box, site), lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep }),
         });
       }

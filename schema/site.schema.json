@@ -813,6 +813,10 @@
               "type": "boolean",
               "description": "末尾の「›」をピルのボタンの右端（右から24・縦中央）へ寄せる。本文は中央、›だけ右端"
             },
+            "rowLines": {
+              "type": "boolean",
+              "description": "labelColumn の各段落を罫線つきの行にする（表の見た目）。上端と各行の下に line の1px。ACCESS の情報の表（fix04 §3）"
+            },
             "list": {
               "type": "string",
               "enum": [
@@ -1254,6 +1258,10 @@
         "config": {
           "type": "object",
           "description": "制作側だけが触る設定。map は①の住所・位置から自動（config 不要）"
+        },
+        "grayscale": {
+          "type": "boolean",
+          "description": "地図を灰色（grayscale・contrast）にするか。既定 true。fix04 の ACCESS は普通の色（false）"
         }
       }
     },

@@ -84,5 +84,40 @@ for (const [id, el] of Object.entries(site.elements)) {
   // 写真・図形・埋め込み・ナビ・フォームは対象外（高さが content で決まらない／写真は比率で決まる）
 }
 
+// ---------- ACCESS の条件つき配置（fix04 §3・B4-9〜B4-15）----------
+// 表の高さ（実測）から、表の縦位置（写真と中央そろえ or 上端そろえ）・地図・ピル・セクション高さを決める。
+// オーナーが表の行を増減しても、次のビルドで自動でそろう。
+function setY(box, y) { if (box && y != null) { const v = round(y); if (box.y !== v) { box.y = v; changed++; } } }
+(function positionAccess() {
+  const e = site.elements;
+  if (!e.el_accinfo || !e.el_accphoto) return;
+  // PC
+  {
+    const ph = e.el_accphoto.layout.pc, photoBottom = ph.y + ph.h;
+    const Ht = e.el_accinfo.layout.pc.h;
+    const tableY = Ht <= ph.h ? ph.y + (ph.h - Ht) / 2 : ph.y;
+    setY(e.el_accinfo.layout.pc, tableY);
+    const lowerBottom = Math.max(photoBottom, tableY + Ht);
+    const mapY = lowerBottom + 80; setY(e.el_accmap.layout.pc, mapY);
+    const pillY = mapY + e.el_accmap.layout.pc.h + 64;
+    setY(e.el_acctelbg.layout.pc, pillY);
+    setY(e.el_acctel.layout.pc, pillY + (e.el_acctelbg.layout.pc.h - e.el_acctel.layout.pc.h) / 2);
+    const secBottom = pillY + e.el_acctelbg.layout.pc.h + 141;
+    if (site.sections.sec_access.minHeight.pc !== round(secBottom)) { site.sections.sec_access.minHeight.pc = round(secBottom); changed++; }
+  }
+  // SP
+  {
+    const ph = e.el_accphoto.layout.sp, photoBottom = ph.y + ph.h;
+    const tableY = photoBottom + 32; setY(e.el_accinfo.layout.sp, tableY);
+    const Ht = e.el_accinfo.layout.sp.h;
+    const mapY = tableY + Ht + 40; setY(e.el_accmap.layout.sp, mapY);
+    const pillY = mapY + e.el_accmap.layout.sp.h + 32;
+    setY(e.el_acctelbg.layout.sp, pillY);
+    setY(e.el_acctel.layout.sp, pillY + (e.el_acctelbg.layout.sp.h - e.el_acctel.layout.sp.h) / 2);
+    const secBottom = pillY + e.el_acctelbg.layout.sp.h + 90;
+    if (site.sections.sec_access.minHeight.sp !== round(secBottom)) { site.sections.sec_access.minHeight.sp = round(secBottom); changed++; }
+  }
+})();
+
 fs.writeFileSync(path.join(dir, "site.json"), JSON.stringify(site, null, 2) + "\n");
 console.log(`✓ site.json の h を更新: ${changed} 箇所（書き出す日付 ${refDate.ymd}）`);

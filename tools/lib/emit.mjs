@@ -117,7 +117,8 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
     const lb = lbEnabled(el.style, el.box, resolved.site);
     const inner = paragraphsHtml(el.text, el.style, { linkResolver: (l) => linkResolver(l), labelColumn: el.style?.labelColumn, lb, lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep });
     const mh = mhAttr(resolved, `t:pc:${el.id}`, `t:sp:${el.id}`);
-    return `<${tag} data-el="${el.id}" class="el el-text${lbCls(el.style, el.box, el.role, resolved.site)}"${mh}>${inner}</${tag}>`;
+    const rowCls = el.style?.rowLines ? " row-table" : "";
+    return `<${tag} data-el="${el.id}" class="el el-text${lbCls(el.style, el.box, el.role, resolved.site)}${rowCls}"${mh}>${inner}</${tag}>`;
   }
   if (el.type === "photo") return photoHtml(el, resolved);
   if (el.type === "shape") {
@@ -132,7 +133,8 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
       const src = g ? `https://www.google.com/maps?q=${g.lat},${g.lng}&z=16&hl=ja&output=embed` : "";
       const label = esc(`${resolved.shop.basic.name}の地図`);
       // loading="lazy" は外す：地図はページ下部にあり、実ブラウザで遅延読み込みが発火せず灰色のままになるため（§9）
-      return `<div data-el="${el.id}" class="el el-embed map-gray"><iframe title="${label}" src="${src}" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`;
+      const gray = el.embed.grayscale === false ? "" : " map-gray";
+      return `<div data-el="${el.id}" class="el el-embed${gray}"><iframe title="${label}" src="${src}" referrerpolicy="no-referrer-when-downgrade"></iframe></div>`;
     }
     return `<div data-el="${el.id}" class="el el-embed"></div>`;
   }

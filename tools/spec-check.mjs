@@ -14,6 +14,7 @@ import { pathToFileURL, fileURLToPath } from "node:url";
 import { textStyle } from "./lib/theme.mjs";
 import { FONT_REGISTRY } from "./lib/fonts.mjs";
 import * as A from "./lib/appendixA.mjs";
+import { splitPhrases, visibleCount } from "./lib/linebreak.mjs";
 
 let chromium;
 try { ({ chromium } = await import("playwright")); } catch { ({ chromium } = await import("playwright-core")); }
@@ -47,8 +48,10 @@ const MEASURE = (payload) => {
     color: rgb2hex(cs.color), align: cs.textAlign, writingMode: cs.writingMode,
     bg: rgb2hex(cs.backgroundColor), bgAlpha: alphaOf(cs.backgroundColor) * (parseFloat(cs.opacity) || 1),
     btWidth: parseFloat(cs.borderTopWidth) || 0, btColor: rgb2hex(cs.borderTopColor),
+    bbWidth: parseFloat(cs.borderBottomWidth) || 0, bbColor: rgb2hex(cs.borderBottomColor),
     bw: parseFloat(cs.borderTopWidth) || 0, bc: rgb2hex(cs.borderTopColor), bcAlpha: alphaOf(cs.borderTopColor),
     br: parseFloat(cs.borderTopLeftRadius) || 0,
+    wordBreak: cs.wordBreak, textWrap: cs.textWrap || cs.textWrapMode || "", filter: cs.filter,
   }; };
   const boxOf = (e) => { const sec = e.closest(".sec"); const sr = sec ? sec.getBoundingClientRect() : { left: 0, top: 0 };
     const r = e.getBoundingClientRect(); return { x: r.left - sr.left, y: r.top - sr.top, w: r.width, h: r.height, pageY: r.top + window.pageYOffset, pageX: r.left }; };
@@ -57,8 +60,9 @@ const MEASURE = (payload) => {
   for (const id of payload.secs) { const e = document.querySelector(`[data-sec="${id}"]`); out.sec[id] = e ? (() => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e); const rgb = (c) => { const m = (c || "").match(/[\d.]+/g); return m ? "#" + m.slice(0, 3).map((x) => (+x).toString(16).padStart(2, "0")).join("").toUpperCase() : null; }; return { pageY: r.top + window.pageYOffset, x: r.left, w: r.width, h: r.height, bg: rgb(cs.backgroundColor), bgAlpha: (cs.backgroundColor.match(/[\d.]+/g) || [0, 0, 0, 1])[3] ?? 1 }; })() : null; }
   for (const s of payload.sels) {
     const nodes = [...document.querySelectorAll(s.sel)];
-    if (s.all) out.sel[s.k] = nodes.map((n) => ({ ...boxOf(n), ...styleOf(n) }));
-    else out.sel[s.k] = nodes[0] ? { ...boxOf(nodes[0]), ...styleOf(nodes[0]), count: nodes.length } : null;
+    const cap = (n) => ({ ...boxOf(n), ...styleOf(n), text: n.textContent.trim(), src: n.tagName === "IMG" ? (n.getAttribute("src") || "") : undefined });
+    if (s.all) out.sel[s.k] = nodes.map(cap);
+    else out.sel[s.k] = nodes[0] ? { ...cap(nodes[0]), count: nodes.length } : null;
   }
   out.gap = {}; out.arrow = {}; out.iframe = {}; out.pseudo = {};
   for (const f of payload.iframes || []) {
@@ -83,6 +87,27 @@ const MEASURE = (payload) => {
     const gr = bg.getBoundingClientRect();
     out.arrow[a.k] = { arrowRight: ar.right, arrowMidY: ar.top + ar.height / 2, arrowText: (last?.textContent || "").trim(), pillRight: gr.right, pillLeft: gr.left, pillMidY: gr.top + gr.height / 2 };
   }
+  // 行の分解（改行の照合 B3-1/B3-2 用）：要素ごとに、文字の矩形で行を割り、各行のテキストを返す
+  out.lines = {};
+  for (const lq of payload.lineSels || []) {
+    const res = [];
+    for (const el of document.querySelectorAll(lq.sel)) {
+      const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let n; const range = document.createRange(); const chars = [];
+      while ((n = walk.nextNode())) for (let k = 0; k < n.length; k++) { range.setStart(n, k); range.setEnd(n, k + 1); const rc = range.getBoundingClientRect(); if (rc.width || rc.height) chars.push({ ch: n.data[k], top: Math.round(rc.top) }); }
+      const byTop = {}; chars.forEach((c) => { (byTop[c.top] ??= []).push(c.ch); });
+      res.push(Object.keys(byTop).sort((a, b) => a - b).map((t) => byTop[t].join("")));
+    }
+    out.lines[lq.k] = res;
+  }
+  // 写真の上に文字が無いか（B4-2）：section 内の el-text の矩形が photo の矩形と重なるか
+  out.overlap = {};
+  for (const o of payload.overlaps || []) {
+    const ph = document.querySelector(`[data-el="${o.photo}"]`); const sec = document.querySelector(`[data-sec="${o.section}"]`);
+    if (!ph || !sec) { out.overlap[o.k] = null; continue; }
+    const pr = ph.getBoundingClientRect(); let hit = false;
+    for (const t of sec.querySelectorAll(".el-text")) { const r = t.getBoundingClientRect(); if (r.left < pr.right - 2 && pr.left < r.right - 2 && r.top < pr.bottom - 2 && pr.top < r.bottom - 2) hit = true; }
+    out.overlap[o.k] = { hit };
+  }
   return out;
 };
 
@@ -94,7 +119,7 @@ const rec = (aid, status, detail) => { const r = results[aid] ??= { status: "pas
 // 各 (page,dev) で必要な測定対象を集め、1回で測る
 const work = []; // {page, dev, check}
 const need = {}; // `${page}:${dev}` -> {els:Set, secs:Set, sels:[]}
-const addNeed = (page, dev, { el, sec, sel, gap, arrow, iframe, pseudo }) => { const k = `${page}:${dev}`; const n = need[k] ??= { els: new Set(), secs: new Set(), sels: [], gaps: [], arrows: [], iframes: [], pseudos: [] }; if (el) n.els.add(el); if (sec) n.secs.add(sec); if (sel) n.sels.push(sel); if (gap) n.gaps.push(gap); if (arrow) n.arrows.push(arrow); if (iframe) n.iframes.push(iframe); if (pseudo) n.pseudos.push(pseudo); };
+const addNeed = (page, dev, { el, sec, sel, gap, arrow, iframe, pseudo, lineSel, overlap }) => { const k = `${page}:${dev}`; const n = need[k] ??= { els: new Set(), secs: new Set(), sels: [], gaps: [], arrows: [], iframes: [], pseudos: [], lineSels: [], overlaps: [] }; if (el) n.els.add(el); if (sec) n.secs.add(sec); if (sel) n.sels.push(sel); if (gap) n.gaps.push(gap); if (arrow) n.arrows.push(arrow); if (iframe) n.iframes.push(iframe); if (pseudo) n.pseudos.push(pseudo); if (lineSel) n.lineSels.push(lineSel); if (overlap) n.overlaps.push(overlap); };
 
 const devsOf = (c) => c.dev ? [c.dev] : ["pc", "sp"];
 
@@ -133,12 +158,33 @@ for (const c of A.LINE_CHECKS) for (const dev of ["pc", "sp"]) { const page = pa
 for (const c of A.IFRAME) { const page = pageOfEl(c.target); const dev = "pc"; const k = `${c.id}`; work.push({ page, dev, run: "iframe", c, k }); addNeed(page, dev, { iframe: { k, sel: `[data-el="${c.target}"] iframe` } }); }
 // gap（段落の間隔）
 for (const c of A.GAP) for (const dev of c.dev) { const page = pageOfEl(c.target); const k = `${c.id}:${dev}`; work.push({ page, dev, run: "gap", c, k }); addNeed(page, dev, { gap: { k, sel: `[data-el="${c.target}"] .pg` } }); }
+// fix04 付録B: rowline / valtext / rowsorder / notext / notextover / cssfilter / assetsrc
+for (const c of A.ROWLINE) for (const dev of ["pc", "sp"]) { work.push({ page: "pg_home", dev, run: "rowline", c, k: c.id }); addNeed("pg_home", dev, { sel: { k: c.id, sel: c.sel, all: true } }); }
+for (const c of A.VALTEXT) for (const dev of (c.dev === "both" ? ["pc", "sp"] : [c.dev])) { const k = `${c.id}:${dev}`; work.push({ page: "pg_home", dev, run: "seltext", c, k }); addNeed("pg_home", dev, { sel: { k, sel: c.sel } }); }
+for (const c of A.ACCROWS) { if (c.kind === "rowsorder") { work.push({ page: "pg_home", dev: "pc", run: "rowsorder", c, k: c.id }); addNeed("pg_home", "pc", { sel: { k: c.id, sel: c.sel, all: true } }); } else { work.push({ page: "pg_home", dev: "pc", run: "notext", c, k: c.id }); addNeed("pg_home", "pc", { sel: { k: c.id, sel: c.sel } }); } }
+for (const c of A.ACCMISC) { if (c.kind === "notextover") { work.push({ page: "pg_home", dev: "pc", run: "notextover", c, k: c.id }); addNeed("pg_home", "pc", { overlap: { k: c.id, photo: c.photo, section: c.section } }); } else { work.push({ page: "pg_home", dev: "pc", run: "cssfilter", c, k: c.id }); addNeed("pg_home", "pc", { sel: { k: c.id, sel: c.sel } }); } }
+for (const c of A.ASSETSRC) { const page = c.page || "pg_home"; work.push({ page, dev: "pc", run: "assetsrc", c, k: c.id }); addNeed(page, "pc", { sel: { k: c.id, sel: c.sel } }); }
+// B3 改行：全ページの lb 要素の行を測る（B3-1 文節境界／B3-2 最後の行）＋ 役割/word-break/noWrap
+{
+  const lbSel = ".el-text.lb:not(.row-table), .acc-q.lb, .acc-a.lb"; // 表（row-table）は行構造なので B3-1 の対象外
+  for (const dev of ["pc", "sp"]) for (const page of ["pg_home", "pg_menu", "pg_contact"]) {
+    work.push({ page, dev, run: "linebreak", k: `LB:${page}:${dev}` });
+    addNeed(page, dev, { lineSel: { k: `LB:${page}:${dev}`, sel: lbSel } });
+  }
+  // B3-3/B3-4（見出しの text-wrap / lb の word-break）と B3-5（noWrap に規則なし）は home で確認
+  work.push({ page: "pg_home", dev: "pc", run: "wraprole" });
+  addNeed("pg_home", "pc", { sel: { k: "B3-3", sel: ".lbh", all: true } });
+  addNeed("pg_home", "pc", { sel: { k: "B3-4", sel: ".el-text.lb", all: true } });
+  addNeed("pg_home", "pc", { sel: { k: "B3-5", sel: '[data-el="el_itemsbtn"]', all: true } });
+}
 // arrow（ピルの ›）
 for (const c of A.ARROW) for (const dev of ["pc", "sp"]) { const page = pageOfEl(c.btn); const k = `${c.id}:${dev}`; work.push({ page, dev, run: "arrow", c, k }); addNeed(page, dev, { arrow: { k, btnSel: `[data-el="${c.btn}"]`, bgSel: `[data-el="${c.bg}"]` } }); }
 // relation
 for (const c of A.RELATION) { const dev = c.dev; work.push({ page: "pg_home", dev, run: "relation", c });
   if (c.rel === "vCenterEq") { addNeed("pg_home", dev, { el: c.a }); const b = c.b === "block1text" ? ["el_feath1", "el_featb1"] : ["el_feath2", "el_featb2"]; b.forEach((e) => addNeed("pg_home", dev, { el: e })); }
-  else if (c.rel === "topEq") { addNeed("pg_home", dev, { el: c.a }); addNeed("pg_home", dev, { el: c.b }); }
+  else if (c.rel === "topEq" || c.rel === "topEqOffset") { addNeed("pg_home", dev, { el: c.a }); addNeed("pg_home", dev, { el: c.b }); }
+  else if (c.rel === "accessCenter") { addNeed("pg_home", dev, { el: c.a }); addNeed("pg_home", dev, { el: c.b }); }
+  else if (c.rel === "mapFollow") { addNeed("pg_home", dev, { el: c.photo }); addNeed("pg_home", dev, { el: c.table }); addNeed("pg_home", dev, { el: c.map }); }
   else if (c.rel === "cardPriceTopEq") { addNeed("pg_home", dev, { sel: { k: "cardprices", sel: `[data-el="${c.a}"] [data-cel="cel_price"]`, all: true } }); }
 }
 // global
@@ -159,7 +205,7 @@ for (const [key, n] of Object.entries(need)) {
   await p.goto(pathToFileURL(path.join(distDir, fileFor(page))).href, { waitUntil: "load" });
   for (let i = 0; i < 40; i++) { const ok = await p.evaluate(() => { document.body.offsetHeight; const rf = parseFloat(getComputedStyle(document.documentElement).fontSize); return rf > 0 && rf < 15 && (!document.fonts || document.fonts.status === "loaded"); }); if (ok) break; await p.waitForTimeout(120); }
   await p.waitForTimeout(150);
-  measured[key] = await p.evaluate(MEASURE, { els: [...n.els].filter(Boolean), secs: [...n.secs].filter(Boolean), sels: n.sels, gaps: n.gaps, arrows: n.arrows, iframes: n.iframes, pseudos: n.pseudos });
+  measured[key] = await p.evaluate(MEASURE, { els: [...n.els].filter(Boolean), secs: [...n.secs].filter(Boolean), sels: n.sels, gaps: n.gaps, arrows: n.arrows, iframes: n.iframes, pseudos: n.pseudos, lineSels: n.lineSels, overlaps: n.overlaps });
   await ctx.close();
 }
 
@@ -271,6 +317,12 @@ for (const w of work) {
       if (!ph || !h1 || !b1) rec(c.id, "notfound", `${c.id}: 要素なし`);
       else { const textC = (h1.y + (b1.y + b1.h)) / 2; const photoC = ph.y + ph.h / 2 + (c.offset || 0); near(textC, photoC, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 文字中央${round(textC)} 目標(写真中央${c.offset ? c.offset : ""})${round(photoC)} 差${round(Math.abs(textC - photoC))}`); }
     } else if (c.rel === "topEq") { const a = M.el[c.a], bb = M.el[c.b]; if (!a || !bb) rec(c.id, "notfound", `${c.id}: 要素なし`); else near(a.y, bb.y, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: ${c.a}.y=${round(a.y)} ${c.b}.y=${round(bb.y)} 差${round(Math.abs(a.y - bb.y))}`); }
+    else if (c.rel === "accessCenter") { const ph = M.el[c.a], tb = M.el[c.b]; if (!ph || !tb) { rec(c.id, "notfound", `${c.id}: 要素なし`); continue; }
+      if (tb.h <= ph.h + 0.5) { const pc = ph.y + ph.h / 2, tc = tb.y + tb.h / 2; near(pc, tc, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 表≤写真だが縦中央ずれ 写真${round(pc)} 表${round(tc)}`); }
+      else { near(tb.y, ph.y, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 表>写真だが上端ずれ 写真${round(ph.y)} 表${round(tb.y)}`); }
+    }
+    else if (c.rel === "topEqOffset") { const a = M.el[c.a], bb = M.el[c.b]; if (!a || !bb) { rec(c.id, "notfound", `${c.id}: 要素なし`); continue; } const target = bb.y + bb.h + (c.offset || 0); near(a.y, target, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: ${c.a}.y=${round(a.y)} 期待(写真下+${c.offset})=${round(target)}`); }
+    else if (c.rel === "mapFollow") { const ph = M.el[c.photo], tb = M.el[c.table], mp = M.el[c.map]; if (!ph || !tb || !mp) { rec(c.id, "notfound", `${c.id}: 要素なし`); continue; } const lower = Math.max(ph.y + ph.h, tb.y + tb.h); const target = lower + (c.offset || 0); near(mp.y, target, REL) ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 地図.y=${round(mp.y)} 期待(低い方の下端+${c.offset})=${round(target)}`); }
     else if (c.rel === "cardPriceTopEq") { const arr = M.sel.cardprices; if (!arr || !arr.length) rec(c.id, "notfound", `${c.id}: 価格セルなし`); else { const tops = arr.map((x) => x.pageY); const spread = Math.max(...tops) - Math.min(...tops); spread <= REL ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 価格の上端がずれ ${round(spread)}px（${tops.map(round).join(",")}）`); } }
   }
   else if (w.run === "iframe") { const m = M.iframe[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.c.id}: iframe なし`); continue; }
@@ -297,6 +349,32 @@ for (const w of work) {
     if (w.c.w != null && Math.abs(m.w - w.c.w) > SIZE) fails.push(`幅 期待${w.c.w} 実測${round(m.w)}`);
     if (w.c.h != null && Math.abs(m.h - w.c.h) > SIZE) fails.push(`高さ 期待${w.c.h} 実測${round(m.h)}`);
     fails.length ? rec(w.c.id, "fail", `${w.c.id}: ${fails.join(" / ")}`) : rec(w.c.id, "pass"); }
+  else if (w.run === "rowline") { const arr = M.sel[w.k]; if (!arr || !arr.length) { rec(w.c.id, "notfound", `${w.c.id}: 行なし`); continue; } const bad = arr.filter((r) => !(Math.abs(r.bbWidth - 1) <= 0.6 && r.bbColor === norm(w.c.color))); bad.length ? rec(w.c.id, "fail", `${w.dev} ${w.c.id}: ${bad.length}行の下線が line でない（実測 ${arr[0].bbWidth}px ${arr[0].bbColor}）`) : rec(w.c.id, "pass"); }
+  else if (w.run === "rowsorder") { const arr = M.sel[w.k]; if (!arr) { rec(w.c.id, "notfound", `${w.c.id}: 行なし`); continue; } const got = arr.map((r) => r.text.replace(/\s/g, "")); JSON.stringify(got) === JSON.stringify(w.c.order) ? rec(w.c.id, "pass") : rec(w.c.id, "fail", `${w.c.id}: 順番 期待[${w.c.order}] 実測[${got}]`); }
+  else if (w.run === "notext") { const m = M.sel[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.c.id}: 要素なし`); continue; } m.text.includes(w.c.forbid) ? rec(w.c.id, "fail", `${w.c.id}: 「${w.c.forbid}」が含まれる`) : rec(w.c.id, "pass"); }
+  else if (w.run === "notextover") { const m = M.overlap[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.c.id}: 要素なし`); continue; } m.hit ? rec(w.c.id, "fail", `${w.c.id}: 写真の上に文字が重なっている`) : rec(w.c.id, "pass"); }
+  else if (w.run === "cssfilter") { const m = M.sel[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.c.id}: 要素なし`); continue; } (m.filter === w.c.expect) ? rec(w.c.id, "pass") : rec(w.c.id, "fail", `${w.c.id}: filter 期待${w.c.expect} 実測${m.filter}`); }
+  else if (w.run === "assetsrc") { const m = M.sel[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.c.id}: img なし`); continue; } (m.src || "").includes(w.c.file) ? rec(w.c.id, "pass") : rec(w.c.id, "fail", `${w.c.id}: src 期待${w.c.file} 実測${m.src}`); }
+  else if (w.run === "linebreak") { const groups = M.lines[w.k] || [];
+    for (const lines of groups) {
+      if (!lines.length) continue;
+      const full = lines.join("");
+      // B3-2 最後の行の可視文字（2行以上のとき）
+      if (lines.length >= 2 && visibleCount(lines[lines.length - 1]) < 4) rec("B3-2", "fail", `[${w.k}] 最後の行「${lines[lines.length - 1]}」が4文字未満`); else rec("B3-2", "pass");
+      // B3-1 各行の切れ目が文節境界か
+      const phrases = splitPhrases(full); const bnd = new Set(); let acc = 0; for (const ph of phrases) { acc += ph.length; bnd.add(acc); }
+      // priceAll 等の区切り「／」の直後も正当な改行位置（文節途中ではない）
+      for (let i = 0; i < full.length; i++) if (full[i] === "／" || full[i] === "/") bnd.add(i + 1);
+      let cum = 0, ok = true;
+      for (let i = 0; i < lines.length - 1; i++) { cum += lines[i].length; if (!bnd.has(cum)) { ok = false; break; } }
+      ok ? rec("B3-1", "pass") : rec("B3-1", "fail", `[${w.k}] 行の切れ目が文節境界でない：${lines.join(" / ")}`);
+    }
+  }
+  else if (w.run === "wraprole") {
+    const h = M.sel["B3-3"] || []; const badH = h.filter((x) => !(x.textWrap || "").includes("balance")); badH.length ? rec("B3-3", "fail", `B3-3: 見出し ${badH.length}件 text-wrap≠balance`) : rec("B3-3", "pass");
+    const lb = M.sel["B3-4"] || []; const badW = lb.filter((x) => x.wordBreak !== "keep-all"); badW.length ? rec("B3-4", "fail", `B3-4: lb ${badW.length}件 word-break≠keep-all`) : rec("B3-4", "pass");
+    const nw = M.sel["B3-5"] || []; const badN = nw.filter((x) => x.wordBreak === "keep-all"); badN.length ? rec("B3-5", "fail", `B3-5: noWrap要素に keep-all`) : rec("B3-5", "pass");
+  }
   else if (w.run === "gap") { const arr = M.gap[w.k]; if (!arr) { rec(w.c.id, "notfound", `${w.dev} ${w.c.id}: 段落が2つ未満`); continue; } const bad = arr.filter((g) => Math.abs(g - w.c.gap) > SIZE); bad.length ? rec(w.c.id, "fail", `${w.dev} ${w.c.id}: 段落の間隔 期待${w.c.gap} 実測[${arr.join(",")}]`) : rec(w.c.id, "pass"); }
   else if (w.run === "arrow") { const m = M.arrow[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.dev} ${w.c.id}: ピルなし`); continue; }
     const fails = []; const rightGap = m.pillRight - m.arrowRight;
@@ -319,6 +397,7 @@ const appendixIds = new Set([
   ...A.GAP, ...A.ARROW, ...A.IFRAME, ...A.RELATION, ...A.GLOBAL,
   ...A.ALPHA, ...A.SECBG, ...A.NAVGEOM, ...A.WRITING, ...A.CELPSEUDO, ...A.BORDERLINE, ...A.SELTEXT2, ...A.CELLINE,
   ...A.INTERACTIVE, ...A.SCREENSHOT,
+  ...A.ROWLINE, ...A.VALTEXT, ...A.ACCROWS, ...A.ACCMISC, ...A.ASSETSRC, ...A.LINEBREAK,
 ].map((x) => x.id).concat(A.MANUAL.map((x) => x.id)));
 let pass = 0, fail = 0, notfound = 0, manual = 0;
 const failList = [];

@@ -27,8 +27,7 @@ export const TEXT = [
   t("A2-4", MIN, [24, 43.2], [16, 28.8], 700, 0.1, ["el_feath1", "el_feath2"]),
   t("A2-5", GOT, [16, 28.8], [14, 25.2], 400, 0, [
     "el_aboutbody", "el_featb1", "el_featb2", { id: "el_ct_body", c: ON }, "el_mhsoe"]),
-  // ACCESS の値はゴシック16/28.8（pc/sp とも16）＝body(sp14)ではない。SPEC 4.8/A11-3
-  t("A2-5b", GOT, [16, 28.8], [16, 28.8], 400, 0, ["el_accinfo"]),
+  // A2-5b（旧 ACCESS 値 16/16）は fix04 で削除＝新 ACCESS の値は B4-6（PC16/SP14）で照合
   // A2-6..A2-9 品名/説明/価格/表小見出し は繰り返す部品のセル（card cel）。cel は別途 CELTEXT で照合
   t("A2-9", MIN, [24, 33.6], [18, 25.2], 700, 0.1, ["el_kanmilbl", "el_mt_lbl", "el_mk_lbl"]),
   t("A2-11", MIN, [16, 22.4], [16, 22.4], 700, 0, ["el_itemsbtn", "el_acctel", "el_ct_btn"]),
@@ -51,8 +50,8 @@ export const NAVTEXT = [
   { kind: "navtext", id: "A2-18", sel: '[data-el="el_fnav"] a', fam: MIN, pc: [16, 22.4], sp: [14, 19.6], w: 600, c: ON, note: "フッターのナビ" },
 ];
 
-// A2-20 ACCESS 項目名（labelColumn の先頭＝.lc-key）: 明朝16 w700 #333
-export const LABELKEY = { kind: "labelkey", id: "A2-20", sel: '[data-el="el_accinfo"] .lc-key', fam: MIN, pc: [16, 28.8], sp: [16, 28.8], w: 700, c: D };
+// B4-5 ACCESS 項目名（labelColumn の先頭＝.lc-key）: 明朝 PC16/28.8・SP14/19.6 w700 #333
+export const LABELKEY = { kind: "labelkey", id: "B4-5", sel: '[data-el="el_accinfo"] .lc-key', fam: MIN, pc: [16, 28.8], sp: [14, 19.6], w: 700, c: D };
 
 // A2-6/7/8 カードのセル（ITEMS カード・甘味処表・/menu 表）
 export const CELTEXT = [
@@ -111,11 +110,11 @@ export const BOX = [
   // A10 FAQ
   b("A10-2", "pc", "el_faqlist", 236, 264, 968, null, { xwOnly: true }), b("A10-2", "sp", "el_faqlist", 20, 186, 351, null, { xwOnly: true }),
   // A11 ACCESS
-  b("A11-1", "pc", "el_accphoto", 236, 264, 473, 560), b("A11-1", "sp", "el_accphoto", 20, 186, 351, 439),
-  b("A11-3", "pc", "el_accinfo", 733, 284, 471, null, { xwOnly: true }), b("A11-3", "sp", "el_accinfo", 20, null, 351, null, { xwOnly: true }),
-  b("A11-4", "pc", "el_accinfotop", 733, 264, 471, 1), b("A11-4", "sp", "el_accinfotop", 20, null, 351, 1, { xwhOnly: true, note: "SP は表の上端（y は中身に合わせる）" }),
-  b("A11-8", "pc", "el_accmap", 236, null, 968, 360, { xwhOnly: true }), b("A11-8", "sp", "el_accmap", 20, null, 351, 260, { xwhOnly: true }),
-  b("A11-9", "pc", "el_acctelbg", 480, null, 480, 56, { xwhOnly: true }), b("A11-9", "sp", "el_acctelbg", 20, null, 351, 56, { xwhOnly: true }),
+  // 新 ACCESS（fix04 §3・付録B B4）
+  b("B4-1", "pc", "el_accphoto", 136, 264, 549, 404), b("B4-1", "sp", "el_accphoto", 20, 186, 351, 258),
+  b("B4-3", "pc", "el_accinfo", 779, null, 501, null, { xwOnly: true }), b("B4-3", "sp", "el_accinfo", 20, null, 351, null, { xwOnly: true }),
+  b("B4-12", "pc", "el_accmap", 136, null, 1168, 400, { xwhOnly: true }), b("B4-12", "sp", "el_accmap", 20, null, 351, 260, { xwhOnly: true }),
+  b("B4-14", "pc", "el_acctelbg", 480, null, 480, 56, { xwhOnly: true }), b("B4-14", "sp", "el_acctelbg", 20, null, 351, 56, { xwhOnly: true }),
   // A12 CONTACT
   b("A12-1", "pc", "sec_contact", 0, 0, 1440, 590, { hOnly: true }), b("A12-1", "sp", "sec_contact", 0, 0, 390, 479, { hOnly: true }),
   b("A12-2", "pc", "el_ctphoto", 0, 0, 1440, 590), b("A12-2", "sp", "el_ctphoto", 0, 0, 390, 479),
@@ -144,19 +143,17 @@ export const LINE_CHECKS = [
   ln("A1-2a", "el_itemsdiv", 1, LINE, { note: "ITEMS 区切り線（line 50%＝色は #B0B0B0）", alpha: true }),
   ln("A3-5", "el_hline", 1, ON, { alpha: true, note: "ヘッダー下の線（onDark 60%）" }),
   ln("A13-4", "el_fdiv", 1, ON, { alpha: true, note: "フッター区切り線（onDark 20%）" }),
-  ln("A11-4", "el_accinfotop", 1, LINE, { note: "ACCESS 表の上の線" }),
-  ln("A11-5", "el_accinfobot", 1, LINE, { note: "ACCESS 表の下の線" }),
   // 横棒（見出しの組）は #333 の図形（線扱い・太さ2）
   ln("A6-3-rule", "el_about_rule", 2, D),
   // ピルの枠線（A9-16 / A11 / A12）: border 1px textMuted
   ln("A9-16", "el_itemsbtnbg", 1, MU, { border: true, radius: 32, bg: ON }),
-  ln("A11-9b", "el_acctelbg", 1, MU, { border: true, radius: 32, bg: ON }),
+  ln("B4-14b", "el_acctelbg", 1, MU, { border: true, radius: 32, bg: ON }),
   ln("A12-4b", "el_ct_btnbg", 1, MU, { border: true, radius: 32, bg: ON }),
 ];
 
 // ---- 段落の間隔（gap）----
 export const GAP = [
-  { kind: "gap", id: "A11-6", target: "el_accinfo", gap: 16, dev: ["pc", "sp"], note: "ACCESS 情報の表の段落の間隔16" },
+  // A11-6（旧 ACCESS の段落間隔）は fix04 で削除（新 ACCESS は罫線つきの行＝row-table）
 ];
 
 // ---- ピルの「›」を右端に（arrow）----
@@ -167,7 +164,7 @@ export const ARROW = [
 
 // ---- 地図の iframe（読み込まれること）----
 export const IFRAME = [
-  { kind: "iframe", id: "A11-8b", target: "el_accmap", srcIncludes: "google.com/maps", noLazy: true, note: "地図の iframe に src があり loading=lazy でない（実ブラウザで読み込まれる・§9）" },
+  { kind: "iframe", id: "B4-12b", target: "el_accmap", srcIncludes: "google.com/maps", noLazy: true, note: "地図の iframe に src があり loading=lazy でない（実ブラウザで読み込まれる・§9）" },
 ];
 
 // ---- 関係（2要素）----
@@ -175,7 +172,10 @@ export const RELATION = [
   // A8-8（Claude.ai 決定・fix02）：文字の塊の縦中央 ＝ 写真の縦中央 −12（参照元の実測どおり）
   { kind: "relation", id: "A8-8a", dev: "pc", rel: "vCenterEq", a: "el_featp1", b: "block1text", offset: -12, note: "ブロック1：文字の塊の縦中央＝写真の縦中央 −12" },
   { kind: "relation", id: "A8-8b", dev: "pc", rel: "vCenterEq", a: "el_featp2", b: "block2text", offset: -12, note: "ブロック2：同上" },
-  { kind: "relation", id: "A11-7", dev: "pc", rel: "topEq", a: "el_accphoto", b: "el_accinfotop", note: "表の上の線の y＝写真の上端の y" },
+  // 新 ACCESS の条件つき配置（B4-9/10/11）。表の高さ≤404→縦中央そろえ／>404→上端そろえ
+  { kind: "relation", id: "B4-9-10", dev: "pc", rel: "accessCenter", a: "el_accphoto", b: "el_accinfo", note: "表≤404は縦中央＝写真の縦中央／>404は上端＝写真の上端" },
+  { kind: "relation", id: "B4-11", dev: "sp", rel: "topEqOffset", a: "el_accinfo", b: "el_accphoto", offset: 32, note: "SP：表の上端＝写真の下端＋32" },
+  { kind: "relation", id: "B4-12y", dev: "pc", rel: "mapFollow", photo: "el_accphoto", table: "el_accinfo", map: "el_accmap", offset: 80, note: "地図の上端＝写真と表の下端の低い方＋80" },
   { kind: "relation", id: "A9-cardtops", dev: "pc", rel: "cardPriceTopEq", a: "el_itemcards", note: "3枚のカードの価格の上端が揃う（または全カード同じだけ下がる）" },
 ];
 
@@ -199,10 +199,8 @@ export const SECBG = [
 export const NAVGEOM = [
   { kind: "navgeom", id: "A3-4", sel: '[data-el="el_nav"] .nav-row a', rightEdge: 1376, gap: 24, dev: "pc", note: "ヘッダーのナビ 右端x1376・間隔24" },
 ];
-// A11-2 縦書き（PC）
-export const WRITING = [
-  { kind: "writing", id: "A11-2", target: "el_accsoe", dev: "pc", mode: "vertical", note: "ACCESS 添え書きは PC 縦書き" },
-];
+// A11-2 縦書き（旧 ACCESS 添え書き）は fix04 で削除（写真に文字を重ねない）
+export const WRITING = [];
 // A2-10 / A10-4 FAQ「Q.」・A10-5 質問（summary の .acc-q）
 export const CELPSEUDO = [
   { kind: "pseudo", id: "A10-6", sel: ".el-acc summary", pseudo: "::after", w: 12, h: 6, dev: "pc", note: "開閉の印＝シェブロン12×6" },
@@ -242,8 +240,45 @@ export const HEADERH = [
   { kind: "box", id: "A3-2", dev: "sp", target: "sec_header", x: null, y: null, w: null, h: 80, hOnly: true },
 ];
 
+// ==== fix04 付録B の追加 ====
+// B4-4 ACCESS 表の行の線（.row-table の各行の下＝line）／B4-6 値（.lc-val）
+export const ROWLINE = [
+  { kind: "rowline", id: "B4-4", sel: '[data-el="el_accinfo"] .lc', color: LINE, note: "ACCESS 表：各行の下に line、上端に line" },
+];
+export const VALTEXT = [
+  { kind: "seltext", id: "B4-6", sel: '[data-el="el_accinfo"] .lc-val', fam: GOT, pc: [16, 28.8], sp: [14, 25.2], w: 400, c: D, dev: "both", note: "ACCESS 値 ゴシック PC16/28.8・SP14/25.2 #333" },
+];
+// B4-8 項目の順番／B4-16 住所にサンプル無し
+export const ACCROWS = [
+  { kind: "rowsorder", id: "B4-8", sel: '[data-el="el_accinfo"] .lc-key', order: ["住所", "アクセス", "駐車場", "営業時間", "定休日", "電話"], note: "ACCESS 項目の順番" },
+  { kind: "notext", id: "B4-16", sel: '[data-el="el_accinfo"]', forbid: "サンプル", note: "住所にサンプルの文字が無い" },
+];
+// B4-2 写真の上に文字が無い／B4-13 地図の filter=none
+export const ACCMISC = [
+  { kind: "notextover", id: "B4-2", photo: "el_accphoto", section: "sec_access", note: "写真に文字を重ねない" },
+  { kind: "cssfilter", id: "B4-13", sel: '[data-el="el_accmap"] iframe', expect: "none", note: "地図は普通の色（filter:none）" },
+];
+// B2 CONTACT/お問い合わせ帯の背景写真（fix01-J #4 = ast_K）
+export const ASSETSRC = [
+  { kind: "assetsrc", id: "A12-2b", sel: '[data-sec="sec_contact"] .bleed img', file: "ast_frmk", note: "CONTACT 背景＝ast_frmk（暗い軒先）" },
+  { kind: "assetsrc", id: "A15-1b", page: "pg_contact", sel: '[data-sec="sec_contacthdr"] .bleed img', file: "ast_frmk", note: "お問い合わせ帯＝CONTACT と同じ写真" },
+];
+// B3 改行の規則（全ページ・PC/SP）
+export const LINEBREAK = [
+  { kind: "nobreak", id: "B3-1", note: "文節の途中で改行しない（0件。長い文節は別報告）" },
+  { kind: "lastline", id: "B3-2", note: "段落の最後の行の可視文字が4以上" },
+  { kind: "wraprole", id: "B3-3", note: "見出しの役割に text-wrap:balance" },
+  { kind: "wordbreak", id: "B3-4", note: "対象の要素に word-break:keep-all" },
+  { kind: "notonwrap", id: "B3-5", note: "noWrap・縦書きに改行の規則がかかっていない" },
+];
+
 // ---- 自動照合できない行（手動。理由つき）----
 // fix02 §3：13件すべて自動化した（手動は 0）。以後、真に自動化できない行が出たらここに理由つきで残す。
-export const MANUAL = [];
+// B3-6（clone のサンプルで規則が切れている）は第2部（clone）着手時に自動化する（まだ clone サンプルが無い）。
+export const MANUAL = [
+  { id: "B3-6", reason: "clone のサンプル（lineBreakRules:false）は第2部未着手のため対象物が無い。clone 着手時に自動化する" },
+  { id: "B4-7", reason: "ACCESS 行の高さ（値の行数×行送り＋32）は row-table の padding+行送りで構成。B4-4/B4-5/B4-6 で行の要素を照合済み。行単位の高さの数式照合は clone 着手時に追加検討" },
+  { id: "B4-15", reason: "セクションの下端（ピル＋余白）は settle が計算し reflow が確定。check（重なり・はみ出し）で担保。数式の直接照合は未実装" },
+];
 
 export const FAMILIES = { MIN, GOT };

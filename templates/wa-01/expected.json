@@ -41,10 +41,6 @@
       "status": "pass",
       "details": []
     },
-    "A2-5b": {
-      "status": "pass",
-      "details": []
-    },
     "A2-9": {
       "status": "pass",
       "details": []
@@ -85,7 +81,7 @@
       "status": "pass",
       "details": []
     },
-    "A2-20": {
+    "B4-5": {
       "status": "pass",
       "details": []
     },
@@ -213,23 +209,19 @@
       "status": "pass",
       "details": []
     },
-    "A11-1": {
+    "B4-1": {
       "status": "pass",
       "details": []
     },
-    "A11-3": {
+    "B4-3": {
       "status": "pass",
       "details": []
     },
-    "A11-4": {
+    "B4-12": {
       "status": "pass",
       "details": []
     },
-    "A11-8": {
-      "status": "pass",
-      "details": []
-    },
-    "A11-9": {
+    "B4-14": {
       "status": "pass",
       "details": []
     },
@@ -329,10 +321,6 @@
       "status": "pass",
       "details": []
     },
-    "A11-2": {
-      "status": "pass",
-      "details": []
-    },
     "A10-3": {
       "status": "pass",
       "details": []
@@ -353,10 +341,6 @@
       "status": "pass",
       "details": []
     },
-    "A11-5": {
-      "status": "pass",
-      "details": []
-    },
     "A6-3-rule": {
       "status": "pass",
       "details": []
@@ -365,7 +349,7 @@
       "status": "pass",
       "details": []
     },
-    "A11-9b": {
+    "B4-14b": {
       "status": "pass",
       "details": []
     },
@@ -373,11 +357,59 @@
       "status": "pass",
       "details": []
     },
-    "A11-8b": {
+    "B4-12b": {
       "status": "pass",
       "details": []
     },
-    "A11-6": {
+    "B4-4": {
+      "status": "pass",
+      "details": []
+    },
+    "B4-6": {
+      "status": "pass",
+      "details": []
+    },
+    "B4-8": {
+      "status": "pass",
+      "details": []
+    },
+    "B4-16": {
+      "status": "pass",
+      "details": []
+    },
+    "B4-2": {
+      "status": "pass",
+      "details": []
+    },
+    "B4-13": {
+      "status": "pass",
+      "details": []
+    },
+    "A12-2b": {
+      "status": "pass",
+      "details": []
+    },
+    "A15-1b": {
+      "status": "pass",
+      "details": []
+    },
+    "B3-2": {
+      "status": "pass",
+      "details": []
+    },
+    "B3-1": {
+      "status": "pass",
+      "details": []
+    },
+    "B3-3": {
+      "status": "pass",
+      "details": []
+    },
+    "B3-4": {
+      "status": "pass",
+      "details": []
+    },
+    "B3-5": {
       "status": "pass",
       "details": []
     },
@@ -389,7 +421,15 @@
       "status": "pass",
       "details": []
     },
-    "A11-7": {
+    "B4-9-10": {
+      "status": "pass",
+      "details": []
+    },
+    "B4-11": {
+      "status": "pass",
+      "details": []
+    },
+    "B4-12y": {
       "status": "pass",
       "details": []
     },
@@ -408,7 +448,38 @@
     "A1-6": {
       "status": "pass",
       "details": []
+    },
+    "B3-6": {
+      "status": "manual",
+      "details": [
+        "clone のサンプル（lineBreakRules:false）は第2部未着手のため対象物が無い。clone 着手時に自動化する"
+      ]
+    },
+    "B4-7": {
+      "status": "manual",
+      "details": [
+        "ACCESS 行の高さ（値の行数×行送り＋32）は row-table の padding+行送りで構成。B4-4/B4-5/B4-6 で行の要素を照合済み。行単位の高さの数式照合は clone 着手時に追加検討"
+      ]
+    },
+    "B4-15": {
+      "status": "manual",
+      "details": [
+        "セクションの下端（ピル＋余白）は settle が計算し reflow が確定。check（重なり・はみ出し）で担保。数式の直接照合は未実装"
+      ]
     }
   },
-  "manual": []
+  "manual": [
+    {
+      "id": "B3-6",
+      "reason": "clone のサンプル（lineBreakRules:false）は第2部未着手のため対象物が無い。clone 着手時に自動化する"
+    },
+    {
+      "id": "B4-7",
+      "reason": "ACCESS 行の高さ（値の行数×行送り＋32）は row-table の padding+行送りで構成。B4-4/B4-5/B4-6 で行の要素を照合済み。行単位の高さの数式照合は clone 着手時に追加検討"
+    },
+    {
+      "id": "B4-15",
+      "reason": "セクションの下端（ピル＋余白）は settle が計算し reflow が確定。check（重なり・はみ出し）で担保。数式の直接照合は未実装"
+    }
+  ]
 }
