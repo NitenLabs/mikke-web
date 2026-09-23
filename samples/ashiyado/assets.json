@@ -278,7 +278,7 @@
         "mime": "image/jpeg",
         "width": 1600,
         "height": 656,
-        "bytes": 264056,
+        "bytes": 169244,
         "exifStripped": true
       },
       "uploadedAt": "2026-09-22T21:40:00+09:00",
@@ -286,8 +286,8 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "credit": "Sir. Simo",
-        "pageUrl": "https://unsplash.com/photos/9n5jGURG2SQ"
+        "credit": "Ria",
+        "pageUrl": "https://unsplash.com/photos/oZzoDW61aoM"
       },
       "rights": {
         "basis": "licensed",
@@ -296,7 +296,7 @@
         "note": "Unsplash License"
       },
       "slot": "other",
-      "alt": "暗い軒先の障子の戸"
+      "alt": "夜の店内の設え（暗い木の桟の質感）"
     },
     "ast_frml": {
       "kind": "photo",

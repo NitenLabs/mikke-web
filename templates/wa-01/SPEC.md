@@ -319,7 +319,7 @@ ABOUT・FEATURE・ITEMS・FAQ・ACCESS・CONTACT で共通。値はすべて同�
 | F | FEATURE 2 | 549×404 | 351×258 | 甘味処の情景：わらび餅、または抹茶と菓子の盆 | warabi mochi, matcha and sweets |
 | G〜I | おすすめのカード3件 | 426×426 | 351×351 | それぞれの品そのもの（上生菓子・最中・わらび餅・どら焼きのうち、写真のある3件） | monaka, warabimochi, dorayaki |
 | J | ACCESS 店構え | 473×560 | 351×439 | 夕方〜夜の木の店構え・格子・軒先。**文字の入ったのれん・看板は不可** | japanese wooden facade night, machiya |
-| K | CONTACT 背景・お問い合わせの帯 | 1440×590 | 390×479 | 細部の少ない質感（石畳、土壁、畑の畝、木目）を暗く沈める | stone path dark, japanese wall texture |
+| K | CONTACT 背景・お問い合わせの帯 | 1440×590 | 390×479 | 夜の店内の設え（質感）。細部の少ない暗い面（木の桟・土壁・木目など）を、桟の間隔が画面の高さの約1/12になるまで寄せて暗く沈める。文字が乗るので均一で落ち着いた面を選ぶ | dark wood slats, japanese interior texture dark |
 | L | お品書きの帯 | 1440×400 | 390×320 | 菓子・道具を横長に。中央に文字の乗る暗い余白 | wagashi tray dark |
 
 - 選んだ写真は、枠・撮影者・URL・選んだ理由（1行）を記録する（既存の手順どおり）。

@@ -2284,7 +2284,7 @@
           "fullBleed": true
         }
       },
-      "darken": 27,
+      "darken": 13,
       "crop": {
         "fx": 50,
         "fy": 50,
@@ -3544,7 +3544,7 @@
           "fullBleed": true
         }
       },
-      "darken": 27,
+      "darken": 13,
       "crop": {
         "fx": 50,
         "fy": 50,
