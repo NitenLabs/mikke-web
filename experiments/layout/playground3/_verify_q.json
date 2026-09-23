@@ -1,0 +1,248 @@
+{
+  "Q1-pc": {
+    "H1": true,
+    "H1v": [
+      12,
+      8
+    ],
+    "H2": {
+      "ok": true,
+      "worst": 0,
+      "wid": ""
+    },
+    "gapAfter": 8,
+    "noOverlap": true,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": 13,
+        "dy": 8
+      }
+    ],
+    "warn": 0
+  },
+  "Q2-pc": {
+    "H1": true,
+    "H1v": [
+      0,
+      -0.2
+    ],
+    "headStill": false,
+    "bodyBelowPhoto": 23.8,
+    "bodyStillAfterHead2": true,
+    "anchors": [
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M2",
+        "anchor": "F_p0",
+        "anchorName": "特集1の写真",
+        "gapY": 23.8,
+        "x": 755
+      }
+    ],
+    "warn": 0
+  },
+  "Q3-pc": {
+    "bothLanded": true,
+    "headY": 763.19,
+    "bodyY": 822.38,
+    "bodyPushedByHead2": 43.18,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M2",
+        "anchor": "F_hg",
+        "anchorName": "特集の見出しの組",
+        "gapY": 546.61,
+        "x": 755
+      },
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M2",
+        "anchor": "F_h0",
+        "anchorName": "特集1の見出し",
+        "gapY": 16,
+        "x": 755
+      }
+    ],
+    "warn": 0
+  },
+  "Q4-pc": {
+    "bodyH": 115.19,
+    "bodyY": 497.58,
+    "warn": 0
+  },
+  "Q5-pc": {
+    "lcBefore": 126,
+    "lcDuring": 126,
+    "lcAfter": 127,
+    "noReflowDuring": true,
+    "reflowedAfter": true,
+    "textOk": true,
+    "bodyGrew": false
+  },
+  "Q6-pc": {
+    "addId": "add_1",
+    "sec0": 1486.3,
+    "sec1": 1616,
+    "grew": true,
+    "overflow": 0,
+    "warn": 0
+  },
+  "Q8-pc": {
+    "peekAtOrigin": true,
+    "backToMoved": true,
+    "opsUnchanged": true
+  },
+  "Q7-pc": {
+    "headingIs2Line": true,
+    "resetPartNoManual": true
+  },
+  "Q9-pc": {
+    "ok": true,
+    "worst": 0
+  },
+  "Q10-pc": {
+    "arrow1": 1,
+    "shift10": 10,
+    "deleted": true,
+    "restored": true
+  },
+  "Q11-pc": {
+    "h1": true,
+    "h2okM1": true,
+    "worst": 0,
+    "note": ""
+  },
+  "Q12-pc": {
+    "pasteAt16": true,
+    "photoDuplicated": true,
+    "addedOnSP": true,
+    "noManualMarkSP": true
+  },
+  "Q13-pc": {
+    "cards": 4,
+    "is4": true
+  },
+  "Q14-pc": {
+    "text": "プレーン",
+    "noFormatting": true
+  },
+  "Q15-pc": {
+    "goneFromFeatureAfterCut": true,
+    "pastedInItems": true,
+    "restoredAfterUndo2": true
+  },
+  "_errs-pc": [],
+  "Q1-sp": {
+    "H1": true,
+    "H1v": [
+      12,
+      8
+    ],
+    "H2": {
+      "ok": true,
+      "worst": 0,
+      "wid": ""
+    },
+    "gapAfter": 0,
+    "noOverlap": true,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": 13,
+        "dy": 8
+      }
+    ],
+    "warn": 0
+  },
+  "Q2-sp": {
+    "H1": true,
+    "H1v": [
+      0,
+      -0.2
+    ],
+    "headStill": true,
+    "bodyBelowPhoto": 23.8,
+    "bodyStillAfterHead2": true,
+    "anchors": [
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M1",
+        "dx": -9,
+        "dy": -37
+      }
+    ],
+    "warn": 1
+  },
+  "Q3-sp": {
+    "bothLanded": true,
+    "headY": 482.59,
+    "bodyY": 519.39,
+    "bodyPushedByHead2": 28.8,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": -9,
+        "dy": 0
+      },
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M1",
+        "dx": -9,
+        "dy": 0
+      }
+    ],
+    "warn": 0
+  },
+  "Q4-sp": {
+    "bodyH": 151.13,
+    "bodyY": 519.39,
+    "warn": 0
+  },
+  "Q6-sp": {
+    "addId": "add_1",
+    "sec0": 2219.1,
+    "sec1": 2364.5,
+    "grew": true,
+    "overflow": 0,
+    "warn": 0
+  },
+  "Q8-sp": {
+    "peekAtOrigin": true,
+    "backToMoved": true,
+    "opsUnchanged": true
+  },
+  "Q9-sp": {
+    "ok": true,
+    "worst": 0
+  },
+  "Q10-sp": {
+    "arrow1": 1,
+    "shift10": 10,
+    "deleted": true,
+    "restored": true
+  },
+  "Q11-sp": {
+    "h1": true,
+    "h2okM1": true,
+    "worst": 0,
+    "note": ""
+  },
+  "Q13-sp": {
+    "cards": 4,
+    "is4": true
+  },
+  "_errs-sp": []
+}

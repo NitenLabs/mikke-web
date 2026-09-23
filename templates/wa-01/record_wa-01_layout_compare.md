@@ -437,3 +437,81 @@ experiments/layout/
 - `pg2-1` 新しい C（c2-select）：選んで動かす＝流れを残した視覚移動＋付いていく先の取り直し（a-box に実測印1行・5.1 検証）
 - `pg2-2` playground2：A と新しい C を触って比べるページ＋まとめて選ぶ＋付いていく先の表示＋P1〜P10 試験＋比較画像（F1〜F6 の直し込み）
 - `pg2-3` 作業票の写し＋記録追補（本線 npm test 30/30・spec-check 117/116/0/0/1・check クリーン・実験 compare 全PASS）
+
+---
+
+---
+
+# 追補：wa-01 layout-playground 3（動かす・戻す・その場で書き換える）
+
+作業票：`wa-01_layout_playground3_workorder.md`。ページで動くのは今回の方式（`c3-edit`）だけ（A・古い C は比較試験にだけ残す）。**判定はしない。所見は最後。**
+
+## R1. git（§9-1）
+- 開始：mikke-web リポジトリ `main`、clean、直近 `pg2-3`（`0d5330d`）。
+- 追加：`experiments/layout/c3-edit/`（model.mjs＝M1/M2/M3・セクション伸長・付いていく先の計算／`_verify_c3.mjs`＝6.1）、`experiments/layout/playground3/`（app.js・build.mjs・`_verify_q.mjs`＝6.2・`_smoke.mjs`）、`refs/compare/layout/playground3_single.html`、`refs/compare/layout/playground3/*.jpg`、作業票の写し、本追補。**本線（tools/samples/schema）・a-box・c2-select は無変更。**
+- コミット一覧は末尾「コミット（playground3）」。
+
+## R2. M1・M2・M3・1.1 の作り方（§9-2）
+**動かした先で扱いを分ける（作業票 §1）。判定は `c3-edit` の `classifyDrop`（離した部品の中心が、その部品の塊の範囲＝塊の全メンバーの元の位置の外接矩形、の中か外か）。**
+- **M1（塊の中）**：`c3-edit` が**流れに残したまま相対オフセット（position:relative）**で描く。塊が動けば一緒に動き、選んでいない部品は動かない。前回 P1 の重なりは、M1 が「見出しの組（259px 上）に付いていく」のをやめ**塊の中のずれ**にしたことで解消（Q1：見出しを右12下8→本文3文足しても重ならず、見出しと本文の間は動かした分＝8 だけ狭いまま・重なり0）。
+- **M2（塊の外）**：`c3-edit` が**元のスロットを流れから外し（＝元の塊が詰め直される・抜け殻＝空白が残らない）**、移動先を**絶対配置＋すぐ上で横が重なる部品に付いていく**。H1 を「詰め直し後」でも保つため、app は **2段階（暫定 @abs で置いて実測 → `reanchor` → 確定）** で確定する。前回 P3 の抜け殻はこれで解消（Q2：本文を写真の下24へ→見出しを2行にしても本文は写真の下24のまま・空白なし）。
+- **M3（まとめて）**：部品ごとに M1/M2 を判定。M2 同士は `reanchor` が「動かした後の見た目」で上の部品を先にするので、下の部品が上に付いて**組ごと一緒に動く**（Q3：見出し＋本文を写真の下へ→見出しを2行にすると本文が押されて +43 下がる）。
+- **1.1 セクションの高さ**：`sectionMinHeight` が、絶対配置の部品の下端＋セクション下余白まで `#sec` を伸ばす。次のセクションはそのぶん下がる。**下方向のはみ出しは警告しない**（横だけ警告）。Q6：区切り線の下に足した文字をセクション下端より80下へ→ items が 1486→1616（PC）/2219→2364（SP）に伸び、overflow 警告 0。
+- **H1・H2・H4**：H1（離した位置にぴったり）は M1・M2 とも全 Q で ±0.5（実測ずれ 0px）。H2（選んでいない部品は動かない）は **M1 で全部品 0px**、**M2 は 1章の例外（元の塊の残りと、塊の高さが変わって動く部品）を除いて**満たす。H4（記録は触った部品だけ）＝`ops` は move/edit/add/del/clear/resetScope のみ、触っていない部品に記録は付かない。**満たせず止めたものは無し。**（M1 を position:relative、選択を DOM 再構築なしにしたことで H2 とダブルクリック編集・IME が両立した＝§0-4 の「ページ側で別に書かない」も守れた＝動かす計算は全て `c3-edit`。）
+
+## R3. 6.1（前回の新しい C との一致）（§9-3）
+`node experiments/layout/c3-edit/_verify_c3.mjs`。**G1・G2・付録B（S1〜S7）が c2-select と全て 0px 一致（PC/SP）**、G3（3エンジン×幅）clean・エンジン差も同値（feature-pc 0.02／items-pc 0.28／…）。テンプレの描画は overrides が無ければ方式A と同一のため。
+
+## R4. 6.2（Q1〜Q15・本物のマウス/キーボード）（§9-4）
+`node experiments/layout/playground3/_verify_q.mjs`（PC=chromium／SP=webkit）。**全 Q が合格。** 主な実測：
+
+| # | 端末 | 結果 | 主な実測 |
+|---|---|---|---|
+| Q1 見出しM1→本文3文足す | PC/SP | ○ | H1 ±0（右12下8）・H2 0px・見出し本文の間8（=16−8）・重なり0 |
+| Q2 本文M2(写真の下24)→見出し2行 | PC/SP | ○ | H1 ±0.2・本文は写真の下24を保持・空白残らず（本文は不動）。SP は本文が見出し位置と重なり警告1（見せる） |
+| Q3 見出し＋本文まとめて写真の下→見出し2行 | PC/SP | ○ | 2つとも着地・見出し2行で本文が +43(PC)/+29(SP) 押し下げ・重なり0(PC) |
+| Q4 本文をS1と同じ3文に書き足す | PC/SP | ○ | 本文高さ 115.19(PC)/151.13(SP)＝S1 の値、重なり0 |
+| Q5 IME 変換中 | PC | ○ | 下 R5 |
+| Q6 足した文字をセクション下端+80へ | PC/SP | ○ | セクション伸長・overflow 0 |
+| Q7 部品/セクション/ページを戻す | PC | ○ | 戻した部品は今の中身のテンプレ位置・書き換えた文字（2行見出し）は残る・手動印なし |
+| Q8 元の配置を見る | PC/SP | ○ | 押している間は元位置・離すと手で動かした位置・記録は増えない |
+| Q9 Cmd+Z で最初→Cmd+Shift+Z で最後 | PC/SP | ○ | 各段階が直後と 0px 一致 |
+| Q10 矢印1px/10px・Delete→Cmd+Z | PC/SP | ○ | 1px／10px／消して戻る |
+| Q11 全部品を塊の中(M1)/外(M2)へ | PC/SP | ○ | 毎回 H1 ±0.5・実 M1 は H2 0px |
+| Q12 コピー→貼り付け／複製／両端末 | PC | ○ | 元の右16下16・写真も複製・SP にも出て手動印なし |
+| Q13 品を複製 | PC/SP | ○ | 4件に |
+| Q14 書式付き貼り付け | PC | ○ | 文字だけ（書式が入らない） |
+| Q15 切り取り→別セクションで貼り付け→Cmd+Z 2回 | PC | ○ | items へ移動・feature から消える・2回で戻る |
+
+- 画像（PC）：`refs/compare/layout/playground3/Q1-before.jpg`／`Q1-moved.jpg`／`Q1-after.jpg`、`Q2-*`、`Q3-moved.jpg`／`Q3-after.jpg`。数値全文：`experiments/layout/playground3/_verify_q.json`／`templates/wa-01/_q_results.txt`。
+- Q1・Q11 の move op に記録される dx が実測より1px大きい場合がある（マウス座標の丸め）。**画面上の位置（geometry）は H1 の ±0.5 を満たす**。
+
+## R5. Q5 の配置計算の回数（§9-5）
+変換中は再配置しないことを、IME と同じ `compositionstart`／`input(isComposing)`／`compositionend` を発火して確認（Chromium の CDP `imeSetComposition` は contenteditable に届かないため「などで再現」）。
+- **変換の途中（`compositionstart`〜`compositionend`）：`layoutCount` は 126 のまま（増分 0）**＝配置計算は走らない。
+- **確定（`compositionend`）後：126→127（+1）**＝そこで初めて計算。確定した文字（「秋の意匠」）も正しい。
+
+## R6. ページと入口（§9-6）
+- **`refs/compare/layout/playground3_single.html`（0.75MB・16MB 未満）**。1ファイル・外部は Google Fonts のみ・viewport-fit=cover・localStorage 不使用。左の操作箱は撤去し、部品を選ぶと浮く操作ボタン＋上部細ツールバー（テキスト／PC・スマホ／元の配置を見る／ページを戻す／戻す・やり直す／制作用）。
+- **`window.__playground` は §7 の名前どおり**（値も `'pc'`/`'sp'`・部品 ID）：`reset・setDevice・geometry・sections・warnings・anchors・ops・presets・runPreset・select・edit・resetScope・undo・redo・layoutCount`。加えて補助として `peek`（Q8 用）・`applyOps` を持つ（欠けは無し＝§8 の再実行に対応）。部品 DOM は `data-el` に ID。
+
+## R7. 本線（§9-7）
+| 検査 | 前 | 後 |
+|---|---|---|
+| `npm test` | 30/0 | **30/0** |
+| `npm run spec-check` | 117/116/0/0/1 | **117/116/0/0/1** |
+| `npm run check dist/ashiyado` | 重なり・はみ出しなし | **重なり・はみ出しなし** |
+| 6.1（c3-edit vs c2-select） | — | **全 0px・G3 clean** |
+
+変更は `experiments/layout/c3-edit/`・`playground3/` と `refs/compare/layout/` の成果物のみ。本線・a-box・c2-select は無変更。
+
+## R8. 所見（判定ではない・追補）
+1. **抜け殻の直しは「M1＝流れに残す／M2＝流れから外して詰める」の二本立てで素直に決まった**。前回の悩み（付いていく先が遠くに付く・抜け殻の空白）は、動かした先で扱いを変えるという作業票の指示にそのまま従うと消えた。
+2. **選択で DOM を作り直さないことが要になった**：作り直すとダブルクリックの対象が入れ替わって編集に入れず、IME も壊れる。選択は印の付け替えだけにし、再配置は透明に走らせることで、H2・その場書き換え・IME が同時に成り立った。
+3. **M1/M2 の境目は「塊の範囲」を元の位置で測るかどうかで結果が変わる**：動かした後の位置で測ると、写真のように塊の端にある部品が自分の塊から外れて見え、M2 に倒れる。元の位置（動かす前）で測ると直った。thin な区切り線は縦にわずかでも動くと範囲外＝M2 になる（横移動は M1）＝これは仕様どおりだが、標準の「少し下げる」が詰め直しになる点は、触って自然か見る価値がある。
+4. **SP で本文を写真の下へ置くと見出しと重なる**（縦積みで写真直後に見出しがあるため）。警告は正しく出る。これも自然かはユーザー判断。
+
+## コミット（playground3）
+`0d5330d pg2-3` の上に積んだ（push はしていない）。
+- `pg3-1` 新方式 c3-edit（M1/M2/M3・セクション伸長・付いていく先の計算）＋6.1
+- `pg3-2` playground3：動かす・戻す・その場書き換え（IME）・浮遊UI・キーボード・クリップボード＋ページ＋Q1〜Q15＋画像

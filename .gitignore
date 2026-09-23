@@ -13,5 +13,6 @@ templates/wa-01/spec-check-result.json
 experiments/layout/playground/index.html
 experiments/layout/playground/_bundle_test.html
 experiments/layout/playground2/index.html
+experiments/layout/playground3/index.html
 templates/wa-01/_baseline_compare_before.txt
 templates/wa-01/_compare_after_abox.txt
