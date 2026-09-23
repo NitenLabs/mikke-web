@@ -1,0 +1,38 @@
+{
+  "pc": {
+    "tops": {
+      "sec_header": 0,
+      "sec_hero": 0,
+      "sec_about": 758,
+      "sec_feature": 1816,
+      "sec_price": 3218,
+      "sec_faqs": 4735,
+      "sec_contact": 5363,
+      "sec_footer": 5953
+    },
+    "docH": 6428
+  },
+  "sp": {
+    "tops": {
+      "sec_header": 0,
+      "sec_hero": 0,
+      "sec_about": 632.8,
+      "sec_feature": 1413.52,
+      "sec_price": 2571.99,
+      "sec_faqs": 4791.27,
+      "sec_contact": 6153.27,
+      "sec_footer": 6632
+    },
+    "next": {
+      "sec_hero": 632.8,
+      "sec_about": 1413.52,
+      "sec_feature": 2571.99,
+      "sec_price": 4791.27,
+      "sec_faqs": 6153.27,
+      "sec_contact": 6632,
+      "sec_footer": 7236.36,
+      "sec_header": 90
+    },
+    "maxBottom": 7236
+  }
+}

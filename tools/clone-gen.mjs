@@ -25,17 +25,55 @@ const SECS = [
   { id: "sec_contact", name: "CONTACT", y0: 5363, y1: 5952 },
   { id: "sec_footer", name: "FOOTER", y0: 5953, y1: 99999 },
 ];
+// PC のセクション高さ（固定・report.md 実測）。SP 対応づけ（matchSp）で相対位置の分母に使う。
+const secHeightPc = { sec_hero: 758, sec_about: 1058, sec_feature: 1402, sec_price: 1517, sec_faqs: 628, sec_contact: 590, sec_footer: Math.round(pc.docH - 5953), sec_header: 88 };
+const pcTopOf = (s) => (s.id === "sec_header" ? 0 : s.y0);
 const HEADER_Y = 90; // これ未満はヘッダー（ロゴ・ナビ）＝FVに重ねる
 
-// SP 要素を「仮の文字（text）」で対にする（同じテキスト＝同じ要素とみなし、順に割り当て）
+// --- SP のセクション上端（spTop）を実測の色面から求める。SP の sp.docH は footer 展開前の古い値
+//     （実測 6363 だが要素・面は 7200 まで伸びる）なので使わず、展開後の要素・面の y を使う。
+//     全幅の色面がセクションの地：#EEEEEE=feature/faqs・#333333=contact/footer・スクリム=hero。
+//     白いセクション（about/price）は色面が無いので、直前セクションの色面の下端から始める。順番は固定。 ---
+const spTall = (sp.surfaces || []).filter((s) => s.w >= SPW * 0.95 && s.h >= 80).sort((a, b) => a.y - b.y);
+const eee = spTall.filter((s) => s.color === "#EEEEEE");
+const d333 = spTall.filter((s) => s.color === "#333333");
+const scrim = spTall.find((s) => s.color === "#000000" || s.color === "#9A9A9A") || { y: 0, h: 0 };
+const newsBand = (sp.surfaces || []).find((s) => s.color === "#333333" && s.w >= SPW * 0.95 && s.h < 80 && s.y >= scrim.y + scrim.h - 4 && s.y <= scrim.y + scrim.h + 60);
+const spMaxBottom = Math.max(...sp.elements.map((e) => e.y + e.h), ...(sp.surfaces || []).map((s) => s.y + s.h));
+const spTop = {
+  sec_header: 0, sec_hero: 0,
+  sec_about: newsBand ? newsBand.y + newsBand.h : scrim.y + scrim.h,
+  sec_feature: eee[0] ? eee[0].y : 1414,
+  sec_price: eee[0] ? eee[0].y + eee[0].h : 2572,
+  sec_faqs: eee[1] ? eee[1].y : 4791,
+  sec_contact: d333[0] ? d333[0].y : 6153,
+  sec_footer: d333[1] ? d333[1].y : 6632,
+};
+const spOrder = ["sec_hero", "sec_about", "sec_feature", "sec_price", "sec_faqs", "sec_contact", "sec_footer"];
+const spNextTop = {}; spOrder.forEach((s, i) => { spNextTop[s] = i + 1 < spOrder.length ? spTop[spOrder[i + 1]] : spMaxBottom; });
+// ヘッダーは SP では折りたたみメニュー＝ナビ項目が SP に出ない。範囲を狭く（ロゴだけ拾える y<90）にして、
+// PC ナビ項目（セクション名と同じ仮の文字＝各セクションの英字ラベルと衝突）が SP の英字ラベルを横取り
+// するのを防ぐ（横取りするとラベルが PC 値へフォールバックして SP でずれる）。
+spNextTop.sec_header = 90;
+
+// SP 要素を「仮の文字（text）」で対にする。同じ仮の文字が別セクションに出る（ヘッダーとフッターの
+// ナビ等）と取り違えるので、まず PC 側のセクションの SP 範囲（spTop..次のspTop）に入る候補から選ぶ。
 const spByText = {};
 for (const e of sp.elements) { if (!e.text) continue; (spByText[e.text] ??= []).push(e); }
-const spTaken = new Map();
-function matchSp(e) {
+const spUsed = new Set();
+function matchSp(e, s) {
   if (!e.text) return null;
   const list = spByText[e.text]; if (!list) return null;
-  const used = spTaken.get(e.text) || 0; if (used >= list.length) return null;
-  spTaken.set(e.text, used + 1); return list[used];
+  const spTopS = spTop[s.id] ?? 0, spH = ((spNextTop[s.id] ?? spMaxBottom) - spTopS) || 1;
+  const lo = spTopS - 40, hi = spTopS + spH + 40;
+  // 同じ仮の文字が同一セクションに複数あるとき（ロゴ y 上端 と 見出し 等）は、PC でのセクション内の
+  // 相対位置（上端からの割合）が最も近い候補を選ぶ。「上端に最も近い」だと別要素を横取りする。
+  const fPc = (e.y - pcTopOf(s)) / (secHeightPc[s.id] || 1);
+  let best = null, bestD = 1e9;
+  for (const c of list) { if (spUsed.has(c)) continue; if (c.y >= lo && c.y < hi) { const fSp = (c.y - spTopS) / spH; const d = Math.abs(fSp - fPc); if (d < bestD) { bestD = d; best = c; } } }
+  // 範囲外は横取りになるので拾わない（SP に対応が無い＝折りたたみメニュー等は null＝PC 値で描く）
+  if (best) spUsed.add(best);
+  return best;
 }
 
 // x,w を％に、y,h は px（セクション相対 y）。round4
@@ -74,10 +112,11 @@ for (const s of (pc.surfaces || [])) {
 
 for (const e of pc.elements) {
   const s = secOf(e.y);
-  const spE = matchSp(e);
+  const spE = matchSp(e, s);
   const id = `el_${String(++idN).padStart(3, "0")}`;
   const pcL = layoutFor(e, PCW, s.id === "sec_header" ? 0 : s.y0);
-  const spL = spE ? layoutFor(spE, SPW, 0) : { ...pcL, x: r4((e.x / PCW) * 100), w: r4((e.w / PCW) * 100) };
+  // SP は SP のセクション上端（spTop）を引いてセクション相対 y にする（絶対 y のままだと二重加算で崩れる）
+  const spL = spE ? layoutFor(spE, SPW, spTop[s.id] || 0) : { ...pcL, x: r4((e.x / PCW) * 100), w: r4((e.w / PCW) * 100) };
   if (e.tag === "img") {
     elements[id] = { type: "shape", kind: "rect", fill: "#9A9A9A", z: 1, section: s.id, layout: { pc: pcL, sp: { ...spL, y: pcL.y } } };
   } else if (e.text) {
@@ -106,12 +145,11 @@ const sectionsObj = {};
 const pageSecs = ["sec_hero", "sec_about", "sec_feature", "sec_price", "sec_faqs", "sec_contact"];
 const bgOrder = { sec_hero: null, sec_about: "#FFFFFF", sec_feature: "#EEEEEE", sec_price: "#FFFFFF", sec_faqs: "#EEEEEE", sec_contact: "#333333", sec_footer: "#333333", sec_header: null };
 // セクションの高さは「参照元のセクションの高さ」に合わせる＝積み上げると参照元の y を再現する。
-// PC は SECS 境界の差、SP は参照元 SP の docH を PC と同じ比率で割る。ヘッダーは 88/80（重ねる）。
-const spDocH = sp.docH, pcDocH = pc.docH;
-const secHeightPc = { sec_hero: 758, sec_about: 1058, sec_feature: 1402, sec_price: 1517, sec_faqs: 628, sec_contact: 590, sec_footer: Math.round(pcDocH - 5953) };
-const idToSec = { sec_hero: 0, sec_about: 1, sec_feature: 2, sec_price: 3, sec_faqs: 4, sec_contact: 5 };
-const secHeightSp = {}; // SP は PC 高さ × (spDocH/pcDocH)
-for (const [sid, hpc] of Object.entries(secHeightPc)) secHeightSp[sid] = Math.round(hpc * (spDocH / pcDocH));
+// PC は SECS 境界の差。SP は上で色面から求めた spTop の差（sp.docH は古いので使わない）。ヘッダーは 88/80（重ねる）。
+const pcDocH = pc.docH;
+const secHeightSp = {}; // SP は実測の色面境界（spTop）の差
+for (const sid of pageSecs) secHeightSp[sid] = Math.max(1, Math.round(spNextTop[sid] - spTop[sid]));
+secHeightSp.sec_footer = Math.max(1, Math.round(spMaxBottom - spTop.sec_footer));
 for (const sid of ["sec_header", ...pageSecs, "sec_footer"]) {
   const pcH = sid === "sec_header" ? 88 : secHeightPc[sid];
   const spH = sid === "sec_header" ? 80 : secHeightSp[sid];
@@ -148,4 +186,11 @@ fs.writeFileSync(path.join(OUT, "site.json"), JSON.stringify(site, null, 2) + "\
 fs.writeFileSync(path.join(OUT, "shop.json"), JSON.stringify(shop, null, 2) + "\n");
 fs.writeFileSync(path.join(OUT, "theme.json"), JSON.stringify(theme, null, 2) + "\n");
 fs.writeFileSync(path.join(OUT, "assets.json"), JSON.stringify(assets, null, 2) + "\n");
+// clone-compare 用のサイドカー：参照元のセクション上端（PC は SECS.y0、SP は色面から求めた spTop）。
+// 照合はセクション相対で行うので、両ツールが同じ境界を使うよう1か所（生成側）で決めて渡す。
+const pcTops = { sec_header: 0 }; for (const s of SECS) pcTops[s.id] = s.y0;
+fs.writeFileSync(path.join(OUT, "_refsections.json"), JSON.stringify({
+  pc: { tops: pcTops, docH: pcDocH },
+  sp: { tops: spTop, next: spNextTop, maxBottom: Math.round(spMaxBottom) },
+}, null, 2) + "\n");
 console.log(`✓ clone-q65 生成：要素 ${Object.keys(elements).length}（うち画像 ${Object.values(elements).filter((e) => e.type === "shape").length}）／セクション ${Object.keys(sectionsObj).length}`);
