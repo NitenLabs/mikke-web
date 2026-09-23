@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "colors": {
+    "background": {
+      "value": "#FFFFFF"
+    },
+    "surface": {
+      "value": "#EEEEEE"
+    },
+    "text": {
+      "value": "#333333"
+    },
+    "textMuted": {
+      "value": "#7B7B7B"
+    },
+    "line": {
+      "value": "#B0B0B0"
+    },
+    "dark": {
+      "value": "#333333"
+    },
+    "onDark": {
+      "value": "#FFFFFF"
+    }
+  },
+  "fonts": {
+    "heading": "zen-old-mincho",
+    "body": "zen-kaku-gothic-new"
+  },
+  "textStyles": {
+    "pageTitle": {
+      "font": "font:heading",
+      "size": {
+        "pc": 28,
+        "sp": 20
+      },
+      "lineHeight": 1.4,
+      "weight": 700,
+      "color": "theme:text"
+    },
+    "heading": {
+      "font": "font:heading",
+      "size": {
+        "pc": 28,
+        "sp": 20
+      },
+      "lineHeight": 1.4,
+      "weight": 700,
+      "color": "theme:text"
+    },
+    "subheading": {
+      "font": "font:heading",
+      "size": {
+        "pc": 24,
+        "sp": 16
+      },
+      "lineHeight": 1.4,
+      "weight": 700,
+      "color": "theme:text"
+    },
+    "body": {
+      "font": "font:body",
+      "size": {
+        "pc": 16,
+        "sp": 14
+      },
+      "lineHeight": 1.8,
+      "color": "theme:text"
+    },
+    "caption": {
+      "font": "font:body",
+      "size": {
+        "pc": 14,
+        "sp": 14
+      },
+      "lineHeight": 1.6,
+      "color": "theme:textMuted"
+    }
+  }
+}

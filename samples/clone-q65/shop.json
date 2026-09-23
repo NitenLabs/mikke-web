@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_cloneq65",
+  "updatedAt": "2026-09-23T00:00:00+09:00",
+  "isSample": true,
+  "basic": {
+    "name": "clone q65",
+    "genre": {
+      "template": "retail",
+      "detail": "検証用クローン"
+    },
+    "tagline": "clone"
+  },
+  "location": {
+    "postalCode": "000-0000",
+    "prefecture": "－",
+    "city": "－",
+    "town": "－",
+    "street": "－"
+  },
+  "hours": {
+    "weekly": {}
+  },
+  "contact": {
+    "phone": {
+      "display": "03-0000-0000",
+      "digits": "0300000000"
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_x": {
+        "name": "－",
+        "order": 1
+      }
+    },
+    "categories": {},
+    "labels": {
+      "lbl_rec": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {},
+    "placements": {}
+  }
+}

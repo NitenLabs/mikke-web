@@ -1,0 +1,2894 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_cloneq65",
+  "lineBreakRules": false,
+  "canvas": {
+    "pcContentWidth": 1440,
+    "spDesignWidth": 390
+  },
+  "regions": {
+    "header": "sec_header",
+    "footer": "sec_footer",
+    "headerBehavior": "sticky",
+    "headerOverlay": {
+      "pages": [
+        "pg_home"
+      ],
+      "textColor": "theme:onDark"
+    }
+  },
+  "pages": {
+    "pg_home": {
+      "slug": "/",
+      "kind": "home",
+      "published": true,
+      "showInNav": true,
+      "sections": [
+        "sec_hero",
+        "sec_about",
+        "sec_feature",
+        "sec_price",
+        "sec_faqs",
+        "sec_contact"
+      ],
+      "navLabel": "TOP",
+      "navOrder": 1
+    }
+  },
+  "sections": {
+    "sec_header": {
+      "name": "sec_header",
+      "minHeight": {
+        "pc": 61,
+        "sp": 6253
+      }
+    },
+    "sec_hero": {
+      "name": "sec_hero",
+      "minHeight": {
+        "pc": 758,
+        "sp": 633
+      }
+    },
+    "sec_about": {
+      "name": "sec_about",
+      "minHeight": {
+        "pc": 445,
+        "sp": 1029
+      },
+      "background": {
+        "color": "#FFFFFF"
+      }
+    },
+    "sec_feature": {
+      "name": "sec_feature",
+      "minHeight": {
+        "pc": 1223,
+        "sp": 2468
+      },
+      "background": {
+        "color": "#EEEEEE"
+      }
+    },
+    "sec_price": {
+      "name": "sec_price",
+      "minHeight": {
+        "pc": 1351,
+        "sp": 4679
+      },
+      "background": {
+        "color": "#FFFFFF"
+      }
+    },
+    "sec_faqs": {
+      "name": "sec_faqs",
+      "minHeight": {
+        "pc": 516,
+        "sp": 6140
+      },
+      "background": {
+        "color": "#EEEEEE"
+      }
+    },
+    "sec_contact": {
+      "name": "sec_contact",
+      "minHeight": {
+        "pc": 428,
+        "sp": 6543
+      },
+      "background": {
+        "color": "#333333"
+      }
+    },
+    "sec_footer": {
+      "name": "sec_footer",
+      "minHeight": {
+        "pc": 427,
+        "sp": 7173
+      },
+      "background": {
+        "color": "#333333"
+      }
+    }
+  },
+  "elements": {
+    "el_hero_bg": {
+      "type": "shape",
+      "kind": "rect",
+      "fill": "#9A9A9A",
+      "z": 0,
+      "section": "sec_hero",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 720
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 600
+        }
+      }
+    },
+    "el_001": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnn."
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 500,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 6.1111,
+          "y": 27,
+          "w": 11.6104,
+          "h": 34,
+          "size": 24
+        },
+        "sp": {
+          "x": 12.7564,
+          "y": 23,
+          "w": 44.6923,
+          "h": 34,
+          "size": 24
+        }
+      }
+    },
+    "el_002": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 68.3875,
+          "y": 33,
+          "w": 1.884,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 4855,
+          "w": 90,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_003": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 71.9382,
+          "y": 33,
+          "w": 3.1389,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 713,
+          "w": 90,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_004": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 76.7437,
+          "y": 33,
+          "w": 4.3944,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 1478,
+          "w": 90,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_005": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 82.8049,
+          "y": 33,
+          "w": 3.1389,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 2636,
+          "w": 90,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_006": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 87.6104,
+          "y": 33,
+          "w": 1.884,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 87.6104,
+          "y": 33,
+          "w": 1.884,
+          "h": 67,
+          "size": 16
+        }
+      }
+    },
+    "el_007": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 91.1611,
+          "y": 33,
+          "w": 4.3944,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 10,
+          "y": 6233,
+          "w": 80,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_008": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_hero",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永\"永永永永\""
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.2,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 294,
+          "w": 41.6667,
+          "h": 50,
+          "size": 28
+        },
+        "sp": {
+          "x": 15,
+          "y": 250,
+          "w": 70,
+          "h": 72,
+          "size": 20
+        }
+      }
+    },
+    "el_009": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_hero",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnn nnnnnnnn nnn nnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.15,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 407,
+          "w": 41.6667,
+          "h": 20,
+          "size": 14
+        },
+        "sp": {
+          "x": 15,
+          "y": 334,
+          "w": 70,
+          "h": 17,
+          "size": 12
+        }
+      }
+    },
+    "el_010": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_hero",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 900,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 5,
+          "y": 728,
+          "w": 8.8889,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 64.6795,
+          "y": 12,
+          "w": 32.8205,
+          "h": 34,
+          "size": 24
+        }
+      }
+    },
+    "el_011": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_hero",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永「永永永永永永永永」永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 15,
+          "y": 720,
+          "w": 81.1111,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 20.5128,
+          "y": 600,
+          "w": 79.4872,
+          "h": 17,
+          "size": 12
+        }
+      }
+    },
+    "el_012": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 900,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 120,
+          "w": 41.6667,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 29.1667,
+          "y": 120,
+          "w": 41.6667,
+          "h": 22,
+          "size": 16
+        }
+      }
+    },
+    "el_013": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 151,
+          "w": 41.6667,
+          "h": 39,
+          "size": 28
+        },
+        "sp": {
+          "x": 5,
+          "y": 740,
+          "w": 90,
+          "h": 28,
+          "size": 20
+        }
+      }
+    },
+    "el_014": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永、永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 248,
+          "w": 41.6667,
+          "h": 50,
+          "size": 28
+        },
+        "sp": {
+          "x": 5,
+          "y": 818,
+          "w": 90,
+          "h": 36,
+          "size": 20
+        }
+      }
+    },
+    "el_015": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永永、永永永永永永永永永永永永永永永永永永永永永永永永永。永永永永永永永永永永、永永永永永永永永永永永永、永永永永永永永永永永永永永永永永永永。永永永永、永永永永永永永永永永永永永永永永永永永永、永永永永永永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.8,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 330,
+          "w": 41.6667,
+          "h": 115,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 878,
+          "w": 90,
+          "h": 151,
+          "size": 14
+        }
+      }
+    },
+    "el_016": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_feature",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 900,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 120,
+          "w": 41.6667,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 29.1667,
+          "y": 120,
+          "w": 41.6667,
+          "h": 22,
+          "size": 16
+        }
+      }
+    },
+    "el_017": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_feature",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 150,
+          "w": 41.6667,
+          "h": 39,
+          "size": 28
+        },
+        "sp": {
+          "x": 5,
+          "y": 1505,
+          "w": 90,
+          "h": 28,
+          "size": 20
+        }
+      }
+    },
+    "el_018": {
+      "type": "shape",
+      "kind": "rect",
+      "fill": "#9A9A9A",
+      "z": 1,
+      "section": "sec_feature",
+      "layout": {
+        "pc": {
+          "x": 52.434,
+          "y": 335,
+          "w": 38.1215,
+          "h": 404
+        },
+        "sp": {
+          "x": 52.434,
+          "y": 335,
+          "w": 38.1215,
+          "h": 404
+        }
+      }
+    },
+    "el_019": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_feature",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 11.1111,
+          "y": 467,
+          "w": 34.7882,
+          "h": 43,
+          "size": 24
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 1897,
+          "w": 85.4974,
+          "h": 29,
+          "size": 16
+        }
+      }
+    },
+    "el_020": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_feature",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永永永永、永永永永永永永永永永永永永永永永永永永永永、永永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.8,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 11.1111,
+          "y": 526,
+          "w": 34.7882,
+          "h": 58,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 1934,
+          "w": 85.4974,
+          "h": 76,
+          "size": 14
+        }
+      }
+    },
+    "el_021": {
+      "type": "shape",
+      "kind": "rect",
+      "fill": "#9A9A9A",
+      "z": 1,
+      "section": "sec_feature",
+      "layout": {
+        "pc": {
+          "x": 9.4444,
+          "y": 819,
+          "w": 38.1215,
+          "h": 404
+        },
+        "sp": {
+          "x": 9.4444,
+          "y": 819,
+          "w": 38.1215,
+          "h": 404
+        }
+      }
+    },
+    "el_022": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_feature",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 54.1007,
+          "y": 950,
+          "w": 34.7882,
+          "h": 43,
+          "size": 24
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 2356,
+          "w": 85.4974,
+          "h": 29,
+          "size": 16
+        }
+      }
+    },
+    "el_023": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_feature",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永永永、永永永永永永永永永永永永永永永。永永永永永永永永永永永永永、永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.8,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 54.1007,
+          "y": 1009,
+          "w": 34.7882,
+          "h": 58,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 2392,
+          "w": 85.4974,
+          "h": 76,
+          "size": 14
+        }
+      }
+    },
+    "el_024": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 900,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 120,
+          "w": 41.6667,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 29.1667,
+          "y": 120,
+          "w": 41.6667,
+          "h": 22,
+          "size": 16
+        }
+      }
+    },
+    "el_025": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 151,
+          "w": 41.6667,
+          "h": 39,
+          "size": 28
+        },
+        "sp": {
+          "x": 5,
+          "y": 2664,
+          "w": 90,
+          "h": 28,
+          "size": 20
+        }
+      }
+    },
+    "el_026": {
+      "type": "shape",
+      "kind": "rect",
+      "fill": "#9A9A9A",
+      "z": 1,
+      "section": "sec_price",
+      "layout": {
+        "pc": {
+          "x": 3.9368,
+          "y": 296,
+          "w": 29.5972,
+          "h": 426
+        },
+        "sp": {
+          "x": 3.9368,
+          "y": 296,
+          "w": 29.5972,
+          "h": 426
+        }
+      }
+    },
+    "el_027": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 4.6764,
+          "y": 746,
+          "w": 28.1174,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 3125,
+          "w": 85.4974,
+          "h": 29,
+          "size": 16
+        }
+      }
+    },
+    "el_028": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.6,
+        "letterSpacing": 0.1,
+        "color": "#7B7B7B",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 4.6764,
+          "y": 783,
+          "w": 28.1174,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 3157,
+          "w": 85.4974,
+          "h": 22,
+          "size": 14
+        }
+      }
+    },
+    "el_029": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "￥0,000 (永永)"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 4.6764,
+          "y": 821,
+          "w": 28.1174,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 3188,
+          "w": 85.4974,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_030": {
+      "type": "shape",
+      "kind": "rect",
+      "fill": "#9A9A9A",
+      "z": 1,
+      "section": "sec_price",
+      "layout": {
+        "pc": {
+          "x": 35.2007,
+          "y": 296,
+          "w": 29.5972,
+          "h": 426
+        },
+        "sp": {
+          "x": 35.2007,
+          "y": 296,
+          "w": 29.5972,
+          "h": 426
+        }
+      }
+    },
+    "el_031": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 35.941,
+          "y": 746,
+          "w": 28.1174,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 3614,
+          "w": 85.4974,
+          "h": 29,
+          "size": 16
+        }
+      }
+    },
+    "el_032": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永、永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.6,
+        "letterSpacing": 0.1,
+        "color": "#7B7B7B",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 35.941,
+          "y": 783,
+          "w": 28.1174,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 3647,
+          "w": 85.4974,
+          "h": 22,
+          "size": 14
+        }
+      }
+    },
+    "el_033": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "￥0,000 (永永)"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 35.941,
+          "y": 821,
+          "w": 28.1174,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 3678,
+          "w": 85.4974,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_034": {
+      "type": "shape",
+      "kind": "rect",
+      "fill": "#9A9A9A",
+      "z": 1,
+      "section": "sec_price",
+      "layout": {
+        "pc": {
+          "x": 66.4646,
+          "y": 296,
+          "w": 29.5972,
+          "h": 426
+        },
+        "sp": {
+          "x": 66.4646,
+          "y": 296,
+          "w": 29.5972,
+          "h": 426
+        }
+      }
+    },
+    "el_035": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 67.2049,
+          "y": 746,
+          "w": 28.1174,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4104,
+          "w": 85.4974,
+          "h": 29,
+          "size": 16
+        }
+      }
+    },
+    "el_036": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.6,
+        "letterSpacing": 0.1,
+        "color": "#7B7B7B",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 67.2049,
+          "y": 783,
+          "w": 28.1174,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4137,
+          "w": 85.4974,
+          "h": 22,
+          "size": 14
+        }
+      }
+    },
+    "el_037": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "￥0,000 (永永)"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 67.2049,
+          "y": 821,
+          "w": 28.1174,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4167,
+          "w": 85.4974,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_038": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "(永永永永永)"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 1085,
+          "w": 41.6667,
+          "h": 34,
+          "size": 24
+        },
+        "sp": {
+          "x": 5,
+          "y": 4340,
+          "w": 90,
+          "h": 25,
+          "size": 18
+        }
+      }
+    },
+    "el_039": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.9444,
+          "y": 1185,
+          "w": 45.4438,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4430,
+          "w": 85.4974,
+          "h": 29,
+          "size": 16
+        }
+      }
+    },
+    "el_040": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永永永永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#7B7B7B",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.9444,
+          "y": 1222,
+          "w": 45.4438,
+          "h": 20,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4463,
+          "w": 85.4974,
+          "h": 39,
+          "size": 14
+        }
+      }
+    },
+    "el_041": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "＋¥000 (永永)"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 66.3465,
+          "y": 1202,
+          "w": 17.2646,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4510,
+          "w": 85.4974,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_042": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.8,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.9444,
+          "y": 1294,
+          "w": 45.4438,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4579,
+          "w": 85.4974,
+          "h": 29,
+          "size": 16
+        }
+      }
+    },
+    "el_043": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#7B7B7B",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.9444,
+          "y": 1331,
+          "w": 45.4438,
+          "h": 20,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4611,
+          "w": 85.4974,
+          "h": 39,
+          "size": 14
+        }
+      }
+    },
+    "el_044": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_price",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "＋¥000 (永永)"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 66.3465,
+          "y": 1311,
+          "w": 17.2646,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.2513,
+          "y": 4659,
+          "w": 85.4974,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_045": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 900,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 120,
+          "w": 41.6667,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 29.1667,
+          "y": 120,
+          "w": 41.6667,
+          "h": 22,
+          "size": 16
+        }
+      }
+    },
+    "el_046": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 29.1667,
+          "y": 151,
+          "w": 41.6667,
+          "h": 39,
+          "size": 28
+        },
+        "sp": {
+          "x": 5,
+          "y": 4883,
+          "w": 90,
+          "h": 28,
+          "size": 20
+        }
+      }
+    },
+    "el_047": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "n."
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.3889,
+          "y": 293,
+          "w": 1.0806,
+          "h": 18,
+          "size": 18
+        },
+        "sp": {
+          "x": 5,
+          "y": 5151,
+          "w": 3.5462,
+          "h": 16,
+          "size": 16
+        }
+      }
+    },
+    "el_048": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永？"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 18.1639,
+          "y": 289,
+          "w": 34.8917,
+          "h": 25,
+          "size": 18
+        },
+        "sp": {
+          "x": 11.1103,
+          "y": 5002,
+          "w": 4.1026,
+          "h": 313,
+          "size": 16
+        }
+      }
+    },
+    "el_049": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnnnnn_nnnnn_nn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 53.0556,
+          "y": 290,
+          "w": 30.5556,
+          "h": 24,
+          "size": 24
+        },
+        "sp": {
+          "x": 14.0513,
+          "y": 5150,
+          "w": 86.6667,
+          "h": 18,
+          "size": 18
+        }
+      }
+    },
+    "el_050": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永、永永永永0永永〜00永永永永永永永永永永永。永永永永永永永永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.8,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.3889,
+          "y": 338,
+          "w": 67.2222,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 5339,
+          "w": 90,
+          "h": 76,
+          "size": 14
+        }
+      }
+    },
+    "el_051": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "n."
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.3889,
+          "y": 367,
+          "w": 1.0806,
+          "h": 18,
+          "size": 18
+        },
+        "sp": {
+          "x": 5,
+          "y": 5513,
+          "w": 3.5462,
+          "h": 16,
+          "size": 16
+        }
+      }
+    },
+    "el_052": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永？"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 18.1639,
+          "y": 363,
+          "w": 34.8917,
+          "h": 25,
+          "size": 18
+        },
+        "sp": {
+          "x": 11.1103,
+          "y": 5364,
+          "w": 4.1026,
+          "h": 313,
+          "size": 16
+        }
+      }
+    },
+    "el_053": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnnnnn_nnnnn_nn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 53.0556,
+          "y": 364,
+          "w": 30.5556,
+          "h": 24,
+          "size": 24
+        },
+        "sp": {
+          "x": 14.0513,
+          "y": 5512,
+          "w": 86.6667,
+          "h": 18,
+          "size": 18
+        }
+      }
+    },
+    "el_054": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永永永永永永永永。永永永永永永永永永永永永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.8,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.3889,
+          "y": 412,
+          "w": 67.2222,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 5702,
+          "w": 90,
+          "h": 50,
+          "size": 14
+        }
+      }
+    },
+    "el_055": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "n."
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.3889,
+          "y": 441,
+          "w": 1.0806,
+          "h": 18,
+          "size": 18
+        },
+        "sp": {
+          "x": 5,
+          "y": 5876,
+          "w": 3.5462,
+          "h": 16,
+          "size": 16
+        }
+      }
+    },
+    "el_056": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永永永永？"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 18.1639,
+          "y": 437,
+          "w": 34.8917,
+          "h": 25,
+          "size": 18
+        },
+        "sp": {
+          "x": 11.1103,
+          "y": 5727,
+          "w": 4.1026,
+          "h": 313,
+          "size": 16
+        }
+      }
+    },
+    "el_057": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnnnnn_nnnnn_nn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 53.0556,
+          "y": 438,
+          "w": 30.5556,
+          "h": 24,
+          "size": 24
+        },
+        "sp": {
+          "x": 14.0513,
+          "y": 5875,
+          "w": 86.6667,
+          "h": 18,
+          "size": 18
+        }
+      }
+    },
+    "el_058": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_faqs",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永、永永永永。永永永永永「永永永永永」永永永永永永永永永、永永永永永永永永、永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.8,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 16.3889,
+          "y": 487,
+          "w": 67.2222,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 6064,
+          "w": 90,
+          "h": 76,
+          "size": 14
+        }
+      }
+    },
+    "el_059": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_contact",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 900,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 33.3333,
+          "y": 120,
+          "w": 33.3333,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 33.3333,
+          "y": 120,
+          "w": 33.3333,
+          "h": 22,
+          "size": 16
+        }
+      }
+    },
+    "el_060": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_contact",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 33.3333,
+          "y": 150,
+          "w": 33.3333,
+          "h": 39,
+          "size": 28
+        },
+        "sp": {
+          "x": 10,
+          "y": 6261,
+          "w": 80,
+          "h": 28,
+          "size": 20
+        }
+      }
+    },
+    "el_061": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_contact",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永、永永永永永永永永永永永永永永永永永永永永、永永永永永永永永永永永。0永永永永永永永永永永永永永永永永永永永永永永。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.8,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 33.3333,
+          "y": 247,
+          "w": 33.3333,
+          "h": 86,
+          "size": 16
+        },
+        "sp": {
+          "x": 10,
+          "y": 6347,
+          "w": 80,
+          "h": 101,
+          "size": 14
+        }
+      }
+    },
+    "el_062": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_contact",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 37.2917,
+          "y": 390,
+          "w": 25.4167,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 20.5128,
+          "y": 6505,
+          "w": 58.9744,
+          "h": 22,
+          "size": 16
+        }
+      }
+    },
+    "el_063": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_contact",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnnnnn_nnnnn_nnnnn"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1,
+        "letterSpacing": 0,
+        "color": "#333333",
+        "align": "left"
+      },
+      "layout": {
+        "pc": {
+          "x": 42.7083,
+          "y": 374,
+          "w": 22.2222,
+          "h": 16,
+          "size": 16
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 6489,
+          "w": 79.4872,
+          "h": 16,
+          "size": 16
+        }
+      }
+    },
+    "el_064": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "nnnnn."
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 700,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 30.5556,
+          "y": 92,
+          "w": 38.8889,
+          "h": 45,
+          "size": 32
+        },
+        "sp": {
+          "x": 10,
+          "y": 6724,
+          "w": 80,
+          "h": 45,
+          "size": 32
+        }
+      }
+    },
+    "el_065": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "〒000-0000 永永永永永永永永４永永２−８"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.8,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 30.5556,
+          "y": 145,
+          "w": 38.8889,
+          "h": 29,
+          "size": 16
+        },
+        "sp": {
+          "x": 10,
+          "y": 6777,
+          "w": 80,
+          "h": 25,
+          "size": 14
+        }
+      }
+    },
+    "el_066": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 30.2778,
+          "y": 314,
+          "w": 3.3333,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 6943,
+          "w": 41.9231,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_067": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 35.2778,
+          "y": 314,
+          "w": 7.7778,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 53.0769,
+          "y": 6943,
+          "w": 41.9231,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_068": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 44.7222,
+          "y": 314,
+          "w": 2.2222,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 6979,
+          "w": 41.9231,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_069": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 48.6111,
+          "y": 314,
+          "w": 4.4444,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 53.0769,
+          "y": 6979,
+          "w": 41.9231,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_070": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 54.7222,
+          "y": 314,
+          "w": 6.6667,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 5,
+          "y": 7014,
+          "w": 41.9231,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_071": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 600,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 63.0556,
+          "y": 314,
+          "w": 6.6667,
+          "h": 22,
+          "size": 16
+        },
+        "sp": {
+          "x": 53.0769,
+          "y": 7014,
+          "w": 41.9231,
+          "h": 20,
+          "size": 14
+        }
+      }
+    },
+    "el_072": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "永永永永永永永永永永"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 300,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 3.8889,
+          "y": 410,
+          "w": 8.3333,
+          "h": 17,
+          "size": 12
+        },
+        "sp": {
+          "x": 34.6154,
+          "y": 7099,
+          "w": 30.7692,
+          "h": 17,
+          "size": 12
+        }
+      }
+    },
+    "el_073": {
+      "type": "text",
+      "z": 2,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "©︎ 0000 nnnnn nnnnnnn."
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 300,
+        "lineHeight": 1.4,
+        "letterSpacing": 0,
+        "color": "#FFFFFF",
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 15,
+          "y": 410,
+          "w": 81.1111,
+          "h": 17,
+          "size": 12
+        },
+        "sp": {
+          "x": 33.3462,
+          "y": 7156,
+          "w": 33.3051,
+          "h": 17,
+          "size": 12
+        }
+      }
+    }
+  }
+}
