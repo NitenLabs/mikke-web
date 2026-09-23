@@ -13,6 +13,16 @@ function applyMove(nodes, edits) {
     if (m.dy && n.anchor) n.anchor.gap = (n.anchor.gap || 0) + m.dy;
   }
 }
+// move（塊の外）＝取り出して、目印の下端に基準を付け替える（間隔と x を持つ）。目印が動けば追従。
+function applyMoveOut(nodes, edits) {
+  for (const [id, m] of Object.entries(edits?.moveOut || {})) {
+    const n = nodes.find((x) => x.id === id);
+    if (!n) continue;
+    n.group = undefined; // グループから取り出す
+    n.x = m.x;
+    n.anchor = { ref: m.marker, edge: "bottom", self: "top", gap: m.gap };
+  }
+}
 
 // ---- 幾何定数（design px。SPEC v2 / 付録A から。gap は基準どうしの距離）----
 const G = {
@@ -117,6 +127,7 @@ export function buildFeature(content, device, H, edits = {}) {
   }
 
   applyMove(nodes, edits);
+  applyMoveOut(nodes, edits);
   let nodes2 = edits.remove?.length ? rebindRemoved(nodes, edits.remove) : nodes;
   const { bottom } = resolve(nodes2);
   return { primitives: toPrimitives(nodes2), sectionH: bottom + c.padBottom, nodes: nodes2 };
@@ -124,7 +135,7 @@ export function buildFeature(content, device, H, edits = {}) {
 
 // ---------- ITEMS ----------
 export function buildItems(content, device, H, edits = {}) {
-  const c = G.items[device];
+  const c = { ...G.items[device], ...(edits.geom?.[device] || {}) }; // geom で幾何定数を差し替え可（別テンプレ＝G2 の参照元プロファイル）
   const photoHOverride = edits.template?.cardPhotoH?.[device];
   const nodes = [];
   const txt = (id, x, w, key, style, anchor, group) =>

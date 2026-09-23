@@ -60,18 +60,27 @@ const mv = (edits, id) => {
   return m ? `;position:relative;left:${px(m.dx || 0)};top:${px(m.dy || 0)}` : "";
 };
 const removed = (edits, id) => edits?.remove?.includes(id);
+// 方式A の move（塊の外）＝取り出し：流れから外し、セクションの絶対座標に置く（跡は詰まる・追従しない）
+const mout = (edits, id) => edits?.moveOut?.[id];
 
 // ---------- FEATURE ----------
 export function buildFeature(content, device, H, edits = {}) {
   const c = G.feature[device];
   const headBody = edits.template?.headBody ?? c.headBody;
   const hg = headingGroup("F", content.feature, device, c);
+  const floated = [];
+  const bodyEl = (i, extraBase) => {
+    const id = `F_b${i}`;
+    if (removed(edits, id)) return "";
+    const mo = mout(edits, id);
+    if (mo) { floated.push(`<div data-el="${id}" data-kind="text" class="t${lbOf("featBody") ? " lb" : ""}" style="position:absolute;left:${px(mo.x)};top:${px(mo.dropY)};width:${px(c.tW)};${textDecls("featBody", device).join(";")}">${thtml(H, id)}</div>`); return ""; }
+    return T(id, "featBody", device, c.tW, thtml(H, id), extraBase + mv(edits, id));
+  };
   let blocks;
   if (device === "pc") {
     const block = (b, i, reversed) => {
       const hEl = T(`F_h${i}`, "featHead", device, c.tW, thtml(H, `F_h${i}`), mv(edits, `F_h${i}`));
-      const bEl = removed(edits, `F_b${i}`) ? "" : T(`F_b${i}`, "featBody", device, c.tW, thtml(H, `F_b${i}`), `margin-top:${px(headBody)}` + mv(edits, `F_b${i}`));
-      const tg = `<div class="tg" style="position:relative;top:${px(c.centerOff)};width:${px(c.tW)};flex:none">${hEl}${bEl}</div>`;
+      const tg = `<div class="tg" style="position:relative;top:${px(c.centerOff)};width:${px(c.tW)};flex:none">${hEl}${bodyEl(i, `margin-top:${px(headBody)}`)}</div>`;
       const photo = removed(edits, `F_p${i}`) ? "" : PHOTO(`F_p${i}`, c.pW, c.pH, b.photo.asset);
       const padL = reversed ? c.b2PadL : c.b1PadL;
       const kids = reversed ? photo + tg : tg + photo;
@@ -82,18 +91,18 @@ export function buildFeature(content, device, H, edits = {}) {
     const block = (b, i) => `
       ${removed(edits, `F_p${i}`) ? "" : PHOTO(`F_p${i}`, c.pW, c.pH, b.photo.asset, `margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}`)}
       ${T(`F_h${i}`, "featHead", device, c.tW, thtml(H, `F_h${i}`), `margin-top:${px(c.photoHead)}` + mv(edits, `F_h${i}`))}
-      ${removed(edits, `F_b${i}`) ? "" : T(`F_b${i}`, "featBody", device, c.tW, thtml(H, `F_b${i}`), `margin-top:${px(headBody)}` + mv(edits, `F_b${i}`))}`;
+      ${bodyEl(i, `margin-top:${px(headBody)}`)}`;
     blocks = block(content.feature.blocks[0], 0) + block(content.feature.blocks[1], 1);
   }
   const align = device === "sp" ? "center" : "stretch";
-  const body = `<div id="sec" style="width:${DESIGN_W[device]}px;background:${COLORS.surface}">
-    <div class="stack" style="display:flex;flex-direction:column;align-items:${align};padding:${px(c.padTop)} 0 ${px(c.padBottom)}">${hg}${blocks}</div></div>`;
+  const body = `<div id="sec" style="position:relative;width:${DESIGN_W[device]}px;background:${COLORS.surface}">
+    <div class="stack" style="display:flex;flex-direction:column;align-items:${align};padding:${px(c.padTop)} 0 ${px(c.padBottom)}">${hg}${blocks}</div>${floated.join("")}</div>`;
   return { bodyHtml: body, extraCss: "" };
 }
 
 // ---------- ITEMS ----------
 export function buildItems(content, device, H, edits = {}) {
-  const c = G.items[device];
+  const c = { ...G.items[device], ...(edits.geom?.[device] || {}) }; // geom で幾何定数を差し替え可（G2 の参照元プロファイル）
   const photoH = edits.template?.cardPhotoH?.[device]; // editRow（E3）で写真高さを固定
   const cph = (id, asset) => photoH
     ? `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;height:${px(photoH)}">${asset}</div>`
