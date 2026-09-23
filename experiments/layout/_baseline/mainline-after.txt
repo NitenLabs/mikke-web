@@ -1,0 +1,5 @@
+本線が作業前と同じであることの確認（wa-01 layout-compare 実施後）
+### npm test          : 30 pass / 0 fail        （前: 30 pass / 0 fail）
+### npm run spec-check: 117 total/116 pass/0 fail/0 missing/1 manual （前: 同一）
+### npm run check     : すべてのエンジン×ページ×幅で想定外の重なり・はみ出しなし （前: 同一）
+→ 本線（samples/ashiyado・tools/lib・schema・expected.json）は無変更。

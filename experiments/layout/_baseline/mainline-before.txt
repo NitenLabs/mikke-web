@@ -1,0 +1,28 @@
+### npm test
+(captured separately: 30 pass / 0 fail)
+### spec-check
+117 total / 116 pass / 0 fail / 0 missing / 1 manual
+### build+check
+✓ 書き出し完了: dist/ashiyado/
+  ページ: index.html 、 menu/index.html 、 contact/index.html 、 privacy/index.html 、 404.html
+  素材: 12 件（ast_frma.jpg 、 ast_frmb.jpg 、 ast_frmc.jpg 、 ast_frmd.jpg 、 ast_frme.jpg 、 ast_frmf.jpg 、 ast_frmg.jpg 、 ast_frmh.jpg 、 ast_frmi.jpg 、 ast_frmj.jpg 、 ast_frmk.jpg 、 ast_frml.jpg）
+  contact 1024px  0px（el_fname）            しない    なし      なし
+  contact 1440px  0px（el_chh）              しない    なし      なし
+  home    360px  0.1px（el_accinfo）        しない    なし      なし
+  home    390px  0.1px（el_accinfo）        しない    なし      なし
+  home    430px  0.2px（el_accinfo）        しない    なし      なし
+  home   1024px  0.1px（el_accinfo）        しない    なし      なし
+  home   1440px  0.1px（el_accinfo）        しない    なし      なし
+  menu    360px  0px（el_mhsoe）            しない    なし      なし
+  menu    390px  0px（cel_tdesc）           しない    なし      なし
+  menu    430px  0px（cel_tdesc）           しない    なし      なし
+  menu   1024px  0px（el_fname）            しない    なし      なし
+  menu   1440px  0px（cel_tdesc）           しない    なし      なし
+  privacy  360px  0px（el_logo）             しない    なし      なし
+  privacy  390px  0px（el_logo）             しない    なし      なし
+  privacy  430px  0px（el_faddr）            しない    なし      なし
+  privacy 1024px  0px（el_fname）            しない    なし      なし
+  privacy 1440px  0px（el_fname）            しない    なし      なし
+
+
+✓ すべての エンジン×ページ×幅 で 想定外の重なり・はみ出しなし

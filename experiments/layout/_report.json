@@ -1,0 +1,738 @@
+{
+  "g1": {
+    "A-pc": {
+      "pass": true,
+      "fails": []
+    },
+    "A-sp": {
+      "pass": true,
+      "fails": []
+    },
+    "B-pc": {
+      "pass": true,
+      "fails": []
+    },
+    "B-sp": {
+      "pass": true,
+      "fails": []
+    }
+  },
+  "g2": {
+    "A": {
+      "pass": true,
+      "fails": []
+    },
+    "B": {
+      "pass": true,
+      "fails": []
+    }
+  },
+  "g3": {
+    "A-feature-pc": {
+      "pass": true,
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.02
+    },
+    "A-items-pc": {
+      "pass": true,
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.28
+    },
+    "A-feature-sp": {
+      "pass": true,
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.05
+    },
+    "A-items-sp": {
+      "pass": true,
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.12
+    },
+    "B-feature-pc": {
+      "pass": true,
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.01
+    },
+    "B-items-pc": {
+      "pass": true,
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.01
+    },
+    "B-feature-sp": {
+      "pass": true,
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.01
+    },
+    "B-items-sp": {
+      "pass": true,
+      "overlaps": 0,
+      "overflows": 0,
+      "maxDrift": 0.02
+    }
+  },
+  "scenarios": {
+    "S1-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:文字中央-写真中央=-12.0(=-12)",
+        "OK:写真F_p0動かない",
+        "OK:ブロック2不変(shift=0)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S1-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:文字中央-写真中央=-12.0(=-12)",
+        "OK:写真F_p0動かない",
+        "OK:ブロック2不変(shift=0)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S1-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:以下が本文増分だけ下がる(shift=75.57, Δbody=75.6)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S1-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:以下が本文増分だけ下がる(shift=75.58, Δbody=75.6)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S1b-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:縦中央-12維持=-12.0",
+        "OK:見出しの組に重ならない",
+        "OK:ブロック2=ブロック1最下+80(=80.0)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S1b-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:縦中央-12維持=-12.0",
+        "OK:見出しの組に重ならない",
+        "OK:ブロック2=ブロック1最下+80(=80.0)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S1b-A-sp": {
+      "pass": true,
+      "notes": [
+        "SP: 以下shift=251.88"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S1b-B-sp": {
+      "pass": true,
+      "notes": [
+        "SP: 以下shift=251.89"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S2-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:縦中央-12=-12.0",
+        "OK:見出し-本文間隔16(=16.0)",
+        "OK:見出しが2行に(h=86.38)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S2-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:縦中央-12=-12.0",
+        "OK:見出し-本文間隔16(=16.0)",
+        "OK:見出しが2行に(h=86.38)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S2-A-sp": {
+      "pass": true,
+      "notes": [
+        "SP: 見出しh=57.59 以下shift=28.8"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S2-B-sp": {
+      "pass": true,
+      "notes": [
+        "SP: 見出しh=57.59 以下shift=28.79"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S3-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:3価格の上端そろう(844.2,844.2,844.2)",
+        "OK:品名の上端不変",
+        "OK:区切り線が価格と同じだけ下がる(div=22.39, price=22.39)",
+        "価格の下がり=22.39（1行=約22.4）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S3-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:3価格の上端そろう(844.2,844.2,844.2)",
+        "OK:品名の上端不変",
+        "OK:区切り線が価格と同じだけ下がる(div=22.39, price=22.39)",
+        "価格の下がり=22.39（1行=約22.4）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S3-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:上のカードは不変",
+        "OK:そのカードの価格と以下が下がる(warabi=44.78, dora=44.79)",
+        "OK:区切り線も同じだけ下がる(44.78)",
+        "下がり=44.78（1行=約22.4）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S3-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:上のカードは不変",
+        "OK:そのカードの価格と以下が下がる(warabi=44.78, dora=44.78)",
+        "OK:区切り線も同じだけ下がる(44.78)",
+        "下がり=44.78（1行=約22.4）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S4-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:幅1440外に出ない(overflow=0)",
+        "OK:4枚目は2行目の左端(x=57)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S4-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:幅1440外に出ない(overflow=0)",
+        "OK:4枚目は2行目の左端(x=57)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S4-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:幅390外に出ない(overflow=0)",
+        "OK:4枚目は3枚目の下"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S4-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:幅390外に出ない(overflow=0)",
+        "OK:4枚目は3枚目の下"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S6b-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:ピルと以下が上がる(shift=-78.39)",
+        "ピルの上がり=-78.39"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S6b-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:ピルと以下が上がる(shift=-78.41)",
+        "ピルの上がり=-78.41"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S6b-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:ピルと以下が上がる(shift=-105.39)",
+        "ピルの上がり=-105.39"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S6b-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:ピルと以下が上がる(shift=-105.39)",
+        "ピルの上がり=-105.39"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S7-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:説明を消して以下が上がる(shift=-30.39)",
+        "以下の上がり=-30.39（行が縮んだ分）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S7-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:説明を消して以下が上がる(shift=-30.39)",
+        "以下の上がり=-30.39（行が縮んだ分）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S7-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:説明を消して以下が上がる(shift=-30.39)",
+        "以下の上がり=-30.39（行が縮んだ分）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "S7-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:説明を消して以下が上がる(shift=-30.39)",
+        "以下の上がり=-30.39（行が縮んだ分）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    }
+  },
+  "ops": {
+    "E1-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:重なりなし(0)",
+        "見出しF_h0=(172,446.39) 本文F_b0=(160,497.58)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E1-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:重なりなし(0)",
+        "見出しF_h0=(172,442.38) 本文F_b0=(160,501.58)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E1-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:重なりなし(0)",
+        "見出しF_h0=(40.5,490.59) 本文F_b0=(28.5,519.39)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E1-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:重なりなし(0)",
+        "見出しF_h0=(40,490.58) 本文F_b0=(28,527.38)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E2-A-pc": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し0"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E2-B-pc": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し0"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E2-A-sp": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し1"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 1
+      }
+    },
+    "E2-B-sp": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し1"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 1
+      }
+    },
+    "E3-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:写真高さ=320",
+        "OK:価格そろい(715.77,715.77,715.77)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E3-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:写真高さ=320",
+        "OK:価格そろい(715.77,715.77,715.77)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E3-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:写真高さ=264"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E3-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:写真高さ=264"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E4-A-pc": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり1・はみ出し0",
+        "I_added.y=988（方式A=絶対/方式B=区切り線に追従）"
+      ],
+      "warn": {
+        "overlaps": 1,
+        "overflows": 0
+      }
+    },
+    "E4-B-pc": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し0",
+        "I_added.y=1600.73（方式A=絶対/方式B=区切り線に追従）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E4-A-sp": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し0",
+        "I_added.y=1727（方式A=絶対/方式B=区切り線に追従）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E4-B-sp": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し0",
+        "I_added.y=2202.09（方式A=絶対/方式B=区切り線に追従）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E5-A-pc": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し0",
+        "F_h1.y=807.58 F_b1.y=866.77（写真なし）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E5-B-pc": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり1・はみ出し0",
+        "F_h1.y=669.19 F_b1.y=728.38（写真なし）"
+      ],
+      "warn": {
+        "overlaps": 1,
+        "overflows": 0
+      }
+    },
+    "E5-A-sp": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し0",
+        "F_h1.y=618.95 F_b1.y=655.75（写真なし）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E5-B-sp": {
+      "pass": null,
+      "notes": [
+        "showOnly：重なり0・はみ出し0",
+        "F_h1.y=618.94 F_b1.y=655.75（写真なし）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E6-A-pc": {
+      "pass": true,
+      "notes": [
+        "PC: F_h0=(172,475.19)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E6-B-pc": {
+      "pass": true,
+      "notes": [
+        "PC: F_h0=(172,471.19)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E6-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:SP不変(F_h0 482.59 vs 482.59)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E6-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:SP不変(F_h0 482.58 vs 482.58)"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E7-A-pc": {
+      "pass": true,
+      "notes": [
+        "OK:reset で G1 と同じ"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E7-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:reset で G1 と同じ"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E7-A-sp": {
+      "pass": true,
+      "notes": [
+        "OK:reset で G1 と同じ"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E7-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:reset で G1 と同じ"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E8-A-pc": {
+      "pass": false,
+      "notes": [
+        "NG:本文が新間隔24で置かれる(16.0)",
+        "見出しの手動ずらしは残る（F_h0.x=172）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E8-B-pc": {
+      "pass": true,
+      "notes": [
+        "OK:本文が新間隔24で置かれる(24.0)",
+        "見出しの手動ずらしは残る（F_h0.x=172）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E8-A-sp": {
+      "pass": false,
+      "notes": [
+        "NG:本文が新間隔24で置かれる(16.0)",
+        "見出しの手動ずらしは残る（F_h0.x=40.5）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    },
+    "E8-B-sp": {
+      "pass": true,
+      "notes": [
+        "OK:本文が新間隔24で置かれる(24.0)",
+        "見出しの手動ずらしは残る（F_h0.x=40）"
+      ],
+      "warn": {
+        "overlaps": 0,
+        "overflows": 0
+      }
+    }
+  }
+}
