@@ -52,7 +52,7 @@ main{display:block}
 .row-table{border-top:1px solid var(--c-line)}
 .row-table .lc{gap:2.4rem;padding:1.6rem 0;border-bottom:1px solid var(--c-line);align-items:baseline}
 .row-table .lc-key{line-height:1.8}
-${mq.sp}{.row-table .lc{display:block;gap:0;padding:1.6rem 0}.row-table .lc-key{display:block;line-height:1.4;margin-bottom:.4rem;width:auto!important}}
+${mq.sp}{.row-table .lc{display:block;gap:0;padding:1.6rem 0;border-bottom:1px solid var(--c-line)}.row-table .lc-key{display:block;line-height:1.4;margin-bottom:.4rem;width:auto!important}}
 /* ピルの「›」を右端（右から24・縦中央）へ。本文は中央のまま（A9-16） */
 .el-text .pill-arrow{position:absolute;right:2.4rem;top:50%;transform:translateY(-50%)}
 .el-photo{overflow:hidden}
