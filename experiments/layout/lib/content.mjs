@@ -1,0 +1,45 @@
+// wa-01 layout-compare 実験：芦屋堂の FEATURE / ITEMS の確定コンテンツ。
+// 文字は本線 resolveSite（_dump_content.mjs）で吐いた値と site.json の text run をそのまま使う。
+// 写真は幾何だけ要るので色板（asset id ラベル付き）で表す（参照元の写真は使わない＝§11）。
+
+export function baseContent() {
+  return {
+    feature: {
+      label: "FEATURE",
+      heading: "芦屋堂の味",
+      blocks: [
+        {
+          id: "f1",
+          photo: { asset: "ast_frme", h: { pc: 404, sp: 258 } },
+          heading: "季節の上生菓子",
+          body: "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+        },
+        {
+          id: "f2",
+          photo: { asset: "ast_frmf", h: { pc: 404, sp: 258 } },
+          heading: "店の奥の、甘味処",
+          body: "店の奥の8席で、わらび餅や抹茶をお召し上がりいただけます。わらび餅は本わらび粉を使い、ご注文ごとに切り分けます。",
+        },
+      ],
+    },
+    items: {
+      label: "ITEMS",
+      heading: "おすすめの品",
+      cards: [
+        { id: "c_jonama", photo: { asset: "ast_frmg" }, name: "季節の上生菓子", desc: "月ごとに意匠が変わる、練り切りときんとん。", price: "380円（税込）" },
+        { id: "c_warabi", photo: { asset: "ast_frmi" }, name: "わらび餅", desc: "本わらび粉を使い、注文ごとに切り分けます。", price: "450円（税込）" },
+        { id: "c_dora", photo: { asset: "ast_frmh" }, name: "どら焼き", desc: "ふっくら焼いた皮に、自家製の粒餡をはさみました。", price: "250円（税込）" },
+      ],
+      kanmiLabel: "（甘味処）",
+      kanmiTime: "提供時間 11:00〜17:00（L.O. 16:30）",
+      table: [
+        { id: "t_warabi", name: "わらび餅", desc: "本わらび粉を使い、注文ごとに切り分けます。", price: "お茶付き 650円（税込）" },
+        { id: "t_matcha", name: "抹茶（上生菓子付き）", desc: "", price: "1,100円（税込）" },
+      ],
+      pill: "お品書きをすべて見る ›",
+    },
+  };
+}
+
+// 深いコピー（scenario / op で壊さないため）
+export function clone(x) { return JSON.parse(JSON.stringify(x)); }

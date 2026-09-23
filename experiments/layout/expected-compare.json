@@ -1,0 +1,75 @@
+{
+  "note": "付録 A〜C（作業票 wa-01）を書き起こしたもの。値は書き換えない。G1 は本線 appendixA.mjs の A6/A8/A9 に一致。tol は付録A（位置±4・大きさ±2・関係±2・不変±0.5）。",
+  "tol": { "pos": 4, "size": 2, "rel": 2, "same": 0.5 },
+
+  "g1": {
+    "boxes": [
+      { "id": "F_lbl",  "pc": [420,120,600,22], "sp": [20,64,351,20],  "fields": "xywh", "ref": "A6-1" },
+      { "id": "F_h",    "pc": [420,151,600,39], "sp": [20,92,351,28],  "fields": "xywh", "ref": "A6-2" },
+      { "id": "F_rule", "pc": [708,214,24,2],   "sp": [183,144,24,2],  "fields": "xywh", "ref": "A6-3" },
+      { "id": "F_p0",   "pc": [755,335,549,404],"sp": [20,201,351,258],"fields": "xywh", "ref": "A8-2" },
+      { "id": "F_h0",   "pc": [160,467,501,43], "sp": [28,483,333,29], "fields": "xywh", "ref": "A8-3" },
+      { "id": "F_b0",   "pc": [160,526,501,58], "sp": [28,520,333,76], "fields": "xywh", "ref": "A8-4" },
+      { "id": "F_p1",   "pc": [136,819,549,404],"sp": [20,660,351,258],"fields": "xywh", "ref": "A8-5" },
+      { "id": "F_h1",   "pc": [779,950,501,43], "sp": [28,942,333,29], "fields": "xywh", "ref": "A8-6" },
+      { "id": "F_b1",   "pc": [779,1009,501,58],"sp": [28,979,333,76], "fields": "xywh", "ref": "A8-7" },
+
+      { "id": "I_lbl",  "pc": [420,120,600,22], "sp": [20,64,351,20],  "fields": "xywh", "ref": "A6-1" },
+      { "id": "I_h",    "pc": [420,151,600,39], "sp": [20,92,351,28],  "fields": "xywh", "ref": "A6-2" },
+      { "id": "I_rule", "pc": [708,214,24,2],   "sp": [183,144,24,2],  "fields": "xywh", "ref": "A6-3" },
+      { "id": "I_divider","pc":[56,964,1328,1], "sp": [20,1703,351,1], "fields": "xywh", "ref": "A9-6" },
+      { "id": "I_kanmi","pc": [420,1085,600,34],"sp": [20,1768,351,25],"fields": "xywh", "ref": "A9-7" },
+      { "id": "I_table","pc": [236,0,968,0],    "sp": [20,0,351,0],    "fields": "xw",   "ref": "A9-9" },
+      { "id": "I_pillbg","pc":[480,0,480,56],   "sp": [20,0,351,56],   "fields": "xwh",  "ref": "A9-15" }
+    ],
+    "relations": [
+      { "id": "A8-8a", "dev": "pc", "type": "vCenterEq", "photo": "F_p0", "group": ["F_h0","F_b0"], "offset": -12 },
+      { "id": "A8-8b", "dev": "pc", "type": "vCenterEq", "photo": "F_p1", "group": ["F_h1","F_b1"], "offset": -12 }
+    ],
+    "cardPriceTop": { "dev": "both", "ids": ["card_price_c_jonama","card_price_c_warabi","card_price_c_dora"], "ref": "A9-cardtops" }
+  },
+
+  "scenarios": {
+    "S1":  { "section": "feature", "checks": [
+      { "type": "vCenterEqPC", "photo": "F_p0", "group": ["F_h0","F_b0"], "offset": -12, "note": "文字の塊の縦中央＝写真の縦中央-12" },
+      { "type": "unchanged", "ids": ["F_p0"], "note": "写真は動かない" },
+      { "type": "unchangedVsBase", "ids": ["F_p1","F_h1","F_b1"], "note": "ブロック2と以下は変わらない" },
+      { "type": "spShiftBelow", "anchor": "F_b0", "ids": ["F_p1","F_h1","F_b1"], "dy": 75.6, "note": "SP:本文より下が3行分(75.6)下がる" }
+    ] },
+    "S1b": { "section": "feature", "checks": [
+      { "type": "vCenterEqPC", "photo": "F_p0", "group": ["F_h0","F_b0"], "offset": -12 },
+      { "type": "noOverlapPC", "a": ["F_h0","F_b0"], "b": ["F_lbl","F_h","F_rule"], "note": "文字の塊が見出しの組に重ならない" },
+      { "type": "blk2FollowsPC", "gap": 80, "note": "ブロック2はブロック1の最も下から80" }
+    ] },
+    "S2":  { "section": "feature", "checks": [
+      { "type": "vCenterEqPC", "photo": "F_p0", "group": ["F_h0","F_b0"], "offset": -12 },
+      { "type": "gapPC", "a": "F_h0", "b": "F_b0", "gap": 16, "note": "見出しと本文の間隔16" }
+    ] },
+    "S3":  { "section": "items", "checks": [
+      { "type": "cardPriceTopPC", "ids": ["card_price_c_jonama","card_price_c_warabi","card_price_c_dora"], "note": "3枚の価格上端が同じyで22.4下がる" },
+      { "type": "cardNameTopUnchangedPC", "ids": ["card_name_c_jonama","card_name_c_warabi","card_name_c_dora"], "note": "3枚の品名の上端は変わらない" },
+      { "type": "shiftBelowPC", "value": 22.4, "ids": ["I_divider","I_kanmi"], "note": "区切り線と以下が22.4下がる" }
+    ] },
+    "S4":  { "section": "items", "checks": [
+      { "type": "noOverflow", "note": "幅1440の外に出る要素がない" },
+      { "type": "fourthCardRow2PC", "note": "4枚目は2行目の左端" }
+    ] },
+    "S6b": { "section": "items", "checks": [
+      { "type": "shiftBelow", "value": { "pc": 108.8, "sp": 122.4 }, "ids": ["I_pillbg"], "note": "ピルと以下が上がる（表1行減）", "sign": -1 }
+    ] },
+    "S7":  { "section": "items", "checks": [
+      { "type": "rowHeightPC", "row": "t_warabi", "note": "説明を消した行が縮む（実測を報告）" }
+    ] }
+  },
+
+  "ops": {
+    "E1": { "section": "feature", "base": "S1", "note": "見出しを move(12右8下)→本文3行増。重なりと警告を見る" },
+    "E2": { "section": "feature", "note": "本文を写真の下へ move。跡・そろい・重なりを見る（判定は人）" },
+    "E3": { "section": "items", "note": "カード写真高さを editRow(426→320/351→264)。3枚に効く・価格そろい・以下が上がる" },
+    "E4": { "section": "items", "note": "区切り線の下に文字を add。重なり・警告を見る（判定は人）" },
+    "E5": { "section": "feature", "note": "ブロック2の写真を remove。文字の置き場所・穴・高さ（判定は人）" },
+    "E6": { "section": "feature", "note": "E1をPCだけ→SPは不変(±0.5)" },
+    "E7": { "section": "feature", "note": "E1+E2の後 reset→G1と同じ(±0.5)" },
+    "E8": { "section": "feature", "note": "E1後にテンプレの見出し-本文間隔を16→24。手動は残る・本文は24" }
+  }
+}

@@ -1,0 +1,936 @@
+{
+ "feature": [
+  {
+   "id": "el_surf_003",
+   "type": "shape",
+   "section": "sec_feature",
+   "pc": {
+    "x": 708,
+    "y": 213,
+    "w": 24,
+    "h": 2
+   },
+   "sp": {
+    "x": 191.75,
+    "y": 213,
+    "w": 6.5,
+    "h": 2
+   },
+   "text": ""
+  },
+  {
+   "id": "el_016",
+   "type": "text",
+   "section": "sec_feature",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 900,
+    "lineHeight": 1.4,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "center"
+   },
+   "pc": {
+    "x": 420,
+    "y": 119.55,
+    "w": 600,
+    "h": 22.39,
+    "size": 16
+   },
+   "sp": {
+    "x": 19.5,
+    "y": 64,
+    "w": 351,
+    "h": 19.59,
+    "size": 14
+   },
+   "text": "nnnnnnn"
+  },
+  {
+   "id": "el_017",
+   "type": "text",
+   "section": "sec_feature",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.4,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "center"
+   },
+   "pc": {
+    "x": 420,
+    "y": 149.94,
+    "w": 600,
+    "h": 39.19,
+    "size": 28
+   },
+   "sp": {
+    "x": 19.5,
+    "y": 91.59,
+    "w": 351,
+    "h": 28,
+    "size": 20
+   },
+   "text": "永永永永永"
+  },
+  {
+   "id": "el_018",
+   "type": "shape",
+   "section": "sec_feature",
+   "pc": {
+    "x": 755.05,
+    "y": 335.13,
+    "w": 548.95,
+    "h": 403.64
+   },
+   "sp": {
+    "x": 204.49,
+    "y": 335.13,
+    "w": 148.67,
+    "h": 403.64
+   },
+   "text": ""
+  },
+  {
+   "id": "el_019",
+   "type": "text",
+   "section": "sec_feature",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.8,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 160,
+    "y": 466.55,
+    "w": 500.95,
+    "h": 43.19,
+    "size": 24
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 483.67,
+    "w": 333.44,
+    "h": 28.8,
+    "size": 16
+   },
+   "text": "永永永永永永永永永永永永"
+  },
+  {
+   "id": "el_020",
+   "type": "text",
+   "section": "sec_feature",
+   "role": "body",
+   "style": {
+    "font": "font:body",
+    "weight": 400,
+    "lineHeight": 1.8,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 160,
+    "y": 525.73,
+    "w": 500.95,
+    "h": 57.59,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 520.46,
+    "w": 333.44,
+    "h": 75.56,
+    "size": 14
+   },
+   "text": "永永永永永永永永永永永永永永永永、永永永永永永永永永永永永永永永永永永永永永、永永永永永永永永永永永永永永。"
+  },
+  {
+   "id": "el_021",
+   "type": "shape",
+   "section": "sec_feature",
+   "pc": {
+    "x": 136,
+    "y": 818.77,
+    "w": 548.95,
+    "h": 403.64
+   },
+   "sp": {
+    "x": 36.83,
+    "y": 818.77,
+    "w": 148.67,
+    "h": 403.64
+   },
+   "text": ""
+  },
+  {
+   "id": "el_022",
+   "type": "text",
+   "section": "sec_feature",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.8,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 779.05,
+    "y": 950.19,
+    "w": 500.95,
+    "h": 43.19,
+    "size": 24
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 942.11,
+    "w": 333.44,
+    "h": 28.8,
+    "size": 16
+   },
+   "text": "永永永永永永永永永"
+  },
+  {
+   "id": "el_023",
+   "type": "text",
+   "section": "sec_feature",
+   "role": "body",
+   "style": {
+    "font": "font:body",
+    "weight": 400,
+    "lineHeight": 1.8,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 779.05,
+    "y": 1009.38,
+    "w": 500.95,
+    "h": 57.59,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 978.9,
+    "w": 333.44,
+    "h": 75.56,
+    "size": 14
+   },
+   "text": "永永永永永永永永永永永永永永永、永永永永永永永永永永永永永永永。永永永永永永永永永永永永永、永永永永永永永永永永。"
+  }
+ ],
+ "price": [
+  {
+   "id": "el_surf_004",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 708,
+    "y": 214,
+    "w": 24,
+    "h": 2
+   },
+   "sp": {
+    "x": 191.75,
+    "y": 214,
+    "w": 6.5,
+    "h": 2
+   },
+   "text": ""
+  },
+  {
+   "id": "el_surf_005",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 56,
+    "y": 964,
+    "w": 1328,
+    "h": 1
+   },
+   "sp": {
+    "x": 15.17,
+    "y": 964,
+    "w": 359.67,
+    "h": 1
+   },
+   "text": ""
+  },
+  {
+   "id": "el_surf_006",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 236,
+    "y": 1158,
+    "w": 968,
+    "h": 1
+   },
+   "sp": {
+    "x": 63.92,
+    "y": 1158,
+    "w": 262.17,
+    "h": 1
+   },
+   "text": ""
+  },
+  {
+   "id": "el_surf_007",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 236,
+    "y": 1267,
+    "w": 968,
+    "h": 1
+   },
+   "sp": {
+    "x": 63.92,
+    "y": 1267,
+    "w": 262.17,
+    "h": 1
+   },
+   "text": ""
+  },
+  {
+   "id": "el_surf_008",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 930.39,
+    "y": 1183,
+    "w": 1,
+    "h": 60
+   },
+   "sp": {
+    "x": 251.98,
+    "y": 1183,
+    "w": 0.27,
+    "h": 60
+   },
+   "text": ""
+  },
+  {
+   "id": "el_surf_009",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 236,
+    "y": 1376,
+    "w": 968,
+    "h": 1
+   },
+   "sp": {
+    "x": 63.92,
+    "y": 1376,
+    "w": 262.17,
+    "h": 1
+   },
+   "text": ""
+  },
+  {
+   "id": "el_surf_010",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 930.39,
+    "y": 1292,
+    "w": 1,
+    "h": 60
+   },
+   "sp": {
+    "x": 251.98,
+    "y": 1292,
+    "w": 0.27,
+    "h": 60
+   },
+   "text": ""
+  },
+  {
+   "id": "el_024",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 900,
+    "lineHeight": 1.4,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "center"
+   },
+   "pc": {
+    "x": 420,
+    "y": 120.41,
+    "w": 600,
+    "h": 22.39,
+    "size": 16
+   },
+   "sp": {
+    "x": 19.5,
+    "y": 63.99,
+    "w": 351,
+    "h": 19.59,
+    "size": 14
+   },
+   "text": "nnnnn"
+  },
+  {
+   "id": "el_025",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.4,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "center"
+   },
+   "pc": {
+    "x": 420,
+    "y": 150.8,
+    "w": 600,
+    "h": 39.19,
+    "size": 28
+   },
+   "sp": {
+    "x": 19.5,
+    "y": 91.59,
+    "w": 351,
+    "h": 28,
+    "size": 20
+   },
+   "text": "永永永永"
+  },
+  {
+   "id": "el_026",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 56.69,
+    "y": 295.98,
+    "w": 426.2,
+    "h": 426.2
+   },
+   "sp": {
+    "x": 15.35,
+    "y": 295.98,
+    "w": 115.43,
+    "h": 426.2
+   },
+   "text": ""
+  },
+  {
+   "id": "el_027",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.8,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 67.34,
+    "y": 746.19,
+    "w": 404.89,
+    "h": 28.8,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1042.37,
+    "w": 333.44,
+    "h": 28.8,
+    "size": 16
+   },
+   "text": "永永永永永永永永"
+  },
+  {
+   "id": "el_028",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:body",
+    "weight": 400,
+    "lineHeight": 1.6,
+    "letterSpacing": 0.1,
+    "color": "#7B7B7B",
+    "align": "left"
+   },
+   "pc": {
+    "x": 67.34,
+    "y": 782.98,
+    "w": 404.89,
+    "h": 22.39,
+    "size": 14
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 585.39,
+    "w": 333.44,
+    "h": 22.39,
+    "size": 14
+   },
+   "text": "永永永永永永永永永永永永永。"
+  },
+  {
+   "id": "el_029",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.4,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 67.34,
+    "y": 821.38,
+    "w": 404.89,
+    "h": 22.39,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1105.56,
+    "w": 333.44,
+    "h": 19.59,
+    "size": 14
+   },
+   "text": "￥0,000 (永永)"
+  },
+  {
+   "id": "el_030",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 506.89,
+    "y": 295.98,
+    "w": 426.2,
+    "h": 426.2
+   },
+   "sp": {
+    "x": 137.28,
+    "y": 295.98,
+    "w": 115.43,
+    "h": 426.2
+   },
+   "text": ""
+  },
+  {
+   "id": "el_031",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.8,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 517.55,
+    "y": 746.19,
+    "w": 404.89,
+    "h": 28.8,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 552.59,
+    "w": 333.44,
+    "h": 28.8,
+    "size": 16
+   },
+   "text": "永永永永永永永永"
+  },
+  {
+   "id": "el_032",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:body",
+    "weight": 400,
+    "lineHeight": 1.6,
+    "letterSpacing": 0.1,
+    "color": "#7B7B7B",
+    "align": "left"
+   },
+   "pc": {
+    "x": 517.55,
+    "y": 782.98,
+    "w": 404.89,
+    "h": 22.39,
+    "size": 14
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1075.17,
+    "w": 333.44,
+    "h": 22.39,
+    "size": 14
+   },
+   "text": "永永永永、永永永永永永永永。"
+  },
+  {
+   "id": "el_033",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.4,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 517.55,
+    "y": 821.38,
+    "w": 404.89,
+    "h": 22.39,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1595.34,
+    "w": 333.44,
+    "h": 19.59,
+    "size": 14
+   },
+   "text": "￥0,000 (永永)"
+  },
+  {
+   "id": "el_034",
+   "type": "shape",
+   "section": "sec_price",
+   "pc": {
+    "x": 957.09,
+    "y": 295.98,
+    "w": 426.2,
+    "h": 426.2
+   },
+   "sp": {
+    "x": 259.21,
+    "y": 295.98,
+    "w": 115.43,
+    "h": 426.2
+   },
+   "text": ""
+  },
+  {
+   "id": "el_035",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.8,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 967.75,
+    "y": 746.19,
+    "w": 404.89,
+    "h": 28.8,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1532.15,
+    "w": 333.44,
+    "h": 28.8,
+    "size": 16
+   },
+   "text": "永永永永永永永永永永"
+  },
+  {
+   "id": "el_036",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:body",
+    "weight": 400,
+    "lineHeight": 1.6,
+    "letterSpacing": 0.1,
+    "color": "#7B7B7B",
+    "align": "left"
+   },
+   "pc": {
+    "x": 967.75,
+    "y": 782.98,
+    "w": 404.89,
+    "h": 22.39,
+    "size": 14
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1564.95,
+    "w": 333.44,
+    "h": 22.39,
+    "size": 14
+   },
+   "text": "永永永永永永永永永永永永永永。"
+  },
+  {
+   "id": "el_037",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.4,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 967.75,
+    "y": 821.38,
+    "w": 404.89,
+    "h": 22.39,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 615.78,
+    "w": 333.44,
+    "h": 19.59,
+    "size": 14
+   },
+   "text": "￥0,000 (永永)"
+  },
+  {
+   "id": "el_038",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.4,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "center"
+   },
+   "pc": {
+    "x": 420,
+    "y": 1084.77,
+    "w": 600,
+    "h": 33.59,
+    "size": 24
+   },
+   "sp": {
+    "x": 19.5,
+    "y": 1767.93,
+    "w": 351,
+    "h": 25.19,
+    "size": 18
+   },
+   "text": "(永永永永永)"
+  },
+  {
+   "id": "el_039",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.8,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 244,
+    "y": 1185.16,
+    "w": 654.39,
+    "h": 28.8,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1858.12,
+    "w": 333.44,
+    "h": 28.8,
+    "size": 16
+   },
+   "text": "永永永永永"
+  },
+  {
+   "id": "el_040",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:body",
+    "weight": 400,
+    "lineHeight": 1.4,
+    "letterSpacing": 0.1,
+    "color": "#7B7B7B",
+    "align": "left"
+   },
+   "pc": {
+    "x": 244,
+    "y": 1221.95,
+    "w": 654.39,
+    "h": 19.59,
+    "size": 14
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1890.92,
+    "w": 333.44,
+    "h": 39.19,
+    "size": 14
+   },
+   "text": "永永永永永永永永永永永永永永永永永永永永永永永永永永永永。"
+  },
+  {
+   "id": "el_041",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.4,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "right"
+   },
+   "pc": {
+    "x": 955.39,
+    "y": 1202.16,
+    "w": 248.61,
+    "h": 22.39,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 1938.1,
+    "w": 333.44,
+    "h": 19.59,
+    "size": 14
+   },
+   "text": "＋¥000 (永永)"
+  },
+  {
+   "id": "el_042",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.8,
+    "letterSpacing": 0.1,
+    "color": "#333333",
+    "align": "left"
+   },
+   "pc": {
+    "x": 244,
+    "y": 1294.16,
+    "w": 654.39,
+    "h": 28.8,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 2006.7,
+    "w": 333.44,
+    "h": 28.8,
+    "size": 16
+   },
+   "text": "永永永永永永"
+  },
+  {
+   "id": "el_043",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:body",
+    "weight": 400,
+    "lineHeight": 1.4,
+    "letterSpacing": 0.1,
+    "color": "#7B7B7B",
+    "align": "left"
+   },
+   "pc": {
+    "x": 244,
+    "y": 1330.95,
+    "w": 654.39,
+    "h": 19.59,
+    "size": 14
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 2039.49,
+    "w": 333.44,
+    "h": 39.19,
+    "size": 14
+   },
+   "text": "永永永永永永永永永永永永永永永永永永永永永永永。"
+  },
+  {
+   "id": "el_044",
+   "type": "text",
+   "section": "sec_price",
+   "role": "body",
+   "style": {
+    "font": "font:heading",
+    "weight": 700,
+    "lineHeight": 1.4,
+    "letterSpacing": 0,
+    "color": "#333333",
+    "align": "right"
+   },
+   "pc": {
+    "x": 955.39,
+    "y": 1311.16,
+    "w": 248.61,
+    "h": 22.39,
+    "size": 16
+   },
+   "sp": {
+    "x": 28.28,
+    "y": 2086.68,
+    "w": 333.44,
+    "h": 19.59,
+    "size": 14
+   },
+   "text": "＋¥000 (永永)"
+  }
+ ]
+}
