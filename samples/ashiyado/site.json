@@ -3672,6 +3672,47 @@
           "h": 640
         }
       }
+    },
+    "el_fsample": {
+      "type": "text",
+      "z": 2,
+      "role": "caption",
+      "section": "sec_footer",
+      "onlySample": true,
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "このサイトは見本です（架空のお店です）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "lineHeight": 1.4,
+        "color": "theme:onDark",
+        "opacity": 70,
+        "align": "left",
+        "noWrap": true
+      },
+      "layout": {
+        "pc": {
+          "x": 3.8889,
+          "y": 443,
+          "w": 55.0,
+          "h": 17,
+          "size": 12
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 551,
+          "w": 90.0,
+          "h": 17,
+          "size": 12
+        }
+      }
     }
   }
 }

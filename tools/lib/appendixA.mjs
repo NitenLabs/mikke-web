@@ -263,6 +263,20 @@ export const ASSETSRC = [
   { kind: "assetsrc", id: "A12-2b", sel: '[data-sec="sec_contact"] .bleed img', file: "ast_frmk", note: "CONTACT 背景＝ast_frmk（暗い軒先）" },
   { kind: "assetsrc", id: "A15-1b", page: "pg_contact", sel: '[data-sec="sec_contacthdr"] .bleed img', file: "ast_frmk", note: "お問い合わせ帯＝CONTACT と同じ写真" },
 ];
+// B4-7 ACCESS 行の高さ／B4-15 セクションの下端（fix05 §6：手動→自動）
+export const ROWHEIGHT = [
+  { kind: "rowheight", id: "B4-7", sel: '[data-el="el_accinfo"] .lc', pc: { base: 32, lh: 28.8 }, sp: { base: 55.6, lh: 25.2 }, note: "行の高さ＝(値の行数×行送り)＋余白（PC 32/28.8・SP 55.6/25.2）" },
+];
+export const SECBOTTOM = [
+  { kind: "sectionbottom", id: "B4-15", sec: "sec_access", pill: "el_acctelbg", pc: 141, sp: 90, note: "セクションの下端＝ピルの下＋141(PC)/90(SP)" },
+];
+
+// B6 見本（架空のお店）の表示（fix05 §5・shop.isSample=true のときのみ）
+export const SAMPLE = [
+  { kind: "sampleline", id: "B6-1", sel: '[data-el="el_fsample"]', text: "このサイトは見本です（架空のお店です）", fam: GOT, size: 12, opacity: 0.7, c: ON, note: "見本の断り書き（フッター最下段左・ゴシック12/16.8・onDark70%）" },
+  { kind: "metarobots", id: "B6-2", name: "robots", expect: "noindex,nofollow", pages: ["pg_home", "pg_menu", "pg_contact", "pg_privacy"], note: "全ページ noindex,nofollow（isSample時）" },
+];
+
 // B3 改行の規則（全ページ・PC/SP）
 export const LINEBREAK = [
   { kind: "nobreak", id: "B3-1", note: "文節の途中で改行しない（0件。長い文節は別報告）" },
@@ -276,9 +290,7 @@ export const LINEBREAK = [
 // fix02 §3：13件すべて自動化した（手動は 0）。以後、真に自動化できない行が出たらここに理由つきで残す。
 // B3-6（clone のサンプルで規則が切れている）は第2部（clone）着手時に自動化する（まだ clone サンプルが無い）。
 export const MANUAL = [
-  { id: "B3-6", reason: "clone のサンプル（lineBreakRules:false）は第2部未着手のため対象物が無い。clone 着手時に自動化する" },
-  { id: "B4-7", reason: "ACCESS 行の高さ（値の行数×行送り＋32）は row-table の padding+行送りで構成。B4-4/B4-5/B4-6 で行の要素を照合済み。行単位の高さの数式照合は clone 着手時に追加検討" },
-  { id: "B4-15", reason: "セクションの下端（ピル＋余白）は settle が計算し reflow が確定。check（重なり・はみ出し）で担保。数式の直接照合は未実装" },
+  { id: "B3-6", reason: "clone のサンプル（lineBreakRules:false）は第2部（clone）が未着手で対象物が存在しない。clone 着手時に自動化する（それまでは対象なし＝手動）" },
 ];
 
 export const FAMILIES = { MIN, GOT };

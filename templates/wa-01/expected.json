@@ -393,6 +393,22 @@
       "status": "pass",
       "details": []
     },
+    "B4-7": {
+      "status": "pass",
+      "details": []
+    },
+    "B4-15": {
+      "status": "pass",
+      "details": []
+    },
+    "B6-1": {
+      "status": "pass",
+      "details": []
+    },
+    "B6-2": {
+      "status": "pass",
+      "details": []
+    },
     "B3-2": {
       "status": "pass",
       "details": []
@@ -452,34 +468,14 @@
     "B3-6": {
       "status": "manual",
       "details": [
-        "clone のサンプル（lineBreakRules:false）は第2部未着手のため対象物が無い。clone 着手時に自動化する"
-      ]
-    },
-    "B4-7": {
-      "status": "manual",
-      "details": [
-        "ACCESS 行の高さ（値の行数×行送り＋32）は row-table の padding+行送りで構成。B4-4/B4-5/B4-6 で行の要素を照合済み。行単位の高さの数式照合は clone 着手時に追加検討"
-      ]
-    },
-    "B4-15": {
-      "status": "manual",
-      "details": [
-        "セクションの下端（ピル＋余白）は settle が計算し reflow が確定。check（重なり・はみ出し）で担保。数式の直接照合は未実装"
+        "clone のサンプル（lineBreakRules:false）は第2部（clone）が未着手で対象物が存在しない。clone 着手時に自動化する（それまでは対象なし＝手動）"
       ]
     }
   },
   "manual": [
     {
       "id": "B3-6",
-      "reason": "clone のサンプル（lineBreakRules:false）は第2部未着手のため対象物が無い。clone 着手時に自動化する"
-    },
-    {
-      "id": "B4-7",
-      "reason": "ACCESS 行の高さ（値の行数×行送り＋32）は row-table の padding+行送りで構成。B4-4/B4-5/B4-6 で行の要素を照合済み。行単位の高さの数式照合は clone 着手時に追加検討"
-    },
-    {
-      "id": "B4-15",
-      "reason": "セクションの下端（ピル＋余白）は settle が計算し reflow が確定。check（重なり・はみ出し）で担保。数式の直接照合は未実装"
+      "reason": "clone のサンプル（lineBreakRules:false）は第2部（clone）が未着手で対象物が存在しない。clone 着手時に自動化する（それまでは対象なし＝手動）"
     }
   ]
 }

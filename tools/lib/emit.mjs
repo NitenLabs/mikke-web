@@ -313,6 +313,7 @@ function elementCss(el, resolved, positions, device, rules) {
     const ts = textStyle(resolved.theme, el.role);
     const col = colorCss(el.style?.color || ts.color); if (col) lines.push(`color:${col}`);
     if (el.style?.align) lines.push(`text-align:${el.style.align}`);
+    if (el.style?.opacity != null) lines.push(`opacity:${el.style.opacity / 100}`);
     if (box.writingMode === "vertical") lines.push(`height:${rem(box.h)}`, "white-space:nowrap");
     // 縦書き以外は高さを指定しない（中身なりに伸びる＝reflow が下をずらす）
   } else if (el.type === "shape") {

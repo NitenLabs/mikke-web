@@ -402,6 +402,10 @@
         "locked": {
           "type": "boolean"
         },
+        "onlySample": {
+          "type": "boolean",
+          "description": "見本の店（shop.isSample=true）のときだけ出す要素。実在の店では描かない（fix05 §5：見本の断り書き）"
+        },
         "hidden": {
           "type": "object",
           "additionalProperties": false,
@@ -780,6 +784,12 @@
             },
             "underline": {
               "type": "boolean"
+            },
+            "opacity": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100,
+              "description": "文字の不透明度（%）。見本の断り書きなど、控えめに出す文字に使う"
             },
             "align": {
               "type": "string",

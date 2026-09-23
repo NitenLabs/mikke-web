@@ -1,5 +1,12 @@
 # 付録 A / B と 照合の項目 の対応表（fix02 §4／fix04 で更新）
 
+## fix05 の差分
+- **写真差し替え（§1）**：C/D/E を fix01-C#8・D#4・E#4 に。**H/I（§2）**は枚別の露出（PER_KEY_GAIN）で明るさを 66〜87 に（H 136→76・I 116→76）。照合IDは不変（assets のみ）。
+- **§4 の 1024px ずれ**：row-table の行の線を border→box-shadow に（高さに入らない）。B4-4 は box-shadow を照合。1024px の el_accinfo 実測ずれ 2.7px→0。
+- **§5 見本の表示（付録B B6）**：B6-1（フッター最下段の断り書き・ゴシック12/16.8・onDark70%・isSample時のみ）、B6-2（全ページ noindex,nofollow）。`element.onlySample`＋`style.opacity`＋pageHead の noindex（いずれも shop.isSample ゲート）。
+- **§6 手動の自動化**：B4-7（行の高さ＝rowheight）・B4-15（セクション下端＝sectionbottom）を自動化。**手動は B3-6 のみ**（clone 未着手で対象物なし）。
+- **合計：照合ID 117／合格 116／手動 1。metacheck 22種。**
+
 ## fix04 の差分（付録B）
 - **削除（fix04 で照合から外した）**：A5-1〜A5-4（営業案内の帯）、A2-21・A2-22（帯の札・文字）、A2-20→B4-5に置換、A11-1〜A11-9（旧ACCESS）、A2-5b（旧ACCES値）、A1-6 は帯を除いた順番に書き換え。
 - **追加（新ACCESS・付録B B4）**：B4-1（写真 box）、B4-3（表 x/w）、B4-4（行の線 rowline）、B4-5（項目名 labelkey）、B4-6（値 seltext pc/sp）、B4-8（項目の順番 rowsorder）、B4-9-10（表≤404縦中央/＞404上端そろえ relation）、B4-11（SP 表の上端＝写真下＋32 relation）、B4-12（地図 box）＋B4-12b（iframe読み込み）＋B4-12y（地図が下端＋80に追従 relation）、B4-13（地図 filter=none）、B4-14（ピル box）＋B4-14b（ピル枠線）、B4-16（住所にサンプル無し notext）、B4-2（写真に文字を重ねない notextover）。
