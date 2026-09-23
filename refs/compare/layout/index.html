@@ -1,0 +1,126 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>wa-01 layout-compare 見比べ</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+body{font:14px/1.7 system-ui,sans-serif;margin:0;padding:24px;background:#fafafa;color:#222}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px}
+section{background:#fff;border:1px solid #ddd;border-radius:8px;padding:16px;margin:0 0 24px}
+.did{margin:0 0 10px;color:#333}
+.strip{display:flex;gap:10px;align-items:flex-start;overflow-x:auto}
+figure{margin:0;flex:none;width:280px} figcaption{font:12px monospace;color:#666;padding:2px 0}
+img{width:280px;display:block;border:1px solid #ccc;background:#fff}
+.what{margin:10px 0 0;padding-left:18px} .what li{margin:2px 0}
+.note{color:#666;font-size:13px}
+</style></head><body>
+<h1>wa-01 layout-compare 見比べ（方式A｜B｜C）</h1>
+<p class="note">左から「変える前｜方式A｜方式B｜方式C」。画像を押すと原寸で開く。どれが良いかは書かない（判定はしない）。公開しないページ。</p>
+<section>
+        <h2>E1（pc）</h2>
+        <p class="did"><b>したこと：</b>見出しを右へ12・下へ8 動かし、その後 本文を3行増やした（S1）</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E1-pc-0.png" target="_blank"><img src="panels/E1-pc-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E1-pc-1.png" target="_blank"><img src="panels/E1-pc-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E1-pc-2.png" target="_blank"><img src="panels/E1-pc-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E1-pc-3.png" target="_blank"><img src="panels/E1-pc-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>OK:重なりなし(0) ｜ 見出しF_h0=(172,446.39) 本文F_b0=(160,497.58)（重0/出0）</li>
+          <li><b>B：</b>OK:重なりなし(0) ｜ 見出しF_h0=(172,442.38) 本文F_b0=(160,501.58)（重0/出0）</li>
+          <li><b>C：</b>OK:重なりなし(0) ｜ 見出しF_h0=(172,442.39) 本文F_b0=(160,501.58)（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E1（sp）</h2>
+        <p class="did"><b>したこと：</b>見出しを右へ12・下へ8 動かし、その後 本文を3行増やした（S1）</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E1-sp-0.png" target="_blank"><img src="panels/E1-sp-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E1-sp-1.png" target="_blank"><img src="panels/E1-sp-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E1-sp-2.png" target="_blank"><img src="panels/E1-sp-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E1-sp-3.png" target="_blank"><img src="panels/E1-sp-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>OK:重なりなし(0) ｜ 見出しF_h0=(40.5,490.59) 本文F_b0=(28.5,519.39)（重0/出0）</li>
+          <li><b>B：</b>OK:重なりなし(0) ｜ 見出しF_h0=(40,490.58) 本文F_b0=(28,527.38)（重0/出0）</li>
+          <li><b>C：</b>OK:重なりなし(0) ｜ 見出しF_h0=(34.5,466.59) 本文F_b0=(28.5,503.39)（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E2（pc）</h2>
+        <p class="did"><b>したこと：</b>本文を写真の下（塊の外）へ動かした</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E2-pc-0.png" target="_blank"><img src="panels/E2-pc-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E2-pc-1.png" target="_blank"><img src="panels/E2-pc-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E2-pc-2.png" target="_blank"><img src="panels/E2-pc-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E2-pc-3.png" target="_blank"><img src="panels/E2-pc-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>showOnly：重なり0・はみ出し0 ｜ F_b0=(755,763)（A=絶対で跡詰まる／B=写真に再基準／C=写真直後）（重0/出0）</li>
+          <li><b>B：</b>showOnly：重なり0・はみ出し0 ｜ F_b0=(755,763.58)（A=絶対で跡詰まる／B=写真に再基準／C=写真直後）（重0/出0）</li>
+          <li><b>C：</b>showOnly：重なり0・はみ出し0 ｜ F_b0=(755,763.58)（A=絶対で跡詰まる／B=写真に再基準／C=写真直後）（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E2（sp）</h2>
+        <p class="did"><b>したこと：</b>本文を写真の下（塊の外）へ動かした</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E2-sp-0.png" target="_blank"><img src="panels/E2-sp-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E2-sp-1.png" target="_blank"><img src="panels/E2-sp-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E2-sp-2.png" target="_blank"><img src="panels/E2-sp-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E2-sp-3.png" target="_blank"><img src="panels/E2-sp-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>showOnly：重なり0・はみ出し1 ｜ F_b0=(755,763)（A=絶対で跡詰まる／B=写真に再基準／C=写真直後）（重0/出1）</li>
+          <li><b>B：</b>showOnly：重なり0・はみ出し1 ｜ F_b0=(755,482.58)（A=絶対で跡詰まる／B=写真に再基準／C=写真直後）（重0/出1）</li>
+          <li><b>C：</b>showOnly：重なり1・はみ出し0 ｜ F_b0=(19.5,482.59)（A=絶対で跡詰まる／B=写真に再基準／C=写真直後）（重1/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E4（pc）</h2>
+        <p class="did"><b>したこと：</b>区切り線の下に文字を足し、その後 カードを4件にした（S4）</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E4-pc-0.png" target="_blank"><img src="panels/E4-pc-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E4-pc-1.png" target="_blank"><img src="panels/E4-pc-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E4-pc-2.png" target="_blank"><img src="panels/E4-pc-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E4-pc-3.png" target="_blank"><img src="panels/E4-pc-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>showOnly：重なり1・はみ出し0 ｜ I_added.y=988（A=絶対で留まる／B・C=区切り線に追従）（重1/出0）</li>
+          <li><b>B：</b>showOnly：重なり0・はみ出し0 ｜ I_added.y=1600.73（A=絶対で留まる／B・C=区切り線に追従）（重0/出0）</li>
+          <li><b>C：</b>showOnly：重なり0・はみ出し0 ｜ I_added.y=1536.73（A=絶対で留まる／B・C=区切り線に追従）（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E4（sp）</h2>
+        <p class="did"><b>したこと：</b>区切り線の下に文字を足し、その後 カードを4件にした（S4）</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E4-sp-0.png" target="_blank"><img src="panels/E4-sp-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E4-sp-1.png" target="_blank"><img src="panels/E4-sp-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E4-sp-2.png" target="_blank"><img src="panels/E4-sp-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E4-sp-3.png" target="_blank"><img src="panels/E4-sp-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>showOnly：重なり0・はみ出し0 ｜ I_added.y=1727（A=絶対で留まる／B・C=区切り線に追従）（重0/出0）</li>
+          <li><b>B：</b>showOnly：重なり0・はみ出し0 ｜ I_added.y=2202.09（A=絶対で留まる／B・C=区切り線に追従）（重0/出0）</li>
+          <li><b>C：</b>showOnly：重なり0・はみ出し0 ｜ I_added.y=2202.11（A=絶対で留まる／B・C=区切り線に追従）（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E5（pc）</h2>
+        <p class="did"><b>したこと：</b>ブロック2の写真を消した</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E5-pc-0.png" target="_blank"><img src="panels/E5-pc-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E5-pc-1.png" target="_blank"><img src="panels/E5-pc-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E5-pc-2.png" target="_blank"><img src="panels/E5-pc-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E5-pc-3.png" target="_blank"><img src="panels/E5-pc-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>showOnly：重なり0・はみ出し0 ｜ F_h1.y=807.58 F_b1.y=866.77（写真なし）（重0/出0）</li>
+          <li><b>B：</b>showOnly：重なり1・はみ出し0 ｜ F_h1.y=669.19 F_b1.y=728.38（写真なし）（重1/出0）</li>
+          <li><b>C：</b>showOnly：重なり0・はみ出し0 ｜ F_h1.y=807.58 F_b1.y=866.77（写真なし）（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E5（sp）</h2>
+        <p class="did"><b>したこと：</b>ブロック2の写真を消した</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E5-sp-0.png" target="_blank"><img src="panels/E5-sp-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E5-sp-1.png" target="_blank"><img src="panels/E5-sp-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E5-sp-2.png" target="_blank"><img src="panels/E5-sp-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E5-sp-3.png" target="_blank"><img src="panels/E5-sp-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>showOnly：重なり0・はみ出し0 ｜ F_h1.y=618.95 F_b1.y=655.75（写真なし）（重0/出0）</li>
+          <li><b>B：</b>showOnly：重なり0・はみ出し0 ｜ F_h1.y=618.94 F_b1.y=655.75（写真なし）（重0/出0）</li>
+          <li><b>C：</b>showOnly：重なり0・はみ出し0 ｜ F_h1.y=618.95 F_b1.y=655.75（写真なし）（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E8（pc）</h2>
+        <p class="did"><b>したこと：</b>見出しを動かした後、テンプレの見出し-本文の間隔を16→24に変えた</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E8-pc-0.png" target="_blank"><img src="panels/E8-pc-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E8-pc-1.png" target="_blank"><img src="panels/E8-pc-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E8-pc-2.png" target="_blank"><img src="panels/E8-pc-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E8-pc-3.png" target="_blank"><img src="panels/E8-pc-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>showOnly：重なり0・はみ出し0 ｜ 見出し下端→本文上端の距離=16.0（テンプレ間隔16→24）（重0/出0）</li>
+          <li><b>B：</b>showOnly：重なり0・はみ出し0 ｜ 見出し下端→本文上端の距離=24.0（テンプレ間隔16→24）（重0/出0）</li>
+          <li><b>C：</b>showOnly：重なり0・はみ出し0 ｜ 見出し下端→本文上端の距離=24.0（テンプレ間隔16→24）（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>E8（sp）</h2>
+        <p class="did"><b>したこと：</b>見出しを動かした後、テンプレの見出し-本文の間隔を16→24に変えた</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/E8-sp-0.png" target="_blank"><img src="panels/E8-sp-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/E8-sp-1.png" target="_blank"><img src="panels/E8-sp-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/E8-sp-2.png" target="_blank"><img src="panels/E8-sp-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/E8-sp-3.png" target="_blank"><img src="panels/E8-sp-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>showOnly：重なり0・はみ出し0 ｜ 見出し下端→本文上端の距離=16.0（テンプレ間隔16→24）（重0/出0）</li>
+          <li><b>B：</b>showOnly：重なり0・はみ出し0 ｜ 見出し下端→本文上端の距離=24.0（テンプレ間隔16→24）（重0/出0）</li>
+          <li><b>C：</b>showOnly：重なり0・はみ出し0 ｜ 見出し下端→本文上端の距離=24.0（テンプレ間隔16→24）（重0/出0）</li>
+        </ul>
+      </section>
+<section>
+        <h2>S1b（pc）</h2>
+        <p class="did"><b>したこと：</b>ブロック1の本文を14行増やし、文字の塊を写真より高くした</p>
+        <div class="strip"><figure><figcaption>変える前</figcaption><a href="panels/S1b-pc-0.png" target="_blank"><img src="panels/S1b-pc-0.png" loading="lazy"></a></figure><figure><figcaption>方式A</figcaption><a href="panels/S1b-pc-1.png" target="_blank"><img src="panels/S1b-pc-1.png" loading="lazy"></a></figure><figure><figcaption>方式B</figcaption><a href="panels/S1b-pc-2.png" target="_blank"><img src="panels/S1b-pc-2.png" loading="lazy"></a></figure><figure><figcaption>方式C</figcaption><a href="panels/S1b-pc-3.png" target="_blank"><img src="panels/S1b-pc-3.png" loading="lazy"></a></figure></div>
+        <ul class="what">
+          <li><b>A：</b>OK:縦中央-12維持=-12.0 ｜ OK:見出しの組に重ならない ｜ OK:ブロック2=ブロック1最下+80(=80.0)（重0/出0）</li>
+          <li><b>B：</b>OK:縦中央-12維持=-12.0 ｜ OK:見出しの組に重ならない ｜ OK:ブロック2=ブロック1最下+80(=80.0)（重0/出0）</li>
+          <li><b>C：</b>OK:縦中央-12維持=-12.0 ｜ OK:見出しの組に重ならない ｜ OK:ブロック2=ブロック1最下+80(=80.0)（重0/出0）</li>
+        </ul>
+      </section>
+</body></html>

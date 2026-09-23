@@ -1,0 +1,12 @@
+### npm test
+ℹ tests 30
+ℹ pass 30
+ℹ fail 0
+### spec-check
+spec-check（付録 A）：総数 117／合格 116／不合格 0／要素が見つからない 0／手動 1
+### metacheck
+✓ 全 23 種の欠陥を検出
+### check
+✓ すべての エンジン×ページ×幅 で 想定外の重なり・はみ出しなし
+### git status (expected.json touched?)
+expected.json changes: 0

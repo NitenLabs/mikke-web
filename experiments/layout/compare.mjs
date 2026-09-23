@@ -11,6 +11,7 @@ import { emitAbsoluteSection } from "./lib/emit.mjs";
 import { COLORS, DESIGN_W, FONT_URL, ROOT_VARS, setLineBreak } from "./lib/spec.mjs";
 import * as A from "./a-box/model.mjs";
 import * as B from "./b-anchor/model.mjs";
+import * as C from "./c-hybrid/model.mjs";
 import { SCENARIOS, makeContent } from "./scenarios/scenarios.mjs";
 import { OPS } from "./ops/ops.mjs";
 
@@ -19,7 +20,15 @@ const EXPECTED = JSON.parse(fs.readFileSync(path.join(here, "expected-compare.js
 const TOL = EXPECTED.tol;
 const OUT = path.resolve(here, "../../refs/compare/layout");
 fs.mkdirSync(OUT, { recursive: true });
-const METHODS = { A, B };
+fs.mkdirSync(path.join(OUT, "panels"), { recursive: true });
+// 見比べるページ（§5）に載せる試験。原寸パネルを個別保存する。
+const INDEX_TESTS = { S1b: ["pc"], E1: ["pc", "sp"], E2: ["pc", "sp"], E4: ["pc", "sp"], E5: ["pc", "sp"], E8: ["pc", "sp"] };
+function savePanels(name, device, panels) {
+  if (!INDEX_TESTS[name]?.includes(device)) return;
+  panels.forEach((p, i) => { if (p.png) fs.writeFileSync(path.join(OUT, "panels", `${name}-${device}-${i}.png`), Buffer.from(p.png, "base64")); });
+}
+const METHODS = { A, B, C };
+const METHOD_KEYS = Object.keys(METHODS);
 const DEVICES = ["pc", "sp"];
 const bg = (section) => (section === "feature" ? COLORS.surface : COLORS.background);
 
@@ -63,7 +72,7 @@ function boxCheck(el, exp, fields, tolPos, tolSize) {
 // ---- G1 ----
 async function runG1() {
   const results = {};
-  for (const mkey of ["A", "B"]) {
+  for (const mkey of METHOD_KEYS) {
     for (const device of DEVICES) {
       const content = baseContent();
       const rf = await render(mkey, "feature", device, content);
@@ -97,12 +106,9 @@ async function runG1() {
       results[`${mkey}-${device}`].png = { feature: rf.png, items: ri.png };
     }
   }
-  // 画像：A|B（セクションごと・端末ごと）
+  // 画像：A|B|C（セクションごと・端末ごと）
   for (const device of DEVICES) for (const section of ["feature", "items"]) {
-    await compose([
-      { label: `方式A ${section} ${device}`, png: results[`A-${device}`].png[section] },
-      { label: `方式B ${section} ${device}`, png: results[`B-${device}`].png[section] },
-    ], device, path.join(OUT, `G1-${section}-${device}.jpg`));
+    await compose(METHOD_KEYS.map((m) => ({ label: `方式${m} ${section} ${device}`, png: results[`${m}-${device}`].png[section] })), device, path.join(OUT, `G1-${section}-${device}.jpg`));
   }
   for (const k of Object.keys(results)) delete results[k].png;
   return results;
@@ -134,16 +140,17 @@ async function runScenarios() {
     const section = ["S3", "S4", "S6b", "S7"].includes(name) ? "items" : "feature";
     for (const device of DEVICES) {
       const panels = [];
-      // base
+      // base（変える前は方式A の描画を代表に）
       const baseA = await render("A", section, device, baseContent());
       panels.push({ label: `変える前 ${device}`, png: baseA.png });
-      for (const mkey of ["A", "B"]) {
-        const rBase = mkey === "A" ? baseA : await render("B", section, device, baseContent());
+      for (const mkey of METHOD_KEYS) {
+        const rBase = mkey === "A" ? baseA : await render(mkey, section, device, baseContent());
         const rNew = await render(mkey, section, device, makeContent(name));
         const chk = evalScenario(name, section, device, rBase, rNew);
         results[`${name}-${mkey}-${device}`] = chk;
         panels.push({ label: `方式${mkey} ${name} ${device}`, png: rNew.png });
       }
+      savePanels(name, device, panels);
       await compose(panels, device, path.join(OUT, `${name}-${device}.jpg`));
     }
   }
@@ -228,7 +235,7 @@ async function runOps() {
       const baseContentObj = op.scenario ? makeContent(op.scenario) : baseContent();
       const baseA = await render("A", op.section, device, op.scenario ? makeContent(op.scenario) : baseContent());
       panels.push({ label: `前 ${device}`, png: baseA.png });
-      for (const mkey of ["A", "B"]) {
+      for (const mkey of METHOD_KEYS) {
         let edits = op.edits(device);
         if (edits.pcOnly && device !== "pc") edits = {};
         const content = op.scenario ? makeContent(op.scenario) : baseContent();
@@ -236,6 +243,7 @@ async function runOps() {
         results[`${name}-${mkey}-${device}`] = await evalOp(name, op, device, r, mkey);
         panels.push({ label: `方式${mkey} ${name} ${device}`, png: r.png });
       }
+      savePanels(name, device, panels);
       await compose(panels, device, path.join(OUT, `${name}-${device}.jpg`));
     }
   }
@@ -249,7 +257,9 @@ async function evalOp(name, op, device, r, mkey) {
   if (op.showOnly) {
     notes.push(`showOnly：重なり${warn.overlaps.length}・はみ出し${warn.overflows.length}`);
     if (name === "E5") notes.push(`F_h1.y=${n.F_h1?.y} F_b1.y=${n.F_b1?.y}（写真なし）`);
-    if (name === "E4") notes.push(`I_added.y=${n.I_added?.y}（方式A=絶対/方式B=区切り線に追従）`);
+    if (name === "E4") notes.push(`I_added.y=${n.I_added?.y}（A=絶対で留まる／B・C=区切り線に追従）`);
+    if (name === "E2") notes.push(`F_b0=(${n.F_b0?.x},${n.F_b0?.y})（A=絶対で跡詰まる／B=写真に再基準／C=写真直後）`);
+    if (name === "E8") { const d = n.F_b0 && n.F_h0 ? (n.F_b0.y - (n.F_h0.y + n.F_h0.h)).toFixed(1) : "?"; notes.push(`見出し下端→本文上端の距離=${d}（テンプレ間隔16→24）`); }
     return { pass: null, notes, warn: { overlaps: warn.overlaps.length, overflows: warn.overflows.length } };
   }
   if (name === "E1") {
@@ -275,55 +285,37 @@ async function evalOp(name, op, device, r, mkey) {
   return { pass: ok, notes, warn: { overlaps: warn.overlaps.length, overflows: warn.overflows.length } };
 }
 
-// ---- G2（clone-q65 の FEATURE・PRICE を覆った参照元の実測から組む）----
-// clone PC FEATURE = ashiyado PC FEATURE、clone PRICE の3カード = ashiyado ITEMS カードと同じ幾何。
-// 参照元（samples/clone-q65 site.json＝masked 実測から生成）の座標に ±2px・文字の段は完全一致で照合。
+// ---- G2（clone-q65 の FEATURE・PRICE を覆った参照元の実測から組む・PC/SP）----
+// 参照元＝refs/studio-Q65qmmvqVR/masked/elements-{pc,sp}.json（生の実測。clone-q65 site.json は
+// SP が clone-gen の乱れた成果物なので使わない）。_g2_target.json に要素id→pc/sp座標を持つ。
+// 参照元は lineBreakRules:false なので改行規則を切って組む。±2px・文字の段は完全一致で照合。
 async function runG2() {
-  const t = JSON.parse(fs.readFileSync(path.join(here, "_clone_target.json"), "utf8"));
-  const byIdT = Object.fromEntries([...t.feature, ...t.price].map((e) => [e.id, e]));
-  const clone = {
-    feature: { label: byIdT.el_016.text, heading: byIdT.el_017.text,
-      blocks: [
-        { id: "g2f1", photo: { asset: "surf" }, heading: byIdT.el_019.text, body: byIdT.el_020.text },
-        { id: "g2f2", photo: { asset: "surf" }, heading: byIdT.el_022.text, body: byIdT.el_023.text },
-      ] },
-    items: { label: byIdT.el_024.text, heading: byIdT.el_025.text,
-      cards: [
-        { id: "g2c0", photo: { asset: "surf" }, name: byIdT.el_027.text, desc: byIdT.el_028.text, price: byIdT.el_029.text },
-        { id: "g2c1", photo: { asset: "surf" }, name: byIdT.el_031.text, desc: byIdT.el_032.text, price: byIdT.el_033.text },
-        { id: "g2c2", photo: { asset: "surf" }, name: byIdT.el_035.text, desc: byIdT.el_036.text, price: byIdT.el_037.text },
-      ],
-      kanmiLabel: byIdT.el_038.text, kanmiTime: "", table: [], pill: "" },
-  };
-  // 自分の要素 id → 参照元 id（PC）
-  const MAP = {
-    F_lbl: "el_016", F_h: "el_017", F_rule: "el_surf_003", F_p0: "el_018", F_h0: "el_019", F_b0: "el_020", F_p1: "el_021", F_h1: "el_022", F_b1: "el_023",
-    I_lbl: "el_024", I_h: "el_025", I_rule: "el_surf_004", I_divider: "el_surf_005",
-    card_photo_g2c0: "el_026", card_name_g2c0: "el_027", card_desc_g2c0: "el_028", card_price_g2c0: "el_029",
-    card_photo_g2c1: "el_030", card_name_g2c1: "el_031", card_desc_g2c1: "el_032", card_price_g2c1: "el_033",
-    card_photo_g2c2: "el_034", card_name_g2c2: "el_035", card_desc_g2c2: "el_036", card_price_g2c2: "el_037",
-  };
+  const { content, targets } = JSON.parse(fs.readFileSync(path.join(here, "_g2_target.json"), "utf8"));
   const results = {};
-  setLineBreak(false); // clone-q65 は lineBreakRules:false（仮の文字は任意位置で折る）
-  for (const mkey of ["A", "B"]) {
-    const rf = await render(mkey, "feature", "pc", clone);
-    const ri = await render(mkey, "items", "pc", clone);
-    const byId = { ...rf.byId, ...ri.byId };
-    const fails = [];
-    for (const [myId, refId] of Object.entries(MAP)) {
-      const el = byId[myId]; const ref = byIdT[refId];
-      if (!el) { fails.push(`${myId}: 要素なし`); continue; }
-      const rp = ref.pc;
-      for (const [f, v] of [["x", rp.x], ["y", rp.y], ["w", rp.w], ["h", rp.h]]) {
-        if (v == null) continue;
-        if (!near(el[f], v, 2)) fails.push(`${myId}.${f} 参照${v} 実測${el[f].toFixed(1)}`);
+  const methods = Object.keys(METHODS); // A, B,（あれば C）
+  setLineBreak(false);
+  for (const device of ["pc", "sp"]) {
+    const featPanels = [], pricePanels = [];
+    // 参照元プロファイル：SP のカード送りは 489.8（gap40）・カード→区切り線 88（芦屋堂は 24/98）
+    const g2edits = { geom: { sp: { interCard: 40, colGap: 40, cardsToDivider: 88 } } };
+    for (const mkey of methods) {
+      const rf = await render(mkey, "feature", device, content);
+      const ri = await render(mkey, "items", device, content, g2edits);
+      const byId = { ...rf.byId, ...ri.byId };
+      const fails = [];
+      for (const [id, tgt] of Object.entries(targets)) {
+        const want = tgt[device]; if (!want) continue;
+        const el = byId[id]; if (!el) { fails.push(`${id}:なし`); continue; }
+        ["x", "y", "w", "h"].forEach((f, i) => { if (!near(el[f], want[i], 2)) fails.push(`${id}.${f} 参照${want[i]} 実測${el[f].toFixed(1)}`); });
       }
+      const ys = ["card_price_g2c0", "card_price_g2c1", "card_price_g2c2"].map((i) => byId[i]?.y).filter((v) => v != null);
+      if (device === "pc" && ys.length === 3 && Math.max(...ys) - Math.min(...ys) > 2) fails.push(`価格そろわず ${ys}`);
+      results[`${mkey}-${device}`] = { pass: fails.length === 0, fails };
+      featPanels.push({ label: `方式${mkey} FEATURE ${device}`, png: rf.png });
+      pricePanels.push({ label: `方式${mkey} PRICE ${device}`, png: ri.png });
     }
-    // 価格の上端そろい
-    const ys = ["card_price_g2c0", "card_price_g2c1", "card_price_g2c2"].map((i) => byId[i].y);
-    if (Math.max(...ys) - Math.min(...ys) > 2) fails.push(`価格そろわず ${ys}`);
-    results[mkey] = { pass: fails.length === 0, fails };
-    await compose([{ label: `方式${mkey} G2 FEATURE pc`, png: rf.png }, { label: `方式${mkey} G2 PRICE pc`, png: ri.png }], "pc", path.join(OUT, `G2-${mkey}-pc.jpg`));
+    await compose(featPanels, device, path.join(OUT, `G2-feature-${device}.jpg`));
+    await compose(pricePanels, device, path.join(OUT, `G2-price-${device}.jpg`));
   }
   setLineBreak(true);
   return results;
@@ -334,7 +326,7 @@ async function runG3() {
   const { chromium, webkit, firefox } = await import("playwright");
   const engines = { chromium, webkit, firefox };
   const results = {};
-  for (const mkey of ["A", "B"]) {
+  for (const mkey of METHOD_KEYS) {
     for (const [section, device] of [["feature", "pc"], ["items", "pc"], ["feature", "sp"], ["items", "sp"]]) {
       // 1回組んで HTML を得る（本文の実測は device の基準エンジンで確定済み）
       const m = METHODS[mkey];
@@ -394,6 +386,64 @@ async function renderScaled(bt, bodyHtml, extraCss, device, designW, scale = 1) 
   return { els: data.els, warnings: { overlaps, overflows } };
 }
 
+// ---- 見比べるページ（§5）----
+function generateIndex(report) {
+  const order = [["E1", "op"], ["E2", "op"], ["E4", "op"], ["E5", "op"], ["E8", "op"], ["S1b", "scenario"]];
+  const did = {
+    E1: "見出しを右へ12・下へ8 動かし、その後 本文を3行増やした（S1）",
+    E2: "本文を写真の下（塊の外）へ動かした",
+    E4: "区切り線の下に文字を足し、その後 カードを4件にした（S4）",
+    E5: "ブロック2の写真を消した",
+    E8: "見出しを動かした後、テンプレの見出し-本文の間隔を16→24に変えた",
+    S1b: "ブロック1の本文を14行増やし、文字の塊を写真より高くした",
+  };
+  const rows = [];
+  for (const [name, kind] of order) {
+    for (const device of INDEX_TESTS[name]) {
+      const notesOf = (m) => {
+        const r = kind === "op" ? report.ops?.[`${name}-${m}-${device}`] : report.scenarios?.[`${name}-${m}-${device}`];
+        if (!r) return "-";
+        const w = `重${r.warn.overlaps}/出${r.warn.overflows}`;
+        return `${(r.notes || []).join(" ｜ ")}（${w}）`;
+      };
+      const imgs = [0, 1, 2, 3].map((i) => {
+        const f = `panels/${name}-${device}-${i}.png`;
+        const label = ["変える前", "方式A", "方式B", "方式C"][i];
+        return `<figure><figcaption>${label}</figcaption><a href="${f}" target="_blank"><img src="${f}" loading="lazy"></a></figure>`;
+      }).join("");
+      rows.push(`<section>
+        <h2>${name}（${device}）</h2>
+        <p class="did"><b>したこと：</b>${did[name]}</p>
+        <div class="strip">${imgs}</div>
+        <ul class="what">
+          <li><b>A：</b>${notesOf("A")}</li>
+          <li><b>B：</b>${notesOf("B")}</li>
+          <li><b>C：</b>${notesOf("C")}</li>
+        </ul>
+      </section>`);
+    }
+  }
+  const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>wa-01 layout-compare 見比べ</title>
+<meta name="robots" content="noindex,nofollow">
+<style>
+body{font:14px/1.7 system-ui,sans-serif;margin:0;padding:24px;background:#fafafa;color:#222}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px}
+section{background:#fff;border:1px solid #ddd;border-radius:8px;padding:16px;margin:0 0 24px}
+.did{margin:0 0 10px;color:#333}
+.strip{display:flex;gap:10px;align-items:flex-start;overflow-x:auto}
+figure{margin:0;flex:none;width:280px} figcaption{font:12px monospace;color:#666;padding:2px 0}
+img{width:280px;display:block;border:1px solid #ccc;background:#fff}
+.what{margin:10px 0 0;padding-left:18px} .what li{margin:2px 0}
+.note{color:#666;font-size:13px}
+</style></head><body>
+<h1>wa-01 layout-compare 見比べ（方式A｜B｜C）</h1>
+<p class="note">左から「変える前｜方式A｜方式B｜方式C」。画像を押すと原寸で開く。どれが良いかは書かない（判定はしない）。公開しないページ。</p>
+${rows.join("\n")}
+</body></html>`;
+  fs.writeFileSync(path.join(OUT, "index.html"), html);
+  console.log(`見比べページ: ${path.join(OUT, "index.html")}`);
+}
+
 // ---- main ----
 const mode = process.argv[2] || "all";
 const report = {};
@@ -402,6 +452,7 @@ if (mode === "g2" || mode === "all") report.g2 = await runG2();
 if (mode === "g3" || mode === "all") report.g3 = await runG3();
 if (mode === "scenarios" || mode === "all") report.scenarios = await runScenarios();
 if (mode === "ops" || mode === "all") report.ops = await runOps();
+if (report.ops && report.scenarios) generateIndex(report);
 await closeBrowsers();
 fs.writeFileSync(path.join(here, "_report.json"), JSON.stringify(report, null, 2));
 
@@ -412,8 +463,8 @@ if (report.g1) {
   for (const k of Object.keys(report.g1)) console.log(`  ${k}: ${report.g1[k].pass ? "PASS" : "FAIL"} ${report.g1[k].fails.length ? "→ " + report.g1[k].fails.join(" / ") : ""}`);
 }
 if (report.g2) {
-  console.log("\n[G2 clone-q65 PC]");
-  for (const k of Object.keys(report.g2)) console.log(`  方式${k}: ${report.g2[k].pass ? "PASS" : "FAIL"} ${report.g2[k].fails.length ? "→ " + report.g2[k].fails.join(" / ") : ""}`);
+  console.log("\n[G2 clone-q65（参照元 masked・PC/SP）]");
+  for (const k of Object.keys(report.g2)) console.log(`  ${k}: ${report.g2[k].pass ? "PASS" : "FAIL"} ${report.g2[k].fails.length ? "→ " + report.g2[k].fails.slice(0, 4).join(" / ") : ""}`);
 }
 if (report.g3) {
   console.log("\n[G3 3エンジン×幅]");
