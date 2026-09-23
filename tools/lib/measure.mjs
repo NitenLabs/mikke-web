@@ -39,9 +39,10 @@ async function measureInBrowser(browserType, reqs, fontUrl, rootVars, device = "
   // row-table（ACCESS 情報の表）は @media でなく端末別に注入（実測は端末ごとに別ページのため）
   // 本番（page.mjs）の .el-text .lc-key（明朝 w700）と .el-text .lc（flex）を実測でも再現する
   const keyBase = ".m .lc{display:flex}.m .lc-key{flex:none;font-family:var(--f-heading);font-weight:700}.m .lc-val{flex:1}";
+  // 行の線は box-shadow（高さに入らない＝本番と同じ）。border だと高さに入り比例縮小でずれる（fix05 §4）
   const rowCss = keyBase + (device === "sp"
-    ? ".row-table{border-top:1px solid #B0B0B0}.row-table .lc{display:block;padding:1.6rem 0;border-bottom:1px solid #B0B0B0}.row-table .lc-key{display:block;line-height:1.4;margin-bottom:.4rem;width:auto!important}"
-    : ".row-table{border-top:1px solid #B0B0B0}.row-table .lc{display:flex;gap:2.4rem;padding:1.6rem 0;border-bottom:1px solid #B0B0B0;align-items:baseline}.row-table .lc-key{line-height:1.8}");
+    ? ".row-table{box-shadow:inset 0 1px 0 #B0B0B0}.row-table .lc{display:block;padding:1.6rem 0;box-shadow:inset 0 -1px 0 #B0B0B0}.row-table .lc-key{display:block;line-height:1.4;margin-bottom:.4rem;width:auto!important}"
+    : ".row-table{box-shadow:inset 0 1px 0 #B0B0B0}.row-table .lc{display:flex;gap:2.4rem;padding:1.6rem 0;box-shadow:inset 0 -1px 0 #B0B0B0;align-items:baseline}.row-table .lc-key{line-height:1.8}");
   const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8">
 ${fontUrl ? `<link rel="stylesheet" href="${fontUrl}">` : ""}
 <style>:root{font-size:10px;${rootVars.join("")}}

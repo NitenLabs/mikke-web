@@ -49,10 +49,12 @@ main{display:block}
 .el-text .lc-key{flex:none;color:var(--c-text);font-family:var(--f-heading);font-weight:700}
 .el-text .lc-val{flex:1}
 /* ACCESS の情報の表（fix04 §3）：labelColumn の各段落を罫線つきの行に（B4-4〜B4-7） */
-.row-table{border-top:1px solid var(--c-line)}
-.row-table .lc{gap:2.4rem;padding:1.6rem 0;border-bottom:1px solid var(--c-line);align-items:baseline}
+/* 行の線は box-shadow（inset）で描く＝レイアウトの高さに入らない。1px 固定の border だと
+   比例縮小時に高さがスケールせず実測ずれになるため（fix05 §4）。上端は箱の inset top、各行の下は行の inset bottom */
+.row-table{box-shadow:inset 0 1px 0 var(--c-line)}
+.row-table .lc{gap:2.4rem;padding:1.6rem 0;box-shadow:inset 0 -1px 0 var(--c-line);align-items:baseline}
 .row-table .lc-key{line-height:1.8}
-${mq.sp}{.row-table .lc{display:block;gap:0;padding:1.6rem 0;border-bottom:1px solid var(--c-line)}.row-table .lc-key{display:block;line-height:1.4;margin-bottom:.4rem;width:auto!important}}
+${mq.sp}{.row-table .lc{display:block;gap:0;padding:1.6rem 0}.row-table .lc-key{display:block;line-height:1.4;margin-bottom:.4rem;width:auto!important}}
 /* ピルの「›」を右端（右から24・縦中央）へ。本文は中央のまま（A9-16） */
 .el-text .pill-arrow{position:absolute;right:2.4rem;top:50%;transform:translateY(-50%)}
 .el-photo{overflow:hidden}
@@ -486,6 +488,7 @@ function pageHead(resolved, page, assetPrefix, css) {
   const lines = [
     `<meta charset="utf-8">`,
     `<meta name="viewport" content="width=device-width,initial-scale=1">`,
+    resolved.shop.isSample && `<meta name="robots" content="noindex,nofollow">`,
     `<title>${esc(title)}</title>`,
     desc && `<meta name="description" content="${esc(desc)}">`,
     `<meta property="og:type" content="website">`,

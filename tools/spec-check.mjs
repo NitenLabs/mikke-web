@@ -51,7 +51,7 @@ const MEASURE = (payload) => {
     bbWidth: parseFloat(cs.borderBottomWidth) || 0, bbColor: rgb2hex(cs.borderBottomColor),
     bw: parseFloat(cs.borderTopWidth) || 0, bc: rgb2hex(cs.borderTopColor), bcAlpha: alphaOf(cs.borderTopColor),
     br: parseFloat(cs.borderTopLeftRadius) || 0,
-    wordBreak: cs.wordBreak, textWrap: cs.textWrap || cs.textWrapMode || "", filter: cs.filter,
+    wordBreak: cs.wordBreak, textWrap: cs.textWrap || cs.textWrapMode || "", filter: cs.filter, boxShadow: cs.boxShadow,
   }; };
   const boxOf = (e) => { const sec = e.closest(".sec"); const sr = sec ? sec.getBoundingClientRect() : { left: 0, top: 0 };
     const r = e.getBoundingClientRect(); return { x: r.left - sr.left, y: r.top - sr.top, w: r.width, h: r.height, pageY: r.top + window.pageYOffset, pageX: r.left }; };
@@ -349,7 +349,11 @@ for (const w of work) {
     if (w.c.w != null && Math.abs(m.w - w.c.w) > SIZE) fails.push(`幅 期待${w.c.w} 実測${round(m.w)}`);
     if (w.c.h != null && Math.abs(m.h - w.c.h) > SIZE) fails.push(`高さ 期待${w.c.h} 実測${round(m.h)}`);
     fails.length ? rec(w.c.id, "fail", `${w.c.id}: ${fails.join(" / ")}`) : rec(w.c.id, "pass"); }
-  else if (w.run === "rowline") { const arr = M.sel[w.k]; if (!arr || !arr.length) { rec(w.c.id, "notfound", `${w.c.id}: 行なし`); continue; } const bad = arr.filter((r) => !(Math.abs(r.bbWidth - 1) <= 0.6 && r.bbColor === norm(w.c.color))); bad.length ? rec(w.c.id, "fail", `${w.dev} ${w.c.id}: ${bad.length}行の下線が line でない（実測 ${arr[0].bbWidth}px ${arr[0].bbColor}）`) : rec(w.c.id, "pass"); }
+  else if (w.run === "rowline") { const arr = M.sel[w.k]; if (!arr || !arr.length) { rec(w.c.id, "notfound", `${w.c.id}: 行なし`); continue; }
+    // 行の下線は box-shadow inset（高さに入らない）。色が line で影が付いているか
+    const rgb = norm(w.c.color); const m = rgb.match(/#(..)(..)(..)/); const rgbStr = m ? `rgb(${parseInt(m[1],16)}, ${parseInt(m[2],16)}, ${parseInt(m[3],16)})` : rgb;
+    const bad = arr.filter((r) => !((r.boxShadow || "").includes(rgbStr) && (r.boxShadow || "").includes("inset")));
+    bad.length ? rec(w.c.id, "fail", `${w.dev} ${w.c.id}: ${bad.length}行の下線(box-shadow)が line でない（実測 ${arr[0].boxShadow}）`) : rec(w.c.id, "pass"); }
   else if (w.run === "rowsorder") { const arr = M.sel[w.k]; if (!arr) { rec(w.c.id, "notfound", `${w.c.id}: 行なし`); continue; } const got = arr.map((r) => r.text.replace(/\s/g, "")); JSON.stringify(got) === JSON.stringify(w.c.order) ? rec(w.c.id, "pass") : rec(w.c.id, "fail", `${w.c.id}: 順番 期待[${w.c.order}] 実測[${got}]`); }
   else if (w.run === "notext") { const m = M.sel[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.c.id}: 要素なし`); continue; } m.text.includes(w.c.forbid) ? rec(w.c.id, "fail", `${w.c.id}: 「${w.c.forbid}」が含まれる`) : rec(w.c.id, "pass"); }
   else if (w.run === "notextover") { const m = M.overlap[w.k]; if (!m) { rec(w.c.id, "notfound", `${w.c.id}: 要素なし`); continue; } m.hit ? rec(w.c.id, "fail", `${w.c.id}: 写真の上に文字が重なっている`) : rec(w.c.id, "pass"); }

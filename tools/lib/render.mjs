@@ -56,6 +56,8 @@ export function resolveSite(data, refDate) {
   const elements = new Map();
 
   for (const [id, el] of Object.entries(site.elements)) {
+    // onlySample の要素は、見本の店（shop.isSample）のときだけ出す（実在の店では描かない・fix05 §5）
+    if (el.onlySample && !shop.isSample) continue;
     const base = {
       id, type: el.type, z: el.z ?? 1, section: el.section,
       box: el.layout, locked: el.locked, hidden: el.hidden, motion: el.motion,
