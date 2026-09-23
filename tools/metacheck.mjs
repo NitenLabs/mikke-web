@@ -4,6 +4,7 @@
 // 使い方: node tools/metacheck.mjs   （終了コード0＝全defectを検出／1＝取りこぼしあり）
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 
@@ -81,6 +82,23 @@ const outDist = specCheck();
 for (const d of DIST_DEFECTS) results.push({ id: d.id, kind: d.kind, caught: outDist.includes(`[${d.id}]`) });
 fs.rmSync(DATA, { recursive: true, force: true });
 fs.rmSync(DIST, { recursive: true, force: true });
+
+// 3) 書き戻しの照合（wa-01 compare2 §1）：spec-check を走らせても expected.json が変わらないこと。
+//    照合の道具が自分の期待値（templates/wa-01/expected.json）を毎回書き換えられると、どんな結果でも
+//    合格にできてしまう。前後でハッシュが同じなら、書き戻していない＝検出。
+{
+  const EXP = path.join(ROOT, "templates/wa-01/expected.json");
+  const hash = (f) => (fs.existsSync(f) ? crypto.createHash("sha256").update(fs.readFileSync(f)).digest("hex") : "(なし)");
+  // spec-check を1回走らせる（実データ。dist/ashiyado が無ければ作る）
+  cpDir(SRC, DATA);
+  execSync(`node tools/build.mjs ${DATA}`, { cwd: ROOT, stdio: "ignore" });
+  const before = hash(EXP);
+  execSync(`node tools/spec-check.mjs ${DATA} ${DIST}`, { cwd: ROOT, stdio: "ignore" });
+  const after = hash(EXP);
+  fs.rmSync(DATA, { recursive: true, force: true });
+  fs.rmSync(DIST, { recursive: true, force: true });
+  results.push({ id: "META-writeback", kind: "spec-check が expected.json を書き戻さない", caught: before === after && before !== "(なし)" });
+}
 
 let ok = true;
 console.log("照合の照合（わざと壊して不合格が出るか）:");

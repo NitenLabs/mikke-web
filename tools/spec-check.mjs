@@ -439,14 +439,17 @@ for (const aid of appendixIds) {
 }
 const total = appendixIds.size;
 
-// expected.json を書き出す（付録 A の解決値 ＋ 手動一覧 ＋ 旧 baseline のメモ）
-const expectedOut = {
-  note: "付録 A（appendixA.mjs）を種類ごとの仕組みで照合。旧来の自動生成（site.json 由来）は baseline として下に残すが、重複は付録 A を優先する。",
+// 実測の結果を書き出す（付録Aの合格基準＝期待値そのものは appendixA.mjs にあり、ここでは書かない）。
+// 以前は templates/wa-01/expected.json に書き戻していたが、照合の道具が自分の出力を毎回書き換えると
+// (a) 実行のたびに git が汚れる (b) コミット済みが陳腐化する 問題があった（wa-01 compare2 §1）。
+// よって結果は git 管理外の spec-check-result.json に出す。合格の基準（項目・許容差・判定）は不変。
+const resultOut = {
+  note: "spec-check の実測結果（status/details）。合格の基準は tools/lib/appendixA.mjs（このファイルは結果のスナップショットで、照合の期待値ではない）。",
   appendixResults: Object.fromEntries(Object.entries(results).map(([k, v]) => [k, { status: v.status, details: v.details }])),
   manual: A.MANUAL,
 };
 fs.mkdirSync(path.join(here, "..", "templates", "wa-01"), { recursive: true });
-fs.writeFileSync(path.join(here, "..", "templates", "wa-01", "expected.json"), JSON.stringify(expectedOut, null, 2) + "\n");
+fs.writeFileSync(path.join(here, "..", "templates", "wa-01", "spec-check-result.json"), JSON.stringify(resultOut, null, 2) + "\n");
 
 console.log(`spec-check（付録 A）：総数 ${total}／合格 ${pass}／不合格 ${fail}／要素が見つからない ${notfound}／手動 ${manual}`);
 if (failList.length) { console.log("― 不合格・見つからない ―"); for (const f of failList) console.log("  " + f); }
