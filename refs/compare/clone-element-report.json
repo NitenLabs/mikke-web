@@ -12,83 +12,133 @@
     },
     "FEATURE": {
       "total": 6,
-      "pass": 1,
-      "fails": [
-        "'永永永永永' dx0.0 dy2.3 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy2.5 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy2.7 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy2.5 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy2.7 dw0.0 dsz0.0"
-      ]
+      "pass": 6,
+      "fails": []
     },
     "PRICE": {
       "total": 18,
-      "pass": 1,
-      "fails": [
-        "'nnnnn' dx0.0 dy2.7 dw0.0 dsz0.0",
-        "'永永永永' dx0.0 dy3.1 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy3.2 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy3.2 dw0.0 dsz0.0",
-        "'￥0,000 (' dx0.0 dy3.6 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy3.2 dw0.0 dsz0.0",
-        "'永永永永、永永永' dx0.0 dy3.2 dw0.0 dsz0.0",
-        "'￥0,000 (' dx0.0 dy3.6 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy3.2 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy3.2 dw0.0 dsz0.0",
-        "'￥0,000 (' dx0.0 dy3.6 dw0.0 dsz0.0",
-        "'永永永永永' dx0.0 dy4.0 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy4.0 dw0.0 dsz0.0",
-        "'＋¥000 (永' dx0.0 dy4.0 dw0.0 dsz0.0",
-        "'永永永永永永' dx0.0 dy4.0 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy4.0 dw0.0 dsz0.0",
-        "'＋¥000 (永' dx0.0 dy4.4 dw0.0 dsz0.0"
-      ]
+      "pass": 18,
+      "fails": []
     },
     "FAQ": {
       "total": 14,
-      "pass": 0,
-      "fails": [
-        "'nnn' dx0.0 dy4.8 dw0.0 dsz0.0",
-        "'永永永永永永' dx0.0 dy5.2 dw0.0 dsz0.0",
-        "'n.' dx0.0 dy4.8 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy5.4 dw0.0 dsz0.0",
-        "'nnnnnnnn' dx0.0 dy5.4 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy5.6 dw0.0 dsz0.0",
-        "'n.' dx0.0 dy5.6 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy5.6 dw0.0 dsz0.0",
-        "'nnnnnnnn' dx0.0 dy5.4 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy5.8 dw0.0 dsz0.0",
-        "'n.' dx0.0 dy5.7 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy5.8 dw0.0 dsz0.0",
-        "'nnnnnnnn' dx0.0 dy5.6 dw0.0 dsz0.0",
-        "'永永、永永永永。' dx0.0 dy5.9 dw0.0 dsz0.0"
-      ]
+      "pass": 14,
+      "fails": []
     },
     "CONTACT": {
       "total": 5,
-      "pass": 0,
-      "fails": [
-        "'nnnnnnn' dx0.0 dy5.9 dw0.0 dsz0.0",
-        "'永永永永永永' dx0.0 dy6.3 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy6.5 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy6.9 dw0.0 dsz0.0",
-        "'nnnnnnnn' dx0.0 dy6.9 dw0.0 dsz0.0"
-      ]
+      "pass": 5,
+      "fails": []
     },
     "FOOTER": {
       "total": 10,
+      "pass": 10,
+      "fails": []
+    }
+  },
+  "sp": {
+    "FV": {
+      "total": 8,
+      "pass": 1,
+      "fails": [
+        "'nnnn' dx0.0 dy6217.6 dw0.0 dsz0.0 w!900/400 c!#333333/#FFFFFF",
+        "'永永永永永永永永' dx0.0 dy6217.6 dw0.0 dsz0.0",
+        "'nnn nnnn' dx0.0 dy6217.6 dw0.0 dsz0.0",
+        "no match 'nnnn' y608",
+        "'永永永「永永永永' dx0.0 dy6217.6 dw0.0 dsz0.0",
+        "'nnnnn' dx0.0 dy44.8 dw0.0 dsz0.0 w!600/900 c!#FFFFFF/#333333",
+        "'永永永永永永永' dx0.0 dy6975.6 dw0.0 dsz0.0"
+      ]
+    },
+    "ABOUT": {
+      "total": 4,
       "pass": 0,
       "fails": [
-        "'nnnnn.' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'〒000-000' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'永永永' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'永永永永永永永' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'永永' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'永永永永' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'永永永永永永' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'永永永永永永' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'永永永永永永永永' dx0.0 dy7.3 dw0.0 dsz0.0",
-        "'©︎ 0000 ' dx0.0 dy7.7 dw0.0 dsz0.0"
+        "'永永永永、永永永' dx0.0 dy6975.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy6975.6 dw0.0 dsz0.0",
+        "'nnnnnnn' dx0.0 dy44.8 dw0.0 dsz0.0 w!600/900 c!#FFFFFF/#333333",
+        "'永永永永永' dx0.0 dy8022.6 dw0.0 dsz0.0"
+      ]
+    },
+    "FEATURE": {
+      "total": 9,
+      "pass": 0,
+      "fails": [
+        "'永永永永永永永永' dx0.0 dy8022.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy8022.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy8022.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy8022.6 dw0.0 dsz0.0",
+        "'nnnnn' dx0.0 dy44.8 dw0.0 dsz0.0 w!600/900 c!#FFFFFF/#333333",
+        "'永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'￥0,000 (' dx0.0 dy10490.6 dw0.0 dsz0.0"
+      ]
+    },
+    "PRICE": {
+      "total": 13,
+      "pass": 0,
+      "fails": [
+        "'永永永永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永、永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'￥0,000 (' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'￥0,000 (' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'(永永永永永)' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'＋¥000 (永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy10490.6 dw0.0 dsz0.0",
+        "'＋¥000 (永' dx0.0 dy10490.6 dw0.0 dsz0.0"
+      ]
+    },
+    "FAQ": {
+      "total": 6,
+      "pass": 0,
+      "fails": [
+        "'nnn' dx0.0 dy44.8 dw0.0 dsz0.0 w!600/900 c!#FFFFFF/#333333",
+        "'永永永永永永' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'n.' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'nnnnnnnn' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy15168.8 dw0.0 dsz0.0"
+      ]
+    },
+    "CONTACT": {
+      "total": 7,
+      "pass": 0,
+      "fails": [
+        "'n.' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'nnnnnnnn' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'n.' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'nnnnnnnn' dx0.0 dy15168.8 dw0.0 dsz0.0"
+      ]
+    },
+    "FOOTER": {
+      "total": 16,
+      "pass": 0,
+      "fails": [
+        "'永永、永永永永。' dx0.0 dy15168.8 dw0.0 dsz0.0",
+        "'nnnnnnn' dx0.0 dy44.8 dw0.0 dsz0.0 w!600/900",
+        "'永永永永永永' dx0.0 dy21309.7 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy21309.7 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy21309.7 dw0.0 dsz0.0",
+        "'nnnnnnnn' dx0.0 dy21309.7 dw0.0 dsz0.0",
+        "'nnnnn.' dx0.0 dy27852.7 dw0.0 dsz0.0",
+        "'〒000-000' dx0.0 dy27852.7 dw0.0 dsz0.0",
+        "'永永永' dx0.0 dy27852.7 dw0.0 dsz0.0",
+        "'永永永永永永永' dx0.0 dy27852.7 dw0.0 dsz0.0",
+        "'永永' dx0.0 dy27852.7 dw0.0 dsz0.0",
+        "'永永永永' dx0.0 dy27852.7 dw0.0 dsz0.0",
+        "'永永永永永永' dx0.0 dy27852.7 dw0.0 dsz0.0",
+        "'永永永永永永' dx0.0 dy27852.7 dw0.0 dsz0.0",
+        "'永永永永永永永永' dx0.0 dy27855.1 dw0.0 dsz0.0",
+        "'©︎ 0000 ' dx0.0 dy27855.3 dw0.0 dsz0.0"
       ]
     }
   }

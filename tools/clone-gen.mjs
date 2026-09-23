@@ -51,6 +51,27 @@ const secOf = (y) => (y < HEADER_Y ? { id: "sec_header", y0: 0 } : SECS.find((s)
 // FV 全面ヒーロー（WebGL＝実測に出ない）を灰色図形で明示（参照元の分析の道具の制約・ANALYSIS-CONSTRAINTS.md）
 elements.el_hero_bg = { type: "shape", kind: "rect", fill: "#9A9A9A", z: 0, section: "sec_hero", layout: { pc: { x: 0, y: 0, w: 100, h: 720 }, sp: { x: 0, y: 0, w: 100, h: 600 } } };
 
+// 色のついた面（帯・地・札・線）を図形として置く（fix06→b1）。除外するもの：
+//   ・セクションの地の色・全面スクリム＝「全幅(w≥1400)かつ高さのある面(h≥300)」。セクションの地は
+//     section.background（bgOrder）で塗り、FV の暗いスクリムはヒーロー（灰）で表すので二重になる。
+//     セクションの区分に依存せず大きさだけで判定する（地の色は最小 475px、残す帯・札・罫線は最大 60px で
+//     明確に分かれる）。これに依存すると、FV スクリムがヘッダー扱い（y<90）になって漏れる／セクション境界の
+//     すき間に落ちた全面地が別セクションへ誤分類される、という取りこぼしを避けられる。
+//   ・グラデーション（ヒーロー等＝別扱い）
+let surfN = 0;
+for (const s of (pc.surfaces || [])) {
+  const isSectionBg = s.w >= 1400 && s.h >= 300; // 全面の地・全面スクリム
+  if (isSectionBg || s.grad) continue;
+  const sec = secOf(s.y); const secY0 = sec.id === "sec_header" ? 0 : sec.y0;
+  const id = `el_surf_${String(++surfN).padStart(3, "0")}`;
+  const pcL = { x: r4((s.x / PCW) * 100), y: Math.round(s.y - secY0), w: r4((s.w / PCW) * 100), h: Math.round(s.h) };
+  const spL = { x: r4((s.x / PCW) * 100), y: pcL.y, w: r4((s.w / PCW) * 100), h: Math.round(s.h) };
+  const shape = { type: "shape", kind: "rect", fill: s.color, z: 1, section: sec.id, layout: { pc: pcL, sp: spL } };
+  if (s.radius) shape.radius = Math.min(100, Math.round(s.radius));
+  if (s.alpha != null && s.alpha < 0.99) shape.opacity = Math.round(s.alpha * 100);
+  elements[id] = shape;
+}
+
 for (const e of pc.elements) {
   const s = secOf(e.y);
   const spE = matchSp(e);

@@ -69,16 +69,43 @@ const MASK_PHOTOS = (gray) => {
 const COLLECT = () => {
   const r2 = (v) => Math.round(v * 100) / 100;
   const rgb2hex = (c) => { const m = (c || "").match(/[\d.]+/g); return m ? "#" + m.slice(0, 3).map((x) => (+x).toString(16).padStart(2, "0")).join("").toUpperCase() : null; };
+  const alphaOf = (c) => { const m = (c || "").match(/[\d.]+/g); return m && m.length >= 4 ? +m[3] : 1; };
   const out = [];
-  for (const el of document.querySelectorAll("body *")) {
+  const surfaces = [];
+  const all = [...document.querySelectorAll("body *")];
+  let dom = 0;
+  for (const el of all) {
+    dom++;
     if (el.id === "__maskLayer") continue;
     const cs = getComputedStyle(el);
     if (cs.display === "none" || cs.visibility === "hidden") continue;
     const r = el.getBoundingClientRect();
-    if (r.width < 2 || r.height < 2) continue;
+    // --- 色のついた面（帯・地・札・線）の取り込み ---
+    const bgA = alphaOf(cs.backgroundColor) * (parseFloat(cs.opacity) || 1);
+    const grad = /gradient/.test(cs.backgroundImage);
+    if ((bgA > 0.02 || grad) && r.width >= 1 && r.height >= 1 && !(r.width < 2 && r.height < 2)) {
+      const color = rgb2hex(cs.backgroundColor);
+      // 親と同じ色・同範囲なら親だけ残す（見える面だけ）：親チェーンに同色で内包する要素があれば捨てる
+      let covered = false;
+      for (let p = el.parentElement; p && p !== document.body.parentElement; p = p.parentElement) {
+        const pcs = getComputedStyle(p); if (alphaOf(pcs.backgroundColor) < 0.02) continue;
+        if (rgb2hex(pcs.backgroundColor) === color) { const pr = p.getBoundingClientRect(); if (pr.left <= r.left + 1 && pr.top <= r.top + 1 && pr.right >= r.right - 1 && pr.bottom >= r.bottom - 1) { covered = true; break; } }
+      }
+      if (!covered) surfaces.push({ tag: el.tagName.toLowerCase(), x: r2(r.left), y: r2(r.top + window.pageYOffset), w: r2(r.width), h: r2(r.height), color, alpha: r2(bgA), grad, radius: parseFloat(cs.borderTopLeftRadius) || 0, z: cs.zIndex === "auto" ? null : +cs.zIndex, dom });
+    }
+    // --- 罫線・区切り線（border）も細い面として ---
+    for (const side of ["Top", "Bottom", "Left", "Right"]) {
+      const bw = parseFloat(cs["border" + side + "Width"]) || 0; const ba = alphaOf(cs["border" + side + "Color"]);
+      if (bw >= 1 && ba > 0.02 && cs["border" + side + "Style"] !== "none") {
+        const horiz = side === "Top" || side === "Bottom";
+        surfaces.push({ tag: "border", x: r2(r.left), y: r2((side === "Bottom" ? r.bottom - bw : r.top) + window.pageYOffset), w: r2(horiz ? r.width : bw), h: r2(horiz ? bw : r.height), color: rgb2hex(cs["border" + side + "Color"]), alpha: r2(ba), grad: false, radius: 0, z: null, dom, border: side });
+      }
+    }
+    // --- 文字・写真 ---
     const ownText = Array.from(el.childNodes).filter((c) => c.nodeType === 3 && c.nodeValue.trim()).map((c) => c.nodeValue).join("").trim();
     const isImg = el.tagName === "IMG";
     if (!ownText && !isImg) continue;
+    if (r.width < 2 || r.height < 2) continue;
     out.push({
       tag: el.tagName.toLowerCase(),
       x: r2(r.left), y: r2(r.top + window.pageYOffset), w: r2(r.width), h: r2(r.height),
@@ -92,7 +119,7 @@ const COLLECT = () => {
       align: ownText ? cs.textAlign : null,
     });
   }
-  return out;
+  return { elements: out, surfaces };
 };
 
 const browser = await chromium.launch();
@@ -108,8 +135,8 @@ for (const [dev, vp] of Object.entries(VIEWPORTS)) {
   await page.evaluate(() => (document.fonts && document.fonts.ready ? document.fonts.ready.then(() => 1) : 1)).catch(() => {});
   await page.waitForTimeout(500);
   await page.evaluate(MASK_TEXT, CJK.source);
-  const els = await page.evaluate(COLLECT); // 覆う面の前に幾何を取る
-  fs.writeFileSync(path.join(out, `elements-${dev}.json`), JSON.stringify({ url, dev, viewport: vp, docH, elements: els }, null, 2));
+  const collected = await page.evaluate(COLLECT); // 覆う面の前に幾何を取る
+  fs.writeFileSync(path.join(out, `elements-${dev}.json`), JSON.stringify({ url, dev, viewport: vp, docH, elements: collected.elements, surfaces: collected.surfaces }, null, 2));
   await page.evaluate(MASK_PHOTOS, GRAY);
   await page.waitForTimeout(300);
   const SEG = 1400;
@@ -117,7 +144,7 @@ for (const [dev, vp] of Object.entries(VIEWPORTS)) {
     const h = Math.min(SEG, docH - y);
     await page.screenshot({ path: path.join(out, `${dev}-${String(i + 1).padStart(2, "0")}.jpg`), clip: { x: 0, y, width: vp.width, height: h }, type: "jpeg", quality: 78 });
   }
-  console.log(`${dev}: docH=${docH}, 要素${els.length}件, 切り抜き${Math.ceil(docH / SEG)}枚`);
+  console.log(`${dev}: docH=${docH}, 文字/写真${collected.elements.length}件, 面${collected.surfaces.length}件, 切り抜き${Math.ceil(docH / SEG)}枚`);
   await ctx.close();
 }
 await browser.close();
