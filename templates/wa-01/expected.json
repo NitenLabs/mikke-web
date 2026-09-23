@@ -10,8 +10,10 @@
       "details": []
     },
     "A3-8": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "A3-8: 背景 期待#222222 実測#FF0000"
+      ]
     },
     "A12-5": {
       "status": "pass",
@@ -178,16 +180,23 @@
       "details": []
     },
     "A8-5": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "pc el_featp2: y 期待819 実測790.41",
+        "sp el_featp2: y 期待660 実測635.05"
+      ]
     },
     "A8-6": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "sp el_feath2: y 期待942 実測917.05"
+      ]
     },
     "A8-7": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "sp el_featb2: y 期待979 実測954.25"
+      ]
     },
     "A9-6": {
       "status": "pass",
@@ -318,8 +327,10 @@
       "details": []
     },
     "A3-4": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "A3-4: 項目間隔 期待24 実測[4,4,4,4,4,4]"
+      ]
     },
     "A10-3": {
       "status": "pass",
@@ -330,8 +341,10 @@
       "details": []
     },
     "A10-6": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "A10-6: 幅 期待12 実測40 / 高さ 期待6 実測40"
+      ]
     },
     "A10-4": {
       "status": "pass",
@@ -358,8 +371,10 @@
       "details": []
     },
     "B4-12b": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "B4-12b: loading=lazy（実ブラウザで読み込まれない）"
+      ]
     },
     "B4-4": {
       "status": "pass",
@@ -394,60 +409,94 @@
       "details": []
     },
     "B4-7": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "pc B4-7: 行の高さが式(=32+N×28.8)に合わない 実測[48.8,77.59,48.8,48.8,48.8,48.8]"
+      ]
     },
     "B4-15": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "pc B4-15: ピル下の余白 期待141 実測213.16"
+      ]
     },
     "B6-1": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "B6-1: 文言 期待「このサイトは見本です（架空のお店です）」実測「」"
+      ]
     },
     "B6-2": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "B6-2: robots 期待noindex,nofollow 実測null",
+        "B6-2: robots 期待noindex,nofollow 実測null",
+        "B6-2: robots 期待noindex,nofollow 実測null",
+        "B6-2: robots 期待noindex,nofollow 実測null"
+      ]
     },
     "B3-2": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "[LB:pg_home:sp] 最後の行「した。」が4文字未満",
+        "[LB:pg_menu:sp] 最後の行「た。」が4文字未満"
+      ]
     },
     "B3-1": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "[LB:pg_home:pc] 行の切れ目が文節境界でない：1978年、父の代にはじまった芦屋の和菓子店です。店主は京都の老舗で修業のの / ち、地元の芦屋に戻りました。餡は毎朝炊き、その日にお出しする分だけをつくり / ます。上生菓子はひと月ごとに入れ替わり、その月にしか出会えない菓子が店先に / 並びます。",
+        "[LB:pg_home:pc] 行の切れ目が文節境界でない：店の奥の8席で、わらび餅や抹茶をお召し上がりいただけます。わら / び餅は本わらび粉を使い、ご注文ごとに切り分けます。",
+        "[LB:pg_home:pc] 行の切れ目が文節境界でない：上生菓子のご予約は、前日の17時まで承ります。お電話、またはお / 問い合わせフォームからご連絡ください。",
+        "[LB:pg_home:sp] 行の切れ目が文節境界でない：1978年、父の代にはじまった芦屋の和菓子店です。店主 / は京都の老舗で修業ののち、地元の芦屋に戻りました。 / 餡は毎朝炊き、その日にお出しする分だけをつくりま / す。上生菓子はひと月ごとに入れ替わり、その月にしか / 出会えない菓子が店先に並びます。",
+        "[LB:pg_home:sp] 行の切れ目が文節境界でない：店の奥の8席で、わらび餅や抹茶をお召し上がりいた / だけます。わらび餅は本わらび粉を使い、ご注文ご / とに切り分けます。",
+        "[LB:pg_home:sp] 行の切れ目が文節境界でない：ふっくら焼いた皮に、自家製の粒餡をはさみま / した。",
+        "[LB:pg_home:sp] 行の切れ目が文節境界でない：上生菓子のご予約は、前日の17時まで承ります。 / お電話、またはお問い合わせフォームからご連絡 / ください。",
+        "[LB:pg_menu:sp] 行の切れ目が文節境界でない：季節により品ぞろえが変わります。上生菓子は売り切れ / 次第終了します。",
+        "[LB:pg_menu:sp] 行の切れ目が文節境界でない：ふっくら焼いた皮に、自家製の粒餡をはさみまし / た。"
+      ]
     },
     "B3-3": {
       "status": "pass",
       "details": []
     },
     "B3-4": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "B3-4: lb 44件 word-break≠keep-all"
+      ]
     },
     "B3-5": {
       "status": "pass",
       "details": []
     },
     "A8-8a": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "A8-8a: 文字中央511.57 目標(写真中央-12)525.58 差14.01"
+      ]
     },
     "A8-8b": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "A8-8b: 文字中央1008.97 目標(写真中央-12)980.41 差28.56"
+      ]
     },
     "B4-9-10": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "B4-9-10: 表≤写真だが縦中央ずれ 写真466.58 表430.37"
+      ]
     },
     "B4-11": {
       "status": "pass",
       "details": []
     },
     "B4-12y": {
-      "status": "pass",
-      "details": []
+      "status": "fail",
+      "details": [
+        "B4-12y: 地図.y=676.42 期待(低い方の下端+80)=748.58"
+      ]
     },
     "A9-cardtops": {
       "status": "pass",
