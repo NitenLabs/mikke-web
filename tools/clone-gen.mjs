@@ -41,7 +41,7 @@ function matchSp(e) {
 // x,w を％に、y,h は px（セクション相対 y）。round4
 const r4 = (n) => Math.round(n * 10000) / 10000;
 function layoutFor(e, W, secY0) {
-  return { x: r4((e.x / W) * 100), y: Math.round(e.y - secY0), w: r4((e.w / W) * 100), h: Math.round(e.h) };
+  return { x: r4((e.x / W) * 100), y: r4(e.y - secY0), w: r4((e.w / W) * 100), h: r4(e.h) };
 }
 
 const elements = {};
@@ -84,8 +84,17 @@ for (const [id, el] of Object.entries(elements)) {
 const sectionsObj = {};
 const pageSecs = ["sec_hero", "sec_about", "sec_feature", "sec_price", "sec_faqs", "sec_contact"];
 const bgOrder = { sec_hero: null, sec_about: "#FFFFFF", sec_feature: "#EEEEEE", sec_price: "#FFFFFF", sec_faqs: "#EEEEEE", sec_contact: "#333333", sec_footer: "#333333", sec_header: null };
+// セクションの高さは「参照元のセクションの高さ」に合わせる＝積み上げると参照元の y を再現する。
+// PC は SECS 境界の差、SP は参照元 SP の docH を PC と同じ比率で割る。ヘッダーは 88/80（重ねる）。
+const spDocH = sp.docH, pcDocH = pc.docH;
+const secHeightPc = { sec_hero: 758, sec_about: 1058, sec_feature: 1402, sec_price: 1517, sec_faqs: 628, sec_contact: 590, sec_footer: Math.round(pcDocH - 5953) };
+const idToSec = { sec_hero: 0, sec_about: 1, sec_feature: 2, sec_price: 3, sec_faqs: 4, sec_contact: 5 };
+const secHeightSp = {}; // SP は PC 高さ × (spDocH/pcDocH)
+for (const [sid, hpc] of Object.entries(secHeightPc)) secHeightSp[sid] = Math.round(hpc * (spDocH / pcDocH));
 for (const sid of ["sec_header", ...pageSecs, "sec_footer"]) {
-  sectionsObj[sid] = { name: sid, minHeight: { pc: Math.round(secH[sid]?.pc || 40), sp: Math.round(secH[sid]?.sp || 40) } };
+  const pcH = sid === "sec_header" ? 88 : secHeightPc[sid];
+  const spH = sid === "sec_header" ? 80 : secHeightSp[sid];
+  sectionsObj[sid] = { name: sid, minHeight: { pc: pcH, sp: spH } };
   if (bgOrder[sid]) sectionsObj[sid].background = { color: bgOrder[sid] };
 }
 
