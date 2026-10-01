@@ -131,53 +131,55 @@ export function buildItems(content, device, H, edits = {}) {
     : photoH ? `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;height:${px(photoH)}">${asset}</div>` : CARDPHOTO(id, asset);
   const hgInner = headingGroupInner("I", content.items, device, c);
 
-  let cards;
-  if (c.cols > 1) {
-    const cardHtml = content.items.cards.map((card) => `
-      <div class="card" style="display:grid;grid-template-rows:subgrid;grid-row:span 4;align-items:start">
+  const cardInners = (cardStyle, extra) => content.items.cards.map((card, i) => `
+      <div class="card" style="${cardStyle}${extra && i ? extra : ""}">
         ${cph(`card_photo_${card.id}`, card.photo.asset)}
         ${T(`card_name_${card.id}`, "cardName", device, c.cardTxtW, thtml(H, `I_cn_${card.id}`), `margin:${px(c.cardPhotoName)} 0 0 ${px(c.cardTxtInset)}`)}
         ${T(`card_desc_${card.id}`, "cardDesc", device, c.cardTxtW, thtml(H, `I_cd_${card.id}`), `margin:${px(c.cardNameDesc)} 0 0 ${px(c.cardTxtInset)}`)}
         ${T(`card_price_${card.id}`, "cardPrice", device, c.cardTxtW, thtml(H, `I_cp_${card.id}`), `margin:${px(c.cardDescPrice)} 0 0 ${px(c.cardTxtInset)}`)}
       </div>`).join("");
-    cards = `<div data-el="I_cards" data-kind="group" class="cards" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);column-gap:${px(c.colGap)};grid-template-rows:auto auto auto auto;width:${px(c.cardsW)};margin:${px(c.hgToCards)} auto 0">${cardHtml}</div>`;
-  } else {
-    const cardHtml = content.items.cards.map((card, i) => `
-      <div class="card" style="display:flex;flex-direction:column;align-items:flex-start;${i ? `margin-top:${px(c.colGap)}` : ""}">
-        ${cph(`card_photo_${card.id}`, card.photo.asset)}
-        ${T(`card_name_${card.id}`, "cardName", device, c.cardTxtW, thtml(H, `I_cn_${card.id}`), `margin:${px(c.cardPhotoName)} 0 0 ${px(c.cardTxtInset)}`)}
-        ${T(`card_desc_${card.id}`, "cardDesc", device, c.cardTxtW, thtml(H, `I_cd_${card.id}`), `margin:${px(c.cardNameDesc)} 0 0 ${px(c.cardTxtInset)}`)}
-        ${T(`card_price_${card.id}`, "cardPrice", device, c.cardTxtW, thtml(H, `I_cp_${card.id}`), `margin:${px(c.cardDescPrice)} 0 0 ${px(c.cardTxtInset)}`)}
-      </div>`).join("");
-    cards = `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;width:${px(c.cardsW)};margin:${px(c.hgToCards)} auto 0">${cardHtml}</div>`;
-  }
+  const cardsHtml = (mt) => c.cols > 1
+    ? `<div data-el="I_cards" data-kind="group" class="cards" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);column-gap:${px(c.colGap)};grid-template-rows:auto auto auto auto;width:${px(c.cardsW)};margin:${px(mt)} auto 0">${cardInners("display:grid;grid-template-rows:subgrid;grid-row:span 4;align-items:start")}</div>`
+    : `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;width:${px(c.cardsW)};margin:${px(mt)} auto 0">${cardInners("display:flex;flex-direction:column;align-items:flex-start;", `margin-top:${px(c.colGap)}`)}</div>`;
 
   const dividerInner = LINE("I_divider", c.dividerW, 1, 0.5);
   const kanmiInner = T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"));
   const timeInner = T("I_time", "kanmiTime", device, c.kanmiW, thtml(H, "I_time"));
-  const order = edits.order || {};
-  // 区切り線・甘味処の見出し・営業時間は、stack の縦積みの連続した直接の子＝並び替えのバンド（§2.1）。
-  // 既定の並び [I_divider,I_kanmi,I_time] と位置ごとの余白 [cardsToDivider,dividerKanmi,kanmiTime] で、従来の描画と完全一致。
-  const bandMargins = [c.cardsToDivider, c.dividerKanmi, c.kanmiTime];
-  const bandOrder = (order.Iband || ["I_divider", ...(order.Ikt || ["I_kanmi", "I_time"])]).filter((id) => !isOut(id));
-  const bandChild = (id, mt) => {
-    const style = `margin-top:${px(mt)};align-self:center${off(id)}`;
-    if (id === "I_divider") return `<div style="margin-top:${px(mt)};width:${px(c.dividerW)};align-self:center${off("I_divider")}">${dividerInner}</div>`;
-    return T(id, id === "I_kanmi" ? "kanmiLbl" : "kanmiTime", device, c.kanmiW, thtml(H, id), style);
-  };
-  let ktFlow = ""; for (let i = 0; i < bandOrder.length; i++) ktFlow += bandChild(bandOrder[i], bandMargins[Math.min(i, bandMargins.length - 1)]);
-  const dividerFlow = "";
   const rows = content.items.table.map((r) => rowHtml(r, device, c, H)).join("");
-  const table = `<div data-el="I_table" class="row-lines" style="width:${px(c.tableW)};margin:${px(c.timeTable)} auto 0">${rows}</div>`;
-  const pill = `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(c.tablePill)};width:${px(c.pillW)};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center">
-    ${T("I_pilltext", "pill", device, "auto", thtml(H, "I_pill"))}</div>`;
+  const pillInner = T("I_pilltext", "pill", device, "auto", thtml(H, "I_pill"));
+
+  // §2 縦積みの間隔：テンプレの隣接と「今の並び」だけから決める（手直しの数字を持たない）。
+  const order = edits.order || {};
+  const STACK = ["I_cards", "I_divider", "I_kanmi", "I_time", "I_table", "I_pillbg"];
+  // TGAP[x]＝テンプレで x の「上の間隔」（x と x のテンプレ上隣との間）。I_cards の上は見出しの組（hgToCards）。
+  const TGAP = { I_cards: c.hgToCards, I_divider: c.cardsToDivider, I_kanmi: c.dividerKanmi, I_time: c.kanmiTime, I_table: c.timeTable, I_pillbg: c.tablePill };
+  const succ = (id) => STACK[STACK.indexOf(id) + 1];
+  const gap2 = (A, B) => {                                 // A（上）と B（下）の間隔
+    const aboveB = TGAP[B] != null ? TGAP[B] : 0;
+    if (A == null) return B === "I_cards" ? TGAP.I_cards : Math.max(TGAP.I_cards, aboveB);  // 先頭（上は見出しの組）
+    if (succ(A) === B) return aboveB;                      // テンプレで隣（同順）＝B の上の間隔
+    if (succ(B) === A) return TGAP[A];                     // テンプレで隣（上下入替）＝A の上の間隔
+    const belowA = TGAP[succ(A)] != null ? TGAP[succ(A)] : 0;  // A のテンプレ下の間隔
+    return Math.max(belowA, aboveB);                      // 初めて隣＝広い方
+  };
+  const childHtml = (id, mt) => {
+    if (id === "I_cards") return cardsHtml(mt);
+    if (id === "I_divider") return `<div style="margin-top:${px(mt)};width:${px(c.dividerW)};align-self:center${off("I_divider")}">${dividerInner}</div>`;
+    if (id === "I_kanmi") return T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"), `margin-top:${px(mt)};align-self:center${off("I_kanmi")}`);
+    if (id === "I_time") return T("I_time", "kanmiTime", device, c.kanmiW, thtml(H, "I_time"), `margin-top:${px(mt)};align-self:center${off("I_time")}`);
+    if (id === "I_table") return `<div data-el="I_table" class="row-lines" style="width:${px(c.tableW)};margin:${px(mt)} auto 0">${rows}</div>`;
+    return `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(mt)};width:${px(c.pillW)};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center">${pillInner}</div>`;
+  };
+  const stackOrder = (order.Istack || STACK).filter((id) => !isOut(id));
+  let stackHtml = ""; let prev = null;
+  for (const id of stackOrder) { stackHtml += childHtml(id, gap2(prev, id)); prev = id; }
 
   const hgFlow = isOut("I_hg") ? "" : hgInner;
   const align = device === "sp" ? "center" : "stretch";
   const absItems = absLayer(m2, added, { I_hg: hgInner, I_divider: dividerInner, I_kanmi: kanmiInner, I_time: timeInner }, device);
   const body = `<div id="sec" data-sec="items" style="width:${DESIGN_W[device]}px;background:${COLORS.background};position:relative">
     <div class="stack" style="display:flex;flex-direction:column;align-items:${align};padding:${px(c.padTop)} 0 ${px(c.padBottom)}">
-      ${hgFlow}${cards}${dividerFlow}${ktFlow}${table}${pill}</div>${absItems}</div>`;
+      ${hgFlow}${stackHtml}</div>${absItems}</div>`;
   return { bodyHtml: body, extraCss: "", padBottom: c.padBottom };
 }
 
