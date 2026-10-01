@@ -1,0 +1,416 @@
+{
+  "Q1-pc": {
+    "H1": true,
+    "H1v": [
+      12,
+      8
+    ],
+    "H2": {
+      "ok": true,
+      "worst": 0,
+      "wid": ""
+    },
+    "gapAfter": 8,
+    "noOverlap": true,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": 13,
+        "dy": 8
+      }
+    ],
+    "warn": 0
+  },
+  "Q2-pc": {
+    "H1": true,
+    "H1v": [
+      0,
+      -0.2
+    ],
+    "headStill": false,
+    "bodyBelowPhoto": 23.8,
+    "bodyStillAfterHead2": true,
+    "anchors": [
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M2",
+        "anchor": "F_p0",
+        "anchorName": "特集1の写真",
+        "gapY": 23.8,
+        "x": 755
+      }
+    ],
+    "warn": 0
+  },
+  "Q3-pc": {
+    "bothLanded": true,
+    "headY": 763.19,
+    "bodyY": 822.38,
+    "bodyPushedByHead2": 43.18,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M2",
+        "anchor": "F_p0",
+        "anchorName": "特集1の写真",
+        "gapY": 23.61,
+        "x": 755
+      },
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M2",
+        "anchor": "F_h0",
+        "anchorName": "特集1の見出し",
+        "gapY": 16,
+        "x": 755
+      }
+    ],
+    "warn": 0
+  },
+  "Q4-pc": {
+    "bodyH": 115.19,
+    "bodyY": 497.58,
+    "warn": 0
+  },
+  "Q5-pc": {
+    "lcBefore": 124,
+    "lcDuring": 124,
+    "lcAfter": 125,
+    "noReflowDuring": true,
+    "reflowedAfter": true,
+    "textOk": true,
+    "bodyGrew": false
+  },
+  "Q6-pc": {
+    "addId": "add_1",
+    "sec0": 1486.3,
+    "sec1": 1616,
+    "grew": true,
+    "overflow": 0,
+    "warn": 0
+  },
+  "Q8-pc": {
+    "peekAtOrigin": true,
+    "backToMoved": true,
+    "opsUnchanged": true
+  },
+  "Q7-pc": {
+    "headingIs2Line": true,
+    "resetPartNoManual": true
+  },
+  "Q9-pc": {
+    "ok": true,
+    "worst": 0
+  },
+  "Q10-pc": {
+    "arrow1": 1,
+    "shift10": 10,
+    "deleted": true,
+    "restored": true
+  },
+  "Q11-pc": {
+    "h1": false,
+    "h2okM1": true,
+    "worst": 37.6,
+    "note": "I_kanmi M2H1 37.60"
+  },
+  "Q12-pc": {
+    "belowSource": true,
+    "anchorSrc": true,
+    "photoDuplicated": true,
+    "addedOnSP": true,
+    "noManualMarkSP": true
+  },
+  "Q13-pc": {
+    "cards": 4,
+    "is4": true
+  },
+  "Q14-pc": {
+    "text": "プレーン",
+    "noFormatting": true
+  },
+  "Q15-pc": {
+    "goneFromFeatureAfterCut": true,
+    "pastedInItems": true,
+    "restoredAfterUndo2": true
+  },
+  "R1-pc": {
+    "grab10": true,
+    "mv10": 10,
+    "grab30": true,
+    "mv30": 30,
+    "kanmiBelow": true,
+    "h2worst": 0
+  },
+  "R2-pc": {
+    "m2": true,
+    "anchorIsCards": true,
+    "anchor": "I_cards",
+    "noCardAnchor": true,
+    "cardsAfter": 2,
+    "followsCards": true,
+    "movedUp": 0,
+    "warn": 0
+  },
+  "R4-pc": {
+    "belowBody": true,
+    "anchorSrc": true,
+    "noOverlapPC": true,
+    "addedOnSP": true,
+    "spInWidth": true,
+    "spClean": true
+  },
+  "R5-pc": {
+    "sizeOk": true,
+    "wh": [
+      549,
+      404
+    ],
+    "nameOk": true,
+    "spRatioKept": true,
+    "spInWidth": true,
+    "spClean": true
+  },
+  "R7-pc": {
+    "orderOk": true,
+    "overlap": 0,
+    "spOrderUnchanged": true
+  },
+  "R8-pc": {
+    "isM1": true,
+    "moved": true,
+    "notReordered": true,
+    "m1": [
+      30,
+      20
+    ]
+  },
+  "R9-pc": {
+    "dupRowTo3": true,
+    "anchorIsTable": true,
+    "anchor": "I_table",
+    "noRowAnchor": true,
+    "rowStaysOnDrag": true,
+    "rowsAfter": 2,
+    "addFollowed": true,
+    "addNoOverlap": true,
+    "warn": 0
+  },
+  "R3-pc": {
+    "noRepeatPartAsAnchor": true
+  },
+  "T1-pc": {
+    "reordered": true,
+    "order": [
+      964.2,
+      1117.8,
+      1122.8
+    ],
+    "noM1M2": true,
+    "overlap": 0,
+    "restored": true
+  },
+  "T2-pc": {
+    "m2": true,
+    "anchorTable": true,
+    "anchor": "I_table",
+    "gapRecorded": 39.85,
+    "gapAfterSettle": 39.85,
+    "overlap": 0
+  },
+  "T3-pc": {
+    "m2": true,
+    "anchorTable": true,
+    "anchor": "I_table",
+    "offsetFromTableTopAfter": 60.02
+  },
+  "T4-pc": {
+    "anchorPhoto": true,
+    "gapRecorded": 23.8,
+    "gapAfterSettle": 23.8,
+    "headCenterVsPhotoCenter": -12,
+    "overlap": 0
+  },
+  "T5-pc": {
+    "srcSPwidth": 333,
+    "pastedLeft": 28.5,
+    "leftEqualsSrc": true,
+    "pastedW": 333,
+    "widthLEsrc": true,
+    "rightWithin": true
+  },
+  "_errs-pc": [],
+  "Q1-sp": {
+    "H1": true,
+    "H1v": [
+      12,
+      8
+    ],
+    "H2": {
+      "ok": true,
+      "worst": 0,
+      "wid": ""
+    },
+    "gapAfter": 0,
+    "noOverlap": true,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": 13,
+        "dy": 8
+      }
+    ],
+    "warn": 0
+  },
+  "Q2-sp": {
+    "H1": true,
+    "H1v": [
+      0,
+      -0.2
+    ],
+    "headStill": true,
+    "bodyBelowPhoto": 23.8,
+    "bodyStillAfterHead2": true,
+    "anchors": [
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M1",
+        "dx": -9,
+        "dy": -37
+      }
+    ],
+    "warn": 1
+  },
+  "Q3-sp": {
+    "bothLanded": true,
+    "headY": 482.59,
+    "bodyY": 519.39,
+    "bodyPushedByHead2": 28.8,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": -9,
+        "dy": 0
+      },
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M1",
+        "dx": -9,
+        "dy": 0
+      }
+    ],
+    "warn": 0
+  },
+  "Q4-sp": {
+    "bodyH": 151.13,
+    "bodyY": 519.39,
+    "warn": 0
+  },
+  "Q6-sp": {
+    "addId": "add_1",
+    "sec0": 2219.1,
+    "sec1": 2364.5,
+    "grew": true,
+    "overflow": 0,
+    "warn": 0
+  },
+  "Q8-sp": {
+    "peekAtOrigin": true,
+    "backToMoved": true,
+    "opsUnchanged": true
+  },
+  "Q9-sp": {
+    "ok": true,
+    "worst": 0
+  },
+  "Q10-sp": {
+    "arrow1": 1,
+    "shift10": 10,
+    "deleted": true,
+    "restored": true
+  },
+  "Q11-sp": {
+    "h1": false,
+    "h2okM1": true,
+    "worst": 282.01,
+    "note": "F_p0 M2H1 282.01"
+  },
+  "Q13-sp": {
+    "cards": 4,
+    "is4": true
+  },
+  "R1-sp": {
+    "grab10": true,
+    "mv10": 10,
+    "grab30": true,
+    "mv30": 30,
+    "kanmiBelow": true,
+    "h2worst": 0
+  },
+  "R2-sp": {
+    "m2": true,
+    "anchorIsCards": true,
+    "anchor": "I_cards",
+    "noCardAnchor": true,
+    "cardsAfter": 2,
+    "followsCards": true,
+    "movedUp": -473.8,
+    "warn": 0
+  },
+  "R6-sp": {
+    "orderOk": true,
+    "overlap": 0,
+    "restored": true
+  },
+  "R9-sp": {
+    "dupRowTo3": true,
+    "anchorIsTable": true,
+    "anchor": "I_table",
+    "noRowAnchor": true,
+    "rowStaysOnDrag": true,
+    "rowsAfter": 2,
+    "addFollowed": true,
+    "addNoOverlap": true,
+    "warn": 0
+  },
+  "R3-sp": {
+    "noRepeatPartAsAnchor": true
+  },
+  "T1-sp": {
+    "reordered": true,
+    "order": [
+      1703.3,
+      1792.5,
+      1798.5
+    ],
+    "noM1M2": true,
+    "overlap": 0,
+    "restored": true
+  },
+  "T2-sp": {
+    "m2": true,
+    "anchorTable": true,
+    "anchor": "I_table",
+    "gapRecorded": 40.25,
+    "gapAfterSettle": 40.25,
+    "overlap": 0
+  },
+  "T3-sp": {
+    "m2": true,
+    "anchorTable": true,
+    "anchor": "I_table",
+    "offsetFromTableTopAfter": 60.42
+  },
+  "_errs-sp": []
+}

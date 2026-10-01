@@ -156,10 +156,17 @@ export function buildItems(content, device, H, edits = {}) {
   const kanmiInner = T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"));
   const timeInner = T("I_time", "kanmiTime", device, c.kanmiW, thtml(H, "I_time"));
   const order = edits.order || {};
-  const dividerFlow = isOut("I_divider") ? "" : `<div style="margin-top:${px(c.cardsToDivider)};width:${px(c.dividerW)};align-self:center${off("I_divider")}">${dividerInner}</div>`;
-  const ktOrder = (order.Ikt || ["I_kanmi", "I_time"]).filter((id) => !isOut(id));
-  let ktFlow = ""; let ktFirst = true;
-  for (const id of ktOrder) { const style = id === "I_kanmi" ? "kanmiLbl" : "kanmiTime"; ktFlow += T(id, style, device, c.kanmiW, thtml(H, id), `margin-top:${px(ktFirst ? c.dividerKanmi : c.kanmiTime)};align-self:center${off(id)}`); ktFirst = false; }
+  // 区切り線・甘味処の見出し・営業時間は、stack の縦積みの連続した直接の子＝並び替えのバンド（§2.1）。
+  // 既定の並び [I_divider,I_kanmi,I_time] と位置ごとの余白 [cardsToDivider,dividerKanmi,kanmiTime] で、従来の描画と完全一致。
+  const bandMargins = [c.cardsToDivider, c.dividerKanmi, c.kanmiTime];
+  const bandOrder = (order.Iband || ["I_divider", ...(order.Ikt || ["I_kanmi", "I_time"])]).filter((id) => !isOut(id));
+  const bandChild = (id, mt) => {
+    const style = `margin-top:${px(mt)};align-self:center${off(id)}`;
+    if (id === "I_divider") return `<div style="margin-top:${px(mt)};width:${px(c.dividerW)};align-self:center${off("I_divider")}">${dividerInner}</div>`;
+    return T(id, id === "I_kanmi" ? "kanmiLbl" : "kanmiTime", device, c.kanmiW, thtml(H, id), style);
+  };
+  let ktFlow = ""; for (let i = 0; i < bandOrder.length; i++) ktFlow += bandChild(bandOrder[i], bandMargins[Math.min(i, bandMargins.length - 1)]);
+  const dividerFlow = "";
   const rows = content.items.table.map((r) => rowHtml(r, device, c, H)).join("");
   const table = `<div data-el="I_table" class="row-lines" style="width:${px(c.tableW)};margin:${px(c.timeTable)} auto 0">${rows}</div>`;
   const pill = `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(c.tablePill)};width:${px(c.pillW)};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center">
