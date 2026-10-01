@@ -79,12 +79,22 @@ export function buildFeature(content, device, H, edits = {}) {
   const hInner = (i, extra = "") => T(`F_h${i}`, "featHead", device, c.tW, thtml(H, `F_h${i}`), extra);
   const bInner = (i, extra = "") => T(`F_b${i}`, "featBody", device, c.tW, thtml(H, `F_b${i}`), extra);
 
+  const order = edits.order || {};                                  // §6/§10.1 並び替え（端末ごと）
+  const isPhotoId = (id) => /_p\d$/.test(id);
+  const gapBetween = (prev, cur) => (isPhotoId(prev) || isPhotoId(cur)) ? c.photoHead : headBody;
+  const childInner = (i, cid, mt) => {
+    if (isPhotoId(cid)) return clearedOf(cid) ? EMPTYFRAME(cid, c.pW, c.pH, mt + off(cid)) : PHOTO(cid, c.pW, c.pH, content.feature.blocks[i].photo.asset, mt + off(cid));
+    if (/_h\d$/.test(cid)) return hInner(i, mt + off(cid));
+    return bInner(i, mt + off(cid));
+  };
   let blocks;
   if (device === "pc") {
     const block = (i, reversed) => {
-      const hH = isOut(`F_h${i}`) ? "" : hInner(i, off(`F_h${i}`));
-      const bH = isOut(`F_b${i}`) ? "" : bInner(i, `margin-top:${px(headBody)}` + off(`F_b${i}`));
-      const tg = (hH || bH) ? `<div class="tg" style="position:relative;top:${px(c.centerOff)};width:${px(c.tW)};flex:none">${hH}${bH}</div>` : "";
+      // 文字の塊（tg）＝見出し・本文の縦並び。並び替えはこの塊の中だけ（写真は横並び＝対象外・§6）
+      const tgOrder = (order[`Ftg${i}`] || [`F_h${i}`, `F_b${i}`]).filter((id) => !isOut(id));
+      let tgKids = ""; let prev = null;
+      for (const cid of tgOrder) { const mt = prev === null ? "" : `margin-top:${px(headBody)}`; tgKids += childInner(i, cid, mt); prev = cid; }
+      const tg = tgKids ? `<div class="tg" style="position:relative;top:${px(c.centerOff)};width:${px(c.tW)};flex:none">${tgKids}</div>` : "";
       const photo = isOut(`F_p${i}`) ? "" : `<div style="flex:none${off(`F_p${i}`)}">${photoInner(i)}</div>`;
       const padL = reversed ? c.b2PadL : c.b1PadL;
       const kids = reversed ? photo + tg : tg + photo;
@@ -93,10 +103,10 @@ export function buildFeature(content, device, H, edits = {}) {
     blocks = block(0, false) + block(1, true);
   } else {
     const block = (i) => {
-      const pH = isOut(`F_p${i}`) ? "" : (clearedOf(`F_p${i}`) ? EMPTYFRAME(`F_p${i}`, c.pW, c.pH, `margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}${off(`F_p${i}`)}`) : PHOTO(`F_p${i}`, c.pW, c.pH, content.feature.blocks[i].photo.asset, `margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}${off(`F_p${i}`)}`));
-      const hH = isOut(`F_h${i}`) ? "" : hInner(i, `margin-top:${px(c.photoHead)}` + off(`F_h${i}`));
-      const bH = isOut(`F_b${i}`) ? "" : bInner(i, `margin-top:${px(headBody)}` + off(`F_b${i}`));
-      return pH + hH + bH;
+      const ord = (order[`Fblk${i}`] || [`F_p${i}`, `F_h${i}`, `F_b${i}`]).filter((id) => !isOut(id));
+      let html = ""; let prev = null;
+      for (const cid of ord) { const mt = `margin-top:${px(prev === null ? (i === 0 ? c.hgToBlk : c.blkGap) : gapBetween(prev, cid))}`; html += childInner(i, cid, mt); prev = cid; }
+      return html;
     };
     blocks = block(0) + block(1);
   }
@@ -130,7 +140,7 @@ export function buildItems(content, device, H, edits = {}) {
         ${T(`card_desc_${card.id}`, "cardDesc", device, c.cardTxtW, thtml(H, `I_cd_${card.id}`), `margin:${px(c.cardNameDesc)} 0 0 ${px(c.cardTxtInset)}`)}
         ${T(`card_price_${card.id}`, "cardPrice", device, c.cardTxtW, thtml(H, `I_cp_${card.id}`), `margin:${px(c.cardDescPrice)} 0 0 ${px(c.cardTxtInset)}`)}
       </div>`).join("");
-    cards = `<div class="cards" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);column-gap:${px(c.colGap)};grid-template-rows:auto auto auto auto;width:${px(c.cardsW)};margin:${px(c.hgToCards)} auto 0">${cardHtml}</div>`;
+    cards = `<div data-el="I_cards" data-kind="group" class="cards" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);column-gap:${px(c.colGap)};grid-template-rows:auto auto auto auto;width:${px(c.cardsW)};margin:${px(c.hgToCards)} auto 0">${cardHtml}</div>`;
   } else {
     const cardHtml = content.items.cards.map((card, i) => `
       <div class="card" style="display:flex;flex-direction:column;align-items:flex-start;${i ? `margin-top:${px(c.colGap)}` : ""}">
@@ -139,15 +149,17 @@ export function buildItems(content, device, H, edits = {}) {
         ${T(`card_desc_${card.id}`, "cardDesc", device, c.cardTxtW, thtml(H, `I_cd_${card.id}`), `margin:${px(c.cardNameDesc)} 0 0 ${px(c.cardTxtInset)}`)}
         ${T(`card_price_${card.id}`, "cardPrice", device, c.cardTxtW, thtml(H, `I_cp_${card.id}`), `margin:${px(c.cardDescPrice)} 0 0 ${px(c.cardTxtInset)}`)}
       </div>`).join("");
-    cards = `<div class="cards" style="display:flex;flex-direction:column;width:${px(c.cardsW)};margin:${px(c.hgToCards)} auto 0">${cardHtml}</div>`;
+    cards = `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;width:${px(c.cardsW)};margin:${px(c.hgToCards)} auto 0">${cardHtml}</div>`;
   }
 
   const dividerInner = LINE("I_divider", c.dividerW, 1, 0.5);
   const kanmiInner = T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"));
   const timeInner = T("I_time", "kanmiTime", device, c.kanmiW, thtml(H, "I_time"));
+  const order = edits.order || {};
   const dividerFlow = isOut("I_divider") ? "" : `<div style="margin-top:${px(c.cardsToDivider)};width:${px(c.dividerW)};align-self:center${off("I_divider")}">${dividerInner}</div>`;
-  const kanmiFlow = isOut("I_kanmi") ? "" : T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"), `margin-top:${px(c.dividerKanmi)};align-self:center${off("I_kanmi")}`);
-  const timeFlow = isOut("I_time") ? "" : T("I_time", "kanmiTime", device, c.kanmiW, thtml(H, "I_time"), `margin-top:${px(c.kanmiTime)};align-self:center${off("I_time")}`);
+  const ktOrder = (order.Ikt || ["I_kanmi", "I_time"]).filter((id) => !isOut(id));
+  let ktFlow = ""; let ktFirst = true;
+  for (const id of ktOrder) { const style = id === "I_kanmi" ? "kanmiLbl" : "kanmiTime"; ktFlow += T(id, style, device, c.kanmiW, thtml(H, id), `margin-top:${px(ktFirst ? c.dividerKanmi : c.kanmiTime)};align-self:center${off(id)}`); ktFirst = false; }
   const rows = content.items.table.map((r) => rowHtml(r, device, c, H)).join("");
   const table = `<div data-el="I_table" class="row-lines" style="width:${px(c.tableW)};margin:${px(c.timeTable)} auto 0">${rows}</div>`;
   const pill = `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(c.tablePill)};width:${px(c.pillW)};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center">
@@ -158,7 +170,7 @@ export function buildItems(content, device, H, edits = {}) {
   const absItems = absLayer(m2, added, { I_hg: hgInner, I_divider: dividerInner, I_kanmi: kanmiInner, I_time: timeInner }, device);
   const body = `<div id="sec" data-sec="items" style="width:${DESIGN_W[device]}px;background:${COLORS.background};position:relative">
     <div class="stack" style="display:flex;flex-direction:column;align-items:${align};padding:${px(c.padTop)} 0 ${px(c.padBottom)}">
-      ${hgFlow}${cards}${dividerFlow}${kanmiFlow}${timeFlow}${table}${pill}</div>${absItems}</div>`;
+      ${hgFlow}${cards}${dividerFlow}${ktFlow}${table}${pill}</div>${absItems}</div>`;
   return { bodyHtml: body, extraCss: "", padBottom: c.padBottom };
 }
 
@@ -199,10 +211,11 @@ export const FRIENDLY = {
   F_hg: "特集の見出しの組", F_p0: "特集1の写真", F_h0: "特集1の見出し", F_b0: "特集1の本文",
   F_p1: "特集2の写真", F_h1: "特集2の見出し", F_b1: "特集2の本文",
   I_hg: "おすすめの見出しの組", I_divider: "区切り線", I_kanmi: "甘味処の見出し", I_time: "甘味処の時間",
-  I_table: "甘味処の表", I_pillbg: "ボタン", "@section": "セクションの先頭",
+  I_cards: "品の並び", I_table: "甘味処の表", I_pillbg: "ボタン", "@section": "セクションの先頭",
 };
 export function friendly(id) {
   if (FRIENDLY[id]) return FRIENDLY[id];
+  if (/^addp_/.test(id)) return "足した写真";
   if (/^add_/.test(id)) return "足した文字";
   if (/^card_/.test(id)) return "品";
   if (/^row_/.test(id)) return "表の行";
@@ -221,39 +234,85 @@ const secId = (id) => (id.startsWith("F_") ? "feature" : "items");
 const overlapX = (a, b) => Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
 const bottomOf = (e) => e.y + e.h;
 
-// M1 か M2 か：離した部品の中心が、その部品の塊の範囲の中なら M1。
-// geomNow＝今の見た目（ドラッグ後）。geomOrig＝動かす前の実測（塊の範囲は元の位置で測る＝動かした部品の元の場所も含める）。
+// 繰り返す部品の1件（品のカード card_* / 甘味処の表の行 row_*）は、その並び全体の ID に畳む（§4-3・§10.2）。
+export const REPEAT_GROUP = (id) => (/^card_/.test(id) ? "I_cards" : (/^row_/.test(id) ? "I_table" : null));
+// 塊（cluster）の範囲：classifyDrop 用に名前つきの塊の箱を作る。繰り返す並びも「別の塊」として数える。
+const CLUSTER_KEYS = [["F_h0", "F_b0", "F_p0"], ["F_h1", "F_b1", "F_p1"], ["F_hg"], ["I_hg"], ["I_divider"], ["I_kanmi", "I_time"], ["I_cards"], ["I_table"]];
+function boxOf(ids, geom) {
+  const ms = ids.filter((m) => geom[m]); if (!ms.length) return null;
+  return { x0: Math.min(...ms.map((m) => geom[m].x)), y0: Math.min(...ms.map((m) => geom[m].y)), x1: Math.max(...ms.map((m) => geom[m].x + geom[m].w)), y1: Math.max(...ms.map((m) => geom[m].y + geom[m].h)) };
+}
+const clusterKeyOf = (id) => REPEAT_GROUP(id) || (CLUSTER_KEYS.find((s) => s.includes(id)) || [id]).join("|");
+
+// M1 か M2 か（§3）：離した部品の中心が、属する塊の範囲を 40px 広げた中にあり、かつ別の塊の中でなければ M1。
+// geomNow＝今の見た目（ドラッグ後）。geomOrig＝動かす前の実測（塊の範囲は元の位置で測る）。
 export function classifyDrop(geomNow, id, movingIds = [id], geomOrig) {
   geomOrig = geomOrig || geomNow;
   const part = geomNow[id]; if (!part) return "M1";
   const cx = part.x + part.w / 2, cy = part.y + part.h / 2;
-  const mates = (CLUSTER[id] || [id]).filter((m) => geomOrig[m]); // 塊の全メンバー（自分を含む・元の位置）
-  if (!mates.length) return "M1";
-  const x0 = Math.min(...mates.map((m) => geomOrig[m].x)), y0 = Math.min(...mates.map((m) => geomOrig[m].y));
-  const x1 = Math.max(...mates.map((m) => geomOrig[m].x + geomOrig[m].w)), y1 = Math.max(...mates.map((m) => geomOrig[m].y + geomOrig[m].h));
-  const pad = 0.5;
-  return cx >= x0 - pad && cx <= x1 + pad && cy >= y0 - pad && cy <= y1 + pad ? "M1" : "M2";
+  const ownKey = clusterKeyOf(id);
+  const own = boxOf(CLUSTER[id] || [id], geomOrig);
+  if (own) { const pad = 40; if (cx < own.x0 - pad || cx > own.x1 + pad || cy < own.y0 - pad || cy > own.y1 + pad) return "M2"; }
+  // 別の塊の中に離した → M2（3-2）。geometry はセクションごとの局所座標なので、同じセクションの塊だけと比べる。
+  const sec = secId(id);
+  for (const set of CLUSTER_KEYS) {
+    if (set.join("|") === ownKey) continue;
+    if (secId(set[0]) !== sec) continue;
+    const b = boxOf(set, geomOrig); if (!b) continue;
+    if (cx >= b.x0 && cx <= b.x1 && cy >= b.y0 && cy <= b.y1) return "M2";
+  }
+  return "M1";
+}
+
+// 並び替え（§6／§10.1）：縦に並んだ塊の中で、離した中心が兄弟の縦中心を越えた位置に割り込ませる。
+// siblings＝その塊の縦並びの全メンバー（自分を含む・元の並び）。dropCenterY＝離した部品の中心 y（設計座標）。
+// 変わらなければ null（＝並び替えでなく M1 のずれ）を返す。先頭より上／末尾より下もこの計算で front／end になる。
+export function reorderWithin(geomOrig, id, siblings, dropCenterY) {
+  const sibs = siblings.filter((s) => geomOrig[s]);
+  if (sibs.length < 2 || !sibs.includes(id)) return null;
+  const order = sibs.slice().sort((a, b) => geomOrig[a].y - geomOrig[b].y);
+  const others = order.filter((s) => s !== id);
+  let idx = 0;
+  for (const o of others) { const oc = geomOrig[o].y + geomOrig[o].h / 2; if (dropCenterY > oc) idx++; else break; }
+  const next = others.slice(); next.splice(idx, 0, id);
+  return next.join("|") === order.join("|") ? null : next;
 }
 
 const NOT_ANCHOR = new Set(["F_lbl", "F_h", "F_rule", "I_lbl", "I_h", "I_rule", "I_pilltext"]);
 
-// 付いていく先を取り直す（同セクションの、すぐ上・横が重なる部品／なければ見出しの組／それも無ければ @section）。
+// 付いていく先を取り直す（§4）。同セクションの、すぐ上・横が重なる部品で最も近いもの。
+// 繰り返す部品の1件の中の部品は候補にせず、その並び全体（I_cards／I_table）に畳む（§4-3・§10.2）。
+// 繰り返す並びの範囲の中に離したときは、その並び全体に付く（R2／R9）。
 export function reanchor(geom, movedId, secOverride) {
   const part = geom[movedId]; if (!part) return null;
   const sec = secOverride || secId(movedId); const hgId = HG_OF[sec];
-  let best = null;
+  const cy = part.y + part.h / 2;
+  // 候補の箱を作る：繰り返す1件は所属グループ（I_cards／I_table）の箱へ畳む
+  const cand = {};
   for (const [id, e] of Object.entries(geom)) {
     if (id === movedId || !e || e.kind === undefined) continue;
     if (NOT_ANCHOR.has(id) || /^row_vline_/.test(id)) continue;
-    if (secId(id) !== sec) continue;
-    if (id === hgId) continue;
-    if (bottomOf(e) > part.y + 1.5) continue;
+    if (secId(id) !== sec || id === hgId) continue;
+    const key = REPEAT_GROUP(id) || id;      // card_*→I_cards, row_*→I_table, I_cards/I_table はそのまま
+    const c = cand[key];
+    if (!c) cand[key] = { x: e.x, y: e.y, w: e.w, h: e.h };
+    else { const nx = Math.min(c.x, e.x), ny = Math.min(c.y, e.y), nr = Math.max(c.x + c.w, e.x + e.w), nb = Math.max(c.y + c.h, e.y + e.h); cand[key] = { x: nx, y: ny, w: nr - nx, h: nb - ny }; }
+  }
+  // 繰り返す並びの範囲の中（縦に）に離した → その並び全体に付く
+  for (const gid of ["I_cards", "I_table"]) {
+    const g = cand[gid]; if (!g) continue;
+    if (cy >= g.y - 0.5 && cy <= g.y + g.h + 0.5 && overlapX(g, part) > 1)
+      return { anchor: gid, gapY: +(part.y - (g.y + g.h)).toFixed(2), x: +part.x.toFixed(2) };
+  }
+  let best = null;
+  for (const [id, e] of Object.entries(cand)) {
+    if (e.y + e.h > part.y + 1.5) continue;
     if (overlapX(e, part) <= 1) continue;
-    if (!best || bottomOf(e) > bottomOf(best.e)) best = { id, e };
+    if (!best || e.y + e.h > best.e.y + best.e.h) best = { id, e };
   }
   if (!best) { const hg = geom[hgId]; if (hg && bottomOf(hg) <= part.y + 1.5) best = { id: hgId, e: hg }; }
   if (!best) return { anchor: "@section", gapY: +part.y.toFixed(2), x: +part.x.toFixed(2) };
-  return { anchor: best.id, gapY: +(part.y - bottomOf(best.e)).toFixed(2), x: +part.x.toFixed(2) };
+  return { anchor: best.id, gapY: +(part.y - (best.e.y + best.e.h)).toFixed(2), x: +part.x.toFixed(2) };
 }
 
 // 絶対配置（M2・足した部品）の top を出す。連鎖（付いていく先も動かした部品）を解く。
