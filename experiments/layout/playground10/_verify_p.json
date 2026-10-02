@@ -1,0 +1,264 @@
+{
+  "P1-pc": {
+    "frameSame": true,
+    "assetChanged": true,
+    "asset": "img_1_1600x6",
+    "viewCenter1": true,
+    "nat": "1600x600",
+    "corners": {
+      "tl": "赤",
+      "tr": "緑",
+      "bl": "青",
+      "br": "黄"
+    }
+  },
+  "P2-pc": {
+    "frameSame": true,
+    "nat": "600x1600",
+    "corners": {
+      "tl": "赤",
+      "tr": "緑",
+      "bl": "青",
+      "br": "黄"
+    },
+    "fourColors": true
+  },
+  "P3-pc": {
+    "frameSame": true,
+    "asset": "img_3_1600x6",
+    "nat": "1600x600",
+    "viewCenter1": true
+  },
+  "P4-pc": {
+    "replaced": true,
+    "nat": "300x200"
+  },
+  "P5-pc": {
+    "clearedThenFilled": true,
+    "frameSameAsBeforeClear": true,
+    "asset": "img_5_1600x6"
+  },
+  "P6-pc": {
+    "warabiChanged": true,
+    "othersSame": true,
+    "posSame": true,
+    "warabiNat": "600x1600"
+  },
+  "P7-pc": {
+    "xDecreased": true,
+    "x": 0.4072,
+    "viewOwn": true,
+    "frameSame": true,
+    "surroundingStill": true
+  },
+  "P8-pc": {
+    "zoom2": true,
+    "zoom": 2.0006
+  },
+  "P9-pc": {
+    "atLowerBound": true,
+    "x": 0.1274,
+    "lower": 0.1274,
+    "leftTopRedBottomBlue": true,
+    "corners": {
+      "tl": "赤",
+      "tr": "赤",
+      "bl": "青",
+      "br": "青"
+    }
+  },
+  "P10-pc": {
+    "viewUnchanged": true,
+    "before": {
+      "x": 0.1274,
+      "y": 0.5,
+      "zoom": 2.0006
+    },
+    "after": {
+      "x": 0.1274,
+      "y": 0.5,
+      "zoom": 2.0006
+    }
+  },
+  "P13-pc": {
+    "nat2400x1600": true,
+    "nat": "2400x1600"
+  },
+  "P14-pc": {
+    "nat1200x1600": true,
+    "nat": "1200x1600",
+    "topLeftRed": true,
+    "corners": {
+      "tl": "赤",
+      "tr": "緑",
+      "bl": "青",
+      "br": "黄"
+    }
+  },
+  "P15-pc": {
+    "photoUnchanged": true,
+    "frameSame": true,
+    "toastShown": "この写真は読み込めません",
+    "toastGone": true
+  },
+  "P16-pc": {
+    "resizedSmaller": true,
+    "keepsSizeAfterReplace": true,
+    "sizeResetToTemplate": true,
+    "photoStaysWide": true
+  },
+  "_errs-pc": [],
+  "P1-sp": {
+    "frameSame": true,
+    "assetChanged": true,
+    "asset": "img_1_1600x6",
+    "viewCenter1": true,
+    "nat": "1600x600",
+    "corners": {
+      "tl": "赤",
+      "tr": "緑",
+      "bl": "青",
+      "br": "黄"
+    }
+  },
+  "P2-sp": {
+    "frameSame": true,
+    "nat": "600x1600",
+    "corners": {
+      "tl": "赤",
+      "tr": "緑",
+      "bl": "青",
+      "br": "黄"
+    },
+    "fourColors": true
+  },
+  "P3-sp": {
+    "frameSame": true,
+    "asset": "img_3_1600x6",
+    "nat": "1600x600",
+    "viewCenter1": true
+  },
+  "P4-sp": {
+    "replaced": true,
+    "nat": "300x200"
+  },
+  "P5-sp": {
+    "clearedThenFilled": true,
+    "frameSameAsBeforeClear": true,
+    "asset": "img_5_1600x6"
+  },
+  "P6-sp": {
+    "warabiChanged": true,
+    "othersSame": true,
+    "posSame": true,
+    "warabiNat": "600x1600"
+  },
+  "P7-sp": {
+    "xDecreased": true,
+    "x": 0.3547,
+    "viewOwn": true,
+    "frameSame": true,
+    "surroundingStill": true
+  },
+  "P8-sp": {
+    "zoom2": true,
+    "zoom": 2
+  },
+  "P9-sp": {
+    "atLowerBound": true,
+    "x": 0.1275,
+    "lower": 0.1275,
+    "leftTopRedBottomBlue": true,
+    "corners": {
+      "tl": "赤",
+      "tr": "赤",
+      "bl": "青",
+      "br": "青"
+    }
+  },
+  "P10-sp": {
+    "viewUnchanged": true,
+    "before": {
+      "x": 0.1275,
+      "y": 0.5,
+      "zoom": 2
+    },
+    "after": {
+      "x": 0.1275,
+      "y": 0.5,
+      "zoom": 2
+    }
+  },
+  "P13-sp": {
+    "nat2400x1600": true,
+    "nat": "2400x1600"
+  },
+  "P14-sp": {
+    "nat1200x1600": true,
+    "nat": "1200x1600",
+    "topLeftRed": true,
+    "corners": {
+      "tl": "赤",
+      "tr": "緑",
+      "bl": "青",
+      "br": "黄"
+    }
+  },
+  "P15-sp": {
+    "photoUnchanged": true,
+    "frameSame": true,
+    "toastShown": "この写真は読み込めません",
+    "toastGone": true
+  },
+  "P16-sp": {
+    "resizedSmaller": true,
+    "keepsSizeAfterReplace": true,
+    "sizeResetToTemplate": true,
+    "photoStaysWide": true
+  },
+  "_errs-sp": [],
+  "P11": {
+    "spInheritsX": true,
+    "spInheritsY": true,
+    "spInheritZoom1": true,
+    "spInheritOwnFalse": true,
+    "spDecidedOwn": true,
+    "spMovedDown": false,
+    "pcUnchanged": true,
+    "pcView": {
+      "x": 0.4072,
+      "y": 0.5,
+      "zoom": 1
+    },
+    "spInheritView": {
+      "x": 0.4072,
+      "y": 0.5,
+      "zoom": 1
+    },
+    "spView": {
+      "x": 0.4072,
+      "y": 0.5,
+      "zoom": 1
+    },
+    "pcView2": {
+      "x": 0.4072,
+      "y": 0.5,
+      "zoom": 1
+    }
+  },
+  "P11-_errs": [],
+  "P12": {
+    "undo1_viewBack": true,
+    "undo2_photoBack": true,
+    "redo1_backToReplace": true,
+    "redo2_backToCrop": true,
+    "trace": {
+      "origAsset": "ast_frme",
+      "afterReplace": "img_1_1600",
+      "afterCropX": 0.4072,
+      "u1x": 0.5,
+      "u2asset": "ast_frme"
+    }
+  },
+  "P12-_errs": []
+}
