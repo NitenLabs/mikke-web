@@ -72,18 +72,24 @@ export function buildFeature(content, device, H, edits = {}) {
   const isOut = (id) => removed.includes(id) || m2[id] != null;       // 流れから外す（詰める）
   const off = (id) => { const m = m1[id]; return m ? `;position:relative;left:${px(m.dx || 0)};top:${px(m.dy || 0)}` : ""; };
   const clearedOf = (id) => cleared.includes(id);
+  // §4（大きさ）：手直しが無ければ既定＝1文字も変わらない（比較試験が ±0）。
+  const sizes = edits.sizes || {};
+  const twOf = (id) => sizes[id]?.w ?? c.tW;                          // 文字の横幅
+  const pbOf = (id) => (sizes[id]?.padB ? `;padding-bottom:${px(sizes[id].padB)}` : ""); // 文字の下に足す空き
+  const pwOf = (id) => sizes[id]?.w ?? c.pW;                          // 写真の幅
+  const phOf = (id) => sizes[id]?.h ?? c.pH;                          // 写真の高さ
 
   // 部品ごとの HTML（流れ用・絶対用の両方で使う）
   const hgInner = headingGroupInner("F", content.feature, device, c);
-  const photoInner = (i) => clearedOf(`F_p${i}`) ? EMPTYFRAME(`F_p${i}`, c.pW, c.pH) : PHOTO(`F_p${i}`, c.pW, c.pH, content.feature.blocks[i].photo.asset);
-  const hInner = (i, extra = "") => T(`F_h${i}`, "featHead", device, c.tW, thtml(H, `F_h${i}`), extra);
-  const bInner = (i, extra = "") => T(`F_b${i}`, "featBody", device, c.tW, thtml(H, `F_b${i}`), extra);
+  const photoInner = (i) => clearedOf(`F_p${i}`) ? EMPTYFRAME(`F_p${i}`, pwOf(`F_p${i}`), phOf(`F_p${i}`)) : PHOTO(`F_p${i}`, pwOf(`F_p${i}`), phOf(`F_p${i}`), content.feature.blocks[i].photo.asset);
+  const hInner = (i, extra = "") => T(`F_h${i}`, "featHead", device, twOf(`F_h${i}`), thtml(H, `F_h${i}`), extra + pbOf(`F_h${i}`));
+  const bInner = (i, extra = "") => T(`F_b${i}`, "featBody", device, twOf(`F_b${i}`), thtml(H, `F_b${i}`), extra + pbOf(`F_b${i}`));
 
   const order = edits.order || {};                                  // §6/§10.1 並び替え（端末ごと）
   const isPhotoId = (id) => /_p\d$/.test(id);
   const gapBetween = (prev, cur) => (isPhotoId(prev) || isPhotoId(cur)) ? c.photoHead : headBody;
   const childInner = (i, cid, mt) => {
-    if (isPhotoId(cid)) return clearedOf(cid) ? EMPTYFRAME(cid, c.pW, c.pH, mt + off(cid)) : PHOTO(cid, c.pW, c.pH, content.feature.blocks[i].photo.asset, mt + off(cid));
+    if (isPhotoId(cid)) return clearedOf(cid) ? EMPTYFRAME(cid, pwOf(cid), phOf(cid), mt + off(cid)) : PHOTO(cid, pwOf(cid), phOf(cid), content.feature.blocks[i].photo.asset, mt + off(cid));
     if (/_h\d$/.test(cid)) return hInner(i, mt + off(cid));
     return bInner(i, mt + off(cid));
   };
@@ -126,6 +132,10 @@ export function buildItems(content, device, H, edits = {}) {
   const photoH = edits.template?.cardPhotoH?.[device];
   const isOut = (id) => removed.includes(id) || m2[id] != null;
   const off = (id) => { const m = m1[id]; return m ? `;position:relative;left:${px(m.dx || 0)};top:${px(m.dy || 0)}` : ""; };
+  // §4（大きさ）：手直しが無ければ既定（比較試験 ±0）
+  const sizes = edits.sizes || {};
+  const wOf = (id, def) => sizes[id]?.w ?? def;
+  const pbOf = (id) => (sizes[id]?.padB ? `;padding-bottom:${px(sizes[id].padB)}` : "");
   const cph = (id, asset) => cleared.includes(id)
     ? EMPTYFRAME(id, 0, 0, "", !photoH)
     : photoH ? `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;height:${px(photoH)}">${asset}</div>` : CARDPHOTO(id, asset);
@@ -142,9 +152,9 @@ export function buildItems(content, device, H, edits = {}) {
     ? `<div data-el="I_cards" data-kind="group" class="cards" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);column-gap:${px(c.colGap)};grid-template-rows:auto auto auto auto;width:${px(c.cardsW)};margin:${px(mt)} auto 0${off("I_cards")}">${cardInners("display:grid;grid-template-rows:subgrid;grid-row:span 4;align-items:start")}</div>`
     : `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;width:${px(c.cardsW)};margin:${px(mt)} auto 0${off("I_cards")}">${cardInners("display:flex;flex-direction:column;align-items:flex-start;", `margin-top:${px(c.colGap)}`)}</div>`;
 
-  const dividerInner = LINE("I_divider", c.dividerW, 1, 0.5);
-  const kanmiInner = T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"));
-  const timeInner = T("I_time", "kanmiTime", device, c.kanmiW, thtml(H, "I_time"));
+  const dividerInner = LINE("I_divider", wOf("I_divider", c.dividerW), 1, 0.5);
+  const kanmiInner = T("I_kanmi", "kanmiLbl", device, wOf("I_kanmi", c.kanmiW), thtml(H, "I_kanmi"), pbOf("I_kanmi"));
+  const timeInner = T("I_time", "kanmiTime", device, wOf("I_time", c.kanmiW), thtml(H, "I_time"), pbOf("I_time"));
   const rows = content.items.table.map((r) => rowHtml(r, device, c, H)).join("");
   const pillInner = T("I_pilltext", "pill", device, "auto", thtml(H, "I_pill"));
 
@@ -164,11 +174,11 @@ export function buildItems(content, device, H, edits = {}) {
   };
   const childHtml = (id, mt) => {
     if (id === "I_cards") return cardsHtml(mt);
-    if (id === "I_divider") return `<div style="margin-top:${px(mt)};width:${px(c.dividerW)};align-self:center${off("I_divider")}">${dividerInner}</div>`;
-    if (id === "I_kanmi") return T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"), `margin-top:${px(mt)};align-self:center${off("I_kanmi")}`);
-    if (id === "I_time") return T("I_time", "kanmiTime", device, c.kanmiW, thtml(H, "I_time"), `margin-top:${px(mt)};align-self:center${off("I_time")}`);
+    if (id === "I_divider") return `<div style="margin-top:${px(mt)};width:${px(wOf("I_divider", c.dividerW))};align-self:center${off("I_divider")}">${dividerInner}</div>`;
+    if (id === "I_kanmi") return T("I_kanmi", "kanmiLbl", device, wOf("I_kanmi", c.kanmiW), thtml(H, "I_kanmi"), `margin-top:${px(mt)};align-self:center${off("I_kanmi")}${pbOf("I_kanmi")}`);
+    if (id === "I_time") return T("I_time", "kanmiTime", device, wOf("I_time", c.kanmiW), thtml(H, "I_time"), `margin-top:${px(mt)};align-self:center${off("I_time")}${pbOf("I_time")}`);
     if (id === "I_table") return `<div data-el="I_table" class="row-lines" style="width:${px(c.tableW)};margin:${px(mt)} auto 0${off("I_table")}">${rows}</div>`;
-    return `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(mt)};width:${px(c.pillW)};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center${off("I_pillbg")}">${pillInner}</div>`;
+    return `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(mt)};width:${px(wOf("I_pillbg", c.pillW))};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center${off("I_pillbg")}">${pillInner}</div>`;
   };
   const stackOrder = (order.Istack || STACK).filter((id) => !isOut(id));
   let stackHtml = ""; let prev = null;
