@@ -139,8 +139,8 @@ export function buildItems(content, device, H, edits = {}) {
         ${T(`card_price_${card.id}`, "cardPrice", device, c.cardTxtW, thtml(H, `I_cp_${card.id}`), `margin:${px(c.cardDescPrice)} 0 0 ${px(c.cardTxtInset)}`)}
       </div>`).join("");
   const cardsHtml = (mt) => c.cols > 1
-    ? `<div data-el="I_cards" data-kind="group" class="cards" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);column-gap:${px(c.colGap)};grid-template-rows:auto auto auto auto;width:${px(c.cardsW)};margin:${px(mt)} auto 0">${cardInners("display:grid;grid-template-rows:subgrid;grid-row:span 4;align-items:start")}</div>`
-    : `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;width:${px(c.cardsW)};margin:${px(mt)} auto 0">${cardInners("display:flex;flex-direction:column;align-items:flex-start;", `margin-top:${px(c.colGap)}`)}</div>`;
+    ? `<div data-el="I_cards" data-kind="group" class="cards" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);column-gap:${px(c.colGap)};grid-template-rows:auto auto auto auto;width:${px(c.cardsW)};margin:${px(mt)} auto 0${off("I_cards")}">${cardInners("display:grid;grid-template-rows:subgrid;grid-row:span 4;align-items:start")}</div>`
+    : `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;width:${px(c.cardsW)};margin:${px(mt)} auto 0${off("I_cards")}">${cardInners("display:flex;flex-direction:column;align-items:flex-start;", `margin-top:${px(c.colGap)}`)}</div>`;
 
   const dividerInner = LINE("I_divider", c.dividerW, 1, 0.5);
   const kanmiInner = T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"));
@@ -167,8 +167,8 @@ export function buildItems(content, device, H, edits = {}) {
     if (id === "I_divider") return `<div style="margin-top:${px(mt)};width:${px(c.dividerW)};align-self:center${off("I_divider")}">${dividerInner}</div>`;
     if (id === "I_kanmi") return T("I_kanmi", "kanmiLbl", device, c.kanmiW, thtml(H, "I_kanmi"), `margin-top:${px(mt)};align-self:center${off("I_kanmi")}`);
     if (id === "I_time") return T("I_time", "kanmiTime", device, c.kanmiW, thtml(H, "I_time"), `margin-top:${px(mt)};align-self:center${off("I_time")}`);
-    if (id === "I_table") return `<div data-el="I_table" class="row-lines" style="width:${px(c.tableW)};margin:${px(mt)} auto 0">${rows}</div>`;
-    return `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(mt)};width:${px(c.pillW)};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center">${pillInner}</div>`;
+    if (id === "I_table") return `<div data-el="I_table" class="row-lines" style="width:${px(c.tableW)};margin:${px(mt)} auto 0${off("I_table")}">${rows}</div>`;
+    return `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(mt)};width:${px(c.pillW)};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center${off("I_pillbg")}">${pillInner}</div>`;
   };
   const stackOrder = (order.Istack || STACK).filter((id) => !isOut(id));
   let stackHtml = ""; let prev = null;
