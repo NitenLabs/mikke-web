@@ -1,0 +1,889 @@
+{
+  "Q1-pc": {
+    "H1": true,
+    "H1v": [
+      12,
+      8
+    ],
+    "H2": {
+      "ok": true,
+      "worst": 0,
+      "wid": ""
+    },
+    "gapAfter": 8,
+    "noOverlap": true,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": 12,
+        "dy": 8
+      }
+    ],
+    "warn": 0
+  },
+  "Q2-pc": {
+    "H1": true,
+    "H1v": [
+      0,
+      -0.2
+    ],
+    "headStill": false,
+    "bodyBelowPhoto": 23.8,
+    "bodyStillAfterHead2": true,
+    "anchors": [
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M2",
+        "anchor": "F_p0",
+        "anchorName": "特集1の写真",
+        "gapY": 23.8,
+        "x": 755
+      }
+    ],
+    "warn": 0
+  },
+  "Q3-pc": {
+    "bothLanded": true,
+    "headY": 763.19,
+    "bodyY": 822.38,
+    "bodyPushedByHead2": 43.18,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M2",
+        "anchor": "F_p0",
+        "anchorName": "特集1の写真",
+        "gapY": 23.61,
+        "x": 755
+      },
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M2",
+        "anchor": "F_h0",
+        "anchorName": "特集1の見出し",
+        "gapY": 16,
+        "x": 755
+      }
+    ],
+    "warn": 0
+  },
+  "Q4-pc": {
+    "bodyH": 115.19,
+    "bodyY": 497.58,
+    "warn": 0
+  },
+  "Q5-pc": {
+    "lcBefore": 190,
+    "lcDuring": 190,
+    "lcAfter": 191,
+    "noReflowDuring": true,
+    "reflowedAfter": true,
+    "textOk": true,
+    "bodyGrew": false
+  },
+  "Q6-pc": {
+    "addId": "add_1",
+    "sec0": 1486.3,
+    "sec1": 1616,
+    "grew": true,
+    "overflow": 0,
+    "warn": 0
+  },
+  "Q8-pc": {
+    "peekAtOrigin": true,
+    "backToMoved": true,
+    "opsUnchanged": true
+  },
+  "Q7-pc": {
+    "headingIs2Line": true,
+    "resetPartNoManual": true
+  },
+  "Q9-pc": {
+    "ok": true,
+    "worst": 0
+  },
+  "Q10-pc": {
+    "arrow1": 1,
+    "shift10": 10,
+    "deleted": true,
+    "restored": true
+  },
+  "Q11-pc": {
+    "m1H1": true,
+    "h2okM1": true,
+    "m2relPreserved": true,
+    "worst": 0,
+    "note": ""
+  },
+  "Q12-pc": {
+    "belowSource": true,
+    "anchorSrc": true,
+    "photoDuplicated": true,
+    "addedOnSP": true,
+    "noManualMarkSP": true
+  },
+  "Q13-pc": {
+    "cards": 4,
+    "is4": true
+  },
+  "Q14-pc": {
+    "text": "プレーン",
+    "noFormatting": true
+  },
+  "Q15-pc": {
+    "goneFromFeatureAfterCut": true,
+    "pastedInItems": true,
+    "restoredAfterUndo2": true
+  },
+  "R1-pc": {
+    "grab10": true,
+    "mv10": 10,
+    "grab30": true,
+    "mv30": 30,
+    "kanmiBelow": true,
+    "h2worst": 0
+  },
+  "R2-pc": {
+    "reordered": true,
+    "noM1M2": true,
+    "overlap": 0,
+    "gaps": {
+      "cards_kanmi": 120,
+      "kanmi_divider": 120,
+      "divider_time": 120,
+      "time_table": 13,
+      "table_pill": 64
+    },
+    "restored": true
+  },
+  "R4-pc": {
+    "belowBody": true,
+    "anchorSrc": true,
+    "noOverlapPC": true,
+    "addedOnSP": true,
+    "spInWidth": true,
+    "spClean": true
+  },
+  "R5-pc": {
+    "sizeOk": true,
+    "wh": [
+      549,
+      404
+    ],
+    "nameOk": true,
+    "spRatioKept": true,
+    "spInWidth": true,
+    "spClean": true
+  },
+  "R7-pc": {
+    "orderOk": true,
+    "overlap": 0,
+    "spOrderUnchanged": true
+  },
+  "R8-pc": {
+    "isM1": true,
+    "moved": true,
+    "notReordered": true,
+    "m1": [
+      30,
+      20
+    ]
+  },
+  "R9-pc": {
+    "dupRowTo3": true,
+    "anchorIsTable": true,
+    "anchor": "I_table",
+    "noRowAnchor": true,
+    "rowStaysOnDrag": false,
+    "rowsAfter": 2,
+    "addFollowed": true,
+    "addNoOverlap": false,
+    "warn": 2
+  },
+  "R3-pc": {
+    "noRepeatPartAsAnchor": true
+  },
+  "T1-pc": {
+    "reordered": true,
+    "order": [
+      964.2,
+      1117.8,
+      1238.8
+    ],
+    "noM1M2": true,
+    "overlap": 0,
+    "restored": true
+  },
+  "T2-pc": {
+    "reordered": true,
+    "noM1M2": true,
+    "overlap": 0,
+    "gaps": {
+      "time_table": 13,
+      "table_divider": 120,
+      "divider_pill": 120
+    },
+    "restored": true
+  },
+  "T3-pc": {
+    "m2": true,
+    "anchorTable": true,
+    "anchor": "I_table",
+    "offsetFromTableTopAfter": 60.02
+  },
+  "T4-pc": {
+    "anchorPhoto": true,
+    "gapRecorded": 23.8,
+    "gapAfterSettle": 23.8,
+    "headCenterVsPhotoCenter": -12,
+    "overlap": 0
+  },
+  "T5-pc": {
+    "srcSPwidth": 333,
+    "pastedLeft": 28.5,
+    "leftEqualsSrc": true,
+    "pastedW": 333,
+    "widthLEsrc": true,
+    "rightWithin": true
+  },
+  "V1-pc": {
+    "I_divider": {
+      "m2": true,
+      "anchor": "I_table",
+      "remainGaps": [
+        "I_cards->I_kanmi:120",
+        "I_kanmi->I_time:4",
+        "I_time->I_table:13",
+        "I_table->I_pillbg:64"
+      ],
+      "overlapOfMovedPart": 0
+    },
+    "I_kanmi": {
+      "m2": true,
+      "anchor": "I_table",
+      "remainGaps": [
+        "I_cards->I_divider:120",
+        "I_divider->I_time:120",
+        "I_time->I_table:13",
+        "I_table->I_pillbg:64"
+      ],
+      "overlapOfMovedPart": 0
+    },
+    "I_time": {
+      "m2": true,
+      "anchor": "I_table",
+      "remainGaps": [
+        "I_cards->I_divider:120",
+        "I_divider->I_kanmi:120",
+        "I_kanmi->I_table:13",
+        "I_table->I_pillbg:64"
+      ],
+      "overlapOfMovedPart": 0
+    }
+  },
+  "W1-pc": {
+    "m1": true,
+    "moved": true,
+    "noMarkWarn": true,
+    "overlapsEmpty": true,
+    "ownerHeadBody": true
+  },
+  "W2-pc": {
+    "m2": true,
+    "noAnchorText": true,
+    "noMarkWarn": true,
+    "ownerKanmiTable": true
+  },
+  "W3-pc": {
+    "hadBack": true,
+    "hadFront": true,
+    "kanmiBelowRowOnBack": true,
+    "kanmiAboveRowOnFront": true,
+    "efpBackNotKanmi": true,
+    "efpFrontIsKanmi": true
+  },
+  "W4-pc": {
+    "kanmiBackToTemplate": true,
+    "ownerEmpty": true,
+    "zOrderEmpty": true
+  },
+  "W5-pc": {
+    "ownerStillHeadBody": true,
+    "overlapsEmpty": true
+  },
+  "W6-pc": {
+    "order": [
+      "I_cards",
+      "I_divider",
+      "I_table",
+      "I_kanmi",
+      "I_time",
+      "I_pillbg"
+    ],
+    "noM1M2": true,
+    "gaps": [
+      "I_cards->I_divider:120",
+      "I_divider->I_table:120",
+      "I_table->I_kanmi:120",
+      "I_kanmi->I_time:4",
+      "I_time->I_pillbg:64"
+    ]
+  },
+  "W7-pc": {
+    "order": [
+      "I_cards",
+      "I_divider",
+      "I_kanmi",
+      "I_time",
+      "I_pillbg",
+      "I_table"
+    ],
+    "noM1M2": true,
+    "textWithBg": true,
+    "gaps": [
+      "I_cards->I_divider:120",
+      "I_divider->I_kanmi:120",
+      "I_kanmi->I_time:4",
+      "I_time->I_pillbg:64",
+      "I_pillbg->I_table:64"
+    ]
+  },
+  "W8-pc": {
+    "order": [
+      "I_divider",
+      "I_kanmi",
+      "I_time",
+      "I_cards",
+      "I_table",
+      "I_pillbg"
+    ],
+    "noM1M2": true,
+    "noCardAnchor": true,
+    "gaps": [
+      "I_divider->I_kanmi:120",
+      "I_kanmi->I_time:4",
+      "I_time->I_cards:80",
+      "I_cards->I_table:120",
+      "I_table->I_pillbg:64"
+    ]
+  },
+  "W9-pc": {
+    "m1": true,
+    "moved10": true,
+    "othersStill": true
+  },
+  "W10-pc": {
+    "firstSel": [
+      "I_table"
+    ],
+    "firstIsTable": true,
+    "secondSel": [
+      "row_name_t_warabi"
+    ],
+    "secondIsRow": true
+  },
+  "W11-pc": {
+    "本文": {
+      "shown": true,
+      "overlap": false,
+      "selected": "F_b0"
+    },
+    "表": {
+      "shown": true,
+      "overlap": false,
+      "selected": "I_table"
+    },
+    "ボタン": {
+      "shown": true,
+      "overlap": false,
+      "selected": "I_pillbg"
+    }
+  },
+  "Y1-pc": {
+    "firstIsTable": true,
+    "tableMoved20": true,
+    "mv": 20,
+    "innerNotSelected": true,
+    "stillTable": true
+  },
+  "Y2-pc": {
+    "rowSelected": true,
+    "sel": [
+      "row_name_t_warabi"
+    ]
+  },
+  "Y3-pc": {
+    "width200": true,
+    "recorded": 200,
+    "taller": true,
+    "gapTimeTable": 13,
+    "gap13": true,
+    "overlapsEmpty": true
+  },
+  "Y4-pc": {
+    "widthMinus100": true,
+    "rightFixed": true,
+    "taller": true,
+    "overlapsEmpty": true
+  },
+  "Y5-pc": {
+    "padB40": true,
+    "boxTaller40": true,
+    "belowPushed": "n/a(pc:下に部品なし)",
+    "belowPushed40": "boxTallerOnly(pc)"
+  },
+  "Y6-pc": {
+    "padB0": true,
+    "heightBackToText": true
+  },
+  "Y7-pc": {
+    "smaller": true,
+    "ratioKept": true,
+    "belowMovedUp": "n/a(pc)",
+    "overlapsEmpty": true
+  },
+  "Y8-pc": {
+    "dividerMinus200": true,
+    "pillWiden": true,
+    "pillW": 580,
+    "note": "+100",
+    "pillTextCentered": true
+  },
+  "Y9-pc": {
+    "stopsAtContentRight": true,
+    "rightEdge": 1383,
+    "overflowsEmpty": true
+  },
+  "Y10-pc": {
+    "pcW": 200,
+    "spTemplate": true,
+    "spW": 351,
+    "pcKept200": true
+  },
+  "Y11-pc": {
+    "undoOrigW": true,
+    "redoY4W": true,
+    "resetOrigW": true,
+    "resetOrigX": true,
+    "sizesEmpty": true
+  },
+  "Y12-pc": {
+    "kanmiWiden": true,
+    "kanmiW": 700,
+    "tableNotPushed": true,
+    "ownerKanmiTable": true,
+    "overlapsEmpty": true,
+    "note": "+100"
+  },
+  "Y13-pc": {
+    "widthKept": true,
+    "taller": true,
+    "overlapsEmpty": true
+  },
+  "Y14-pc": {
+    "reordered": true,
+    "gapHgDiv": 120,
+    "gapDivCards": 120,
+    "hgDivOk": true,
+    "divCardsOk": true
+  },
+  "_errs-pc": [],
+  "Q1-sp": {
+    "H1": true,
+    "H1v": [
+      12,
+      8
+    ],
+    "H2": {
+      "ok": true,
+      "worst": 0,
+      "wid": ""
+    },
+    "gapAfter": 0,
+    "noOverlap": true,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": 12,
+        "dy": 8
+      }
+    ],
+    "warn": 0
+  },
+  "Q2-sp": {
+    "H1": true,
+    "H1v": [
+      0,
+      -0.2
+    ],
+    "headStill": true,
+    "bodyBelowPhoto": 23.8,
+    "bodyStillAfterHead2": true,
+    "anchors": [
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M1",
+        "dx": -9,
+        "dy": -37
+      }
+    ],
+    "warn": 0
+  },
+  "Q3-sp": {
+    "bothLanded": true,
+    "headY": 482.59,
+    "bodyY": 519.39,
+    "bodyPushedByHead2": 28.8,
+    "anchors": [
+      {
+        "part": "F_h0",
+        "partName": "特集1の見出し",
+        "mode": "M1",
+        "dx": -9,
+        "dy": 0
+      },
+      {
+        "part": "F_b0",
+        "partName": "特集1の本文",
+        "mode": "M1",
+        "dx": -9,
+        "dy": 0
+      }
+    ],
+    "warn": 0
+  },
+  "Q4-sp": {
+    "bodyH": 151.13,
+    "bodyY": 519.39,
+    "warn": 0
+  },
+  "Q6-sp": {
+    "addId": "add_1",
+    "sec0": 2219.1,
+    "sec1": 2364.5,
+    "grew": true,
+    "overflow": 0,
+    "warn": 0
+  },
+  "Q8-sp": {
+    "peekAtOrigin": true,
+    "backToMoved": true,
+    "opsUnchanged": true
+  },
+  "Q9-sp": {
+    "ok": true,
+    "worst": 0
+  },
+  "Q10-sp": {
+    "arrow1": 1,
+    "shift10": 10,
+    "deleted": true,
+    "restored": true
+  },
+  "Q11-sp": {
+    "m1H1": true,
+    "h2okM1": true,
+    "m2relPreserved": true,
+    "worst": 0,
+    "note": ""
+  },
+  "Q13-sp": {
+    "cards": 4,
+    "is4": true
+  },
+  "R1-sp": {
+    "grab10": true,
+    "mv10": 10,
+    "grab30": true,
+    "mv30": 30,
+    "kanmiBelow": true,
+    "h2worst": 0
+  },
+  "R2-sp": {
+    "reordered": true,
+    "noM1M2": true,
+    "overlap": 0,
+    "gaps": {
+      "cards_kanmi": 98,
+      "kanmi_divider": 64,
+      "divider_time": 64,
+      "time_table": 13,
+      "table_pill": 48
+    },
+    "restored": true
+  },
+  "R6-sp": {
+    "orderOk": true,
+    "overlap": 0,
+    "restored": true
+  },
+  "R9-sp": {
+    "dupRowTo3": true,
+    "anchorIsTable": true,
+    "anchor": "I_table",
+    "noRowAnchor": true,
+    "rowStaysOnDrag": false,
+    "rowsAfter": 2,
+    "addFollowed": true,
+    "addNoOverlap": false,
+    "warn": 1
+  },
+  "R3-sp": {
+    "noRepeatPartAsAnchor": true
+  },
+  "T1-sp": {
+    "reordered": true,
+    "order": [
+      1703.3,
+      1792.5,
+      1857.5
+    ],
+    "noM1M2": true,
+    "overlap": 0,
+    "restored": true
+  },
+  "T2-sp": {
+    "reordered": true,
+    "noM1M2": true,
+    "overlap": 0,
+    "gaps": {
+      "time_table": 13,
+      "table_divider": 98,
+      "divider_pill": 64
+    },
+    "restored": true
+  },
+  "T3-sp": {
+    "m2": true,
+    "anchorTable": true,
+    "anchor": "I_table",
+    "offsetFromTableTopAfter": 60.42
+  },
+  "V1-sp": {
+    "F_h0": {
+      "m2": true,
+      "anchor": "F_b0",
+      "remainGaps": [
+        "F_p0->F_b0:24"
+      ],
+      "overlapOfMovedPart": 0
+    },
+    "F_b0": {
+      "m2": true,
+      "anchor": "F_h0",
+      "remainGaps": [
+        "F_p0->F_h0:24"
+      ],
+      "overlapOfMovedPart": 0
+    }
+  },
+  "W1-sp": {
+    "m1": true,
+    "moved": true,
+    "noMarkWarn": true,
+    "overlapsEmpty": true,
+    "ownerHeadBody": true
+  },
+  "W2-sp": {
+    "m2": true,
+    "noAnchorText": true,
+    "noMarkWarn": true,
+    "ownerKanmiTable": true
+  },
+  "W3-sp": {
+    "hadBack": true,
+    "hadFront": true,
+    "kanmiBelowRowOnBack": true,
+    "kanmiAboveRowOnFront": true,
+    "efpBackNotKanmi": true,
+    "efpFrontIsKanmi": true
+  },
+  "W4-sp": {
+    "kanmiBackToTemplate": true,
+    "ownerEmpty": true,
+    "zOrderEmpty": true
+  },
+  "W5-sp": {
+    "ownerStillHeadBody": true,
+    "overlapsEmpty": true
+  },
+  "W6-sp": {
+    "order": [
+      "I_cards",
+      "I_divider",
+      "I_table",
+      "I_kanmi",
+      "I_time",
+      "I_pillbg"
+    ],
+    "noM1M2": true,
+    "gaps": [
+      "I_cards->I_divider:98",
+      "I_divider->I_table:64",
+      "I_table->I_kanmi:64",
+      "I_kanmi->I_time:5",
+      "I_time->I_pillbg:48"
+    ]
+  },
+  "W7-sp": {
+    "order": [
+      "I_cards",
+      "I_divider",
+      "I_kanmi",
+      "I_time",
+      "I_pillbg",
+      "I_table"
+    ],
+    "noM1M2": true,
+    "textWithBg": true,
+    "gaps": [
+      "I_cards->I_divider:98",
+      "I_divider->I_kanmi:64",
+      "I_kanmi->I_time:5",
+      "I_time->I_pillbg:48",
+      "I_pillbg->I_table:48"
+    ]
+  },
+  "W8-sp": {
+    "order": [
+      "I_divider",
+      "I_kanmi",
+      "I_time",
+      "I_cards",
+      "I_table",
+      "I_pillbg"
+    ],
+    "noM1M2": true,
+    "noCardAnchor": true,
+    "gaps": [
+      "I_divider->I_kanmi:64",
+      "I_kanmi->I_time:5",
+      "I_time->I_cards:40",
+      "I_cards->I_table:98",
+      "I_table->I_pillbg:48"
+    ]
+  },
+  "W9-sp": {
+    "m1": true,
+    "moved10": true,
+    "othersStill": true
+  },
+  "W10-sp": {
+    "firstSel": [
+      "I_table"
+    ],
+    "firstIsTable": true,
+    "secondSel": [
+      "row_name_t_warabi"
+    ],
+    "secondIsRow": true
+  },
+  "W11-sp": {
+    "本文": {
+      "shown": true,
+      "overlap": false,
+      "selected": "F_b0"
+    },
+    "表": {
+      "shown": true,
+      "overlap": false,
+      "selected": "I_table"
+    },
+    "ボタン": {
+      "shown": true,
+      "overlap": false,
+      "selected": "I_pillbg"
+    }
+  },
+  "Y1-sp": {
+    "firstIsTable": true,
+    "tableMoved20": true,
+    "mv": 20,
+    "innerNotSelected": true,
+    "stillTable": true
+  },
+  "Y2-sp": {
+    "rowSelected": true,
+    "sel": [
+      "row_name_t_warabi"
+    ]
+  },
+  "Y3-sp": {
+    "width200": true,
+    "recorded": 200,
+    "taller": true,
+    "gapTimeTable": 13,
+    "gap13": true,
+    "overlapsEmpty": true
+  },
+  "Y4-sp": {
+    "widthMinus100": true,
+    "rightFixed": true,
+    "taller": true,
+    "overlapsEmpty": true
+  },
+  "Y5-sp": {
+    "padB40": true,
+    "boxTaller40": true,
+    "belowPushed": 40,
+    "belowPushed40": true
+  },
+  "Y6-sp": {
+    "padB0": true,
+    "heightBackToText": true
+  },
+  "Y7-sp": {
+    "smaller": true,
+    "ratioKept": true,
+    "belowMovedUp": true,
+    "overlapsEmpty": true
+  },
+  "Y8-sp": {
+    "dividerMinus200": true,
+    "pillWiden": true,
+    "pillW": 351,
+    "note": "SPボタンは既に全幅＝端で止まる",
+    "pillTextCentered": true
+  },
+  "Y9-sp": {
+    "stopsAtContentRight": true,
+    "rightEdge": 371,
+    "overflowsEmpty": true
+  },
+  "Y11-sp": {
+    "undoOrigW": true,
+    "redoY4W": true,
+    "resetOrigW": true,
+    "resetOrigX": true,
+    "sizesEmpty": true
+  },
+  "Y12-sp": {
+    "kanmiWiden": true,
+    "kanmiW": 351,
+    "tableNotPushed": true,
+    "ownerKanmiTable": true,
+    "overlapsEmpty": true,
+    "note": "SP見出しは既に全幅＝端で止まる"
+  },
+  "Y13-sp": {
+    "widthKept": true,
+    "taller": true,
+    "overlapsEmpty": true
+  },
+  "Y14-sp": {
+    "reordered": true,
+    "gapHgDiv": 98,
+    "gapDivCards": 98,
+    "hgDivOk": true,
+    "divCardsOk": true
+  },
+  "_errs-sp": []
+}
