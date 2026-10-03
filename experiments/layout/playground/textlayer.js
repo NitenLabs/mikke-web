@@ -17,6 +17,30 @@ const TEXT = (function () {
     }
     return toks;
   }
+  // 文の一部の見た目（試験台13）：ひと続きの切れ目 runs=[{text,bold?,color?,scale?}] を、改行の切れ目（phrase）ごとに
+  // 見た目つきの span に分けてトークン化する。色は token 名なら CSS 変数、#hex ならそのまま。大きさは箱に対する倍率（em）。
+  function runStyleCss(r) {
+    const s = [];
+    if (r.bold) s.push("font-weight:700");
+    if (r.color) s.push("color:" + (/^#/.test(r.color) ? r.color : ("var(--c-" + r.color + ")")));
+    if (r.scale && r.scale !== 1) s.push("font-size:" + r.scale + "em");
+    return s.join(";");
+  }
+  function tokenizeRuns(runs, lb) {
+    const plain = runs.map((r) => r.text || "").join("");
+    if (!plain) return ["<span></span>"];
+    const phrases = lb ? splitPhrases(plain) : [plain];
+    const bnd = []; let o = 0; for (const r of runs) { const len = (r.text || "").length; bnd.push([o, o + len, r]); o += len; }
+    const runAt = (i) => { for (const [s, e, r] of bnd) if (i >= s && i < e) return r; return runs.length ? runs[runs.length - 1] : {}; };
+    const seg = (text, r) => { const css = runStyleCss(r); return css ? ('<span style="' + css + '">' + esc(text) + "</span>") : esc(text); };
+    const toks = []; let pos = 0;
+    for (const ph of phrases) { const L = ph.length; if (L === 0) continue; const start = pos; pos += L; const end = start + L;
+      let inner = ""; let i = start;
+      while (i < end) { const r = runAt(i); let j = i + 1; while (j < end && runAt(j) === r) j++; inner += seg(plain.slice(i, j), r); i = j; }
+      toks.push("<span>" + inner + "</span>");
+    }
+    return toks.length ? toks : ["<span></span>"];
+  }
   function joinTokens(toks, keep) {
     if (keep > 0 && toks.length > keep) {
       const head = toks.slice(0, toks.length - keep);
@@ -63,7 +87,7 @@ const TEXT = (function () {
     const H = new Map();
     for (const b of boxes) {
       const lb = SPEC.lbOf(b.styleName);
-      const toks = tokenize([{ text: b.text }], lb);
+      const toks = (b.runs && b.runs.length) ? tokenizeRuns(b.runs, lb) : tokenize([{ text: b.text }], lb);
       let keep = 0;
       if (lb) {
         meas.style.cssText = MEAS_BASE; // 箱ごとにリセット（前の箱の font 指定を残さない）
@@ -79,5 +103,5 @@ const TEXT = (function () {
     meas.remove();
     return H;
   }
-  return { tokenize, joinTokens, buildH, esc };
+  return { tokenize, joinTokens, buildH, esc, runStyleCss };
 })();
