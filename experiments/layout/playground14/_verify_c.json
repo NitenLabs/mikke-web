@@ -1,0 +1,43 @@
+{
+  "sectionList-pc": {
+    "pass": true,
+    "list": [
+      {
+        "id": "feature",
+        "type": "feature",
+        "bg": "surface",
+        "top": 0,
+        "height": 1403.58
+      },
+      {
+        "id": "items",
+        "type": "items",
+        "bg": "background",
+        "top": 1403.58,
+        "height": 1486.31
+      }
+    ]
+  },
+  "sectionList-sp": {
+    "pass": true,
+    "order": [
+      "feature:surface",
+      "items:background"
+    ]
+  },
+  "photos-missing": {
+    "pass": true,
+    "count": 5,
+    "anyMissing": []
+  },
+  "C12-pc": {
+    "pass": true,
+    "selAfterFirstClick": "I_cards",
+    "editing": true,
+    "toolsShown": true,
+    "selected": [
+      "card_name_c_warabi"
+    ]
+  },
+  "_errs": []
+}
