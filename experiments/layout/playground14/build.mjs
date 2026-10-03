@@ -79,6 +79,13 @@ button:active{transform:translateY(1px)}
 #fmenu.on{display:flex}
 #fmenu button{font-size:12px;padding:4px 8px}
 #fmenu .note{font-size:11px;color:#777;align-self:center;padding:0 4px}
+/* §2 セクションを足す「＋」。境目の帯にマウスを乗せると出る。 */
+.sec-add-zone{position:relative;height:14px;margin:0;display:flex;align-items:center;justify-content:center}
+.sec-add-btn{opacity:0;transition:opacity .08s;width:26px;height:22px;line-height:1;padding:0;border:1px solid #06c;border-radius:50%;background:#fff;color:#06c;font-size:16px;cursor:pointer;z-index:20}
+.sec-add-zone:hover .sec-add-btn,.sec-add-btn:focus{opacity:1}
+#sectypes{position:fixed;z-index:62;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;display:none;gap:4px}
+#sectypes.on{display:flex}
+#sectypes button{font-size:12px;padding:4px 10px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
 #ghost{position:absolute;inset:0;pointer-events:none;z-index:4}
 /* §1 読めないファイルの短い知らせ（数秒で消える。画面に出す言葉はこれだけ） */
 .photo-toast{position:fixed;z-index:80;background:#333;color:#fff;font:12px/1.4 system-ui;padding:6px 10px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.25);pointer-events:none}
@@ -187,7 +194,7 @@ function opText(op){ const nm=id=>C3.friendly(id);
   return op.t; }
 function refreshStudio(){ const ol=document.getElementById("oplog"); if(ol){ ol.innerHTML=""; for(const op of PG.api.ops()){ const li=document.createElement("li"); li.textContent=opText(op); ol.appendChild(li);} }
   const ul=document.getElementById("anchorlist"); if(ul){ ul.innerHTML=""; for(const a of PG.anchorsList()){ const li=document.createElement("li"); li.textContent=a.partName+"："+(a.mode==="M1"?"塊の中でずらす":a.anchorName+"の下（空き"+a.gapY+"）"); ul.appendChild(li);} } }
-window.onRender=function(){ applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); };
+window.onRender=function(){ applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updateAddZones(); };
 
 document.getElementById("dPC").onclick=()=>{ PG.setDevice("pc"); document.getElementById("dPC").classList.add("on"); document.getElementById("dSP").classList.remove("on"); };
 document.getElementById("dSP").onclick=()=>{ PG.setDevice("sp"); document.getElementById("dSP").classList.add("on"); document.getElementById("dPC").classList.remove("on"); };
@@ -211,7 +218,7 @@ const tstools=document.getElementById("tstools");
 const sizePop=document.getElementById("sizePop");
 const colorPop=document.getElementById("colorPop");
 const tsEl=(s)=>document.querySelector('#tstools [data-ts="'+s+'"]');
-function textSelected(){ if(PG.state.editing) return true; const s=[...PG.state.selected]; return s.length>0 && s.every(id=>PG.isText(id)); }
+function textSelected(){ if(PG.state.editing) return true; const s=[...PG.state.selected]; return s.length>0 && s.every(id=>PG.isText(id)||PG.isHeadingGroup(id)); }
 function updateTextTools(){
   if(!textSelected()){ tstools.style.display="none"; sizePop.classList.remove("on"); colorPop.classList.remove("on"); return; }
   tstools.style.display="inline-flex";
@@ -260,8 +267,8 @@ window.addEventListener("pointerdown",(e)=>{ if(sizePop.classList.contains("on")
 
 // 浮遊メニュー
 const fmenu=document.getElementById("fmenu");
-function positionFmenu(){ if(!fmenu.classList.contains("on"))return; const id=[...PG.state.selected][0]; const n=id&&PG.elNode(id); if(!n){ fmenu.classList.remove("on"); return;} const r=n.getBoundingClientRect(); const mh=fmenu.offsetHeight||30; let top=r.top-mh-6; if(top<4) top=r.bottom+6; /* §2 部品の上の外側。上に場所がなければ下の外側 */ fmenu.style.left=r.left+"px"; fmenu.style.top=top+"px"; }
-function showFmenu(){ const sel=[...PG.state.selected]; if(!sel.length){ fmenu.classList.remove("on"); return; } fmenu.innerHTML="";
+function positionFmenu(){ if(!fmenu.classList.contains("on"))return; if(fmenu._section)return; /* セクションのメニューはカーソル位置に出したまま */ const id=[...PG.state.selected][0]; const n=id&&PG.elNode(id); if(!n){ fmenu.classList.remove("on"); return;} const r=n.getBoundingClientRect(); const mh=fmenu.offsetHeight||30; let top=r.top-mh-6; if(top<4) top=r.bottom+6; /* §2 部品の上の外側。上に場所がなければ下の外側 */ fmenu.style.left=r.left+"px"; fmenu.style.top=top+"px"; }
+function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if(!sel.length){ fmenu.classList.remove("on"); return; } fmenu.innerHTML="";
   const add=(label,fn,note)=>{ if(note){ const s=document.createElement("span"); s.className="note"; s.textContent=note; fmenu.appendChild(s); return;} const b=document.createElement("button"); b.textContent=label; b.onclick=(ev)=>{ ev.stopPropagation(); fn(); }; fmenu.appendChild(b); };
   const one=sel.length===1?sel[0]:null; const R=PG.reduce(PG.activeOps());
   const moved=one&&PG.partChangedFromTemplate(one);   // N1：位置・大きさ・並び順・重なり順のどれかが変われば出す
@@ -328,8 +335,47 @@ window.addEventListener("pointerup",(e)=>{
 });
 // ダブルクリック＝文字はその場書き換え、写真は見せる範囲（§2.1）
 stage.addEventListener("dblclick",(e)=>{ const id=elFrom(e.target); if(!id)return; const c=PG.canonId(id); if(PG.isText(c)){ PG.startEdit(c); } else if(/^F_p|photo/.test(id)){ enterCrop(id); } });
-// 右クリック＝浮遊メニュー
-stage.addEventListener("contextmenu",(e)=>{ const id=elFrom(e.target); if(id){ e.preventDefault(); const grp=PG.groupOf(id); PG.selectOnly(grp||PG.canonId(id)); showFmenu(); } });
+// 右クリック＝浮遊メニュー（部品）／セクションの余白ならセクションのメニュー（§2.1）
+stage.addEventListener("contextmenu",(e)=>{
+  const id=elFrom(e.target);
+  if(id){ e.preventDefault(); const grp=PG.groupOf(id); PG.selectOnly(grp||PG.canonId(id)); showFmenu(); return; }
+  const host=e.target.closest&&e.target.closest("#sectionwrap .host");
+  if(host){ e.preventDefault(); const sec=host.id.replace("host_",""); PG.selectSection(sec); showSectionMenu(sec,e.clientX,e.clientY); }
+});
+
+// ---- §2 セクションのメニュー（上へ・下へ・複製・削除）。#fmenu を使い、カーソルの位置に出す ----
+function showSectionMenu(sec,cx,cy){
+  const can=PG.sectionCan(sec); if(!can.exists){ fmenu.classList.remove("on"); return; }
+  fmenu.innerHTML="";
+  const add=(label,fn)=>{ const b=document.createElement("button"); b.textContent=label; b.setAttribute("data-sec-menu",label); b.onclick=(ev)=>{ ev.stopPropagation(); fmenu.classList.remove("on"); fn(); }; fmenu.appendChild(b); };
+  if(can.up) add("上へ",()=>PG.sectionMove(sec,-1));
+  if(can.down) add("下へ",()=>PG.sectionMove(sec,1));
+  add("複製",()=>PG.sectionDuplicate(sec));
+  if(can.del) add("削除",()=>PG.sectionDelete(sec));
+  fmenu.classList.add("on"); fmenu._section=true;
+  fmenu.style.left=Math.round(cx)+"px"; fmenu.style.top=Math.round(cy)+"px";
+}
+
+// ---- §2 セクションを足す「＋」。セクションの境目（と上端・下端）に出す。押すと型の一覧（特集／品）----
+function updateAddZones(){
+  const wrap=document.getElementById("sectionwrap"); if(!wrap) return;
+  wrap.querySelectorAll(".sec-add-zone").forEach(n=>n.remove());
+  const wraps=[...wrap.querySelectorAll(".sec-wrap")];
+  const mk=(n)=>{ const z=document.createElement("div"); z.className="sec-add-zone"; z.setAttribute("data-sec-add",String(n));
+    const b=document.createElement("button"); b.type="button"; b.className="sec-add-btn"; b.textContent="＋"; b.setAttribute("data-sec-add-btn",String(n));
+    b.onclick=(ev)=>{ ev.stopPropagation(); showTypePicker(n, b.getBoundingClientRect()); }; z.appendChild(b); return z; };
+  wraps.forEach((w)=>wrap.insertBefore(mk([...wrap.querySelectorAll(".sec-wrap")].indexOf(w)),w));
+  wrap.appendChild(mk(wraps.length));
+}
+let typePicker=null;
+function showTypePicker(pos,anchorRect){
+  if(!typePicker){ typePicker=document.createElement("div"); typePicker.id="sectypes"; document.body.appendChild(typePicker); }
+  typePicker.innerHTML="";
+  const add=(label,type)=>{ const b=document.createElement("button"); b.type="button"; b.textContent=label; b.setAttribute("data-sec-type",type); b.onclick=(ev)=>{ ev.stopPropagation(); typePicker.classList.remove("on"); PG.sectionAdd(pos,type); }; typePicker.appendChild(b); };
+  add("特集","feature"); add("品","items");
+  typePicker.classList.add("on"); typePicker.style.left=Math.round(anchorRect.left)+"px"; typePicker.style.top=Math.round(anchorRect.bottom+4)+"px";
+}
+window.addEventListener("pointerdown",(e)=>{ if(typePicker&&typePicker.classList.contains("on")&&!typePicker.contains(e.target)&&!(e.target.classList&&e.target.classList.contains("sec-add-btn"))) typePicker.classList.remove("on"); },true);
 
 // ---- キーボード ----
 window.addEventListener("keydown",(e)=>{

@@ -37,6 +37,13 @@ button:active{transform:translateY(1px)}
 #fmenu.on{display:flex}
 #fmenu button{font-size:12px;padding:4px 8px}
 #fmenu .note{font-size:11px;color:#777;align-self:center;padding:0 4px}
+/* §2 セクションを足す「＋」。境目の帯にマウスを乗せると出る。 */
+.sec-add-zone{position:relative;height:14px;margin:0;display:flex;align-items:center;justify-content:center}
+.sec-add-btn{opacity:0;transition:opacity .08s;width:26px;height:22px;line-height:1;padding:0;border:1px solid #06c;border-radius:50%;background:#fff;color:#06c;font-size:16px;cursor:pointer;z-index:20}
+.sec-add-zone:hover .sec-add-btn,.sec-add-btn:focus{opacity:1}
+#sectypes{position:fixed;z-index:62;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;display:none;gap:4px}
+#sectypes.on{display:flex}
+#sectypes button{font-size:12px;padding:4px 10px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
 #ghost{position:absolute;inset:0;pointer-events:none;z-index:4}
 /* §1 読めないファイルの短い知らせ（数秒で消える。画面に出す言葉はこれだけ） */
 .photo-toast{position:fixed;z-index:80;background:#333;color:#fff;font:12px/1.4 system-ui;padding:6px 10px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.25);pointer-events:none}
@@ -1190,28 +1197,37 @@ const PG = (function () {
   const S1_ADD = "毎朝炊いた餡を、その日のうちにお出しします。手のひらにのる小さな菓子に、季節のうつろいを写します。四季折々の意匠をお楽しみください。";
   const S2_HEAD = "季節の上生菓子と、その月だけの特別な意匠";
 
+  // §2 部品 ID の名前空間：最初からある特集・品（anchor）は素の ID（F_h0 など）のまま。複製・追加したセクションの部品だけ
+  // 「セクションID__素のID」（例 sec3__F_h0）にして重ならないようにする。bareOf/instTag/prefixOf で素とインスタンスを分ける。
+  const SEP = "__";
+  const bareOf = (id) => { const i = id.indexOf(SEP); return i >= 0 ? id.slice(i + 2) : id; };
+  const instTag = (id) => { const i = id.indexOf(SEP); return i >= 0 ? id.slice(0, i) : null; };
+  const prefixOf = (id) => { const t = instTag(id); return t ? t + SEP : ""; };
+  const withPfx = (pfx, id) => (pfx ? pfx + id : id);
   const HG = { feature: "F_hg", items: "I_hg" };
   // §5：表・品の並び・ボタンも動かせる（I_table / I_cards / I_pillbg を足す）
   const TEMPLATE_DRAG = ["F_hg", "F_p0", "F_h0", "F_b0", "F_p1", "F_h1", "F_b1", "I_hg", "I_cards", "I_divider", "I_kanmi", "I_time", "I_table", "I_pillbg"];
   // ボタンは文字(I_pilltext)と背景(I_pillbg)を一緒に扱う＝文字クリックでも背景を選ぶ（§5）
   const HG_MEMBERS = { F_lbl: "F_hg", F_h: "F_hg", F_rule: "F_hg", I_lbl: "I_hg", I_h: "I_hg", I_rule: "I_hg", I_pilltext: "I_pillbg" };
-  // 繰り返す部品を中に持つ子（品の並び・表）：中の1件・文字が属するグループ
-  const groupOf = (id) => (/^card_/.test(id) ? "I_cards" : (/^row_/.test(id) ? "I_table" : null));
+  // 繰り返す部品を中に持つ子（品の並び・表）：中の1件・文字が属するグループ（同じインスタンスの中）
+  const groupOf = (id) => { const b = bareOf(id); const g = /^card_/.test(b) ? "I_cards" : (/^row_/.test(b) ? "I_table" : null); return g ? withPfx(prefixOf(id), g) : null; };
   const REPEAT = /^(card_|row_)/;
-  const canonId = (id) => HG_MEMBERS[id] || id;
+  const isRepeat = (id) => REPEAT.test(bareOf(id));
+  const canonId = (id) => { const c = HG_MEMBERS[bareOf(id)]; return c ? withPfx(prefixOf(id), c) : id; };
   const isAdded = (id) => /^addp?_/.test(id);
-  const isDraggable = (id) => TEMPLATE_DRAG.includes(canonId(id)) || isAdded(id);
-  const isText = (id) => /^F_[hb]\d$|^add_/.test(id) || /^card_(name|desc|price)_/.test(id) || /^row_(name|desc|price)_/.test(id) || id === "I_kanmi" || id === "I_time";
-  const secOf = (id) => { if (id.startsWith("F_")) return "feature"; if (isAdded(id)) { const op = activeOps().find((o) => o.t === "add" && o.id === id); return op ? op.section : "items"; } return "items"; };
+  const isDraggable = (id) => TEMPLATE_DRAG.includes(bareOf(canonId(id))) || isAdded(id);
+  const isText = (id) => { const b = bareOf(id); return /^F_[hb]\d$|^add_/.test(b) || /^card_(name|desc|price)_/.test(b) || /^row_(name|desc|price)_/.test(b) || b === "I_kanmi" || b === "I_time"; };
+  // そのパーツが属するセクション（インスタンス ID）。anchor は "feature"/"items"、複製・追加は "sec3" 等。
+  const secOf = (id) => { const t = instTag(id); if (t) return t; if (isAdded(id)) { const op = activeOps().find((o) => o.t === "add" && o.id === id); return op ? op.section : "items"; } return id.startsWith("F_") ? "feature" : "items"; };
   // 並び替え（§6／§10.1）：縦に並んだ塊の中だけ。PC は文字の塊（見出し・本文）＝写真は横並びで対象外。SP はブロック（写真・見出し・本文）。
   function reorderClusterOf(id) {
-    const dev = state.device;
-    for (const i of [0, 1]) { if (id === `F_h${i}` || id === `F_b${i}` || id === `F_p${i}`) {
-      if (dev === "pc") return id === `F_p${i}` ? null : { key: `Ftg${i}`, sibs: [`F_h${i}`, `F_b${i}`] };
-      return { key: `Fblk${i}`, sibs: [`F_p${i}`, `F_h${i}`, `F_b${i}`] };
+    const dev = state.device; const pfx = prefixOf(id); const b = bareOf(id);
+    for (const i of [0, 1]) { if (b === `F_h${i}` || b === `F_b${i}` || b === `F_p${i}`) {
+      if (dev === "pc") return b === `F_p${i}` ? null : { key: pfx + `Ftg${i}`, sibs: [pfx + `F_h${i}`, pfx + `F_b${i}`] };
+      return { key: pfx + `Fblk${i}`, sibs: [pfx + `F_p${i}`, pfx + `F_h${i}`, pfx + `F_b${i}`] };
     } }
     // 品のセクションの stack の縦積みの直接の子すべてが並び替えの相手（§3・§5）。中の1件・文字はグループに畳む（I_pilltext→I_pillbg は canonId 済み）
-    if (["I_cards", "I_divider", "I_kanmi", "I_time", "I_table", "I_pillbg"].includes(id)) return { key: "Istack", sibs: ["I_cards", "I_divider", "I_kanmi", "I_time", "I_table", "I_pillbg"] };
+    if (["I_cards", "I_divider", "I_kanmi", "I_time", "I_table", "I_pillbg"].includes(b)) return { key: pfx + "Istack", sibs: ["I_cards", "I_divider", "I_kanmi", "I_time", "I_table", "I_pillbg"].map((x) => withPfx(pfx, x)) };
     return null;
   }
 
@@ -1220,18 +1236,25 @@ const PG = (function () {
   const SIZE_LIST = [12, 14, 16, 18, 20, 24, 28, 32, 40, 48, 64, 80];
   const SIZE_MIN = 8, SIZE_MAX = 120;
   // 手直しの鍵：繰り返す1件（品・表の行）はフィールドに畳む（全件の同じ所に効く）。それ以外は部品 ID。
-  function tsKeyOf(id) { const m = id.match(/^(card|row)_(name|desc|price)_/); return m ? m[1] + "_" + m[2] : canonId(id); }
+  // §2 セクションの見出し（F_h / I_h「芦屋堂の味」等）は、ふだんは見出しの組（F_hg）にまとめて動かすが、文字の大きさ等は個別に効く（C10）。
+  const isHeadingGroup = (id) => { const b = bareOf(id); return b === "F_hg" || b === "I_hg"; };
+  const headingTextOf = (id) => withPfx(prefixOf(id), bareOf(id) === "F_hg" ? "F_h" : "I_h");
+  const isHeadingText = (id) => { const b = bareOf(id); return b === "F_h" || b === "I_h"; };
+  // 見出しの文字は自分自身を鍵にする（組にまとめない＝ラベルまで大きくならない）。それ以外は従来どおり canonId。
+  function tsKeyOf(id) { const b = bareOf(id); const m = b.match(/^(card|row)_(name|desc|price)_/); if (m) return withPfx(prefixOf(id), m[1] + "_" + m[2]); if (isHeadingText(id)) return withPfx(prefixOf(id), b); return canonId(id); }
   // 文字箱（collectTextBoxes の key）→ 手直しの鍵
   function tsKeyBox(k) { if (/^I_cn_/.test(k)) return "card_name"; if (/^I_cd_/.test(k)) return "card_desc"; if (/^I_cp_/.test(k)) return "card_price"; if (/^I_tn_/.test(k)) return "row_name"; if (/^I_td_/.test(k)) return "row_desc"; if (/^I_tp_/.test(k)) return "row_price"; return k; }
   // 文字箱の key → 部品 ID（runs は部品＝1件ごと）
   function partIdOfBox(k) { let m; if ((m = k.match(/^I_cn_(.+)$/))) return "card_name_" + m[1]; if ((m = k.match(/^I_cd_(.+)$/))) return "card_desc_" + m[1]; if ((m = k.match(/^I_cp_(.+)$/))) return "card_price_" + m[1]; if ((m = k.match(/^I_tn_(.+)$/))) return "row_name_" + m[1]; if ((m = k.match(/^I_td_(.+)$/))) return "row_desc_" + m[1]; if ((m = k.match(/^I_tp_(.+)$/))) return "row_price_" + m[1]; if (k === "I_pill") return "I_pilltext"; return k; }
   // 部品 ID → 文字の段（テンプレの既定の大きさ・太さ・色を引く）
   function styleNameOf(id) {
-    if (/^F_h\d$/.test(id)) return "featHead"; if (/^F_b\d$/.test(id)) return "featBody";
-    if (/^card_name_/.test(id)) return "cardName"; if (/^card_desc_/.test(id)) return "cardDesc"; if (/^card_price_/.test(id)) return "cardPrice";
-    if (/^row_name_/.test(id)) return "tName"; if (/^row_desc_/.test(id)) return "tDesc"; if (/^row_price_/.test(id)) return state.device === "pc" ? "tPriceR" : "tPriceL";
-    if (id === "I_kanmi") return "kanmiLbl"; if (id === "I_time") return "kanmiTime"; if (id === "I_pilltext") return "pill";
-    if (/^add_/.test(id)) { const a = reduce(activeOps()).added.find((a) => a.id === id); return a ? (a.styleName || "featBody") : "featBody"; }
+    const b = bareOf(id);
+    if (b === "F_h" || b === "I_h") return "secHead";   // §2 セクションの見出し（個別に大きさ等が効く・C10）
+    if (/^F_h\d$/.test(b)) return "featHead"; if (/^F_b\d$/.test(b)) return "featBody";
+    if (/^card_name_/.test(b)) return "cardName"; if (/^card_desc_/.test(b)) return "cardDesc"; if (/^card_price_/.test(b)) return "cardPrice";
+    if (/^row_name_/.test(b)) return "tName"; if (/^row_desc_/.test(b)) return "tDesc"; if (/^row_price_/.test(b)) return state.device === "pc" ? "tPriceR" : "tPriceL";
+    if (b === "I_kanmi") return "kanmiLbl"; if (b === "I_time") return "kanmiTime"; if (b === "I_pilltext") return "pill";
+    if (/^add_/.test(b)) { const a = reduce(activeOps()).added.find((a) => a.id === id); return a ? (a.styleName || "featBody") : "featBody"; }
     return null;
   }
   // この端末で見える大きさ（端末ごと。まだ触っていない方は、触った方の倍率を引き継ぐ）
@@ -1244,8 +1267,9 @@ const PG = (function () {
   }
   const colorVal = (c) => (/^#/.test(c) ? c : (SPEC.COLORS[c] || c));
   // 今選んでいる文字の部品の鍵（重複なし）・代表
-  function selTextKeys() { return [...new Set([...state.selected].filter((id) => isText(id)).map(tsKeyOf))]; }
-  function primaryTextSel() { return [...state.selected].find((id) => isText(id)) || null; }
+  // 選択の中の「文字の鍵」。見出しの組（F_hg）を選んでいるときは、その中の見出し文字（F_h）の鍵にする（C10）。
+  function selTextKeys() { const ks = []; for (const id of state.selected) { if (isText(id)) ks.push(tsKeyOf(id)); else if (isHeadingGroup(id)) ks.push(tsKeyOf(headingTextOf(id))); } return [...new Set(ks)]; }
+  function primaryTextSel() { for (const id of state.selected) { if (isText(id)) return id; if (isHeadingGroup(id)) return headingTextOf(id); } return null; }
   function curTs(id) { return reduce(activeOps()).textStyles[tsKeyOf(id)]; }
   function curSizeOf(id) { return effSize(styleNameOf(id), state.device, curTs(id)).size; }
   function curWeightOf(id) { const ts = curTs(id); return ts && ts.weight != null ? ts.weight : SPEC.STYLES[styleNameOf(id)].weight; }
@@ -1263,7 +1287,7 @@ const PG = (function () {
     for (const inst of state.secList) {
       const host = document.getElementById(secHostId(inst)); if (!host) continue;
       for (const el of host.querySelectorAll('[data-kind="text"]')) {
-        const id = el.getAttribute("data-el"); const sn = styleNameOf(id); if (!sn) continue;
+        const id = el.getAttribute("data-el"); const sn = styleNameOf(id); if (!sn || isHeadingText(id)) continue;   // 見出し文字は従来どおり一覧に出さない（出力を第1回までと一致させる）
         const ts = R.textStyles[tsKeyOf(id)]; const es = effSize(sn, state.device, ts); const st = SPEC.STYLES[sn];
         out.push({ part: id, size: es.size, sizeOwn: es.own, weight: ts && ts.weight != null ? ts.weight : st.weight, color: ts && ts.color != null ? ts.color : st.color });
       }
@@ -1348,7 +1372,7 @@ const PG = (function () {
 
   // §2 セクションの並び（ページの組み立て）。今は特集・品の2つ。複製・追加・削除・並べ替えはこの並びを書き換える（試験台14・第2回で操作を足す）。
   const defaultSecList = () => [{ id: "feature", type: "feature" }, { id: "items", type: "items" }];
-  let state = { device: "pc", ops: [], cursor: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secList: defaultSecList() };
+  let state = { device: "pc", ops: [], cursor: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList() };
   let scale = 1, layoutCount = 0, composing = false;
   let appliedPlace = {}; // id -> {top,left} 直近の絶対配置
 
@@ -1415,27 +1439,37 @@ const PG = (function () {
   }
   function clampView(w, h, iw, ih, view) { const c = coverBG(w, h, iw, ih, view); return c ? { x: c.x, y: c.y, zoom: view.zoom } : view; }
 
-  // ---- content への文字の反映 ----
-  function setContent(content, id, text) {
+  // ---- content への文字の反映（パーツの属するインスタンスの content へ振り分ける）----
+  // secContent[インスタンスID] は、feature なら {label,blocks,...}、items なら {label,cards,table,...} の「スライス」。
+  function routeSetContent(secContent, id, text) {
+    const c = secContent[secOf(id)]; if (!c) return false; const b = bareOf(id);
     const mB = { F_h0: [0, "heading"], F_b0: [0, "body"], F_h1: [1, "heading"], F_b1: [1, "body"] };
-    if (mB[id]) { content.feature.blocks[mB[id][0]][mB[id][1]] = text; return true; }
+    if (mB[b] && c.blocks) { c.blocks[mB[b][0]][mB[b][1]] = text; return true; }
     let m;
-    if ((m = id.match(/^card_(name|desc|price)_(.+)$/))) { const card = content.items.cards.find((c) => c.id === m[2]); if (card) card[m[1]] = text; return true; }
-    if ((m = id.match(/^row_(name|desc|price)_(.+)$/))) { const row = content.items.table.find((r) => r.id === m[2]); if (row) row[m[1]] = text; return true; }
+    if ((m = b.match(/^card_(name|desc|price)_(.+)$/)) && c.cards) { const card = c.cards.find((x) => x.id === m[2]); if (card) card[m[1]] = text; return true; }
+    if ((m = b.match(/^row_(name|desc|price)_(.+)$/)) && c.table) { const row = c.table.find((x) => x.id === m[2]); if (row) row[m[1]] = text; return true; }
     return false;
+  }
+  function routeReplaceAsset(secContent, pid, asset) {
+    const c = secContent[secOf(pid)]; if (!c) return; const b = bareOf(pid); let m;
+    if ((m = b.match(/^F_p(\d)$/)) && c.blocks) { if (c.blocks[+m[1]]) c.blocks[+m[1]].photo.asset = asset; }
+    else if ((m = b.match(/^card_photo_(.+)$/)) && c.cards) { const card = c.cards.find((x) => x.id === m[1]); if (card) card.photo.asset = asset; }
   }
 
   // ---- 操作列 → content / edits ----
   function reduce(ops, device, peek) {
     device = device || state.device;
-    const content = base();
+    const full = base();
+    // §2 セクションの並びと、インスタンスごとの content スライス。最初は特集・品の2つ。
+    const secList = [{ id: "feature", type: "feature" }, { id: "items", type: "items" }];
+    const secContent = { feature: full.feature, items: full.items };
     const editMap = {}; const adds = []; const removed = new Set();
     const m1 = {}, m2 = {}, clearL = []; const tpl = {}; const order = {}; const zmap = {}; const sizes = {};
     const replaceMap = {}, viewAll = {};   // §1 写真の差し替え（端末共通）／§2 見せる範囲（端末ごと）
     const textStyles = {};                  // §12 文字の見た目：鍵→{weight,color,size:{pc,sp}}（weight/color は端末共通・size は端末ごと）
     const runsMap = {};                     // §13 文の一部の見た目：部品ID→[{text,bold?,color?,scale?}]（中身＝PC/SP 共通）
-    const delCards = new Set(), delRows = new Set();
-    const orderSec = (k) => (/^F/.test(k) ? "feature" : "items");
+    const delCards = {}, delRows = {};      // インスタンスID → 消す card/row id の Set
+    const orderSec = (k) => (/^F/.test(bareOf(k)) ? "feature" : "items");
     const scopeIds = (scope, id) => {
       if (scope === "part") return [canonId(id)];
       const all = [...TEMPLATE_DRAG, ...adds.map((a) => a.id)];
@@ -1445,7 +1479,7 @@ const PG = (function () {
     for (const op of ops) {
       if (op.t === "edit") { if (op.runs) { runsMap[op.id] = op.runs; editMap[op.id] = op.runs.map((r) => r.text).join(""); } else { editMap[op.id] = op.text; delete runsMap[op.id]; } }
       else if (op.t === "add") { if (!removed.has(op.id)) adds.push(op); }
-      else if (op.t === "del") { if (/^card_/.test(op.id)) delCards.add(cardIdOf(op.id)); else if (/^row_/.test(op.id)) delRows.add(cardIdOf(op.id)); removed.add(op.id); for (let i = adds.length - 1; i >= 0; i--) if (adds[i].id === op.id) adds.splice(i, 1); delete m1[op.id]; delete m2[op.id]; }
+      else if (op.t === "del") { const inst = secOf(op.id); const bb = bareOf(op.id); if (/^card_/.test(bb)) (delCards[inst] = delCards[inst] || new Set()).add(cardIdOf(op.id)); else if (/^row_/.test(bb)) (delRows[inst] = delRows[inst] || new Set()).add(cardIdOf(op.id)); removed.add(op.id); for (let i = adds.length - 1; i >= 0; i--) if (adds[i].id === op.id) adds.splice(i, 1); delete m1[op.id]; delete m2[op.id]; }
       else if (op.t === "clear") { if (!clearL.includes(op.id)) clearL.push(op.id); }
       else if (op.t === "unclear") { const i = clearL.indexOf(op.id); if (i >= 0) clearL.splice(i, 1); }
       // §1 差し替え：素材を入れ替える（端末共通）。外した印は消す。両端末の見せる範囲は真ん中・1倍に戻す（＝view を捨てる）
@@ -1453,8 +1487,25 @@ const PG = (function () {
       // §2 見せる範囲：端末ごとに {x,y,zoom}（端末で絞らない＝両端末ぶんを集める）
       else if (op.t === "view") { (viewAll[op.id] = viewAll[op.id] || {})[op.device] = { x: op.x, y: op.y, zoom: op.zoom }; }
       else if (op.t === "template") Object.assign(tpl, op.v);
-      else if (op.t === "addCard") { const i = content.items.cards.findIndex((c) => c.id === op.after); if (i >= 0) content.items.cards.splice(i + 1, 0, clone(op.card)); else content.items.cards.push(clone(op.card)); }
-      else if (op.t === "addRow") { const i = content.items.table.findIndex((r) => r.id === op.after); if (i >= 0) content.items.table.splice(i + 1, 0, clone(op.row)); else content.items.table.push(clone(op.row)); }
+      else if (op.t === "addCard") { const c = secContent[op.section || "items"]; if (c && c.cards) { const i = c.cards.findIndex((x) => x.id === op.after); if (i >= 0) c.cards.splice(i + 1, 0, clone(op.card)); else c.cards.push(clone(op.card)); } }
+      else if (op.t === "addRow") { const c = secContent[op.section || "items"]; if (c && c.table) { const i = c.table.findIndex((x) => x.id === op.after); if (i >= 0) c.table.splice(i + 1, 0, clone(op.row)); else c.table.push(clone(op.row)); } }
+      // §2 セクションの操作（ページの組み立て＝端末共通・1操作1undo）。「このページを元に戻す」では戻さない。
+      else if (op.t === "secMove") { const i = secList.findIndex((s) => s.id === op.id); if (i >= 0) { const j = i + op.delta; if (j >= 0 && j < secList.length) { const [x] = secList.splice(i, 1); secList.splice(j, 0, x); } } }
+      else if (op.t === "secDel") { const i = secList.findIndex((s) => s.id === op.id); if (i >= 0) secList.splice(i, 1); }
+      else if (op.t === "secAdd") { const i = secList.findIndex((s) => s.id === op.afterId); const at = (op.pos != null) ? op.pos : (i >= 0 ? i + 1 : secList.length); secList.splice(at, 0, { id: op.newId, type: op.type, from: "@new" }); secContent[op.newId] = clone(op.content); }
+      else if (op.t === "secDup") {
+        const i = secList.findIndex((s) => s.id === op.afterId); secList.splice(i >= 0 ? i + 1 : secList.length, 0, { id: op.newId, type: op.type, from: op.srcId });
+        secContent[op.newId] = clone(op.content);
+        const dev = (op.edits && op.edits[device]) || {};
+        Object.assign(m1, dev.m1 || {}); Object.assign(m2, dev.m2 || {}); Object.assign(zmap, dev.zmap || {});
+        for (const k in (dev.sizes || {})) sizes[k] = clone(dev.sizes[k]); for (const k in (dev.order || {})) order[k] = dev.order[k].slice();
+        for (const k in (op.edits.textStyles || {})) textStyles[k] = clone(op.edits.textStyles[k]);
+        for (const k in (op.edits.runsMap || {})) runsMap[k] = clone(op.edits.runsMap[k]);
+        for (const k in (op.edits.replace || {})) replaceMap[k] = op.edits.replace[k];
+        for (const k in (op.edits.viewAll || {})) viewAll[k] = clone(op.edits.viewAll[k]);
+        for (const id of (op.edits.clear || [])) if (!clearL.includes(id)) clearL.push(id);
+        for (const a of (op.added || [])) adds.push(clone(a));
+      }
       else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; } } }
       else if (op.t === "reorder") { if (op.device === device) { order[op.key] = op.order.slice(); delete m1[op.id]; delete m2[op.id]; } }
       else if (op.t === "zorder") { if (op.device === device) zmap[op.id] = op.z; }   // §4 重なり順
@@ -1464,21 +1515,26 @@ const PG = (function () {
       else if (op.t === "tstyle") { for (const k of op.keys) { const s = textStyles[k] = textStyles[k] || {}; if (op.weight != null) s.weight = op.weight; if (op.color != null) s.color = op.color; if (op.size != null) { s.size = s.size || {}; s.size[op.device] = op.size; } } }
       // 文字の見た目を元に戻す：箱まるごと（鍵）＋文の一部（部品の runs）の両方（§2.2 書式のクリア）
       else if (op.t === "tstyleReset") { for (const k of op.keys) delete textStyles[k]; if (op.parts) for (const pid of op.parts) delete runsMap[pid]; }
-      else if (op.t === "resetScope") { if (op.devices.includes(device)) { const sIds = scopeIds(op.scope, op.id); for (const id of sIds) { delete m1[id]; delete m2[id]; delete zmap[id]; delete sizes[id]; } for (const k of Object.keys(order)) { if (op.scope === "page" || (op.scope === "section" && orderSec(k) === secOf(op.id)) || (op.scope === "part" && (op.id === k || scopeIds("part", op.id).some((pid) => (order[k] || []).includes(pid))))) delete order[k]; }
-        // §13.1「このページを元に戻す」＝デザインに関わるもの全部：箱まるごとの文字の見た目・写真の見せる範囲も戻す（中身・文の一部の見た目・写真は残す）
-        if (op.scope === "page") { for (const k of Object.keys(textStyles)) delete textStyles[k]; for (const k of Object.keys(viewAll)) delete viewAll[k]; } } }
+      else if (op.t === "resetScope") { if (op.devices.includes(device)) {
+        if (op.scope === "page") {
+          // §13.1「このページを元に戻す」＝全セクションのデザインに関わるもの全部（セクションの並び・追加・複製・削除は §2.2 により戻さない＝別 op のため触らない）。
+          for (const k of Object.keys(m1)) delete m1[k]; for (const k of Object.keys(m2)) delete m2[k];
+          for (const k of Object.keys(zmap)) delete zmap[k]; for (const k of Object.keys(sizes)) delete sizes[k];
+          for (const k of Object.keys(order)) delete order[k];
+          for (const k of Object.keys(textStyles)) delete textStyles[k]; for (const k of Object.keys(viewAll)) delete viewAll[k];
+        } else {
+          const sIds = scopeIds(op.scope, op.id); for (const id of sIds) { delete m1[id]; delete m2[id]; delete zmap[id]; delete sizes[id]; }
+          for (const k of Object.keys(order)) { if ((op.scope === "section" && orderSec(k) === secOf(op.id)) || (op.scope === "part" && (op.id === k || scopeIds("part", op.id).some((pid) => (order[k] || []).includes(pid))))) delete order[k]; }
+        }
+      } }
     }
-    // 品・表の行を減らす（§10.2・R2/R9）
-    if (delCards.size) content.items.cards = content.items.cards.filter((c) => !delCards.has(c.id));
-    if (delRows.size) content.items.table = content.items.table.filter((r) => !delRows.has(r.id));
-    // content に文字を反映（テンプレ・品）
-    for (const [id, text] of Object.entries(editMap)) setContent(content, id, text);
-    // §1 差し替えた素材を content に反映（モデルは content.*.photo.asset を写真枠の中身にする）
-    for (const [pid, asset] of Object.entries(replaceMap)) {
-      let m;
-      if ((m = pid.match(/^F_p(\d)$/))) { if (content.feature.blocks[+m[1]]) content.feature.blocks[+m[1]].photo.asset = asset; }
-      else if ((m = pid.match(/^card_photo_(.+)$/))) { const c = content.items.cards.find((c) => c.id === m[1]); if (c) c.photo.asset = asset; }
-    }
+    // 品・表の行を減らす（§10.2・R2/R9）＝インスタンスごと
+    for (const [inst, set] of Object.entries(delCards)) { const c = secContent[inst]; if (c && c.cards) c.cards = c.cards.filter((x) => !set.has(x.id)); }
+    for (const [inst, set] of Object.entries(delRows)) { const c = secContent[inst]; if (c && c.table) c.table = c.table.filter((x) => !set.has(x.id)); }
+    // content に文字を反映（テンプレ・品）＝パーツの属するインスタンスへ
+    for (const [id, text] of Object.entries(editMap)) routeSetContent(secContent, id, text);
+    // §1 差し替えた素材を content に反映＝パーツの属するインスタンスへ
+    for (const [pid, asset] of Object.entries(replaceMap)) routeReplaceAsset(secContent, pid, asset);
     // 足した部品（両端末に存在。位置は端末ごと）
     const added = [];
     const CW = device === "pc" ? 1326 : 351;
@@ -1502,12 +1558,21 @@ const PG = (function () {
     const remove = [...removed].filter((id) => !isAdded(id));
     // 「元の配置を見る」：手で動かした部品・並び替えを元（今の中身からのテンプレ）に戻して見せる（記録は変えない）
     if (peek) { for (const k in m1) delete m1[k]; for (const k in m2) delete m2[k]; for (const k in order) delete order[k]; for (const k in sizes) delete sizes[k]; }
-    return { content, m1, m2, added, remove, clear: clearL, tpl, adds, editMap, order, zmap, sizes, replaceMap, viewAll, textStyles, runsMap };
+    // content は従来どおり anchor（特集・品）のスライスを束ねたもの。インスタンス全体は secContent/secList で持つ。
+    const content = { feature: secContent.feature, items: secContent.items };
+    return { content, secContent, secList, m1, m2, added, remove, clear: clearL, tpl, adds, editMap, order, zmap, sizes, replaceMap, viewAll, textStyles, runsMap };
   }
 
   function secNode(sec) { return document.getElementById("host_" + sec)?.querySelector("#sec"); }
   const secHostId = (inst) => "host_" + inst.id;
-  function secLabelText(inst) { if (inst.id === "feature") return "FEATURE（芦屋堂の味）"; if (inst.id === "items") return "ITEMS（おすすめの品）"; return (inst.type === "feature" ? "FEATURE" : "ITEMS") + "（" + inst.id + "）"; }
+  function secLabelText(inst) { if (inst.id === "feature") return "FEATURE（芦屋堂の味）"; if (inst.id === "items") return "ITEMS（おすすめの品）"; return (inst.type === "feature" ? "FEATURE" : "ITEMS") + "（複製／追加）"; }
+  // §2 複製・追加したセクションの HTML の ID を「セクションID__素のID」に付け替える（builder は素の ID を出すので出力を書き換える）。
+  // 足した部品（add_/addp_）はもともと一意なので付け替えない。付いていく先の @section/@abs も付け替えない。
+  function prefixIds(html, pfx) {
+    html = html.replace(/data-(el|absid)="([^"]+)"/g, (mm, attr, v) => isAdded(v) ? mm : `data-${attr}="${pfx}${v}"`);
+    html = html.replace(/data-anchor="([^"]+)"/g, (mm, v) => (v[0] === "@" || isAdded(v)) ? mm : `data-anchor="${pfx}${v}"`);
+    return html;
+  }
   // §2 セクションを並び（state.secList）として DOM に用意する（土台）。host の id は host_<セクションID>。並び順に合わせて作る・移す・消す。
   function ensureHosts() {
     const wrap = document.getElementById("sectionwrap"); if (!wrap) return;
@@ -1532,26 +1597,47 @@ const PG = (function () {
   // ---- 描画 ----
   function render() {
     curGuides = []; curGuidesSec = null;                 // §2 目安の線は離したら消す（再描画で必ずリセット）
-    ensureHosts();                                        // §2 セクションの並びに合わせて host を用意（土台）
     const R = reduce(activeOps(), state.device, state.peek);
+    state.secList = R.secList;                            // §2 今のセクションの並び（undo/redo で再計算されたもの）
+    ensureHosts();                                        // §2 セクションの並びに合わせて host を用意
     const meas = document.getElementById("meas");
     state.secList.forEach((inst, idx) => {
       const sec = inst.id;
+      const anchor = (sec === "feature" || sec === "items");
+      const pfx = anchor ? "" : sec + SEP;
       const host = document.getElementById(secHostId(inst));
-      const boxes = M.collectTextBoxes(R.content, state.device);
+      // このインスタンスの content。builder は自分の型のスライス（content.feature or content.items）だけ見るが、
+      // collectTextBoxes は両方を読むので、両スライスを渡す（相手側は anchor のものを借りる）。このインスタンスの型のスライスだけ差し替える。
+      const content = { feature: R.content.feature, items: R.content.items };
+      content[inst.type] = R.secContent[sec];
+      const boxes = M.collectTextBoxes(content, state.device);
       for (const a of R.added) if (a.section === sec && a.kind !== "photo") boxes.push({ key: a.id, styleName: a.styleName, device: state.device, widthPx: a.w, text: a.text });
+      // 箱の鍵（bare）→ グローバルの手直しの鍵（非 anchor は pfx を付ける。足した部品 add_ は素のまま）
+      const lk = (k) => (pfx && !isAdded(k)) ? pfx + k : k;
       // §4：大きさを変えた文字は、その幅で改行を測り直す（表示幅と改行幅をそろえる）
-      for (const b of boxes) { const s = R.sizes[b.key]; if (s && s.w != null) b.widthPx = s.w; }
+      for (const b of boxes) { const s = R.sizes[lk(b.key)]; if (s && s.w != null) b.widthPx = s.w; }
       // §12：文字の見た目の手直しがあれば、改行の測りも手直し後の大きさ・太さで行う
-      for (const b of boxes) { const ts = R.textStyles[tsKeyBox(b.key)]; if (!ts) continue; if (ts.size && (ts.size.pc != null || ts.size.sp != null)) b.sizePx = effSize(b.styleName, b.device, ts).size; if (ts.weight != null) b.weightOv = ts.weight; }
+      for (const b of boxes) { const ts = R.textStyles[lk(tsKeyBox(b.key))]; if (!ts) continue; if (ts.size && (ts.size.pc != null || ts.size.sp != null)) b.sizePx = effSize(b.styleName, b.device, ts).size; if (ts.weight != null) b.weightOv = ts.weight; }
       // §13：文の一部の見た目（runs）を当てる（箱の key → 部品 ID で引く）
-      for (const b of boxes) { const rs = R.runsMap[partIdOfBox(b.key)]; if (rs) b.runs = rs; }
+      for (const b of boxes) { const rs = R.runsMap[lk(partIdOfBox(b.key))]; if (rs) b.runs = rs; }
       const H = TEXT.buildH(boxes, meas, SPEC);
-      const edits = { m1: R.m1, m2: R.m2, added: R.added.map((a) => ({ ...a, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined })), remove: R.remove, clear: R.clear, template: R.tpl, order: R.order, sizes: R.sizes };
-      const out = (inst.type === "feature" ? M.buildFeature : M.buildItems)(R.content, state.device, H, edits);
-      host.innerHTML = out.bodyHtml;
+      let edits;
+      if (anchor) {   // anchor は従来どおり（素の ID・グローバルの手直しをそのまま渡す＝第1回までと1pxも変わらない）
+        edits = { m1: R.m1, m2: R.m2, added: R.added.map((a) => ({ ...a, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined })), remove: R.remove, clear: R.clear, template: R.tpl, order: R.order, sizes: R.sizes };
+      } else {        // 非 anchor：このインスタンスの手直しだけを素の鍵に戻して渡す。写真が無い枠は「まだない写真」＝薄い枠で描く。
+        const strip = (k) => (k.startsWith(pfx) ? k.slice(pfx.length) : k);
+        const pick = (map) => { const o = {}; for (const k of Object.keys(map)) if (secOf(k) === sec) o[strip(k)] = map[k]; return o; };
+        const missingPhotos = [];
+        if (inst.type === "feature") (R.secContent[sec].blocks || []).forEach((bl, i) => { if (!bl.photo || !bl.photo.asset) missingPhotos.push("F_p" + i); });
+        else (R.secContent[sec].cards || []).forEach((cd) => { if (!cd.photo || !cd.photo.asset) missingPhotos.push("card_photo_" + cd.id); });
+        const clearLocal = [...R.clear.filter((id) => secOf(id) === sec).map(strip), ...missingPhotos];
+        const addedLocal = R.added.filter((a) => a.section === sec).map((a) => ({ ...a, section: inst.type, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined }));
+        edits = { m1: pick(R.m1), m2: pick(R.m2), added: addedLocal, remove: R.remove.filter((id) => secOf(id) === sec).map(strip), clear: clearLocal, template: R.tpl, order: pick(R.order), sizes: pick(R.sizes) };
+      }
+      const out = (inst.type === "feature" ? M.buildFeature : M.buildItems)(content, state.device, H, edits);
+      host.innerHTML = pfx ? prefixIds(out.bodyHtml, pfx) : out.bodyHtml;
       host._padBottom = out.padBottom;
-      const s = host.querySelector("#sec"); if (s) s.style.background = SPEC.COLORS[secBgName(idx)];   // §2.2 背景は並び順で（今は型順と同じ＝見た目は変わらない）
+      const s = host.querySelector("#sec"); if (s) s.style.background = SPEC.COLORS[secBgName(idx)];   // §2.2 背景は並び順で
     });
     applyTextStyles(R);   // §12：文字の箱まるごとの大きさ・太さ・色を当てる（実測・配置の前に）
     layoutScale();
@@ -1727,6 +1813,42 @@ const PG = (function () {
   function reset() { state.ops = []; state.cursor = 0; state.selected = new Set(); state.selectedSection = null; state.editing = null; state.secList = defaultSecList(); render(); }
   function setDevice(d) { if (state.editing) commitEdit(); state.device = d; render(); }
 
+  // ---- §2 セクションの操作（上へ・下へ・複製・削除・足す）。ページの組み立て＝端末共通・1操作1undo。----
+  const isAnchorSec = (id) => (id === "feature" || id === "items");
+  // 足す・複製の見本：テンプレの文章そのまま。写真は「まだない写真」＝素材なし（薄い枠）。
+  function templateSectionContent(type) { const c = clone(type === "feature" ? base().feature : base().items); if (type === "feature") (c.blocks || []).forEach((b) => { if (b.photo) b.photo.asset = ""; }); else (c.cards || []).forEach((cd) => { if (cd.photo) cd.photo.asset = ""; }); return c; }
+  function sectionMove(id, delta) { const list = reduce(activeOps()).secList; const i = list.findIndex((s) => s.id === id); if (i < 0 || i + delta < 0 || i + delta >= list.length) return; commit({ t: "secMove", id, delta }); }
+  function sectionDelete(id) { const list = reduce(activeOps()).secList; if (list.length <= 1 || !list.find((s) => s.id === id)) return; if (state.selectedSection === id) state.selectedSection = null; commit({ t: "secDel", id }); }
+  function sectionAdd(pos, type) { const list = reduce(activeOps()).secList; const newId = "sec" + (++state.secSeq); const afterId = pos > 0 ? (list[pos - 1] || {}).id : null; commit({ t: "secAdd", newId, type, pos, afterId, content: templateSectionContent(type) }); state.selectedSection = null; }
+  function sectionDuplicate(id) {
+    const R0 = reduce(activeOps()); const idx = R0.secList.findIndex((s) => s.id === id); if (idx < 0) return;
+    const type = R0.secList[idx].type; const newId = "sec" + (++state.secSeq); const pfx = newId + SEP;
+    const srcPfx = isAnchorSec(id) ? "" : id + SEP;
+    const Rpc = reduce(activeOps(), "pc"), Rsp = reduce(activeOps(), "sp");
+    const content = clone(Rpc.secContent[id]);
+    const remap = (k) => pfx + (srcPfx && k.startsWith(srcPfx) ? k.slice(srcPfx.length) : k);
+    const osec = (k) => (/^F/.test(bareOf(k)) ? "feature" : "items");
+    const ownPart = (k) => !isAdded(k) && (srcPfx ? k.startsWith(srcPfx) : (!k.includes(SEP) && secOf(k) === id));
+    const ownOrder = (k) => srcPfx ? k.startsWith(srcPfx) : (!k.includes(SEP) && osec(k) === id);
+    const perDev = (R) => { const e = { m1: {}, m2: {}, sizes: {}, zmap: {}, order: {} };
+      for (const k in R.m1) if (ownPart(k)) e.m1[remap(k)] = clone(R.m1[k]);
+      for (const k in R.m2) if (ownPart(k)) e.m2[remap(k)] = clone(R.m2[k]);
+      for (const k in R.sizes) if (ownPart(k)) e.sizes[remap(k)] = clone(R.sizes[k]);
+      for (const k in R.zmap) if (ownPart(k)) e.zmap[remap(k)] = R.zmap[k];
+      for (const k in R.order) if (ownOrder(k)) e.order[remap(k)] = R.order[k].slice();
+      return e; };
+    const shared = { textStyles: {}, runsMap: {}, replace: {}, viewAll: {}, clear: [] };
+    for (const k in Rpc.textStyles) if (ownPart(k)) shared.textStyles[remap(k)] = clone(Rpc.textStyles[k]);
+    for (const k in Rpc.runsMap) if (ownPart(k)) shared.runsMap[remap(k)] = clone(Rpc.runsMap[k]);
+    for (const k in Rpc.replaceMap) if (ownPart(k)) shared.replace[remap(k)] = Rpc.replaceMap[k];
+    for (const k in Rpc.viewAll) if (ownPart(k)) shared.viewAll[remap(k)] = clone(Rpc.viewAll[k]);
+    for (const cid of Rpc.clear) if (ownPart(cid)) shared.clear.push(remap(cid));
+    const added = Rpc.adds.filter((a) => a.section === id).map((a) => ({ ...clone(a), id: (a.kind === "photo" ? "addp_" : "add_") + (++state.addSeq), section: newId }));
+    commit({ t: "secDup", srcId: id, afterId: id, newId, type, content, edits: { pc: perDev(Rpc), sp: perDev(Rsp), ...shared }, added });
+  }
+  // §2 入口の補助（操作ボタンの出し分け）：上下の端・唯一のセクションか
+  function sectionCan(id) { const list = reduce(activeOps()).secList; const i = list.findIndex((s) => s.id === id); return { up: i > 0, down: i >= 0 && i < list.length - 1, del: list.length > 1, exists: i >= 0 }; }
+
   // ---- ドラッグ（M1/M2 を離した位置で判定）----
   let drag = null;
   function beginDrag(clientX, clientY) {
@@ -1753,11 +1875,26 @@ const PG = (function () {
     else setGuides([], null);
     if (ro) showReorderLine(drag.ids[0], ro);
   }
-  function classify(g, id) { if (isAdded(id)) return "M2"; return M.classifyDrop(g, id, drag ? drag.ids : [id], drag ? drag.origGeom : g); }
+  function classify(g, id) { if (isAdded(id)) return "M2"; return classifyDropX(g, id, drag ? drag.ids : [id], drag ? drag.origGeom : g); }
+  // §2 複製・追加したセクションは、座標がセクションごとに独立する。C3 には「そのセクションだけ・素の ID」の実測を渡す（anchor は従来どおり全体で）。
+  function stripGeom(gMerged, sec) { const pfx = sec + SEP; const out = {}; for (const k in gMerged) if (secOf(k) === sec) out[k.startsWith(pfx) ? k.slice(pfx.length) : k] = gMerged[k]; return out; }
+  function classifyDropX(gMerged, id, ids, origMerged) {
+    const sec = secOf(id); if (isAnchorSec(sec)) return M.classifyDrop(gMerged, id, ids, origMerged);
+    const pfx = sec + SEP; const strip = (k) => k.startsWith(pfx) ? k.slice(pfx.length) : k;
+    return M.classifyDrop(stripGeom(gMerged, sec), strip(id), ids.map(strip), stripGeom(origMerged, sec));
+  }
+  function reanchorX(gMerged, id) {
+    const sec = secOf(id); if (isAnchorSec(sec)) return M.reanchor(gMerged, id, sec);
+    const pfx = sec + SEP; const strip = (k) => k.startsWith(pfx) ? k.slice(pfx.length) : k;
+    const inst = reduce(activeOps()).secList.find((s) => s.id === sec);
+    const pr = M.reanchor(stripGeom(gMerged, sec), strip(id), inst ? inst.type : "feature");
+    const re = (a) => (!a || a[0] === "@" || isAdded(a)) ? a : pfx + a;
+    return { anchor: re(pr.anchor), gapY: pr.gapY, x: pr.x };
+  }
   // 入れ子の別塊（品の並び・甘味処の表）の中に離したか（§2.1）。同一セクションのみ。自分自身の箱は除く（§5：表・品の並び自体をつかんだとき）。
   function insideNestedGroup(g, id, cy) {
-    const sec = secOf(id);
-    for (const gid of ["I_cards", "I_table"]) { if (gid === id) continue; const e = g[gid]; if (!e || secOf(gid) !== sec) continue; if (cy >= e.y && cy <= e.y + e.h) return true; }
+    const sec = secOf(id); const pfx = prefixOf(id);
+    for (const gid of [withPfx(pfx, "I_cards"), withPfx(pfx, "I_table")]) { if (gid === id) continue; const e = g[gid]; if (!e || secOf(gid) !== sec) continue; if (cy >= e.y && cy <= e.y + e.h) return true; }
     return false;
   }
   // 並び替えになるか（§6／§10.1／§2.1）：縦積みの塊の直接の子どうしの間に離したとき。
@@ -1795,7 +1932,7 @@ const PG = (function () {
     if (decided.some((d) => d.mode === "M2")) {
       const finalItems = decided.map((d) => {
         if (d.mode === "M1") { const bt = drag.baseT[d.id], p0 = prior[d.id] || { dx: 0, dy: 0 }; return { id: d.id, mode: "M1", dx: Math.round((p0.dx || 0) + bt.tx + dx), dy: Math.round((p0.dy || 0) + bt.ty + dy) }; }
-        const pr = M.reanchor(g, d.id, secOf(d.id));   // g＝離した瞬間（詰める前）の実測
+        const pr = reanchorX(g, d.id);   // g＝離した瞬間（詰める前）の実測（複製・追加セクションはそのセクションだけで）
         return { id: d.id, mode: "M2", anchor: pr.anchor, gapY: pr.gapY, x: pr.x };
       });
       drag = null; commit({ t: "move", device: state.device, items: finalItems });
@@ -1965,12 +2102,13 @@ const PG = (function () {
   // ---- その場書き換え ----
   function rawText(id, R) {
     R = R || reduce(activeOps());
-    if (id === "F_h0") return R.content.feature.blocks[0].heading;
-    if (id === "F_b0") return R.content.feature.blocks[0].body;
-    if (id === "F_h1") return R.content.feature.blocks[1].heading;
-    if (id === "F_b1") return R.content.feature.blocks[1].body;
-    let m; if ((m = id.match(/^card_(name|desc|price)_(.+)$/))) { const c = R.content.items.cards.find((c) => c.id === m[2]); return c ? c[m[1]] : ""; }
-    if ((m = id.match(/^row_(name|desc|price)_(.+)$/))) { const r = R.content.items.table.find((r) => r.id === m[2]); return r ? (r[m[1]] || "") : ""; }
+    const c = R.secContent[secOf(id)]; const b = bareOf(id);
+    if (c) {
+      const mB = { F_h0: [0, "heading"], F_b0: [0, "body"], F_h1: [1, "heading"], F_b1: [1, "body"] };
+      if (mB[b] && c.blocks) return c.blocks[mB[b][0]][mB[b][1]];
+      let m; if ((m = b.match(/^card_(name|desc|price)_(.+)$/)) && c.cards) { const x = c.cards.find((x) => x.id === m[2]); return x ? x[m[1]] : ""; }
+      if ((m = b.match(/^row_(name|desc|price)_(.+)$/)) && c.table) { const x = c.table.find((x) => x.id === m[2]); return x ? (x[m[1]] || "") : ""; }
+    }
     const a = R.adds.find((a) => a.id === id); if (a) return R.editMap[id] != null ? R.editMap[id] : a.text;
     return elNode(id)?.textContent || "";
   }
@@ -2059,7 +2197,7 @@ const PG = (function () {
     const nr = clone(row); nr.id = "r_dup" + (++state.addSeq);
     commit({ t: "addRow", after: rid, row: nr });
   }
-  const cardIdOf = (id) => (id.match(/^(?:card|row)_(?:photo|name|desc|price|vline)?_?(.+)$/) || [])[1] || id.replace(/^(?:card|row)_[a-z]+_/, "");
+  const cardIdOf = (id) => { const b = bareOf(id); return (b.match(/^(?:card|row)_(?:photo|name|desc|price|vline)?_?(.+)$/) || [])[1] || b.replace(/^(?:card|row)_[a-z]+_/, ""); };
   const kindOf = (id) => (/^F_p|^I_.*photo|photo/.test(id) ? "photo" : "text");
   const styleOf = (id) => (/_h\d$/.test(id) || id === "F_h0" ? "featHead" : "featBody");
 
@@ -2305,16 +2443,36 @@ const PG = (function () {
       D11: [{ act: "partRun", id: "F_b0", s: 0, e: 4, kind: "color", value: "#C03030" }, { act: "undo" }, { act: "redo" }],
       // D12：D1 の後、本文の最初の6文字を特集2の本文の末尾へ（貼り付け＝文字だけ・貼り先の見た目を引き継ぐ）
       D12: [{ act: "partRun", id: "F_b0", s: 0, e: 4, kind: "color", value: "#C03030" }, { act: "editStart", id: "F_b1" }, { act: "editCaretEnd" }, { act: "editTypeFromBody", n: 6 }, { act: "editCommit" }],
+      // ===== 試験台14 C1〜C11（セクションの操作）。@dup/@add は直前に作ったセクションの ID に置き換わる。=====
+      C1: [{ act: "secMove", id: "items", delta: -1 }],
+      C2: [{ act: "secMove", id: "items", delta: -1 }, { act: "undo" }],
+      C3: [{ act: "edit", id: "F_h0", text: "季節の上生菓子と抹茶" }, { act: "secDup", id: "feature" }],
+      C4: [{ act: "edit", id: "F_h0", text: "季節の上生菓子と抹茶" }, { act: "secDup", id: "feature" }, { act: "move", id: "@dup__F_h0", by: [30, 0] }, { act: "edit", id: "@dup__F_h0", text: "新しい見出し" }],
+      C5: [{ act: "moveCenterToRef", id: "I_divider", ref: "I_kanmi", edge: "bottom", off: 1 }, { act: "secDel", id: "items" }, { act: "undo" }],
+      C6: [{ act: "secAdd", pos: 1, type: "feature" }],
+      C7: [{ act: "secAdd", pos: 1, type: "feature" }, { act: "dropPhoto", id: "@add__F_p0", name: "wide.jpg", w: 1600, h: 600 }],
+      C8: [{ act: "secMove", id: "items", delta: -1 }],
+      C9: [{ act: "secMove", id: "items", delta: -1 }, { act: "move", id: "F_h0", by: [30, 0] }, { act: "pageReset" }],
+      C10: [{ act: "edit", id: "F_h0", text: "季節の上生菓子と抹茶" }, { act: "secDup", id: "feature" }, { act: "tsize", id: "@dup__F_hg", px: 36 }],
+      C11: [{ act: "secDel", id: "items" }],
       // ===== 試験台14 C12（X3：品の並びを選んでから品名を書き換え＝選びが品名に移り道具が出る）=====
       C12: [{ act: "select", id: "I_cards" }, { act: "editStart", id: "card_name_c_warabi" }],
     };
   }
+  let lastSec = null;   // プリセットで直前に作った（複製・追加した）セクションの ID。@dup/@add が指す。
   async function runPreset(name) {
-    reset();
+    reset(); lastSec = null;
     for (const step of presets()[name]) await runStep(step);
   }
   async function runStep(step) {
+    if (step.id && step.id.includes("@")) step = { ...step, id: step.id.replace(/@dup|@add/g, lastSec || "") };
     const g = geometry();
+    // §2 セクションの操作
+    if (step.act === "secMove") { sectionMove(step.id, step.delta); return; }
+    if (step.act === "secDel") { sectionDelete(step.id); return; }
+    if (step.act === "secDup") { sectionDuplicate(step.id); lastSec = "sec" + state.secSeq; return; }
+    if (step.act === "secAdd") { sectionAdd(step.pos, step.type); lastSec = "sec" + state.secSeq; return; }
+    if (step.act === "dropPhoto") { const f = await quadFile(step.name, step.w, step.h, step.type); selectMany([canonId(step.id)]); await replacePhotoFile(step.id, f); return; }
     if (step.act === "move") { const c = canonId(step.id); programMove([c], (id) => ({ x: g[id].x + step.by[0], y: g[id].y + step.by[1] })); }
     else if (step.act === "moveToBelow") { const t = g[step.target]; programMove([step.id], () => ({ x: g[step.alignLeft].x, y: t.y + t.h + step.gap })); }
     else if (step.act === "moveGroupBelow") { const t = g[step.target]; const stackTop = t.y + t.h + step.gap; programMove(step.ids, (id, i) => ({ x: g[step.alignLeft].x, y: stackTop + i * (g[id].h + 8) })); }
@@ -2401,11 +2559,11 @@ const PG = (function () {
       if (e) { const snap = snapBox(secOf(id), e, true, !ro0, new Set([id])); if (snap.dx || snap.dy) { const n = elNode(id); const tg = targetOf(id, 0); if (n) n.style.transform = `translate(${tg.x - g[id].x + snap.dx}px,${tg.y - g[id].y + snap.dy}px)`; g2 = geometry(); } } }
     if (ids.length === 1) { const ro = reorderPreview(g2, ids[0], g); if (ro) { commit({ t: "reorder", device: state.device, key: ro.key, id: ids[0], order: ro.order }); return; } }
     const m1Of = (d) => ({ id: d.id, mode: "M1", dx: Math.round((prior[d.id]?.dx || 0) + g2[d.id].x - g[d.id].x), dy: Math.round((prior[d.id]?.dy || 0) + g2[d.id].y - g[d.id].y) });
-    const decided = ids.map((id) => ({ id, mode: isAdded(id) ? "M2" : M.classifyDrop(g2, id, ids, g) }));
+    const decided = ids.map((id) => ({ id, mode: isAdded(id) ? "M2" : classifyDropX(g2, id, ids, g) }));
     if (decided.some((d) => d.mode === "M2")) {
       const finalItems = decided.map((d) => d.mode === "M1"
         ? m1Of(d)
-        : (() => { const pr = M.reanchor(g2, d.id, secOf(d.id)); return { id: d.id, mode: "M2", anchor: pr.anchor, gapY: pr.gapY, x: pr.x }; })());
+        : (() => { const pr = reanchorX(g2, d.id); return { id: d.id, mode: "M2", anchor: pr.anchor, gapY: pr.gapY, x: pr.x }; })());
       commit({ t: "move", device: state.device, items: finalItems });
       for (const d of finalItems) if (d.mode === "M2" && isAdded(d.id)) pushDownClear(d.id);
     } else {
@@ -2422,9 +2580,9 @@ const PG = (function () {
   // ---- 写真の描画・入口（§1-3）----
   // 枠の中身（素材 ID）を reduce 済み content から引く（差し替えを反映）。
   function assetOfPart(part, R) {
-    let m;
-    if ((m = part.match(/^F_p(\d)$/))) return R.content.feature.blocks[+m[1]]?.photo?.asset || null;
-    if ((m = part.match(/^card_photo_(.+)$/))) return R.content.items.cards.find((c) => c.id === m[1])?.photo?.asset || null;
+    const c = R.secContent[secOf(part)]; const b = bareOf(part); let m;
+    if (c && (m = b.match(/^F_p(\d)$/))) return c.blocks?.[+m[1]]?.photo?.asset || null;
+    if (c && (m = b.match(/^card_photo_(.+)$/))) return c.cards?.find((x) => x.id === m[1])?.photo?.asset || null;
     const a = R.added.find((a) => a.id === part); if (a) return a.asset || null;
     return null;
   }
@@ -2448,7 +2606,7 @@ const PG = (function () {
   function photosApi() {
     const device = state.device; const R = reduce(activeOps(), device, state.peek); const out = [];
     for (const el of document.querySelectorAll('#stage [data-kind="photo"]')) {
-      const part = el.getAttribute("data-el"); const cleared = el.classList.contains("empty");
+      const part = el.getAttribute("data-el"); const cleared = (R.clear || []).includes(part);   // お店が外した空枠だけ cleared（足したセクションの空枠は missing）
       const asset = assetOfPart(part, R); ensureNat(asset);
       const nat = assetNat(asset); const v = effView(part, device, R.viewAll);
       // §2.3「まだない写真」＝素材がまだ無い枠（足したセクションの写真枠など）。お店が外した空枠（cleared）とは区別する。
@@ -2521,7 +2679,8 @@ const PG = (function () {
   };
   return {
     state, render, reset, setDevice, undo, redo, commit, api, reduce, activeOps,
-    canonId, isDraggable, isText, REPEAT, groupOf, secOf, elNode, getScale: () => scale,
+    canonId, isDraggable, isText, REPEAT, groupOf, secOf, elNode, getScale: () => scale, isHeadingGroup,
+    sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionCan,   // §2 セクションの操作
     beginDrag, dragMove, endDrag, isDragging: () => !!drag, selectOnly, toggleSel, selectMany, clearSel, selectSection, selectInDesignRect, smallHit,
     startEdit, commitEdit, nudge, nudgeSelected, deleteSelected, copySelection, cutSelection, paste, duplicate,
     resetScope, peekOn, peekOff, addTextAt, anchorsList, classify: (id) => M.classifyDrop(geometry(), id, [id]),
@@ -2552,7 +2711,7 @@ function opText(op){ const nm=id=>C3.friendly(id);
   return op.t; }
 function refreshStudio(){ const ol=document.getElementById("oplog"); if(ol){ ol.innerHTML=""; for(const op of PG.api.ops()){ const li=document.createElement("li"); li.textContent=opText(op); ol.appendChild(li);} }
   const ul=document.getElementById("anchorlist"); if(ul){ ul.innerHTML=""; for(const a of PG.anchorsList()){ const li=document.createElement("li"); li.textContent=a.partName+"："+(a.mode==="M1"?"塊の中でずらす":a.anchorName+"の下（空き"+a.gapY+"）"); ul.appendChild(li);} } }
-window.onRender=function(){ applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); };
+window.onRender=function(){ applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updateAddZones(); };
 
 document.getElementById("dPC").onclick=()=>{ PG.setDevice("pc"); document.getElementById("dPC").classList.add("on"); document.getElementById("dSP").classList.remove("on"); };
 document.getElementById("dSP").onclick=()=>{ PG.setDevice("sp"); document.getElementById("dSP").classList.add("on"); document.getElementById("dPC").classList.remove("on"); };
@@ -2576,7 +2735,7 @@ const tstools=document.getElementById("tstools");
 const sizePop=document.getElementById("sizePop");
 const colorPop=document.getElementById("colorPop");
 const tsEl=(s)=>document.querySelector('#tstools [data-ts="'+s+'"]');
-function textSelected(){ if(PG.state.editing) return true; const s=[...PG.state.selected]; return s.length>0 && s.every(id=>PG.isText(id)); }
+function textSelected(){ if(PG.state.editing) return true; const s=[...PG.state.selected]; return s.length>0 && s.every(id=>PG.isText(id)||PG.isHeadingGroup(id)); }
 function updateTextTools(){
   if(!textSelected()){ tstools.style.display="none"; sizePop.classList.remove("on"); colorPop.classList.remove("on"); return; }
   tstools.style.display="inline-flex";
@@ -2625,8 +2784,8 @@ window.addEventListener("pointerdown",(e)=>{ if(sizePop.classList.contains("on")
 
 // 浮遊メニュー
 const fmenu=document.getElementById("fmenu");
-function positionFmenu(){ if(!fmenu.classList.contains("on"))return; const id=[...PG.state.selected][0]; const n=id&&PG.elNode(id); if(!n){ fmenu.classList.remove("on"); return;} const r=n.getBoundingClientRect(); const mh=fmenu.offsetHeight||30; let top=r.top-mh-6; if(top<4) top=r.bottom+6; /* §2 部品の上の外側。上に場所がなければ下の外側 */ fmenu.style.left=r.left+"px"; fmenu.style.top=top+"px"; }
-function showFmenu(){ const sel=[...PG.state.selected]; if(!sel.length){ fmenu.classList.remove("on"); return; } fmenu.innerHTML="";
+function positionFmenu(){ if(!fmenu.classList.contains("on"))return; if(fmenu._section)return; /* セクションのメニューはカーソル位置に出したまま */ const id=[...PG.state.selected][0]; const n=id&&PG.elNode(id); if(!n){ fmenu.classList.remove("on"); return;} const r=n.getBoundingClientRect(); const mh=fmenu.offsetHeight||30; let top=r.top-mh-6; if(top<4) top=r.bottom+6; /* §2 部品の上の外側。上に場所がなければ下の外側 */ fmenu.style.left=r.left+"px"; fmenu.style.top=top+"px"; }
+function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if(!sel.length){ fmenu.classList.remove("on"); return; } fmenu.innerHTML="";
   const add=(label,fn,note)=>{ if(note){ const s=document.createElement("span"); s.className="note"; s.textContent=note; fmenu.appendChild(s); return;} const b=document.createElement("button"); b.textContent=label; b.onclick=(ev)=>{ ev.stopPropagation(); fn(); }; fmenu.appendChild(b); };
   const one=sel.length===1?sel[0]:null; const R=PG.reduce(PG.activeOps());
   const moved=one&&PG.partChangedFromTemplate(one);   // N1：位置・大きさ・並び順・重なり順のどれかが変われば出す
@@ -2693,8 +2852,47 @@ window.addEventListener("pointerup",(e)=>{
 });
 // ダブルクリック＝文字はその場書き換え、写真は見せる範囲（§2.1）
 stage.addEventListener("dblclick",(e)=>{ const id=elFrom(e.target); if(!id)return; const c=PG.canonId(id); if(PG.isText(c)){ PG.startEdit(c); } else if(/^F_p|photo/.test(id)){ enterCrop(id); } });
-// 右クリック＝浮遊メニュー
-stage.addEventListener("contextmenu",(e)=>{ const id=elFrom(e.target); if(id){ e.preventDefault(); const grp=PG.groupOf(id); PG.selectOnly(grp||PG.canonId(id)); showFmenu(); } });
+// 右クリック＝浮遊メニュー（部品）／セクションの余白ならセクションのメニュー（§2.1）
+stage.addEventListener("contextmenu",(e)=>{
+  const id=elFrom(e.target);
+  if(id){ e.preventDefault(); const grp=PG.groupOf(id); PG.selectOnly(grp||PG.canonId(id)); showFmenu(); return; }
+  const host=e.target.closest&&e.target.closest("#sectionwrap .host");
+  if(host){ e.preventDefault(); const sec=host.id.replace("host_",""); PG.selectSection(sec); showSectionMenu(sec,e.clientX,e.clientY); }
+});
+
+// ---- §2 セクションのメニュー（上へ・下へ・複製・削除）。#fmenu を使い、カーソルの位置に出す ----
+function showSectionMenu(sec,cx,cy){
+  const can=PG.sectionCan(sec); if(!can.exists){ fmenu.classList.remove("on"); return; }
+  fmenu.innerHTML="";
+  const add=(label,fn)=>{ const b=document.createElement("button"); b.textContent=label; b.setAttribute("data-sec-menu",label); b.onclick=(ev)=>{ ev.stopPropagation(); fmenu.classList.remove("on"); fn(); }; fmenu.appendChild(b); };
+  if(can.up) add("上へ",()=>PG.sectionMove(sec,-1));
+  if(can.down) add("下へ",()=>PG.sectionMove(sec,1));
+  add("複製",()=>PG.sectionDuplicate(sec));
+  if(can.del) add("削除",()=>PG.sectionDelete(sec));
+  fmenu.classList.add("on"); fmenu._section=true;
+  fmenu.style.left=Math.round(cx)+"px"; fmenu.style.top=Math.round(cy)+"px";
+}
+
+// ---- §2 セクションを足す「＋」。セクションの境目（と上端・下端）に出す。押すと型の一覧（特集／品）----
+function updateAddZones(){
+  const wrap=document.getElementById("sectionwrap"); if(!wrap) return;
+  wrap.querySelectorAll(".sec-add-zone").forEach(n=>n.remove());
+  const wraps=[...wrap.querySelectorAll(".sec-wrap")];
+  const mk=(n)=>{ const z=document.createElement("div"); z.className="sec-add-zone"; z.setAttribute("data-sec-add",String(n));
+    const b=document.createElement("button"); b.type="button"; b.className="sec-add-btn"; b.textContent="＋"; b.setAttribute("data-sec-add-btn",String(n));
+    b.onclick=(ev)=>{ ev.stopPropagation(); showTypePicker(n, b.getBoundingClientRect()); }; z.appendChild(b); return z; };
+  wraps.forEach((w)=>wrap.insertBefore(mk([...wrap.querySelectorAll(".sec-wrap")].indexOf(w)),w));
+  wrap.appendChild(mk(wraps.length));
+}
+let typePicker=null;
+function showTypePicker(pos,anchorRect){
+  if(!typePicker){ typePicker=document.createElement("div"); typePicker.id="sectypes"; document.body.appendChild(typePicker); }
+  typePicker.innerHTML="";
+  const add=(label,type)=>{ const b=document.createElement("button"); b.type="button"; b.textContent=label; b.setAttribute("data-sec-type",type); b.onclick=(ev)=>{ ev.stopPropagation(); typePicker.classList.remove("on"); PG.sectionAdd(pos,type); }; typePicker.appendChild(b); };
+  add("特集","feature"); add("品","items");
+  typePicker.classList.add("on"); typePicker.style.left=Math.round(anchorRect.left)+"px"; typePicker.style.top=Math.round(anchorRect.bottom+4)+"px";
+}
+window.addEventListener("pointerdown",(e)=>{ if(typePicker&&typePicker.classList.contains("on")&&!typePicker.contains(e.target)&&!(e.target.classList&&e.target.classList.contains("sec-add-btn"))) typePicker.classList.remove("on"); },true);
 
 // ---- キーボード ----
 window.addEventListener("keydown",(e)=>{
