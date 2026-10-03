@@ -1,0 +1,130 @@
+{
+  "C1-pc": {
+    "pass": true,
+    "order": [
+      "items",
+      "feature"
+    ],
+    "bg": [
+      "surface",
+      "background"
+    ],
+    "itemPartsWorstShift": 0
+  },
+  "C2-pc": {
+    "pass": true,
+    "order": [
+      "feature",
+      "items"
+    ],
+    "bg": [
+      "surface",
+      "background"
+    ]
+  },
+  "C3-pc": {
+    "pass": true,
+    "order": [
+      "feature",
+      "sec1",
+      "items"
+    ],
+    "bg": [
+      "surface",
+      "background",
+      "surface"
+    ],
+    "dupHeading": "季節の上生菓子と抹茶",
+    "dupPartId": "sec1__F_h0"
+  },
+  "_dup3": "sec1",
+  "C4-pc": {
+    "pass": true,
+    "dupMovedX": 24,
+    "note": "右30→ガイド吸着で24（anchorと同じ）",
+    "dupText": "新しい見出し",
+    "origText": "季節の上生菓子と抹茶",
+    "origMoved": false
+  },
+  "C5-pc": {
+    "pass": true,
+    "afterDelete": [
+      "feature"
+    ],
+    "afterUndo": [
+      "feature",
+      "items"
+    ],
+    "reorderKeptAfterUndo": true
+  },
+  "C6-pc": {
+    "pass": true,
+    "order": [
+      "feature",
+      "sec2",
+      "items"
+    ],
+    "bg": [
+      "surface",
+      "background",
+      "surface"
+    ],
+    "addedHeading": "季節の上生菓子",
+    "addedBody": "練り切りときんと…",
+    "photosMissing": [
+      "sec2__F_p0:true",
+      "sec2__F_p1:true"
+    ]
+  },
+  "_add6": "sec2",
+  "C7-pc": {
+    "pass": true,
+    "missing": false,
+    "hasAsset": true
+  },
+  "C8-sp": {
+    "pass": true,
+    "order": [
+      "items",
+      "feature"
+    ],
+    "bg": [
+      "surface",
+      "background"
+    ]
+  },
+  "C9-pc": {
+    "pass": true,
+    "headingBackToTemplate": true,
+    "orderKept": [
+      "items",
+      "feature"
+    ],
+    "movedThenReset": 24
+  },
+  "C10-pc": {
+    "pass": true,
+    "dupHeadingPx": 36,
+    "origHeadingPxPc": 28,
+    "origHeadingPxSp": 20
+  },
+  "C11-pc": {
+    "pass": true,
+    "order": [
+      "feature"
+    ],
+    "menu": [
+      "複製"
+    ]
+  },
+  "C12-pc": {
+    "pass": true,
+    "selAfterFirstClick": "I_cards",
+    "editing": true,
+    "toolsShown": true,
+    "selected": [
+      "card_name_c_warabi"
+    ]
+  },
+  "_errs": []
+}
