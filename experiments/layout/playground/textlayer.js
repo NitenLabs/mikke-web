@@ -68,6 +68,9 @@ const TEXT = (function () {
       if (lb) {
         meas.style.cssText = MEAS_BASE; // 箱ごとにリセット（前の箱の font 指定を残さない）
         for (const d of SPEC.textDecls(b.styleName, b.device)) { const i = d.indexOf(":"); meas.style.setProperty(d.slice(0, i).trim(), d.slice(i + 1).trim()); }
+        // 文字の見た目（大きさ・太さ）の手直しがあれば、改行の測りもその値で行う（表示と改行幅をそろえる）
+        if (b.sizePx != null) meas.style.fontSize = b.sizePx + "px";
+        if (b.weightOv != null) meas.style.fontWeight = b.weightOv;
         meas.style.width = b.widthPx + "px";
         keep = chooseKeep(meas, toks);
       }
