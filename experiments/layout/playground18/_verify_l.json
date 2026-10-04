@@ -1,0 +1,140 @@
+{
+  "L1_80": {
+    "movedY": 30,
+    "moved30": true,
+    "noCrop": true
+  },
+  "L1_250": {
+    "movedY": 30,
+    "moved30": true,
+    "noCrop": true
+  },
+  "L2": {
+    "menuHasReplace": true,
+    "noCrop": true
+  },
+  "L3": {
+    "cropTopLeft": true,
+    "cropCenter": true,
+    "noPicker": true
+  },
+  "L4": {
+    "replacedViaChangeBtn": true,
+    "noAddAfter1": true,
+    "droppedOnHandle": true,
+    "noAddAfter2": true
+  },
+  "L5": {
+    "moveVisible": {
+      "scrollKept": true,
+      "sy0": 700,
+      "sy1": 700,
+      "visible": true
+    },
+    "replace": {
+      "scrollKept": true,
+      "sy0": 700,
+      "sy1": 700,
+      "visible": true
+    },
+    "addPhoto": {
+      "scrollKept": true,
+      "sy0": 700,
+      "sy1": 700,
+      "visible": true
+    },
+    "addText": {
+      "scrollKept": true,
+      "sy0": 700,
+      "sy1": 700,
+      "visible": true
+    },
+    "dropMargin": {
+      "scrollKept": true,
+      "sy0": 700,
+      "sy1": 700,
+      "visible": true
+    },
+    "bright": {
+      "scrollKept": true,
+      "sy0": 700,
+      "sy1": 700,
+      "visible": true
+    },
+    "undo": {
+      "scrollKept": true,
+      "sy0": 700,
+      "sy1": 700,
+      "visible": true
+    }
+  },
+  "L7": {
+    "anchorFb0": true,
+    "topAtFb0Plus16": true,
+    "leftAligned": true,
+    "belowMovedBy": [
+      147.6,
+      147.6,
+      147.6
+    ],
+    "expectPush": 147.6,
+    "overlapsEmpty": true
+  },
+  "L8": {
+    "spBackToBase": true
+  },
+  "L9": {
+    "topAtFb0Plus16": true,
+    "leftAligned": true,
+    "fp1Below": true,
+    "overlapsEmpty": true
+  },
+  "L10": {
+    "topAtFb0Plus16": true,
+    "leftAligned": true,
+    "overlapsEmpty": true
+  },
+  "L11": {
+    "dupExists": true,
+    "topAtFh0Plus16": true,
+    "overlapsEmpty": true
+  },
+  "L12": {
+    "addedOwner": true,
+    "addedOverlapsEmpty": true,
+    "stays": true,
+    "resetBelow16": true,
+    "resetOverlapsEmpty": true,
+    "resetOwnerEmpty": true
+  },
+  "L13": {
+    "within8": true,
+    "left": 546,
+    "right": 1016,
+    "W": 1024
+  },
+  "L14": {
+    "addedBrights": [
+      20,
+      20
+    ],
+    "allAre20": true
+  },
+  "L15": {
+    "present": true,
+    "cyDelta": 0,
+    "centered": true,
+    "bcy": 146,
+    "tbb": 45,
+    "rtop": -156,
+    "rbottom": 247
+  },
+  "_errs": [],
+  "L6": {
+    "note": "指のダブルタップ書き換えは実機確認。ここは描き直しで scrollY が動かないことを確認（キーボード分は対象外）",
+    "scrollKept": true,
+    "sy0": 600,
+    "sy1": 600,
+    "inputMode": "phone"
+  }
+}
