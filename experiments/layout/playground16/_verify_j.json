@@ -1,0 +1,174 @@
+{
+  "J1-pc": {
+    "headShows": true,
+    "photoHides": true,
+    "noneHides": true
+  },
+  "J2-pc": {
+    "size": 36,
+    "sizeOwn": true,
+    "taller": true,
+    "gapSame": true,
+    "gapB": 15.99,
+    "gapA": 15.99,
+    "overlapsEmpty": true
+  },
+  "J3-pc": {
+    "spInherit24": 24,
+    "spOwnFalse": true,
+    "spSet20": 20,
+    "pcStill36": 36
+  },
+  "J4-pc": {
+    "first": 28,
+    "second": 32,
+    "expected": [
+      28,
+      32
+    ]
+  },
+  "J5-pc": {
+    "first700": 700,
+    "second400": 400,
+    "third700": 700,
+    "otherDeviceSame": true
+  },
+  "J6-pc": {
+    "templateColor": "textMuted",
+    "customColor": "#C03030",
+    "recentTop": "#C03030",
+    "otherDeviceSame": true
+  },
+  "J7-pc": {
+    "selected": [
+      "card_name_c_warabi"
+    ],
+    "names": [
+      "#C03030",
+      "#C03030",
+      "#C03030"
+    ],
+    "allNamesRed": true,
+    "descsUnchanged": true
+  },
+  "J8-pc": {
+    "selCount": 2,
+    "headSize": 20,
+    "bodySize": 20,
+    "both20": true
+  },
+  "J9-pc": {
+    "size": 40,
+    "tableNotPushedBySize": true,
+    "tableYMove": 1120.5,
+    "tableYAfter": 1120.5,
+    "ownerOverlaps": 3,
+    "hasOwnerKanmi": true,
+    "overlapsEmpty": true
+  },
+  "J10-pc": {
+    "afterUndo": 24,
+    "afterRedo": 36
+  },
+  "J11-pc": {
+    "menuHasPosReset": true,
+    "posBack": true,
+    "lookKeptAfterPosReset": true,
+    "menuHasLookReset": true,
+    "sizeBack": true,
+    "weightBack": true,
+    "colorBack": true
+  },
+  "J12-pc": {
+    "lastCharA": true,
+    "bold": true
+  },
+  "J13-pc": {
+    "at200": 120,
+    "at3": 8
+  },
+  "_errs-pc": [],
+  "J1-sp": {
+    "headShows": true,
+    "photoHides": true,
+    "noneHides": true
+  },
+  "J2-sp": {
+    "size": 36,
+    "sizeOwn": true,
+    "taller": true,
+    "gapSame": true,
+    "gapB": 8,
+    "gapA": 8,
+    "overlapsEmpty": true
+  },
+  "J4-sp": {
+    "first": 18,
+    "second": 20,
+    "expected": [
+      18,
+      20
+    ]
+  },
+  "J5-sp": {
+    "first700": 700,
+    "second400": 400,
+    "third700": 700,
+    "otherDeviceSame": true
+  },
+  "J6-sp": {
+    "templateColor": "textMuted",
+    "customColor": "#C03030",
+    "recentTop": "#C03030",
+    "otherDeviceSame": true
+  },
+  "J7-sp": {
+    "selected": [
+      "card_name_c_warabi"
+    ],
+    "names": [
+      "#C03030",
+      "#C03030",
+      "#C03030"
+    ],
+    "allNamesRed": true,
+    "descsUnchanged": true
+  },
+  "J8-sp": {
+    "selCount": 2,
+    "headSize": 20,
+    "bodySize": 20,
+    "both20": true
+  },
+  "J9-sp": {
+    "size": 40,
+    "tableNotPushedBySize": true,
+    "tableYMove": 1803.7,
+    "tableYAfter": 1803.7,
+    "ownerOverlaps": 2,
+    "hasOwnerKanmi": true,
+    "overlapsEmpty": true
+  },
+  "J10-sp": {
+    "afterUndo": 16,
+    "afterRedo": 36
+  },
+  "J11-sp": {
+    "menuHasPosReset": true,
+    "posBack": true,
+    "lookKeptAfterPosReset": true,
+    "menuHasLookReset": true,
+    "sizeBack": true,
+    "weightBack": true,
+    "colorBack": true
+  },
+  "J12-sp": {
+    "lastCharA": true,
+    "bold": true
+  },
+  "J13-sp": {
+    "at200": 120,
+    "at3": 8
+  },
+  "_errs-sp": []
+}

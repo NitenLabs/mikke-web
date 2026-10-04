@@ -1,0 +1,172 @@
+{
+  "D1-pc": {
+    "run0": {
+      "text": "練り切り",
+      "color": "#C03030"
+    },
+    "run1Plain": true,
+    "run0len": 4,
+    "run0red": true,
+    "nRuns": 2
+  },
+  "D2-pc": {
+    "firstBold4": true,
+    "secondCleared": true
+  },
+  "D3-pc": {
+    "run0": "練り切りあ",
+    "run0red": true,
+    "run0len": 5,
+    "endsWithA": true
+  },
+  "D4-pc": {
+    "run0": "練りん切り",
+    "allRedFirst": true,
+    "firstRunLen": 5,
+    "hasN": true,
+    "noDup": true
+  },
+  "D5-pc": {
+    "run0red": true,
+    "run0len": 4
+  },
+  "D6-pc": {
+    "boxBold": true,
+    "runsPlain": true
+  },
+  "D7-pc": {
+    "warabi2red": true,
+    "warabiRest": true,
+    "jonamaPlain": true,
+    "doraPlain": true
+  },
+  "D8-pc": {
+    "scale": 1.5,
+    "pxHere": 24,
+    "pxOther": 21,
+    "run0len": 4
+  },
+  "D9-pc": {
+    "beforeReset": {
+      "headSize": 36,
+      "headColor": "textMuted",
+      "headX": 190,
+      "zoom": 1.95
+    },
+    "afterReset": {
+      "headSize": 24,
+      "headColorText": true,
+      "headXBack": true,
+      "viewDefault": true,
+      "bodyStillRed": true
+    },
+    "afterUndo": {
+      "headSize": 36,
+      "headColor7b": true,
+      "headXBack30": true,
+      "zoomBack": true
+    }
+  },
+  "D10-pc": {
+    "menuHas": true,
+    "oneRun": true
+  },
+  "D11-pc": {
+    "undoCleared": true,
+    "redoRed": true
+  },
+  "D12-pc": {
+    "sixSelected": "練り切りとき",
+    "sixLen": 6,
+    "lenGrew": true,
+    "appended6": "練り切りとき",
+    "appendedPlain": true,
+    "nRuns": 1
+  },
+  "_errs-pc": [],
+  "D1-sp": {
+    "run0": {
+      "text": "練り切り",
+      "color": "#C03030"
+    },
+    "run1Plain": true,
+    "run0len": 4,
+    "run0red": true,
+    "nRuns": 2
+  },
+  "D2-sp": {
+    "firstBold4": true,
+    "secondCleared": true
+  },
+  "D3-sp": {
+    "run0": "練り切りあ",
+    "run0red": true,
+    "run0len": 5,
+    "endsWithA": true
+  },
+  "D4-sp": {
+    "run0": "練りん切り",
+    "allRedFirst": true,
+    "firstRunLen": 5,
+    "hasN": true,
+    "noDup": true
+  },
+  "D5-sp": {
+    "run0red": true,
+    "run0len": 4
+  },
+  "D6-sp": {
+    "boxBold": true,
+    "runsPlain": true
+  },
+  "D7-sp": {
+    "warabi2red": true,
+    "warabiRest": true,
+    "jonamaPlain": true,
+    "doraPlain": true
+  },
+  "D8-sp": {
+    "scale": 1.5,
+    "pxHere": 21,
+    "pxOther": 24,
+    "run0len": 4
+  },
+  "D9-sp": {
+    "beforeReset": {
+      "headSize": 36,
+      "headColor": "textMuted",
+      "headX": 58.5,
+      "zoom": 1.89
+    },
+    "afterReset": {
+      "headSize": 16,
+      "headColorText": true,
+      "headXBack": true,
+      "viewDefault": true,
+      "bodyStillRed": true
+    },
+    "afterUndo": {
+      "headSize": 36,
+      "headColor7b": true,
+      "headXBack30": true,
+      "zoomBack": true
+    }
+  },
+  "D10-sp": {
+    "menuHas": true,
+    "oneRun": true
+  },
+  "D11-sp": {
+    "undoCleared": true,
+    "redoRed": true
+  },
+  "D12-sp": {
+    "sixSelected": "練り切りとき",
+    "sixLen": 6,
+    "lenGrew": true,
+    "appended6": "練り切りとき",
+    "appendedPlain": true,
+    "nRuns": 1
+  },
+  "_errs-sp": []
+}
