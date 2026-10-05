@@ -21,9 +21,13 @@ const TEXT = (function () {
   // 見た目つきの span に分けてトークン化する。色は token 名なら CSS 変数、#hex ならそのまま。大きさは箱に対する倍率（em）。
   function runStyleCss(r) {
     const s = [];
+    // §19 文の一部の書体（テンプレートの heading/body を参照）。font/link が無い run の出力は従来と1文字も変えない。
+    if (r.font && typeof SPEC !== "undefined" && SPEC.FONT) s.push("font-family:" + (SPEC.FONT[r.font] || r.font));
     if (r.bold) s.push("font-weight:700");
     if (r.color) s.push("color:" + (/^#/.test(r.color) ? r.color : ("var(--c-" + r.color + ")")));
     if (r.scale && r.scale !== 1) s.push("font-size:" + r.scale + "em");
+    // §19 リンクの見た目：下線 1px・文字の下 3px・色はまわりと同じ（テンプレートの決まり）
+    if (r.link) { s.push("text-decoration:underline"); s.push("text-decoration-thickness:1px"); s.push("text-underline-offset:3px"); }
     return s.join(";");
   }
   function tokenizeRuns(runs, lb) {
@@ -32,7 +36,7 @@ const TEXT = (function () {
     const phrases = lb ? splitPhrases(plain) : [plain];
     const bnd = []; let o = 0; for (const r of runs) { const len = (r.text || "").length; bnd.push([o, o + len, r]); o += len; }
     const runAt = (i) => { for (const [s, e, r] of bnd) if (i >= s && i < e) return r; return runs.length ? runs[runs.length - 1] : {}; };
-    const seg = (text, r) => { const css = runStyleCss(r); return css ? ('<span style="' + css + '">' + esc(text) + "</span>") : esc(text); };
+    const seg = (text, r) => { const css = runStyleCss(r); const lk = r.link ? (' data-lk="' + esc(JSON.stringify(r.link)) + '"') : ""; return (css || lk) ? ('<span' + lk + (css ? ' style="' + css + '"' : "") + '>' + esc(text) + "</span>") : esc(text); };
     const toks = []; let pos = 0;
     for (const ph of phrases) { const L = ph.length; if (L === 0) continue; const start = pos; pos += L; const end = start + L;
       let inner = ""; let i = start;
@@ -95,6 +99,7 @@ const TEXT = (function () {
         // 文字の見た目（大きさ・太さ）の手直しがあれば、改行の測りもその値で行う（表示と改行幅をそろえる）
         if (b.sizePx != null) meas.style.fontSize = b.sizePx + "px";
         if (b.weightOv != null) meas.style.fontWeight = b.weightOv;
+        if (b.fontOv != null) meas.style.fontFamily = b.fontOv;   // §19 箱の書体で改行を測る（指定が無ければ従来どおり）
         meas.style.width = b.widthPx + "px";
         keep = chooseKeep(meas, toks);
       }

@@ -1,0 +1,100 @@
+{
+  "U1-pc": {
+    "resizedNarrower": true,
+    "menuHasReset": true,
+    "widthBackToTemplate": true,
+    "sizesEmpty": true
+  },
+  "U2-pc": {
+    "resizedSmaller": true,
+    "menuHasReset": true,
+    "sizeBackToTemplate": true,
+    "sizesEmpty": true
+  },
+  "U3-pc": {
+    "seHandleScreenX": 1577,
+    "seOnScreen": false,
+    "ox0": -264.16666666666663,
+    "oy0": 0,
+    "ran": false,
+    "note": "se つまみが画面外（x=1577・画面幅1440）＝1440では実マウスで掴めない（N3）"
+  },
+  "U4-pc": {
+    "seOnScreen": false,
+    "ran": false,
+    "note": "se つまみが画面外＝1440では実マウスで掴めない（N3）"
+  },
+  "U5-pc": {
+    "barOnScreen": true,
+    "zoom": 3,
+    "zoom3": true,
+    "xUnchanged": true,
+    "yUnchanged": true,
+    "v0": {
+      "x": 0.5,
+      "y": 0.5,
+      "zoom": 1
+    },
+    "vAfter": {
+      "x": 0.5,
+      "y": 0.5,
+      "zoom": 3
+    }
+  },
+  "U6-pc": {
+    "firstHasClear": true,
+    "firstNoRestore": true,
+    "secondHasRestore": true,
+    "secondNoClear": true
+  },
+  "_errs-pc": [],
+  "U1-sp": {
+    "resizedNarrower": true,
+    "menuHasReset": true,
+    "widthBackToTemplate": true,
+    "sizesEmpty": true
+  },
+  "U2-sp": {
+    "resizedSmaller": true,
+    "menuHasReset": true,
+    "sizeBackToTemplate": true,
+    "sizesEmpty": true
+  },
+  "U3-sp": {
+    "seHandleScreenX": 552,
+    "seOnScreen": false,
+    "ox0": -168.5,
+    "oy0": 0,
+    "ran": false,
+    "note": "se つまみが画面外（x=552・画面幅430）＝1440では実マウスで掴めない（N3）"
+  },
+  "U4-sp": {
+    "seOnScreen": false,
+    "ran": false,
+    "note": "se つまみが画面外＝1440では実マウスで掴めない（N3）"
+  },
+  "U5-sp": {
+    "barOnScreen": true,
+    "zoom": 3,
+    "zoom3": true,
+    "xUnchanged": true,
+    "yUnchanged": true,
+    "v0": {
+      "x": 0.5,
+      "y": 0.5,
+      "zoom": 1
+    },
+    "vAfter": {
+      "x": 0.5,
+      "y": 0.5,
+      "zoom": 3
+    }
+  },
+  "U6-sp": {
+    "firstHasClear": true,
+    "firstNoRestore": true,
+    "secondHasRestore": true,
+    "secondNoClear": true
+  },
+  "_errs-sp": []
+}
