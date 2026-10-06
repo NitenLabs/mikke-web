@@ -4,7 +4,7 @@ import { chromium } from "playwright";
 import path from "node:path"; import fs from "node:fs"; import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
 const url = "file://" + "/Users/ryutak1105/Desktop/芦屋みっけ/mikke-web/refs/compare/layout/playground22_single.html";
-const OUT = path.join(here, "..", "..", "..", "refs/compare/layout/playground20"); fs.mkdirSync(OUT, { recursive: true });
+const OUT = path.join(here, "..", "..", "..", "refs/compare/layout/playground22"); fs.mkdirSync(OUT, { recursive: true });
 const near = (a, b, t = 0.5) => Math.abs(a - b) <= t;
 const pause = (p, ms = 150) => p.waitForTimeout(ms);
 const reset = (p) => p.evaluate(() => window.__playground.reset());
