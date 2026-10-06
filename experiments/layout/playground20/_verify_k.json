@@ -1,0 +1,256 @@
+{
+  "K1-pc": {
+    "present": true,
+    "text": "写真を変える",
+    "h36": true,
+    "centeredX": true,
+    "centeredY": true
+  },
+  "K2-pc": {
+    "assetChanged": true,
+    "frameSame": true,
+    "viewCenter1": true
+  },
+  "K3-pc": {
+    "movedX": 59,
+    "moved60": true,
+    "noPicker": true
+  },
+  "K4-pc": {
+    "btn": true,
+    "warabiChanged": true,
+    "othersUnchanged": true
+  },
+  "K5-pc": {
+    "choose": true,
+    "hint": "または、ここに写真を落とす",
+    "noOldText": true
+  },
+  "K6-pc": {
+    "filled": true,
+    "notCleared": true
+  },
+  "K7-pc": {
+    "movedY": 50,
+    "moved50": true,
+    "noPicker": true
+  },
+  "K8-pc": {
+    "hadMissing": true,
+    "filled": true
+  },
+  "K9-pc": {
+    "added": true,
+    "width": 663,
+    "widthHalf": true,
+    "ratioOK": true,
+    "centerXContent": true,
+    "centerYVisible": true,
+    "selected": true,
+    "othersSame": true
+  },
+  "_k9state_pc": {
+    "addedPart": "addp_1"
+  },
+  "K10-pc": {
+    "present": true,
+    "belowAnchor": true,
+    "gap": 16,
+    "leftAligned": true,
+    "inContent": true,
+    "overlapsEmpty": true
+  },
+  "K11-pc": {
+    "moved": true,
+    "undo1Back": true,
+    "undo2Gone": true,
+    "redoBack": true
+  },
+  "K12-pc": {
+    "ratio45": true,
+    "h": 829,
+    "w": 663
+  },
+  "K13-pc": {
+    "added": true,
+    "centerYDelta": 0.4,
+    "centerYAtDrop": true,
+    "clampedToContentLeft": true
+  },
+  "K14-pc": {
+    "pasteHeadingAdds": true,
+    "pastePhotoReplaces": true
+  },
+  "K15-pc": {
+    "goneHere": true,
+    "goneOther": true
+  },
+  "K16-pc": {
+    "stays": true,
+    "revertedFromMove": true,
+    "belowAnchor": true,
+    "leftAligned": true
+  },
+  "K17-pc": {
+    "inEdit": true,
+    "box": true,
+    "text": "新しい文",
+    "replaced": true,
+    "othersSame": true
+  },
+  "K18-pc": {
+    "noBox": true,
+    "opsSame": true,
+    "nOps0": 0,
+    "nOps1": 0
+  },
+  "K1-sp": {
+    "present": true,
+    "text": "写真を変える",
+    "h36": true,
+    "centeredX": true,
+    "centeredY": true
+  },
+  "K2-sp": {
+    "assetChanged": true,
+    "frameSame": true,
+    "viewCenter1": true
+  },
+  "K3-sp": {
+    "movedX": 60,
+    "moved60": true,
+    "noPicker": true
+  },
+  "K4-sp": {
+    "btn": true,
+    "warabiChanged": true,
+    "othersUnchanged": true
+  },
+  "K5-sp": {
+    "choose": true,
+    "hint": "または、ここに写真を落とす",
+    "noOldText": true
+  },
+  "K6-sp": {
+    "filled": true,
+    "notCleared": true
+  },
+  "K7-sp": {
+    "movedY": 50,
+    "moved50": true,
+    "noPicker": true
+  },
+  "K8-sp": {
+    "hadMissing": true,
+    "filled": true
+  },
+  "K9-sp": {
+    "added": true,
+    "width": 351,
+    "widthHalf": true,
+    "ratioOK": true,
+    "centerXContent": true,
+    "centerYVisible": true,
+    "selected": true,
+    "othersSame": true
+  },
+  "_k9state_sp": {
+    "addedPart": "addp_1"
+  },
+  "K10-sp": {
+    "present": true,
+    "belowAnchor": true,
+    "gap": 16,
+    "leftAligned": true,
+    "inContent": true,
+    "overlapsEmpty": true
+  },
+  "K11-sp": {
+    "moved": true,
+    "undo1Back": true,
+    "undo2Gone": true,
+    "redoBack": true
+  },
+  "K12-sp": {
+    "ratio45": true,
+    "h": 439,
+    "w": 351
+  },
+  "K13-sp": {
+    "added": true,
+    "centerYDelta": 1,
+    "centerYAtDrop": true,
+    "clampedToContentLeft": true
+  },
+  "K14-sp": {
+    "pasteHeadingAdds": true,
+    "pastePhotoReplaces": true
+  },
+  "K15-sp": {
+    "goneHere": true,
+    "goneOther": true
+  },
+  "K16-sp": {
+    "stays": true,
+    "revertedFromMove": true,
+    "belowAnchor": true,
+    "leftAligned": true
+  },
+  "K17-sp": {
+    "inEdit": true,
+    "box": true,
+    "text": "新しい文",
+    "replaced": true,
+    "othersSame": true
+  },
+  "K18-sp": {
+    "noBox": true,
+    "opsSame": true,
+    "nOps0": 0,
+    "nOps1": 0
+  },
+  "K19": {
+    "hoverFilter": true,
+    "brightStays0OnHover": true,
+    "restoredOnOut": true,
+    "committed20": true,
+    "popClosed": true
+  },
+  "K20": {
+    "otherDevice20": true,
+    "afterPageReset20": true,
+    "undo1_20": true,
+    "undo2_0": true
+  },
+  "K21": {
+    "brightness0": true
+  },
+  "K22": {
+    "brightness20": true
+  },
+  "K23": {
+    "warabiMinus20": true,
+    "others0": true
+  },
+  "K24": {
+    "none": true,
+    "head": true,
+    "two": true,
+    "cleared": true
+  },
+  "K25": {
+    "closed": true,
+    "unchanged": true
+  },
+  "K26": {
+    "enteredCrop": true,
+    "noBtnInCrop": true,
+    "noBtnInDrag": true
+  },
+  "K27": {
+    "inputMode": "phone",
+    "addedVisible": true,
+    "brightFilterApplied": true,
+    "phoneNoChooseButton": true
+  }
+}

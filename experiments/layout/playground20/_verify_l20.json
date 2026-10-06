@@ -1,0 +1,241 @@
+{
+  "L1": {
+    "onCards": true,
+    "onCard": false,
+    "onFeaturePhoto": false,
+    "pass": true
+  },
+  "L2": {
+    "opts": [
+      {
+        "n": 2,
+        "cur": false,
+        "dis": false
+      },
+      {
+        "n": 3,
+        "cur": true,
+        "dis": false
+      },
+      {
+        "n": 4,
+        "cur": false,
+        "dis": false
+      }
+    ],
+    "w4": 313.5,
+    "oneRow": true,
+    "wBack": 426,
+    "opsKept": true,
+    "pass": true
+  },
+  "L3": {
+    "cardsW": 1326,
+    "photoW": 651,
+    "doraLeftIsCardsLeft": true,
+    "dora2ndRow": true,
+    "rowGap": 64,
+    "spStill1": true,
+    "opsInc": true,
+    "pass": true
+  },
+  "L4": {
+    "afterUndo": 3,
+    "afterRedo": 2,
+    "pass": true
+  },
+  "L5": {
+    "opts": [
+      1,
+      2
+    ],
+    "cardW": 163.5,
+    "rowGap": 40,
+    "pcStill3": true,
+    "pass": true
+  },
+  "L7": {
+    "handles": [
+      "e",
+      "w"
+    ],
+    "w": 968,
+    "x": 57,
+    "cols": 3,
+    "cardW": 306.66,
+    "pass": true
+  },
+  "L8": {
+    "wMin": 408,
+    "rightWithin": true,
+    "leftWithin": true,
+    "pass": true
+  },
+  "L9": {
+    "opts": [
+      {
+        "n": 2,
+        "cur": false,
+        "dis": false
+      },
+      {
+        "n": 3,
+        "cur": true,
+        "dis": false
+      },
+      {
+        "n": 4,
+        "cur": false,
+        "dis": true
+      }
+    ],
+    "col4Disabled": true,
+    "col2Enabled": true,
+    "pass": true
+  },
+  "L10": {
+    "tableW": 720,
+    "tableX": 236,
+    "nameW": 312,
+    "priceRightEqTableRight": true,
+    "tableHBefore": 187.2,
+    "tableHAfter": 209.6,
+    "pillDelta": 22.4,
+    "spTableW": 351,
+    "pass": true
+  },
+  "L11": {
+    "afterPageCols": 3,
+    "afterPageW": 1326,
+    "afterPageTableW": 968,
+    "partResetColsBecame": 3,
+    "pageResetPass": true,
+    "pass": true
+  },
+  "L12": {
+    "anchor": "F_p0",
+    "mode": "M2",
+    "bodyTopEq": true,
+    "owner": true,
+    "hasZ": true,
+    "pass": true
+  },
+  "L13": {
+    "order": [
+      "F_p0",
+      "F_b0",
+      "F_h0"
+    ],
+    "noM2": true,
+    "pass": true
+  },
+  "L14": {
+    "lineAt13": true,
+    "dt13": "reorder",
+    "lineAt12": false,
+    "dt12": "overlap",
+    "pass": true
+  },
+  "L15": {
+    "hasSwap": true,
+    "fp0x": 136,
+    "fh0x": 779,
+    "pillKept": true,
+    "opsInc": true,
+    "undoBack": true,
+    "pass": true
+  },
+  "L16": {
+    "onHead": true,
+    "onCard": false,
+    "onSp": false,
+    "pass": true
+  },
+  "L17": {
+    "fp0x": 136,
+    "noM1": true,
+    "pass": true
+  },
+  "L18": {
+    "hasHP": true,
+    "hasBP": true,
+    "hasZ": true,
+    "atHeadAfterBack": "DIV.",
+    "pass": true
+  },
+  "L19": {
+    "pcOverlaps": 0,
+    "pcOwner": 0,
+    "pcOverflow": 0,
+    "spOverlaps": 0,
+    "spOwner": 0,
+    "pass": true
+  },
+  "L6": {
+    "within3": true,
+    "within4": true,
+    "pass": true
+  },
+  "L20": {
+    "w520": {
+      "linkLoc": "その他",
+      "enabled": true,
+      "panelOpen": true,
+      "belowSel": true,
+      "inView": true,
+      "ok": true
+    },
+    "w500": {
+      "linkLoc": "その他",
+      "enabled": true,
+      "panelOpen": true,
+      "belowSel": true,
+      "inView": true,
+      "ok": true
+    },
+    "w400": {
+      "linkLoc": "その他",
+      "enabled": true,
+      "panelOpen": true,
+      "belowSel": true,
+      "inView": true,
+      "ok": true
+    },
+    "pass": true
+  },
+  "L21": {
+    "allNamed": true,
+    "allTall": true,
+    "hasColor": true,
+    "hasBold": true,
+    "pcBeforeSp": true,
+    "dividerOk": true,
+    "pass": true
+  },
+  "L22": {
+    "colsLoc": "bar",
+    "popInView": true,
+    "applied": 2,
+    "pass": true
+  },
+  "_errs": [],
+  "L23": {
+    "mode": "phone",
+    "boxOpen": true,
+    "has12": true,
+    "tall": true,
+    "curMarked": true,
+    "applied": 2,
+    "pass": true
+  },
+  "L24": {
+    "mode": "phone",
+    "firstSel": true,
+    "w0": 351,
+    "w1": 200,
+    "shrank": true,
+    "minHeld": true,
+    "pass": true
+  },
+  "_errsPhone": []
+}
