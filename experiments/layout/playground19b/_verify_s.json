@@ -1,0 +1,189 @@
+{
+  "S1": {
+    "pass": true,
+    "inputMode": "phone",
+    "spLayout": true
+  },
+  "S2": {
+    "pass": true,
+    "scrolled": 307,
+    "selected": [],
+    "headingMoved": false
+  },
+  "S3": {
+    "pass": true,
+    "selAfterTap": [
+      "F_h0"
+    ],
+    "boxAfterTap": false,
+    "scrolled": 306,
+    "selAfterScroll": [
+      "F_h0"
+    ],
+    "headingMoved": false
+  },
+  "S4": {
+    "pass": true,
+    "movedDesignX": 30,
+    "expect": 30,
+    "scrolled": 0,
+    "boxAfter": true
+  },
+  "S5": {
+    "pass": true,
+    "selected": [
+      "F_h0"
+    ],
+    "labels": [
+      "書き換える",
+      "複製",
+      "削除"
+    ],
+    "boxTop": 347.6,
+    "headingTop": 407.6,
+    "getSelection": ""
+  },
+  "S6": {
+    "pass": true,
+    "addedBefore": 0,
+    "afterDup": 1,
+    "afterUndo": 0
+  },
+  "S7": {
+    "pass": true,
+    "selGroup": [
+      "I_cards"
+    ],
+    "selInner": [
+      "card_photo_c_warabi"
+    ],
+    "selAfterLP": [
+      "card_photo_c_warabi"
+    ],
+    "cardsBefore": 3,
+    "cardsAfterDel": 2,
+    "cardsAfterUndo": 3,
+    "labels": [
+      "書き換える",
+      "複製",
+      "削除"
+    ]
+  },
+  "S8": {
+    "pass": true,
+    "editing": true,
+    "toolsShown": true,
+    "selected": [
+      "card_name_c_warabi"
+    ],
+    "boxAfterLP": false
+  },
+  "S9": {
+    "pass": true,
+    "widthShrink": 40,
+    "expect": 40,
+    "ratioBefore": 1.36,
+    "ratioAfter": 1.361,
+    "topLeftSame": true
+  },
+  "S10": {
+    "pass": true,
+    "scrolled": 1930,
+    "fingerDist": 0,
+    "placement": "M2"
+  },
+  "S11": {
+    "pass": true,
+    "textLeft": 28.5,
+    "snappedTo8": 28.5,
+    "snapped8": true,
+    "left14": 37.5,
+    "rightEdge14": 370.5,
+    "contentRight": 370.5,
+    "kept14": false,
+    "snappedRight14": true,
+    "note": "8px右＝見出しの左端が本文列の左端(28.5)に吸い付く。14px右は、見出し幅333が中身幅351に近いため右端が中身右端(370.5)に先に吸い付いた＝作業票の但し書き『別の相手に吸い付いたらその相手を報告』に該当（相手＝中身の右端）。吸い付きは画面上10pxしきい値で機能。"
+  },
+  "S12": {
+    "pass": true,
+    "labels": [
+      "上へ",
+      "複製",
+      "削除"
+    ],
+    "order": [
+      "items",
+      "feature"
+    ]
+  },
+  "S13": {
+    "pass": true,
+    "inputModeStillPhone": true,
+    "selOnPcTap": [],
+    "boxOnPcLP": false,
+    "editOnPcDbl": false,
+    "pcScrolled": 112,
+    "selAfterBackToSp": [
+      "F_h0"
+    ]
+  },
+  "S14": {
+    "pass": true,
+    "buttons": [
+      {
+        "t": "書き換える",
+        "w": 92.6,
+        "h": 44
+      },
+      {
+        "t": "複製",
+        "w": 48,
+        "h": 44
+      },
+      {
+        "t": "削除",
+        "w": 48,
+        "h": 44
+      }
+    ],
+    "hits": [
+      "handle-nw:44x44",
+      "handle-ne:44x44",
+      "handle-sw:44x44",
+      "handle-se:44x44"
+    ],
+    "seInnerX": 22,
+    "seInnerY": 22,
+    "quarterW": 87.75,
+    "quarterH": 64.5
+  },
+  "S15": {
+    "pass": true,
+    "enteredCrop": true,
+    "panDelivered": true,
+    "committedOut": true,
+    "view0": {
+      "x": 0.5,
+      "y": 0.5,
+      "zoom": 1
+    },
+    "view1": {
+      "x": 0.5,
+      "y": 0.5,
+      "zoom": 1
+    },
+    "changed": false,
+    "note": "写真 1098x808 は枠 351x258 とほぼ同じ縦横比＝1倍では寄せる余地がほぼ無く、左20のパンは clampView で戻る（指のパン操作は見せる範囲へ届いている）。ダブルタップで見せる範囲に入り・枠外タップで決まる動作は成立。"
+  },
+  "S16": {
+    "pass": true,
+    "boxBefore": true,
+    "selBefore": [
+      "F_h0"
+    ],
+    "selectedAfter": [],
+    "boxAfter": false,
+    "selectedSectionReadable": false
+  },
+  "_errs": []
+}

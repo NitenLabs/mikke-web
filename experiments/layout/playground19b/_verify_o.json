@@ -1,0 +1,441 @@
+{
+  "O1": {
+    "linkEnabled": true,
+    "panelOpen": true,
+    "belowSelTop8": true,
+    "leftAtSel": true,
+    "topDelta": 0.4,
+    "leftDelta": -0.4,
+    "segCount": 3,
+    "segs": [
+      "お店の情報から",
+      "このサイトのページ",
+      "そのほかのホームページ"
+    ],
+    "oneLink": true,
+    "range": [
+      34,
+      39
+    ],
+    "len5": true,
+    "kind": "instagram",
+    "underline": "underline/1px",
+    "pass": true
+  },
+  "O2": {
+    "panelOpen": true,
+    "pass": true
+  },
+  "O3": {
+    "chipOn": true,
+    "chipName": "お店の Instagram（@ashiyado_sample）",
+    "chipBtns": [
+      "開いて確かめる",
+      "変える",
+      "外す"
+    ],
+    "opened": "https://www.instagram.com/ashiyado_sample/",
+    "instaOpened": true,
+    "pass": true
+  },
+  "O4": {
+    "afterChangeKind": "page",
+    "afterChangePage": "/menu",
+    "removedEmpty": true,
+    "textKept": true,
+    "undoBack": true,
+    "pass": true
+  },
+  "O5": {
+    "url": "https://www.example.com",
+    "urlOk": true,
+    "mail": "mailto:info@example.com",
+    "mailOk": true,
+    "invalidErr": true,
+    "invalidStillOpen": true,
+    "invalidNoLink": true,
+    "pass": true
+  },
+  "O6": {
+    "linked": [
+      {
+        "txt": "https://example.com",
+        "kind": "url"
+      }
+    ],
+    "linkedOk": true,
+    "undoLinks0": true,
+    "textKept": true,
+    "pass": true
+  },
+  "O7": {
+    "kisetsuLinked": true,
+    "kind": "url",
+    "noReplace": true,
+    "pass": true
+  },
+  "O8": {
+    "linked": 0,
+    "pass": true
+  },
+  "O9": {
+    "linkedDuringComposition": 0,
+    "note": "変換の途中（isComposing）ではリンクにならない。確定後の扱いは onEditInput が通常入力として扱う",
+    "pass": true
+  },
+  "O10": {
+    "elemToolsShown": true,
+    "panelOpen": true,
+    "linkKind": "line",
+    "chipOn": true,
+    "pass": true
+  },
+  "O11": {
+    "curOutlined": "お品書き",
+    "changedTo": "page",
+    "changedPage": "/contact",
+    "pass": true
+  },
+  "O12": {
+    "notOpened": true,
+    "selected": true,
+    "editing": true,
+    "pass": true
+  },
+  "O13": {
+    "spLinks": 1,
+    "spElem": "line",
+    "afterResetLinks": 1,
+    "afterResetElem": "line",
+    "dupPart": "add_1",
+    "dupLinks": 1,
+    "pass": true
+  },
+  "O14": {
+    "btn": "明朝 ▾",
+    "optCount": 2,
+    "opts": [
+      {
+        "k": "heading",
+        "nm": "✓明朝　見出しの書体",
+        "sample": "季節の上生菓子",
+        "cur": true
+      },
+      {
+        "k": "body",
+        "nm": "ゴシック　本文の書体",
+        "sample": "季節の上生菓子",
+        "cur": false
+      }
+    ],
+    "sampleMatches": true,
+    "minchoChecked": true,
+    "pass": true
+  },
+  "O15": {
+    "previewGothic": true,
+    "dataUnchangedDuringHover": true,
+    "restoredOnLeave": true,
+    "afterClick": "body",
+    "afterUndo": "heading",
+    "pass": true
+  },
+  "O16": {
+    "runs": [
+      {
+        "txt": "練り切りときんとんの意匠は、ひと月ごとに変わります。",
+        "font": null
+      },
+      {
+        "txt": "季節の移ろい",
+        "font": "heading"
+      },
+      {
+        "txt": "を、小さな菓子に写してお届けします。",
+        "font": null
+      }
+    ],
+    "minchoOnRange": true,
+    "pass": true
+  },
+  "O17": {
+    "spSameH0": true,
+    "spB0part": true,
+    "h0After": "heading",
+    "b0partAfter": true,
+    "pass": true
+  },
+  "O18": {
+    "font": "heading",
+    "overlapsEmpty": true,
+    "pass": true
+  },
+  "O19": {
+    "photoFontHidden": true,
+    "multiFontHidden": true,
+    "noneFontHidden": true,
+    "pass": true
+  },
+  "O20": {
+    "feature_1100": {
+      "shown": true,
+      "ok": true,
+      "box": {
+        "top": 1054,
+        "bottom": 1092,
+        "left": 18,
+        "right": 162,
+        "tb": 45,
+        "vw": 1440,
+        "vh": 1100
+      }
+    },
+    "items_1100": {
+      "shown": true,
+      "ok": true,
+      "box": {
+        "top": 1054,
+        "bottom": 1092,
+        "left": 18,
+        "right": 162,
+        "tb": 45,
+        "vw": 1440,
+        "vh": 1100
+      }
+    },
+    "feature_800": {
+      "shown": true,
+      "ok": true,
+      "box": {
+        "top": 754,
+        "bottom": 792,
+        "left": 18,
+        "right": 162,
+        "tb": 45,
+        "vw": 1440,
+        "vh": 800
+      }
+    },
+    "items_800": {
+      "shown": true,
+      "ok": true,
+      "box": {
+        "top": 754,
+        "bottom": 792,
+        "left": 18,
+        "right": 162,
+        "tb": 45,
+        "vw": 1440,
+        "vh": 800
+      }
+    },
+    "pass": true
+  },
+  "O21": {
+    "w1440": {
+      "oneRow": true,
+      "h": [
+        45,
+        45,
+        45
+      ],
+      "yStable": true,
+      "y": [
+        420.91,
+        420.91,
+        420.91
+      ],
+      "inView": true,
+      "fontLoc": "bar",
+      "linkLoc": "bar",
+      "ok": true
+    },
+    "w1280": {
+      "oneRow": true,
+      "h": [
+        45,
+        45,
+        45
+      ],
+      "yStable": true,
+      "y": [
+        424.43,
+        424.43,
+        424.43
+      ],
+      "inView": true,
+      "fontLoc": "bar",
+      "linkLoc": "bar",
+      "ok": true
+    },
+    "w1180": {
+      "oneRow": true,
+      "h": [
+        45,
+        45,
+        45
+      ],
+      "yStable": true,
+      "y": [
+        426.87,
+        426.87,
+        426.87
+      ],
+      "inView": true,
+      "fontLoc": "bar",
+      "linkLoc": "bar",
+      "ok": true
+    },
+    "w1024": {
+      "oneRow": true,
+      "h": [
+        45,
+        45,
+        45
+      ],
+      "yStable": true,
+      "y": [
+        429.85,
+        429.85,
+        429.85
+      ],
+      "inView": true,
+      "fontLoc": "bar",
+      "linkLoc": "bar",
+      "ok": true
+    },
+    "w900": {
+      "oneRow": true,
+      "h": [
+        45,
+        45,
+        45
+      ],
+      "yStable": true,
+      "y": [
+        425.52,
+        425.52,
+        425.52
+      ],
+      "inView": true,
+      "fontLoc": "bar",
+      "linkLoc": "bar",
+      "ok": true
+    },
+    "w800": {
+      "oneRow": true,
+      "h": [
+        45,
+        45,
+        45
+      ],
+      "yStable": true,
+      "y": [
+        388.97,
+        388.97,
+        388.97
+      ],
+      "inView": true,
+      "fontLoc": "bar",
+      "linkLoc": "bar",
+      "ok": true
+    },
+    "w700": {
+      "oneRow": true,
+      "h": [
+        45,
+        45,
+        45
+      ],
+      "yStable": true,
+      "y": [
+        352.41,
+        352.41,
+        352.41
+      ],
+      "inView": true,
+      "fontLoc": "bar",
+      "linkLoc": "bar",
+      "ok": true
+    },
+    "w650": {
+      "oneRow": true,
+      "h": [
+        45,
+        45,
+        45
+      ],
+      "yStable": true,
+      "y": [
+        334.14,
+        334.14,
+        334.14
+      ],
+      "inView": true,
+      "fontLoc": "bar",
+      "linkLoc": "bar",
+      "ok": true
+    },
+    "pass": true
+  },
+  "O22": {
+    "moreShown": true,
+    "studioInMore": true,
+    "fontLoc": "bar",
+    "fontApplied": true,
+    "linkLoc": "bar",
+    "linkApplied": true,
+    "pass": true
+  },
+  "O23": {
+    "kbd": {
+      "topDelta": 0.4,
+      "leftDelta": -0.4
+    },
+    "mouse": {
+      "topDelta": 0.4,
+      "leftDelta": -0.4
+    },
+    "cmdk": {
+      "topDelta": 0.4,
+      "leftDelta": -0.4
+    },
+    "pass": true
+  },
+  "O24": {
+    "above": true,
+    "withinTop": true,
+    "withinBottom": true,
+    "pass": true
+  },
+  "O25": {
+    "below": true,
+    "above": false,
+    "inView": true,
+    "pass": true
+  },
+  "O26": {
+    "previewed": true,
+    "restored": true,
+    "popClosed": true,
+    "pass": true
+  },
+  "O27": {
+    "previewed": true,
+    "restored": true,
+    "pass": true
+  },
+  "O28": {
+    "kisetBoldRed": true,
+    "kashiLinked": true,
+    "sizeOfTarget": true,
+    "undoBack": true,
+    "pass": true
+  },
+  "O29": {
+    "hasPlain": true,
+    "noStyle": true,
+    "pass": true
+  },
+  "_errs": []
+}

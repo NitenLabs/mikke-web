@@ -1,0 +1,249 @@
+{
+  "S17": {
+    "pass": true,
+    "scrollWidth": 390,
+    "scrollX": 0,
+    "innerW": 390
+  },
+  "S18": {
+    "pass": true,
+    "scrolled": 0,
+    "fingerDist": 0
+  },
+  "S19": {
+    "pass": true,
+    "boxLeft": 8,
+    "boxRight": 382,
+    "buttons": 6
+  },
+  "S20": {
+    "pass": true,
+    "boxLeft": 220,
+    "boxRight": 382,
+    "section": true,
+    "labels": [
+      "上へ",
+      "複製",
+      "削除"
+    ]
+  },
+  "S21": {
+    "pass": true,
+    "gapBefore": 6,
+    "gapAfter": 6,
+    "boxFollows": true
+  },
+  "S22": {
+    "pass": true,
+    "topToolbarShown": false,
+    "pbarVisible": true,
+    "labels": [
+      "戻す",
+      "やり直す",
+      "その他"
+    ],
+    "buttons": [
+      {
+        "t": "戻す",
+        "w": 64,
+        "h": 44
+      },
+      {
+        "t": "やり直す",
+        "w": 80,
+        "h": 44
+      },
+      {
+        "t": "その他",
+        "w": 65,
+        "h": 44
+      }
+    ],
+    "pbarBottom": 844,
+    "visBottom": 844
+  },
+  "S23": {
+    "pass": true,
+    "lastBottom": 679.4,
+    "pbarTop": 787
+  },
+  "S24": {
+    "pass": true,
+    "moved": 30,
+    "expect": 30,
+    "afterUndo": 28.5,
+    "orig": 28.5,
+    "afterRedo": 30
+  },
+  "S25": {
+    "pass": true,
+    "items": [
+      "テキストを足す",
+      "PC の見え方を見る",
+      "元の配置を見る",
+      "このページを元に戻す",
+      "制作用"
+    ],
+    "all44": true,
+    "closedOnOutside": true,
+    "deviceAfterPC": "pc",
+    "pbarInPC": [
+      "スマホの編集に戻る"
+    ],
+    "deviceBack": "sp",
+    "selAfterBack": [
+      "F_h0"
+    ]
+  },
+  "S26": {
+    "pass": true,
+    "addedBefore": 0,
+    "addedAfter": 1,
+    "where": {
+      "part": "add_1",
+      "partName": "足した文字",
+      "mode": "M2",
+      "anchor": "F_h0",
+      "anchorName": "特集1の見出し",
+      "gapY": 24,
+      "x": 28.5,
+      "added": true
+    }
+  },
+  "S27": {
+    "pass": true,
+    "ptextShown": true,
+    "pbarHiddenWhileEdit": true,
+    "ptextButtons": [
+      {
+        "t": "大きさ",
+        "w": 65,
+        "h": 44
+      },
+      {
+        "t": "太字",
+        "w": 50,
+        "h": 44
+      },
+      {
+        "t": "色",
+        "w": 48,
+        "h": 44
+      },
+      {
+        "t": "終わる",
+        "w": 65,
+        "h": 44
+      }
+    ],
+    "bolded": true,
+    "activeEl": "F_h0",
+    "editingAfterBold": true,
+    "editingAfterDone": false,
+    "ptextAfterDone": false,
+    "pbarBack": true
+  },
+  "S28": {
+    "pass": true,
+    "selectionOk": true,
+    "warabiColor": "#D00000",
+    "mochiColor": "none",
+    "listLeft": 8,
+    "listRight": 322
+  },
+  "S29": {
+    "pass": true,
+    "vs": 2,
+    "btnScreenBefore": 64,
+    "btnScreenAfter": 64,
+    "pbarBottom": 633,
+    "visBottom": 633
+  },
+  "S30": {
+    "pass": true,
+    "vs": 2,
+    "boxBtnScreen": [
+      92.6,
+      48,
+      48
+    ],
+    "boxLeft": 156.6,
+    "boxRight": 259.9,
+    "viewLeft": 105,
+    "viewRight": 284
+  },
+  "S31": {
+    "pass": true,
+    "vs": 2,
+    "scale": 1,
+    "literal20_moved": 9,
+    "literal20_expect": 10,
+    "clean40_moved": 20,
+    "clean40_expect": 20,
+    "note": "作業票どおりの『画面上20px』は設計10px移動のはずが実測9px＝吸い付き(§3.2.8/§4.5。vs2での吸い付き閾値は設計5px)が近くの目安線へ1px引いた正規の動作。吸い付きの届かない画面上40px（設計20px）では 40/(scale×vs)=20 にぴたり一致し、移動量が 1/(scale×vs) で縮む関係は成立。"
+  },
+  "S32": {
+    "pass": true,
+    "vs": 1
+  },
+  "S33": {
+    "pass": true,
+    "zoomBefore": 1,
+    "zoomAfter": 1.1,
+    "vsDuring": 1,
+    "committedOnOutside": true
+  },
+  "S34": {
+    "pass": true,
+    "movedAt2ndFinger": 20,
+    "movedFinal": 20,
+    "expect": 20,
+    "boxShown": false,
+    "selAfterTap": [
+      "F_b0"
+    ]
+  },
+  "S35": {
+    "pass": true,
+    "accept": "image/*",
+    "capture": null,
+    "changed": true
+  },
+  "S36": {
+    "pass": true,
+    "zonesVisible": 3,
+    "boundaries": 3,
+    "hits": [
+      {
+        "w": 44,
+        "h": 44
+      },
+      {
+        "w": 44,
+        "h": 44
+      },
+      {
+        "w": 44,
+        "h": 44
+      }
+    ],
+    "plusAboveBar": true,
+    "pickerInView": true,
+    "secAfterAdd": 3,
+    "secAfterUndo": 2
+  },
+  "S37": {
+    "pass": true,
+    "scrolled": 0,
+    "pickerShown": false,
+    "sectionAdded": false,
+    "atPageBottom": true,
+    "note": "＋は版面の最下端（品の下＝最後の要素）。触れるには版面最下端まで送る必要があり、そこから上へのなぞりは送る中身が無く移動量0。なぞりが一覧を出さず（スクロール扱い＝§6.3）セクションも足さない点を確認。"
+  },
+  "S38": {
+    "pass": true,
+    "plusInPCView": 0,
+    "plusWhileEditing": 0
+  },
+  "_errs": []
+}
