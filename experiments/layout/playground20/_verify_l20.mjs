@@ -3,7 +3,7 @@
 import { chromium } from "playwright";
 import path from "node:path"; import fs from "node:fs"; import { fileURLToPath } from "node:url";
 const here = path.dirname(fileURLToPath(import.meta.url));
-const url = "file://" + "/Users/ryutak1105/Desktop/芦屋みっけ/mikke-web/refs/compare/layout/playground20_single.html";
+const url = "file://" + "/Users/ryutak1105/Desktop/芦屋みっけ/mikke-web/refs/compare/layout/playground20b_single.html";
 const OUT = path.join(here, "..", "..", "..", "refs/compare/layout/playground20"); fs.mkdirSync(OUT, { recursive: true });
 const near = (a, b, t = 0.5) => Math.abs(a - b) <= t;
 const pause = (p, ms = 150) => p.waitForTimeout(ms);
@@ -83,14 +83,14 @@ async function run() {
   { await reset(p); await pause(p, 150); await clickEl(p, "I_cards"); await p.evaluate(() => window.__playground.programResize("I_cards", "e", -918, 0, true)); await pause(p, 200);
     await openColsList(p); const opts = await colOpts(p);
     report.L9 = { opts, col4Disabled: opts.find((o) => o.n === 4).dis, col2Enabled: !opts.find((o) => o.n === 2).dis, pass: opts.find((o) => o.n === 4).dis && !opts.find((o) => o.n === 2).dis }; await p.keyboard.press("Escape"); await pause(p, 100); }
-  // L10：表を選び右の辺つまみ Alt 左248 → 幅720・左端236・名前312・値段右端=表右端。表高さ・下ボタン不変。SP表は変わらない
+  // L10：表を選び右の辺つまみ Alt 左248 → 幅720・左端236・名前416.5・値段右端=表右端（§20b §2 等比：名前560:間159:値段249）。表高さ・下ボタン不変。SP表は変わらない
   { await reset(p); await pause(p, 150);
     const pillBefore = (await geom(p)).I_pillbg; const tableHBefore = (await geom(p)).I_table.h;
     await clickEl(p, "I_table"); await p.evaluate(() => window.__playground.programResize("I_table", "e", -248, 0, true)); await pause(p, 250);
     const ll = await listLayout(p); const g = await geom(p); const nameW = g[Object.keys(g).find((k) => /row_name/.test(k))].w; const pk = Object.keys(g).find((k) => /row_price/.test(k)); const priceRight = g[pk].x + g[pk].w; const tableRight = g.I_table.x + g.I_table.w;
     const spTable = (await listLayout(p, "sp")).I_table.w;
     await shot(p, "L10.jpg");
-    report.L10 = { tableW: ll.I_table.w, tableX: ll.I_table.x, nameW: +nameW.toFixed(1), priceRightEqTableRight: near(priceRight, tableRight, 0.6), tableHBefore: +tableHBefore.toFixed(1), tableHAfter: +g.I_table.h.toFixed(1), pillDelta: +(g.I_pillbg.y - pillBefore.y).toFixed(1), spTableW: spTable, pass: near(ll.I_table.w, 720, 0.6) && near(ll.I_table.x, 236, 0.6) && near(nameW, 312, 0.6) && near(priceRight, tableRight, 0.6) && spTable === 351 }; }
+    report.L10 = { tableW: ll.I_table.w, tableX: ll.I_table.x, nameW: +nameW.toFixed(1), priceRightEqTableRight: near(priceRight, tableRight, 0.6), tableHBefore: +tableHBefore.toFixed(1), tableHAfter: +g.I_table.h.toFixed(1), pillDelta: +(g.I_pillbg.y - pillBefore.y).toFixed(1), spTableW: spTable, pass: near(ll.I_table.w, 720, 0.6) && near(ll.I_table.x, 236, 0.6) && near(nameW, 416.5, 0.6) && near(priceRight, tableRight, 0.6) && spTable === 351 }; }
   // L11：列・幅の後「このページを元に戻す」で全部戻る。元の位置に戻すで列がどうなるか
   { await reset(p); await pause(p, 150);
     await clickEl(p, "I_cards"); await p.evaluate(() => window.__playground.setCols("I_cards", 2)); await pause(p, 150);

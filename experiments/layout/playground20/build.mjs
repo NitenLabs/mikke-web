@@ -74,6 +74,7 @@ body{margin:0;font:14px/1.6 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",
 /* §20（X23.②）しまったボタンは名前つき・高さそろえ（30以上）。アイコンだけの物は字を隠して名前を出す（色は見本を名前の左に） */
 #moreMenu [data-more-name]{display:flex!important;align-items:center;gap:6px;justify-content:flex-start;min-height:30px;width:100%;padding:4px 10px;font-size:0;text-align:left}
 #moreMenu [data-more-name]::after{content:attr(data-more-name);font:13px system-ui;color:#333}
+#moreMenu [data-more-name].on::after{color:#fff}/* §20b X25：今の端末・選んでいる印の行は黒地（button.on）なので文字を白に＝上の並びと同じ見た目 */
 #moreMenu [data-more-name]>*{display:none}
 #moreMenu [data-more-name] .sw{display:inline-block;width:16px;height:16px;border:1px solid #bbb;border-radius:3px}
 #moreMenu #tstools,#moreMenu #photoTools,#moreMenu #elemTools{display:inline-flex!important}
@@ -96,15 +97,15 @@ button:active{transform:translateY(1px)}
 #elemTools{display:none;align-items:center;gap:4px}
 #cardsTools{display:none;align-items:center;gap:4px}
 #cardsTools .div{width:1px;height:20px;background:#ddd}
-/* §20 列の見本（.tspop を踏襲） */
-#colsPop{padding:4px;min-width:150px}
-#colsPop .crow{display:flex;align-items:center;gap:8px;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:6px 8px;cursor:pointer}
-#colsPop .crow:hover:not([disabled]),#colsPop .crow.cur{background:#eef4ff}
-#colsPop .crow[disabled]{opacity:.4;cursor:default}
-#colsPop .crow .ico{display:grid;gap:2px;width:38px}
-#colsPop .crow .ico i{height:10px;background:#9bb;border-radius:1px;display:block}
-#colsPop .crow .nm{font:13px system-ui;color:#333}
-#colsPop .crow .ck{color:#06c;margin-left:auto}
+/* §20b §3 列の見本（横並び・写真の「明るさ ▾」と同じ形：小さな絵＋名前、今の列に青枠、押せない列は灰色） */
+#colsPop{padding:8px}
+#colsPop .swrow{display:flex;gap:8px}
+#colsPop .sw{display:flex;flex-direction:column;align-items:center;gap:4px;border:2px solid transparent;border-radius:8px;padding:4px;background:none;cursor:pointer}
+#colsPop .sw.cur{border-color:#06c}
+#colsPop .sw[disabled]{opacity:.4;cursor:default}
+#colsPop .sw .thumb{width:60px;height:44px;border:1px solid #ccc;border-radius:4px;display:grid;gap:3px;padding:6px;box-sizing:border-box;background:#fff}
+#colsPop .sw .thumb i{background:#9bb;border-radius:1px;display:block}
+#colsPop .sw .cap{font:11px system-ui;color:#555}
 #elemTools .div{width:1px;height:20px;background:#ddd}
 /* §19 書体の一覧（.tspop を踏襲）・各行に見本＋名前 */
 #fontPop{padding:4px;min-width:200px}
@@ -590,15 +591,15 @@ const colsPop=document.getElementById("colsPop");
 function cardsSelected(){ const sel=[...PG.state.selected]; return sel.length===1 && PG.canonId(sel[0])==="I_cards"; }
 function updateCardsTools(){ const show=cardsSelected() && !PG.state.editing && !isPhone(); cardsTools.style.display=show?"inline-flex":"none"; if(!show) closeColsPop(); }
 function closeColsPop(){ PG.clearColsPreview(); colsPop.classList.remove("on"); }
-function buildColsPop(){ colsPop.innerHTML=""; const info=PG.colsApi();
-  for(const opt of info.enabled){ const b=document.createElement("button"); b.className="crow"+(opt.n===info.current?" cur":""); b.setAttribute("data-cols-opt",String(opt.n)); if(!opt.enabled) b.disabled=true;
-    const ico=document.createElement("span"); ico.className="ico"; ico.style.gridTemplateColumns="repeat("+opt.n+",1fr)"; for(let i=0;i<opt.n;i++){ const bar=document.createElement("i"); ico.appendChild(bar); }
-    const nm=document.createElement("span"); nm.className="nm"; nm.textContent=opt.n+"列"; b.appendChild(ico); b.appendChild(nm);
-    if(opt.n===info.current){ const ck=document.createElement("span"); ck.className="ck"; ck.textContent="✓"; b.appendChild(ck); }
+function buildColsPop(){ colsPop.innerHTML=""; const info=PG.colsApi(); const row=document.createElement("div"); row.className="swrow";
+  for(const opt of info.enabled){ const b=document.createElement("button"); b.className="sw"+(opt.n===info.current?" cur":""); b.setAttribute("data-cols-opt",String(opt.n)); if(!opt.enabled) b.disabled=true;
+    const thumb=document.createElement("div"); thumb.className="thumb"; thumb.style.gridTemplateColumns="repeat("+opt.n+",1fr)"; for(let i=0;i<opt.n;i++){ thumb.appendChild(document.createElement("i")); }
+    const cap=document.createElement("div"); cap.className="cap"; cap.textContent=opt.n+"列"; b.appendChild(thumb); b.appendChild(cap);
     b.onmousedown=(e)=>e.preventDefault();
     if(opt.enabled){ b.addEventListener("mouseenter",()=>PG.setColsPreview("I_cards",opt.n)); b.addEventListener("mouseleave",()=>PG.clearColsPreview());
       b.onclick=(e)=>{ e.stopPropagation(); PG.clearColsPreview(); PG.setCols("I_cards",opt.n); colsPop.classList.remove("on"); }; }
-    colsPop.appendChild(b); } }
+    row.appendChild(b); }
+  colsPop.appendChild(row); }
 document.getElementById("tCols").onmousedown=(e)=>e.preventDefault();
 document.getElementById("tCols").onclick=(e)=>{ e.stopPropagation(); if(colsPop.classList.contains("on")){ closeColsPop(); return; } buildColsPop(); const r=e.currentTarget.getBoundingClientRect(); const vw=innerWidth; colsPop.classList.add("on"); const pw=colsPop.offsetWidth||160; let left=Math.min(r.left, vw-8-pw); left=Math.max(8,left); colsPop.style.left=Math.round(left)+"px"; colsPop.style.top=(r.bottom+4)+"px"; };
 window.addEventListener("pointerdown",(e)=>{ if(colsPop.classList.contains("on")&&!colsPop.contains(e.target)&&!document.getElementById("tCols").contains(e.target)&&!(e.target.closest&&e.target.closest("#moreMenu"))) closeColsPop(); },true);
@@ -1216,11 +1217,11 @@ ${WIRING}
 </body></html>`;
   const outDir = path.join(ROOT, "refs/compare/layout");
   fs.mkdirSync(outDir, { recursive: true });
-  const out = path.join(outDir, "playground20_single.html");
+  const out = path.join(outDir, "playground20b_single.html");
   fs.writeFileSync(out, html);
   console.log(`wrote ${out}  (${(fs.statSync(out).size / 1024 / 1024).toFixed(2)} MB)`);
   // §6 試験の画像を refs にも写す（Claude.ai の確認で使う）
-  const imgSrc = path.join(here, "testimg"), imgDst = path.join(outDir, "playground20_testimg");
+  const imgSrc = path.join(here, "testimg"), imgDst = path.join(outDir, "playground20b_testimg");
   if (fs.existsSync(imgSrc)) { fs.mkdirSync(imgDst, { recursive: true }); for (const f of fs.readdirSync(imgSrc)) fs.copyFileSync(path.join(imgSrc, f), path.join(imgDst, f)); }
   fs.writeFileSync(path.join(here, "index.html"), html);
 }

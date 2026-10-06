@@ -106,7 +106,11 @@ const PG = (function () {
   // §8 入口：品の並び・表の、設計pxでの 列/幅/x（省けば今の端末）
   function listLayout(device) {
     device = device || state.device;
-    const grab = () => { const g = geometry(); const out = {}; if (g["I_cards"]) out.I_cards = { cols: colsOf("I_cards", device), w: +g["I_cards"].w.toFixed(2), x: +g["I_cards"].x.toFixed(2) }; if (g["I_table"]) out.I_table = { w: +g["I_table"].w.toFixed(2), x: +g["I_table"].x.toFixed(2) }; return out; };
+    const grab = () => { const g = geometry(); const R = reduce(activeOps(), device); const out = {};
+      if (g["I_cards"]) out.I_cards = { cols: colsOf("I_cards", device), w: +g["I_cards"].w.toFixed(2), x: +g["I_cards"].x.toFixed(2) };
+      // §20b §2.4 表の幅は「記録の幅」を返す（描画時クランプで画面上は広がりうるが、記録は変わらない）
+      if (g["I_table"]) { const rec = (R.sizes && R.sizes["I_table"] && R.sizes["I_table"].w != null) ? R.sizes["I_table"].w : g["I_table"].w; out.I_table = { w: +rec.toFixed(2), x: +g["I_table"].x.toFixed(2) }; }
+      return out; };
     if (device === state.device) return grab();
     const here = state.device; state.device = device; render(); const out = grab(); state.device = here; render(); return out;
   }
@@ -402,6 +406,7 @@ const PG = (function () {
   const defaultSecList = () => [{ id: "feature", type: "feature" }, { id: "items", type: "items" }];
   let state = { device: "pc", ops: [], cursor: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null };
   let scale = 1, layoutCount = 0, composing = false;
+  let clampGuard = false;   // §20b §2.4 表の幅クランプの再描画ガード（render の再入防止）
   let appliedPlace = {}; // id -> {top,left} 直近の絶対配置
 
   // ---- 写真（§1-2）：素材の中身はページの中だけで持つ（保存しない）。差し替え＝replace op・見せる範囲＝view op。----
@@ -687,13 +692,26 @@ const PG = (function () {
       }
       if (inst.type === "items") { const cardsId = anchor ? "I_cards" : (pfx + "I_cards"); let cv = R.colsMap[cardsId] && R.colsMap[cardsId][state.device]; if (state.colsPreview && state.colsPreview.id === cardsId && state.colsPreview.device === state.device) cv = state.colsPreview.n; if (cv != null) edits.geom = { [state.device]: { cols: cv } }; }   // §20 列（仮表示を優先）
       if (inst.type === "feature") { const sw = R.swapMap[sec] && R.swapMap[sec][state.device]; if (sw) edits.swap = sw; }   // §5 左右入替
+      // §20b §2.4 描画時クランプ：記録幅では値段が1行に入らない表を、表示だけ広い幅で描く（記録=edits.sizes には触らず transient な幅を差し込む）
+      if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tid = anchor ? "I_table" : (pfx + "I_table"); edits.sizes = Object.assign({}, edits.sizes, { [tid]: Object.assign({}, edits.sizes[tid], { w: state._tableDispW }) }); }
       const out = (inst.type === "feature" ? M.buildFeature : M.buildItems)(content, state.device, H, edits);
       host.innerHTML = pfx ? prefixIds(out.bodyHtml, pfx) : out.bodyHtml;
+      // §20b §2.4 広げるのは右へ（左端は動かさない）＝中央そろえ(margin:auto)を左端固定に上書き
+      if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tn = host.querySelector('#host_items [data-el="I_table"]') || host.querySelector('[data-el="I_table"]'); if (tn) { const dw = SPEC.DESIGN_W[state.device]; const recW = (R.sizes && R.sizes["I_table"] && R.sizes["I_table"].w != null) ? R.sizes["I_table"].w : 968; tn.style.marginLeft = ((dw - recW) / 2) + "px"; tn.style.marginRight = "0"; } }
       host._padBottom = out.padBottom;
       const s = host.querySelector("#sec"); if (s) s.style.background = SPEC.COLORS[secBgName(idx)];   // §2.2 背景は並び順で
     });
     applyTextStyles(R);   // §12：文字の箱まるごとの大きさ・太さ・色を当てる（実測・配置の前に）
     layoutScale();
+    // §20b §2.4 記録幅では値段が1行に入らない表を、表示だけ右へ広げて描き直す（記録は変えない・左端固定・中身の右端で頭打ち）
+    if (!clampGuard && state.device === "pc") {
+      const Rt = reduce(activeOps(), state.device);
+      const recW = (Rt.sizes && Rt.sizes["I_table"] && Rt.sizes["I_table"].w != null) ? Rt.sizes["I_table"].w : 968;
+      const dw = SPEC.DESIGN_W[state.device], leftD = (dw - recW) / 2, cap = contentEdges().right - leftD;
+      const dispW = +Math.min(Math.max(recW, tableFitW("pc")), cap).toFixed(2);
+      const want = dispW > recW + 0.5 ? dispW : null;
+      if (want !== (state._tableDispW || null)) { state._tableDispW = want; clampGuard = true; render(); clampGuard = false; return; }
+    }
     placeAbsolute(R);
     decorate();
     if (typeof onRender === "function") onRender();
@@ -899,8 +917,32 @@ const PG = (function () {
   const HSZ = 14;
   function resizableKind(id) { const c = canonId(id); if (c === "I_divider") return "line"; if (c === "I_pillbg") return "pill"; if (c === "I_cards") return "cards"; if (c === "I_table") return "table"; if (/^F_p\d$/.test(c) || /^addp_/.test(c)) return "photo"; if (REPEAT.test(c)) return null; if (isText(c) || isAdded(c)) return "text"; return null; }   // §20 品の並び・表＝左右の辺のつまみ
   function handlesFor(id) { const k = resizableKind(id); if (k === "text") return ["nw", "ne", "sw", "se", "e", "w", "s"]; if (k === "photo") return ["nw", "ne", "sw", "se"]; if (k === "line" || k === "pill" || k === "cards" || k === "table") return ["e", "w"]; return []; }
-  // §3.2.3 最小幅：品の並び＝1件120×列＋間、表PC＝名前120（最小528）、表SP＝200
-  function minWidthOf(id) { const c = canonId(id); if (c === "I_cards") { const n = colsOf(c); return 120 * n + 24 * (n - 1); } if (c === "I_table") return state.device === "pc" ? 528 : 200; return 40; }
+  // §20b §2.3/§2.4 値段を折らず1行に描くのに要る「表の幅」を、描かれている値段の箱の自然幅（折らない1行）から測る。
+  // 値段の箱＝表幅×249/968（PC）／表幅そのもの（SP）。いちばん広い行の値段で決まる。中身が無ければ従来の下限に戻す。
+  // 値段の文字の自然幅（折らない1行）を #meas で測る（buildH と同じ＝設計px・倍率で割らない）。いちばん広い行を返す。
+  function priceNatMax(device) {
+    device = device || state.device;
+    const meas = document.getElementById("meas"); if (!meas) return 0;
+    const probe = document.createElement("div");
+    probe.style.cssText = "position:absolute;left:0;top:0;visibility:hidden;white-space:nowrap";
+    for (const d of SPEC.textDecls(device === "pc" ? "tPriceR" : "tPriceL", device)) { const i = d.indexOf(":"); probe.style.setProperty(d.slice(0, i).trim(), d.slice(i + 1).trim()); }
+    meas.appendChild(probe);
+    let maxNat = 0; const R = reduce(activeOps(), device);
+    for (const inst of state.secList) {
+      if (inst.type !== "items") continue;
+      const rows = (R.secContent[inst.id] && R.secContent[inst.id].table) || [];
+      for (const r of rows) { if (r.price == null) continue; probe.textContent = r.price; const w = probe.getBoundingClientRect().width; if (w > maxNat) maxNat = w; }
+    }
+    probe.remove();
+    return maxNat;
+  }
+  function tableFitW(device) {
+    device = device || state.device; const nat = priceNatMax(device);
+    if (!nat) return device === "pc" ? 528 : 200;
+    return device === "pc" ? nat * 968 / 249 : Math.max(200, nat);
+  }
+  // §20b §2.3 最小幅：品の並び＝1件120×列＋間、表＝どの行の値段も1行に入る幅（PC は値段欄=幅×249/968、SP は max(200, 値段1行)）
+  function minWidthOf(id) { const c = canonId(id); if (c === "I_cards") { const n = colsOf(c); return 120 * n + 24 * (n - 1); } if (c === "I_table") return tableFitW(state.device); return 40; }
   function handlePoint(dir, e) { const xs = { w: e.x, e: e.x + e.w, n: e.x + e.w / 2, s: e.x + e.w / 2, nw: e.x, sw: e.x, ne: e.x + e.w, se: e.x + e.w, c: e.x + e.w / 2 }; const ys = { n: e.y, s: e.y + e.h, w: e.y + e.h / 2, e: e.y + e.h / 2, nw: e.y, ne: e.y, sw: e.y + e.h, se: e.y + e.h }; return { x: xs[dir], y: ys[dir] }; }
   function cursorFor(dir) { return ({ n: "ns-resize", s: "ns-resize", e: "ew-resize", w: "ew-resize", ne: "nesw-resize", sw: "nesw-resize", nw: "nwse-resize", se: "nwse-resize" })[dir] || "pointer"; }
 
@@ -1020,8 +1062,10 @@ const PG = (function () {
   }
   // 並び替えになるか（§6／§10.1／§2.1）：縦積みの塊の直接の子どうしの間に離したとき。
   // 塊の範囲（直接の子の上端〜下端を40px広げた中）にあり、入れ子の別塊の中でないこと。40px の M1 判定には依存しない。
-  // §20（§4.2）並び替えは「間の帯」の中だけ：子と子の空き＋上の子の下端から12・下の子の上端から12。
-  // 子の箱の深い所（帯の外）に落としたら並び替えない（→ M2 で重なる＝③を②と同じに）。一番上/下の外・入れ子の別塊は従来どおり。
+  // §20（§4.2）並び替えの帯：子と子の空き＋上の子の下端から12・下の子の上端から12。
+  // §20b §1（X26 直し）一番上の子より上・一番下の子より下の「空いた所」は pg19b と同じく並び替え（塊の範囲＝直接の子の上端〜下端±40）。
+  //   そこに子の中の12の帯を足す＝一番上の子は上端＋12まで、一番下の子は下端−12までが先頭／末尾への並び替え。
+  // 子の箱の深い所（帯の外・子と子の間でもない）に落としたら並び替えない（→ M2 で重なる＝③を②と同じに）。入れ子の別塊は従来どおり M2。
   const REORDER_BAND = 12;
   function reorderPreview(g, id, ogArg) {
     if (isAdded(id)) return null;
@@ -1034,9 +1078,9 @@ const PG = (function () {
     if (!others.length) return null;
     const B = REORDER_BAND; let targetIdx = -1;
     const first = og[others[0]], last = og[others[others.length - 1]];
-    if (cy < first.y - B || cy > last.y + last.h + B) return null;                                  // 塊の外（±12）＝並び替えでない → M2（④）
-    if (cy >= first.y - B && cy <= first.y + B) targetIdx = 0;                                       // 一番上の子の上端から±12（上寄り）
-    else if (cy >= last.y + last.h - B && cy <= last.y + last.h + B) targetIdx = others.length;       // 一番下の子の下端から±12（下寄り）
+    if (cy < first.y - 40 || cy > last.y + last.h + 40) return null;                                 // 塊の範囲（±40・pg19b と同じ）の外＝並び替えでない → M2（④）
+    if (cy <= first.y + B) targetIdx = 0;                                                            // §20b 一番上の子より上の空いた所＋子の中12 → 先頭（X26）
+    else if (cy >= last.y + last.h - B) targetIdx = others.length;                                    // §20b 一番下の子より下の空いた所＋子の中12 → 末尾（X26）
     else { for (let i = 0; i < others.length - 1; i++) { const A = og[others[i]], C = og[others[i + 1]]; if (cy >= A.y + A.h - B && cy <= C.y + B) { targetIdx = i + 1; break; } } }
     if (targetIdx < 0) return null;                        // 子の箱の深い所＝帯の外 → M2（③）
     const curOrder = [...sibs].sort((a, b) => og[a].y - og[b].y);   // 今の見た目の並び（id を含む）

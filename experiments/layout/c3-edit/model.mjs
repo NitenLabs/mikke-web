@@ -174,10 +174,12 @@ export function buildItems(content, device, H, edits = {}) {
   const dividerInner = LINE("I_divider", wOf("I_divider", c.dividerW), 1, 0.5);
   const kanmiInner = T("I_kanmi", "kanmiLbl", device, wOf("I_kanmi", c.kanmiW), thtml(H, "I_kanmi"), pbOf("I_kanmi"));
   const timeInner = T("I_time", "kanmiTime", device, wOf("I_time", c.kanmiW), thtml(H, "I_time"), pbOf("I_time"));
-  // §3.2.5 表の幅を変えたとき：PC は名前の欄が伸び縮み・値段は右端に付く（既定では ±0）。SP は全欄が幅いっぱい
+  // §20b §2（C案）表の幅を変えたとき：PC は名前の欄・間・値段の欄が同じ割合で伸び縮み（560:159:249）。値段の箱の右端＝表の右端。SP は全欄が幅いっぱい
   const tableWidth = wOf("I_table", c.tableW);
-  const tableNameW = device === "pc" ? (tableWidth - c.tablePriceW - (c.tableW - c.tableNameW - c.tablePriceW)) : tableWidth;
-  const cTable = { ...c, tableW: tableWidth, tableNameW, vlineLeft: device === "pc" ? tableNameW + (c.vlineLeft - c.tableNameW) : c.vlineLeft };
+  const tr = device === "pc" ? tableWidth / c.tableW : 1;   // 等比
+  const cTable = device === "pc"
+    ? { ...c, tableW: tableWidth, tableNameW: c.tableNameW * tr, tablePriceW: c.tablePriceW * tr, vlineLeft: c.vlineLeft * tr }
+    : { ...c, tableW: tableWidth, tableNameW: tableWidth };
   const rows = content.items.table.map((r) => rowHtml(r, device, cTable, H)).join("");
   const pillInner = T("I_pilltext", "pill", device, "auto", thtml(H, "I_pill"));
 
