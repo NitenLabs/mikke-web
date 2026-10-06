@@ -130,8 +130,8 @@ async function run() {
     const w = await p.evaluate(() => window.__playground.warnings());
     const hasHP = w.ownerOverlaps.some((o) => (o.a === "F_h0" && o.b === "F_p0") || (o.a === "F_p0" && o.b === "F_h0"));
     const hasBP = w.ownerOverlaps.some((o) => (o.a === "F_b0" && o.b === "F_p0") || (o.a === "F_p0" && o.b === "F_b0"));
-    await rightClick(p, "F_p0"); const labels = await menuLabels(p); const hasZ = labels.includes("前面へ") && labels.includes("背面へ");
-    await clickMenu(p, "背面へ"); await pause(p, 250);
+    await rightClick(p, "F_p0"); const labels = await menuLabels(p); const hasZ = labels.includes("最前面へ移動 ▸") && labels.includes("最背面へ移動 ▸");   // §22 §8：前面へ/背面へ→最前面/最背面へ移動 ▸ に変更
+    await clickMenu(p, "最背面へ移動"); await pause(p, 250);
     await p.evaluate(() => window.__playground.select([])); await pause(p, 150);   // 選択の覆いを外してから測る
     const atHead = await p.evaluate(() => { const el = document.querySelector('[data-el="F_h0"]'); const r = el.getBoundingClientRect(); const t = document.elementFromPoint(Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2)); if (!t) return "null"; const de = t.closest("[data-el]"); return de ? de.getAttribute("data-el") : (t.tagName + "." + t.className); });
     await shot(p, "L18.jpg");
@@ -202,7 +202,7 @@ async function dragTests(p, report) {
     const an = await p.evaluate(() => window.__playground.anchors().find((a) => a.part === "F_h0") || null); const w = await p.evaluate(() => window.__playground.warnings()); const g = await geom(p);
     await rightClick(p, "F_h0"); const labels = await menuLabels(p); await p.keyboard.press("Escape");
     await shot(p, "L12.jpg");
-    report.L12 = { anchor: an && an.anchor, mode: an && an.mode, bodyTopEq: near(g.F_b0.y, g.F_p0.y + g.F_p0.h + 24, 1), owner: w.ownerOverlaps.some((o) => (o.a === "F_h0" && o.b === "F_p0") || (o.a === "F_p0" && o.b === "F_h0")), hasZ: labels.includes("前面へ") && labels.includes("背面へ"), pass: !!(an && an.anchor === "F_p0" && an.mode === "M2") && near(g.F_b0.y, g.F_p0.y + g.F_p0.h + 24, 1) && w.ownerOverlaps.some((o) => (o.a === "F_h0" && o.b === "F_p0") || (o.a === "F_p0" && o.b === "F_h0")) && labels.includes("前面へ") }; }
+    report.L12 = { anchor: an && an.anchor, mode: an && an.mode, bodyTopEq: near(g.F_b0.y, g.F_p0.y + g.F_p0.h + 24, 1), owner: w.ownerOverlaps.some((o) => (o.a === "F_h0" && o.b === "F_p0") || (o.a === "F_p0" && o.b === "F_h0")), hasZ: labels.includes("最前面へ移動 ▸") && labels.includes("最背面へ移動 ▸"), pass: !!(an && an.anchor === "F_p0" && an.mode === "M2") && near(g.F_b0.y, g.F_p0.y + g.F_p0.h + 24, 1) && w.ownerOverlaps.some((o) => (o.a === "F_h0" && o.b === "F_p0") || (o.a === "F_p0" && o.b === "F_h0")) && labels.includes("最前面へ移動 ▸") }; }   // §22 §8：z メニューのラベル変更
   // L13：SP 本文を写真下端から8上へ→帯の中で並び替え（写真→本文→見出し）・M2 にならない
   { await reset(p); await pause(p, 250); const sc = await scaleOf(p, 390);
     const fb0 = await p.evaluate(() => { const el = document.querySelector('[data-el="F_b0"]'); el.scrollIntoView({ block: "center" }); const r = el.getBoundingClientRect(); return { cx: r.left + r.width / 2, cy: r.top + r.height / 2 }; });

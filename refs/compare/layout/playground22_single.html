@@ -95,7 +95,14 @@ button:active{transform:translateY(1px)}
 #fmenu{position:fixed;z-index:60;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;display:none;gap:4px}
 #fmenu.on{display:flex}
 #fmenu button{font-size:12px;padding:4px 8px}
+#fmenu button:disabled{opacity:.4;cursor:default}
 #fmenu .note{font-size:11px;color:#777;align-self:center;padding:0 4px}
+/* §22 §8 前面/背面の ▸ サブ箱・区切り（横並びの fmenu から下へ出す） */
+#fmenu .fdiv{width:1px;align-self:stretch;background:#ddd;margin:0 2px}
+#fmenu .zrow{position:relative}
+#fmenu .zsub{display:none;position:absolute;left:0;top:100%;margin-top:4px;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;flex-direction:column;gap:2px;min-width:150px;z-index:63;white-space:nowrap}
+#fmenu .zrow:hover .zsub,#fmenu .zrow.open .zsub{display:flex}
+.pg-phone #fmenu .zsub button{min-width:44px;min-height:44px}
 /* §2 セクションを足す「＋」。境目の帯にマウスを乗せると出る。 */
 .sec-add-zone{position:relative;height:14px;margin:0;display:flex;align-items:center;justify-content:center}
 .sec-add-btn{opacity:0;transition:opacity .08s;width:26px;height:22px;line-height:1;padding:0;border:1px solid #06c;border-radius:50%;background:#fff;color:#06c;font-size:16px;cursor:pointer;z-index:20}
@@ -1785,7 +1792,7 @@ const PG = (function () {
 
   // §2 セクションの並び（ページの組み立て）。今は特集・品の2つ。複製・追加・削除・並べ替えはこの並びを書き換える（試験台14・第2回で操作を足す）。
   const defaultSecList = () => [{ id: "feature", type: "feature" }, { id: "items", type: "items" }];
-  let state = { device: "pc", ops: [], cursor: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null };
+  let state = { device: "pc", ops: [], cursor: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null, fixedSections: false };
   let scale = 1, layoutCount = 0, composing = false;
   let clampGuard = false;   // §20b §2.4 表の幅クランプの再描画ガード（render の再入防止）
   let appliedPlace = {}; // id -> {top,left} 直近の絶対配置
@@ -1931,7 +1938,7 @@ const PG = (function () {
       else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; } }
         for (const it of op.items) if (it.mode === "M2" && isAdded(it.id)) placedFollow[it.id] = { anchor: it.anchor, device: op.device }; }   // §X13 置いた端末での今の付いていく先
       else if (op.t === "reorder") { if (op.device === device) { order[op.key] = op.order.slice(); delete m1[op.id]; delete m2[op.id]; } }
-      else if (op.t === "zorder") { if (op.device === device) zmap[op.id] = op.z; }   // §4 重なり順
+      else if (op.t === "zorder") { if (op.device === device) { if (op.zs) Object.assign(zmap, op.zs); else zmap[op.id] = op.z; } }   // §4/§22 重なり順（単体 z か、cluster まとめの zs）
       // §4（大きさ）：部品→端末ごと。w/h/padB は絶対値（最後が勝つ）。dx は「左から変えた分」の位置ずれ＝m1 に足す（右端を動かさない）。
       else if (op.t === "size") { if (op.device === device) { const s = sizes[op.id] || {}; if (op.w != null) s.w = op.w; if (op.h != null) s.h = op.h; if (op.padB != null) s.padB = op.padB; sizes[op.id] = s; if (op.dx) { const m = m1[op.id] || { dx: 0, dy: 0 }; m1[op.id] = { dx: (m.dx || 0) + op.dx, dy: m.dy || 0 }; } } }
       else if (op.t === "cols") { const m = colsMap[op.id] = colsMap[op.id] || {}; m[op.device] = op.n; }   // §20 列（端末ごと。両端末ぶんを溜める）
@@ -2029,6 +2036,20 @@ const PG = (function () {
   }
   // §2.2 背景は並び順で決まる（交互：0番目＝灰 surface・1番目＝白 background・…）。今の並び [feature, items] では型順と同じ。
   const secBgName = (idx) => (idx % 2 === 0 ? "surface" : "background");
+  // §22 §7 仮の一番上・一番下セクション（表示だけ・secList には入れない＝geometry・並び替え・背景交互・＋の既定は不変）。
+  // setFixedSections(true) のときだけ #sectionwrap の先頭・末尾に空の箱を置く。.sec-wrap でない＝右クリックで操作が出ず、境目の＋も上端・下端には付かない。
+  function setFixedSections(on) { state.fixedSections = !!on; render(); }
+  function renderFixedSections() {
+    const wrap = document.getElementById("sectionwrap"); if (!wrap) return;
+    const top0 = document.getElementById("fixedTop"), bot0 = document.getElementById("fixedBottom");
+    if (!state.fixedSections) { if (top0) top0.remove(); if (bot0) bot0.remove(); return; }
+    const dw = SPEC.DESIGN_W[state.device];
+    const mk = (id, h, bg, label) => { let el = document.getElementById(id); if (!el) { el = document.createElement("div"); el.id = id; el.className = "fixed-sec"; } el.style.cssText = `width:${dw * scale}px;height:${h * scale}px;background:${bg};display:flex;align-items:center;justify-content:center;color:#fff;font:14px system-ui;flex:none`; el.textContent = label; return el; };
+    const topEl = mk("fixedTop", state.device === "pc" ? 480 : 320, "#4a4a4a", "一番上の大きな写真（仮）");
+    const botEl = mk("fixedBottom", state.device === "pc" ? 240 : 200, "#8a8a8a", "お問い合わせ・足元（仮）");
+    if (wrap.firstElementChild !== topEl) wrap.insertBefore(topEl, wrap.firstElementChild);
+    wrap.appendChild(botEl);
+  }
   function elNode(id) { for (const inst of state.secList) { const h = document.getElementById(secHostId(inst)); const n = h && h.querySelector('[data-el="' + id + '"]'); if (n) return n; } return null; }
 
   // ---- 描画 ----
@@ -2095,6 +2116,7 @@ const PG = (function () {
     }
     placeAbsolute(R);
     decorate();
+    renderFixedSections();   // §22 §7 仮の一番上・一番下（setFixedSections のときだけ）
     if (typeof onRender === "function") onRender();
   }
 
@@ -2829,16 +2851,28 @@ const PG = (function () {
     }
     return [...out];
   }
-  function bringToFront() {
-    const id = canonId([...state.selected][0]); if (!id) return; const partners = overlapPartners(id); if (!partners.length) return;
-    const R = reduce(activeOps()); let mx = 0; for (const p of partners) mx = Math.max(mx, effZ(p, R.zmap));
-    commit({ t: "zorder", device: state.device, id, z: mx + 1 });
+  // §22 §8 重なり順の決め方：端末ごとの「前後の順番」。手直しのない部品の初めの順＝テンプレの描画順（後に描くものほど前＝DOM順）。
+  // 重なっている相手＋自分を1つの束として、今の前後（zmap があればそれ、無ければ描画順）で並べ、動かした後に連番で materialize する（同値を作らない）。
+  function drawOrderIndex() { const g = geometry(); const di = {}; let i = 0; for (const k of Object.keys(g)) { const c = canonId(k); if (di[c] == null) di[c] = i++; } return di; }
+  const effZsort = (id, zmap, di) => (zmap[id] != null ? zmap[id] : (groupOf(id) && zmap[groupOf(id)] != null ? zmap[groupOf(id)] : (di[id] != null ? di[id] : 0)));
+  function zReorder(mode) {
+    const id = canonId([...state.selected][0]); if (!id) return;
+    const partners = overlapPartners(id); if (!partners.length) return;
+    const R = reduce(activeOps()); const di = drawOrderIndex();
+    const cluster = [id, ...partners].sort((a, b) => effZsort(a, R.zmap, di) - effZsort(b, R.zmap, di));   // back→front
+    const pos = cluster.indexOf(id); const order = cluster.slice();
+    if (mode === "front") { order.splice(pos, 1); order.push(id); }
+    else if (mode === "back") { order.splice(pos, 1); order.unshift(id); }
+    else if (mode === "forward") { if (pos < cluster.length - 1) { order[pos] = cluster[pos + 1]; order[pos + 1] = id; } }
+    else if (mode === "backward") { if (pos > 0) { order[pos] = cluster[pos - 1]; order[pos - 1] = id; } }
+    const base = Math.min(...cluster.map((c) => Math.floor(effZsort(c, R.zmap, di))));   // 束の最小の前後を基準に連番（相対順だけが意味を持つ）
+    const zs = {}; order.forEach((c, i) => { zs[c] = base + i; });
+    commit({ t: "zorder", device: state.device, zs });
   }
-  function sendToBack() {
-    const id = canonId([...state.selected][0]); if (!id) return; const partners = overlapPartners(id); if (!partners.length) return;
-    const R = reduce(activeOps()); let mn = 0; for (const p of partners) mn = Math.min(mn, effZ(p, R.zmap));
-    commit({ t: "zorder", device: state.device, id, z: mn - 1 });
-  }
+  function bringToFront() { zReorder("front"); }      // 最前面へ移動（相手すべての前へ）
+  function sendToBack() { zReorder("back"); }          // 最背面へ移動（相手すべての後ろへ）
+  function bringForward() { zReorder("forward"); }     // 前面へ移動（今すぐ前の1つと入れ替え）
+  function sendBackward() { zReorder("backward"); }    // 背面へ移動（今すぐ後ろの1つと入れ替え）
   function hasOverlapPartner() { const id = canonId([...state.selected][0]); return !!id && overlapPartners(id).length > 0; }
   // 今の端末の重なり順（部品 ID。後ろほど上＝実効 z の昇順、同値は y 順）
   function zOrderList() {
@@ -3233,6 +3267,11 @@ const PG = (function () {
       L30: [{ act: "setDev", d: "pc" }, { act: "resize", id: "I_table", handle: "e", by: [-2000, 0], alt: true }, { act: "edit", id: "row_price_t_matcha", text: "1,100円（税込・上生菓子付き）" }],  // §2.4 最小の後に値段を長く＝表示だけ広がる（記録は不変）。終状態＝書き換え後
       L31: [{ act: "setDev", d: "sp" }, { act: "resize", id: "I_table", handle: "e", by: [-2000, 0], alt: true }],                  // §2.6 SP 表を最小幅（200 と値段1行の広い方）まで
       L32: [{ act: "setDev", d: "pc" }, { act: "resize", id: "I_cards", handle: "e", by: [-918, 0], alt: true }, { act: "select", id: "I_cards" }],  // §3 品の並び幅408＝列の見本で4列が灰色（見本UI・その他経由は窓幅で再現なし）
+      // ===== 試験台22a（W20〜W23）=====
+      W20: [{ act: "setFixedSections", on: true }],   // §7 仮の一番上・一番下（右クリック操作・＋・隣の向きは試験で確認）
+      W21: [],                                          // §7 開いた直後（setFixedSections=false）＝20b と一致
+      W22: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [-619, 0] }, { act: "zmove", id: "F_p0", m: "back" }, { act: "zmove", id: "F_p0", m: "forward" }],   // §8 最背面→前面へ移動＝写真が見出しの前・本文の後ろ
+      W23: [{ act: "winOnly" }],                         // X27 離す前の dropTarget（ドラッグ中の見た目＝再現なし）
     };
   }
   let lastSec = null;   // プリセットで直前に作った（複製・追加した）セクションの ID。@dup/@add が指す。
@@ -3273,6 +3312,8 @@ const PG = (function () {
     else if (step.act === "select") { selectMany([step.id]); }
     else if (step.act === "zback") { sendToBack(); }
     else if (step.act === "zfront") { bringToFront(); }
+    else if (step.act === "zmove") { selectMany([canonId(step.id)]); ({ front: bringToFront, back: sendToBack, forward: bringForward, backward: sendBackward }[step.m] || (() => {}))(); }   // §22 §8
+    else if (step.act === "setFixedSections") { setFixedSections(step.on); }   // §22 §7
     else if (step.act === "resetSection") { resetScope("section", step.sec === "feature" ? "F_h0" : "I_kanmi", [state.device]); }
     else if (step.act === "moveCenterToCenter") { const r = g[step.ref]; if (r) { const y = r.y + r.h / 2 + (step.off || 0) - g[step.id].h / 2; programMove([step.id], () => ({ x: g[step.id].x, y })); } }
     else if (step.act === "moveCenterToGap") { const a = g[step.after], b = g[step.before]; if (a && b) { const y = (a.y + a.h + b.y) / 2 - g[step.id].h / 2; programMove([step.id], () => ({ x: g[step.id].x, y })); } }
@@ -3499,6 +3540,7 @@ const PG = (function () {
     editSelect: (s, e) => { if (!state.editing) return false; const n = elNode(state.editing.id); if (!n) return false; n.focus(); setCaretOffsets(n, s, e); if (typeof onRender === "function") onRender(); return true; },
     startEdit: (id) => startEdit(canonId(id)),
     editingId: () => state.editing && state.editing.id,
+    setFixedSections,   // §22 §7 仮の一番上・一番下セクション
   };
   return {
     state, render, reset, setDevice, undo, redo, commit, api, reduce, activeOps,
@@ -3507,7 +3549,7 @@ const PG = (function () {
     beginDrag, dragMove, endDrag, isDragging: () => !!drag, selectOnly, toggleSel, selectMany, clearSel, selectSection, selectInDesignRect, smallHit,
     startEdit, commitEdit, nudge, nudgeSelected, deleteSelected, copySelection, cutSelection, paste, duplicate,
     resetScope, peekOn, peekOff, addTextAt, anchorsList, classify: (id) => M.classifyDrop(geometry(), id, [id]),
-    bringToFront, sendToBack, hasOverlapPartner, zOrderList,
+    bringToFront, sendToBack, bringForward, sendBackward, hasOverlapPartner, zOrderList,
     beginResize, resizeMove, endResize, isResizing: () => !!rz, programResize, handlesFor,
     paintPhotos, photosApi, replacePhotoFile, loadImageFile, assetUrl, assetNat,
     setBrightness, brightnessOf, addPhotoAtPoint, addTextAtPoint,   // §3/§4/§5（試験台17）
@@ -3581,7 +3623,9 @@ function layoutToolbar(){ if(laying) return; laying=true;
   moreMenu.classList.remove("on"); restoreFromMore(); tMore.style.display="none"; cleanupDividers();
   if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1){ laying=false; return; }
   tMore.style.display="inline-block";   // §19b CSS 既定が display:none のため明示的に出す（""だと none に戻る）
-  for(const el of overflowCandidates()){ if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1) break; if(el && el.offsetParent!==null && el!==tMore) moveToMore(el); }
+  // §22 X28：PC とスマホ、テキストと写真は組＝片方だけ並びに残さない（しまうときは相方も一緒にしまう）
+  const PAIR={dSP:"dPC",dPC:"dSP",tPhoto:"tText",tText:"tPhoto"};
+  for(const el of overflowCandidates()){ if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1) break; if(el && el.offsetParent!==null && el!==tMore){ moveToMore(el); const pid=PAIR[el.id]; if(pid){ const pe=document.getElementById(pid); if(pe && pe.offsetParent!==null) moveToMore(pe); } } }
   reorderMore(); cleanupDividers();
   laying=false; }
 tMore.onmousedown=(e)=>e.preventDefault();
@@ -3837,6 +3881,15 @@ function positionFmenu(){ if(!fmenu.classList.contains("on"))return;
   const id=[...PG.state.selected][0]; const n=id&&PG.elNode(id); if(!n){ fmenu.classList.remove("on"); return;} const r=n.getBoundingClientRect(); const mh=fmenu.offsetHeight||30; let top=r.top-mh-6; if(top<4) top=r.bottom+6; /* §2 部品の上の外側。上に場所がなければ下の外側 */ fmenu.style.left=r.left+"px"; fmenu.style.top=top+"px"; }
 function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if(!sel.length){ fmenu.classList.remove("on"); return; } fmenu.innerHTML="";
   const add=(label,fn,note)=>{ if(note){ const s=document.createElement("span"); s.className="note"; s.textContent=note; fmenu.appendChild(s); return;} const b=document.createElement("button"); b.textContent=label; b.onclick=(ev)=>{ ev.stopPropagation(); fn(); }; fmenu.appendChild(b); };
+  const addDiv=()=>{ const d=document.createElement("span"); d.className="fdiv"; fmenu.appendChild(d); };
+  // §22 §8 PC：「最前面へ移動 ▸」の行＝親ボタン＋ホバーで出るサブ箱（最前面へ移動／前面へ移動）。重なり相手がいなければ灰色・▸箱なし
+  const addZSub=(label,items,disabled)=>{ const row=document.createElement("div"); row.className="zrow";
+    const b=document.createElement("button"); b.textContent=label+" ▸"; b.setAttribute("data-zsub",label); if(disabled){ b.disabled=true; b.textContent=label; } row.appendChild(b);
+    if(!disabled){ const sub=document.createElement("div"); sub.className="zsub";
+      for(const [lbl,fn] of items){ const sb=document.createElement("button"); sb.textContent=lbl; sb.setAttribute("data-zitem",lbl); sb.onclick=(ev)=>{ ev.stopPropagation(); fn(); }; sub.appendChild(sb); }
+      b.onclick=(ev)=>{ ev.stopPropagation(); row.classList.toggle("open"); };   // クリックでも開く（ホバーできない環境用）
+      row.appendChild(sub); }
+    fmenu.appendChild(row); };
   const addColsPhone=()=>{ const info=PG.colsApi(); for(const opt of info.enabled){ const b=document.createElement("button"); b.className="colbtn"+(opt.n===info.current?" cur":""); b.setAttribute("data-cols-opt",String(opt.n)); b.textContent=opt.n+"列"+(opt.n===info.current?" ✓":""); if(!opt.enabled){ b.disabled=true; } else { b.onclick=(ev)=>{ ev.stopPropagation(); PG.setCols("I_cards",opt.n); showFmenu(); }; } fmenu.appendChild(b); } };
   const one=sel.length===1?sel[0]:null; const R=PG.reduce(PG.activeOps()); const ph=isPhone();   // §3.2.6 スマホのときだけ箱に「複製」「削除」を足す
   const moved=one&&PG.partChangedFromTemplate(one);   // N1：位置・大きさ・並び順・重なり順のどれかが変われば出す
@@ -3847,7 +3900,14 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
     if(isPhoto){ const isCleared=(R.clear||[]).includes(one); add("写真を差し替える",()=>startReplace(one));
       if(!isCleared){ add("見せる範囲",()=>enterCrop(one)); add("写真を外す",()=>PG.commit({t:"clear",id:one})); }   // N4：外していない写真は「外す」だけ
       else { add("写真を戻す",()=>PG.commit({t:"unclear",id:one})); } }                                            // N4：外した空枠は「戻す」だけ
-    if(PG.hasOverlapPartner()){ add("前面へ",()=>{PG.bringToFront(); showFmenu();}); add("背面へ",()=>{PG.sendToBack(); showFmenu();}); }   // §4 重なっている相手がいるときだけ
+    // §22 §8 最前面/最背面へ移動（いつも出す）。重なり相手がいなければ灰色・▸箱なし。スマホは ▸ を使わず前面/背面の2つ
+    { const hasOv=PG.hasOverlapPartner();
+      if(ph){ add("前面へ",()=>{ if(hasOv){PG.bringToFront(); showFmenu();} }); add("背面へ",()=>{ if(hasOv){PG.sendToBack(); showFmenu();} });
+        const bs=[...fmenu.querySelectorAll("button")].slice(-2); if(!hasOv) for(const b of bs) b.disabled=true; }
+      else { addDiv();
+        addZSub("最前面へ移動",[["最前面へ移動",()=>{PG.bringToFront(); showFmenu();}],["前面へ移動",()=>{PG.bringForward(); showFmenu();}]],!hasOv);
+        addZSub("最背面へ移動",[["最背面へ移動",()=>{PG.sendToBack(); showFmenu();}],["背面へ移動",()=>{PG.sendBackward(); showFmenu();}]],!hasOv);
+        addDiv(); } }
     if(PG.canSwap(one)) add("左右を入れ替える",()=>PG.swapHoriz(one));   // §5 横並びの組（PC 特集）
     if(ph&&PG.canonId(one)==="I_cards") addColsPhone();   // §2.2/§6.7（L23）スマホは長押しの箱に「列」の見本ボタン（44px）
     if(moved) add("元の位置に戻す",()=>PG.resetScope("part",one,[PG.state.device])); if(ph){ add("複製",()=>PG.duplicate()); add("削除",()=>PG.deleteSelected()); } else add("消す",()=>PG.commit({t:"del",id:one})); }
@@ -3954,7 +4014,8 @@ function updateAddZones(){
     hit.onclick=(ev)=>{ ev.stopPropagation(); showTypePicker(n, b.getBoundingClientRect()); }; z.appendChild(hit);
     return z; };
   wraps.forEach((w)=>wrap.insertBefore(mk([...wrap.querySelectorAll(".sec-wrap")].indexOf(w)),w));
-  wrap.appendChild(mk(wraps.length));
+  const botFixed=document.getElementById("fixedBottom");   // §22 §7：一番下（仮）の下には＋を出さない＝最後の＋はその手前へ
+  if(botFixed) wrap.insertBefore(mk(wraps.length),botFixed); else wrap.appendChild(mk(wraps.length));
 }
 let typePicker=null;
 function showTypePicker(pos,anchorRect){

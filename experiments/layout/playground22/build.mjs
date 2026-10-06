@@ -137,7 +137,14 @@ button:active{transform:translateY(1px)}
 #fmenu{position:fixed;z-index:60;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;display:none;gap:4px}
 #fmenu.on{display:flex}
 #fmenu button{font-size:12px;padding:4px 8px}
+#fmenu button:disabled{opacity:.4;cursor:default}
 #fmenu .note{font-size:11px;color:#777;align-self:center;padding:0 4px}
+/* §22 §8 前面/背面の ▸ サブ箱・区切り（横並びの fmenu から下へ出す） */
+#fmenu .fdiv{width:1px;align-self:stretch;background:#ddd;margin:0 2px}
+#fmenu .zrow{position:relative}
+#fmenu .zsub{display:none;position:absolute;left:0;top:100%;margin-top:4px;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;flex-direction:column;gap:2px;min-width:150px;z-index:63;white-space:nowrap}
+#fmenu .zrow:hover .zsub,#fmenu .zrow.open .zsub{display:flex}
+.pg-phone #fmenu .zsub button{min-width:44px;min-height:44px}
 /* §2 セクションを足す「＋」。境目の帯にマウスを乗せると出る。 */
 .sec-add-zone{position:relative;height:14px;margin:0;display:flex;align-items:center;justify-content:center}
 .sec-add-btn{opacity:0;transition:opacity .08s;width:26px;height:22px;line-height:1;padding:0;border:1px solid #06c;border-radius:50%;background:#fff;color:#06c;font-size:16px;cursor:pointer;z-index:20}
@@ -393,7 +400,9 @@ function layoutToolbar(){ if(laying) return; laying=true;
   moreMenu.classList.remove("on"); restoreFromMore(); tMore.style.display="none"; cleanupDividers();
   if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1){ laying=false; return; }
   tMore.style.display="inline-block";   // §19b CSS 既定が display:none のため明示的に出す（""だと none に戻る）
-  for(const el of overflowCandidates()){ if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1) break; if(el && el.offsetParent!==null && el!==tMore) moveToMore(el); }
+  // §22 X28：PC とスマホ、テキストと写真は組＝片方だけ並びに残さない（しまうときは相方も一緒にしまう）
+  const PAIR={dSP:"dPC",dPC:"dSP",tPhoto:"tText",tText:"tPhoto"};
+  for(const el of overflowCandidates()){ if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1) break; if(el && el.offsetParent!==null && el!==tMore){ moveToMore(el); const pid=PAIR[el.id]; if(pid){ const pe=document.getElementById(pid); if(pe && pe.offsetParent!==null) moveToMore(pe); } } }
   reorderMore(); cleanupDividers();
   laying=false; }
 tMore.onmousedown=(e)=>e.preventDefault();
@@ -649,6 +658,15 @@ function positionFmenu(){ if(!fmenu.classList.contains("on"))return;
   const id=[...PG.state.selected][0]; const n=id&&PG.elNode(id); if(!n){ fmenu.classList.remove("on"); return;} const r=n.getBoundingClientRect(); const mh=fmenu.offsetHeight||30; let top=r.top-mh-6; if(top<4) top=r.bottom+6; /* §2 部品の上の外側。上に場所がなければ下の外側 */ fmenu.style.left=r.left+"px"; fmenu.style.top=top+"px"; }
 function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if(!sel.length){ fmenu.classList.remove("on"); return; } fmenu.innerHTML="";
   const add=(label,fn,note)=>{ if(note){ const s=document.createElement("span"); s.className="note"; s.textContent=note; fmenu.appendChild(s); return;} const b=document.createElement("button"); b.textContent=label; b.onclick=(ev)=>{ ev.stopPropagation(); fn(); }; fmenu.appendChild(b); };
+  const addDiv=()=>{ const d=document.createElement("span"); d.className="fdiv"; fmenu.appendChild(d); };
+  // §22 §8 PC：「最前面へ移動 ▸」の行＝親ボタン＋ホバーで出るサブ箱（最前面へ移動／前面へ移動）。重なり相手がいなければ灰色・▸箱なし
+  const addZSub=(label,items,disabled)=>{ const row=document.createElement("div"); row.className="zrow";
+    const b=document.createElement("button"); b.textContent=label+" ▸"; b.setAttribute("data-zsub",label); if(disabled){ b.disabled=true; b.textContent=label; } row.appendChild(b);
+    if(!disabled){ const sub=document.createElement("div"); sub.className="zsub";
+      for(const [lbl,fn] of items){ const sb=document.createElement("button"); sb.textContent=lbl; sb.setAttribute("data-zitem",lbl); sb.onclick=(ev)=>{ ev.stopPropagation(); fn(); }; sub.appendChild(sb); }
+      b.onclick=(ev)=>{ ev.stopPropagation(); row.classList.toggle("open"); };   // クリックでも開く（ホバーできない環境用）
+      row.appendChild(sub); }
+    fmenu.appendChild(row); };
   const addColsPhone=()=>{ const info=PG.colsApi(); for(const opt of info.enabled){ const b=document.createElement("button"); b.className="colbtn"+(opt.n===info.current?" cur":""); b.setAttribute("data-cols-opt",String(opt.n)); b.textContent=opt.n+"列"+(opt.n===info.current?" ✓":""); if(!opt.enabled){ b.disabled=true; } else { b.onclick=(ev)=>{ ev.stopPropagation(); PG.setCols("I_cards",opt.n); showFmenu(); }; } fmenu.appendChild(b); } };
   const one=sel.length===1?sel[0]:null; const R=PG.reduce(PG.activeOps()); const ph=isPhone();   // §3.2.6 スマホのときだけ箱に「複製」「削除」を足す
   const moved=one&&PG.partChangedFromTemplate(one);   // N1：位置・大きさ・並び順・重なり順のどれかが変われば出す
@@ -659,7 +677,14 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
     if(isPhoto){ const isCleared=(R.clear||[]).includes(one); add("写真を差し替える",()=>startReplace(one));
       if(!isCleared){ add("見せる範囲",()=>enterCrop(one)); add("写真を外す",()=>PG.commit({t:"clear",id:one})); }   // N4：外していない写真は「外す」だけ
       else { add("写真を戻す",()=>PG.commit({t:"unclear",id:one})); } }                                            // N4：外した空枠は「戻す」だけ
-    if(PG.hasOverlapPartner()){ add("前面へ",()=>{PG.bringToFront(); showFmenu();}); add("背面へ",()=>{PG.sendToBack(); showFmenu();}); }   // §4 重なっている相手がいるときだけ
+    // §22 §8 最前面/最背面へ移動（いつも出す）。重なり相手がいなければ灰色・▸箱なし。スマホは ▸ を使わず前面/背面の2つ
+    { const hasOv=PG.hasOverlapPartner();
+      if(ph){ add("前面へ",()=>{ if(hasOv){PG.bringToFront(); showFmenu();} }); add("背面へ",()=>{ if(hasOv){PG.sendToBack(); showFmenu();} });
+        const bs=[...fmenu.querySelectorAll("button")].slice(-2); if(!hasOv) for(const b of bs) b.disabled=true; }
+      else { addDiv();
+        addZSub("最前面へ移動",[["最前面へ移動",()=>{PG.bringToFront(); showFmenu();}],["前面へ移動",()=>{PG.bringForward(); showFmenu();}]],!hasOv);
+        addZSub("最背面へ移動",[["最背面へ移動",()=>{PG.sendToBack(); showFmenu();}],["背面へ移動",()=>{PG.sendBackward(); showFmenu();}]],!hasOv);
+        addDiv(); } }
     if(PG.canSwap(one)) add("左右を入れ替える",()=>PG.swapHoriz(one));   // §5 横並びの組（PC 特集）
     if(ph&&PG.canonId(one)==="I_cards") addColsPhone();   // §2.2/§6.7（L23）スマホは長押しの箱に「列」の見本ボタン（44px）
     if(moved) add("元の位置に戻す",()=>PG.resetScope("part",one,[PG.state.device])); if(ph){ add("複製",()=>PG.duplicate()); add("削除",()=>PG.deleteSelected()); } else add("消す",()=>PG.commit({t:"del",id:one})); }
@@ -766,7 +791,8 @@ function updateAddZones(){
     hit.onclick=(ev)=>{ ev.stopPropagation(); showTypePicker(n, b.getBoundingClientRect()); }; z.appendChild(hit);
     return z; };
   wraps.forEach((w)=>wrap.insertBefore(mk([...wrap.querySelectorAll(".sec-wrap")].indexOf(w)),w));
-  wrap.appendChild(mk(wraps.length));
+  const botFixed=document.getElementById("fixedBottom");   // §22 §7：一番下（仮）の下には＋を出さない＝最後の＋はその手前へ
+  if(botFixed) wrap.insertBefore(mk(wraps.length),botFixed); else wrap.appendChild(mk(wraps.length));
 }
 let typePicker=null;
 function showTypePicker(pos,anchorRect){

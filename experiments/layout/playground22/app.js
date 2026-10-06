@@ -404,7 +404,7 @@ const PG = (function () {
 
   // §2 セクションの並び（ページの組み立て）。今は特集・品の2つ。複製・追加・削除・並べ替えはこの並びを書き換える（試験台14・第2回で操作を足す）。
   const defaultSecList = () => [{ id: "feature", type: "feature" }, { id: "items", type: "items" }];
-  let state = { device: "pc", ops: [], cursor: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null };
+  let state = { device: "pc", ops: [], cursor: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null, fixedSections: false };
   let scale = 1, layoutCount = 0, composing = false;
   let clampGuard = false;   // §20b §2.4 表の幅クランプの再描画ガード（render の再入防止）
   let appliedPlace = {}; // id -> {top,left} 直近の絶対配置
@@ -550,7 +550,7 @@ const PG = (function () {
       else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; } }
         for (const it of op.items) if (it.mode === "M2" && isAdded(it.id)) placedFollow[it.id] = { anchor: it.anchor, device: op.device }; }   // §X13 置いた端末での今の付いていく先
       else if (op.t === "reorder") { if (op.device === device) { order[op.key] = op.order.slice(); delete m1[op.id]; delete m2[op.id]; } }
-      else if (op.t === "zorder") { if (op.device === device) zmap[op.id] = op.z; }   // §4 重なり順
+      else if (op.t === "zorder") { if (op.device === device) { if (op.zs) Object.assign(zmap, op.zs); else zmap[op.id] = op.z; } }   // §4/§22 重なり順（単体 z か、cluster まとめの zs）
       // §4（大きさ）：部品→端末ごと。w/h/padB は絶対値（最後が勝つ）。dx は「左から変えた分」の位置ずれ＝m1 に足す（右端を動かさない）。
       else if (op.t === "size") { if (op.device === device) { const s = sizes[op.id] || {}; if (op.w != null) s.w = op.w; if (op.h != null) s.h = op.h; if (op.padB != null) s.padB = op.padB; sizes[op.id] = s; if (op.dx) { const m = m1[op.id] || { dx: 0, dy: 0 }; m1[op.id] = { dx: (m.dx || 0) + op.dx, dy: m.dy || 0 }; } } }
       else if (op.t === "cols") { const m = colsMap[op.id] = colsMap[op.id] || {}; m[op.device] = op.n; }   // §20 列（端末ごと。両端末ぶんを溜める）
@@ -648,6 +648,20 @@ const PG = (function () {
   }
   // §2.2 背景は並び順で決まる（交互：0番目＝灰 surface・1番目＝白 background・…）。今の並び [feature, items] では型順と同じ。
   const secBgName = (idx) => (idx % 2 === 0 ? "surface" : "background");
+  // §22 §7 仮の一番上・一番下セクション（表示だけ・secList には入れない＝geometry・並び替え・背景交互・＋の既定は不変）。
+  // setFixedSections(true) のときだけ #sectionwrap の先頭・末尾に空の箱を置く。.sec-wrap でない＝右クリックで操作が出ず、境目の＋も上端・下端には付かない。
+  function setFixedSections(on) { state.fixedSections = !!on; render(); }
+  function renderFixedSections() {
+    const wrap = document.getElementById("sectionwrap"); if (!wrap) return;
+    const top0 = document.getElementById("fixedTop"), bot0 = document.getElementById("fixedBottom");
+    if (!state.fixedSections) { if (top0) top0.remove(); if (bot0) bot0.remove(); return; }
+    const dw = SPEC.DESIGN_W[state.device];
+    const mk = (id, h, bg, label) => { let el = document.getElementById(id); if (!el) { el = document.createElement("div"); el.id = id; el.className = "fixed-sec"; } el.style.cssText = `width:${dw * scale}px;height:${h * scale}px;background:${bg};display:flex;align-items:center;justify-content:center;color:#fff;font:14px system-ui;flex:none`; el.textContent = label; return el; };
+    const topEl = mk("fixedTop", state.device === "pc" ? 480 : 320, "#4a4a4a", "一番上の大きな写真（仮）");
+    const botEl = mk("fixedBottom", state.device === "pc" ? 240 : 200, "#8a8a8a", "お問い合わせ・足元（仮）");
+    if (wrap.firstElementChild !== topEl) wrap.insertBefore(topEl, wrap.firstElementChild);
+    wrap.appendChild(botEl);
+  }
   function elNode(id) { for (const inst of state.secList) { const h = document.getElementById(secHostId(inst)); const n = h && h.querySelector('[data-el="' + id + '"]'); if (n) return n; } return null; }
 
   // ---- 描画 ----
@@ -714,6 +728,7 @@ const PG = (function () {
     }
     placeAbsolute(R);
     decorate();
+    renderFixedSections();   // §22 §7 仮の一番上・一番下（setFixedSections のときだけ）
     if (typeof onRender === "function") onRender();
   }
 
@@ -1448,16 +1463,28 @@ const PG = (function () {
     }
     return [...out];
   }
-  function bringToFront() {
-    const id = canonId([...state.selected][0]); if (!id) return; const partners = overlapPartners(id); if (!partners.length) return;
-    const R = reduce(activeOps()); let mx = 0; for (const p of partners) mx = Math.max(mx, effZ(p, R.zmap));
-    commit({ t: "zorder", device: state.device, id, z: mx + 1 });
+  // §22 §8 重なり順の決め方：端末ごとの「前後の順番」。手直しのない部品の初めの順＝テンプレの描画順（後に描くものほど前＝DOM順）。
+  // 重なっている相手＋自分を1つの束として、今の前後（zmap があればそれ、無ければ描画順）で並べ、動かした後に連番で materialize する（同値を作らない）。
+  function drawOrderIndex() { const g = geometry(); const di = {}; let i = 0; for (const k of Object.keys(g)) { const c = canonId(k); if (di[c] == null) di[c] = i++; } return di; }
+  const effZsort = (id, zmap, di) => (zmap[id] != null ? zmap[id] : (groupOf(id) && zmap[groupOf(id)] != null ? zmap[groupOf(id)] : (di[id] != null ? di[id] : 0)));
+  function zReorder(mode) {
+    const id = canonId([...state.selected][0]); if (!id) return;
+    const partners = overlapPartners(id); if (!partners.length) return;
+    const R = reduce(activeOps()); const di = drawOrderIndex();
+    const cluster = [id, ...partners].sort((a, b) => effZsort(a, R.zmap, di) - effZsort(b, R.zmap, di));   // back→front
+    const pos = cluster.indexOf(id); const order = cluster.slice();
+    if (mode === "front") { order.splice(pos, 1); order.push(id); }
+    else if (mode === "back") { order.splice(pos, 1); order.unshift(id); }
+    else if (mode === "forward") { if (pos < cluster.length - 1) { order[pos] = cluster[pos + 1]; order[pos + 1] = id; } }
+    else if (mode === "backward") { if (pos > 0) { order[pos] = cluster[pos - 1]; order[pos - 1] = id; } }
+    const base = Math.min(...cluster.map((c) => Math.floor(effZsort(c, R.zmap, di))));   // 束の最小の前後を基準に連番（相対順だけが意味を持つ）
+    const zs = {}; order.forEach((c, i) => { zs[c] = base + i; });
+    commit({ t: "zorder", device: state.device, zs });
   }
-  function sendToBack() {
-    const id = canonId([...state.selected][0]); if (!id) return; const partners = overlapPartners(id); if (!partners.length) return;
-    const R = reduce(activeOps()); let mn = 0; for (const p of partners) mn = Math.min(mn, effZ(p, R.zmap));
-    commit({ t: "zorder", device: state.device, id, z: mn - 1 });
-  }
+  function bringToFront() { zReorder("front"); }      // 最前面へ移動（相手すべての前へ）
+  function sendToBack() { zReorder("back"); }          // 最背面へ移動（相手すべての後ろへ）
+  function bringForward() { zReorder("forward"); }     // 前面へ移動（今すぐ前の1つと入れ替え）
+  function sendBackward() { zReorder("backward"); }    // 背面へ移動（今すぐ後ろの1つと入れ替え）
   function hasOverlapPartner() { const id = canonId([...state.selected][0]); return !!id && overlapPartners(id).length > 0; }
   // 今の端末の重なり順（部品 ID。後ろほど上＝実効 z の昇順、同値は y 順）
   function zOrderList() {
@@ -1852,6 +1879,11 @@ const PG = (function () {
       L30: [{ act: "setDev", d: "pc" }, { act: "resize", id: "I_table", handle: "e", by: [-2000, 0], alt: true }, { act: "edit", id: "row_price_t_matcha", text: "1,100円（税込・上生菓子付き）" }],  // §2.4 最小の後に値段を長く＝表示だけ広がる（記録は不変）。終状態＝書き換え後
       L31: [{ act: "setDev", d: "sp" }, { act: "resize", id: "I_table", handle: "e", by: [-2000, 0], alt: true }],                  // §2.6 SP 表を最小幅（200 と値段1行の広い方）まで
       L32: [{ act: "setDev", d: "pc" }, { act: "resize", id: "I_cards", handle: "e", by: [-918, 0], alt: true }, { act: "select", id: "I_cards" }],  // §3 品の並び幅408＝列の見本で4列が灰色（見本UI・その他経由は窓幅で再現なし）
+      // ===== 試験台22a（W20〜W23）=====
+      W20: [{ act: "setFixedSections", on: true }],   // §7 仮の一番上・一番下（右クリック操作・＋・隣の向きは試験で確認）
+      W21: [],                                          // §7 開いた直後（setFixedSections=false）＝20b と一致
+      W22: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [-619, 0] }, { act: "zmove", id: "F_p0", m: "back" }, { act: "zmove", id: "F_p0", m: "forward" }],   // §8 最背面→前面へ移動＝写真が見出しの前・本文の後ろ
+      W23: [{ act: "winOnly" }],                         // X27 離す前の dropTarget（ドラッグ中の見た目＝再現なし）
     };
   }
   let lastSec = null;   // プリセットで直前に作った（複製・追加した）セクションの ID。@dup/@add が指す。
@@ -1892,6 +1924,8 @@ const PG = (function () {
     else if (step.act === "select") { selectMany([step.id]); }
     else if (step.act === "zback") { sendToBack(); }
     else if (step.act === "zfront") { bringToFront(); }
+    else if (step.act === "zmove") { selectMany([canonId(step.id)]); ({ front: bringToFront, back: sendToBack, forward: bringForward, backward: sendBackward }[step.m] || (() => {}))(); }   // §22 §8
+    else if (step.act === "setFixedSections") { setFixedSections(step.on); }   // §22 §7
     else if (step.act === "resetSection") { resetScope("section", step.sec === "feature" ? "F_h0" : "I_kanmi", [state.device]); }
     else if (step.act === "moveCenterToCenter") { const r = g[step.ref]; if (r) { const y = r.y + r.h / 2 + (step.off || 0) - g[step.id].h / 2; programMove([step.id], () => ({ x: g[step.id].x, y })); } }
     else if (step.act === "moveCenterToGap") { const a = g[step.after], b = g[step.before]; if (a && b) { const y = (a.y + a.h + b.y) / 2 - g[step.id].h / 2; programMove([step.id], () => ({ x: g[step.id].x, y })); } }
@@ -2118,6 +2152,7 @@ const PG = (function () {
     editSelect: (s, e) => { if (!state.editing) return false; const n = elNode(state.editing.id); if (!n) return false; n.focus(); setCaretOffsets(n, s, e); if (typeof onRender === "function") onRender(); return true; },
     startEdit: (id) => startEdit(canonId(id)),
     editingId: () => state.editing && state.editing.id,
+    setFixedSections,   // §22 §7 仮の一番上・一番下セクション
   };
   return {
     state, render, reset, setDevice, undo, redo, commit, api, reduce, activeOps,
@@ -2126,7 +2161,7 @@ const PG = (function () {
     beginDrag, dragMove, endDrag, isDragging: () => !!drag, selectOnly, toggleSel, selectMany, clearSel, selectSection, selectInDesignRect, smallHit,
     startEdit, commitEdit, nudge, nudgeSelected, deleteSelected, copySelection, cutSelection, paste, duplicate,
     resetScope, peekOn, peekOff, addTextAt, anchorsList, classify: (id) => M.classifyDrop(geometry(), id, [id]),
-    bringToFront, sendToBack, hasOverlapPartner, zOrderList,
+    bringToFront, sendToBack, bringForward, sendBackward, hasOverlapPartner, zOrderList,
     beginResize, resizeMove, endResize, isResizing: () => !!rz, programResize, handlesFor,
     paintPhotos, photosApi, replacePhotoFile, loadImageFile, assetUrl, assetNat,
     setBrightness, brightnessOf, addPhotoAtPoint, addTextAtPoint,   // §3/§4/§5（試験台17）
