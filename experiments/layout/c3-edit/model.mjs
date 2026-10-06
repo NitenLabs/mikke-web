@@ -106,7 +106,8 @@ export function buildFeature(content, device, H, edits = {}) {
       const kids = reversed ? photo + tg : tg + photo;
       return `<div class="row" style="display:flex;align-items:center;padding-left:${px(padL)};gap:${px(c.b1Gap)};margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}">${kids}</div>`;
     };
-    blocks = block(0, false) + block(1, true);
+    const swap = edits.swap || {};   // §5 左右を入れ替える（端末ごと・ブロックごと）。既定は 0=そのまま・1=入替。入替えると反転
+    blocks = block(0, false !== !!swap[0]) + block(1, true !== !!swap[1]);
   } else {
     const block = (i) => {
       const ord = (order[`Fblk${i}`] || [`F_p${i}`, `F_h${i}`, `F_b${i}`]).filter((id) => !isOut(id));
@@ -141,21 +142,43 @@ export function buildItems(content, device, H, edits = {}) {
     : photoH ? `<div data-el="${id}" data-kind="photo" class="photo" style="width:100%;height:${px(photoH)}">${asset}</div>` : CARDPHOTO(id, asset);
   const hgInner = headingGroupInner("I", content.items, device, c);
 
-  const cardInners = (cardStyle, extra) => content.items.cards.map((card, i) => `
-      <div class="card" style="${cardStyle}${extra && i ? extra : ""}">
+  // §20 列（端末ごと）。既定（PC3/SP1）では1件の幅・文字の箱の幅・構造が従来と同じ＝比較試験 ±0。
+  const DEFCOLS = device === "pc" ? 3 : 1;
+  const defCardW = (c.cardsW - c.colGap * (DEFCOLS - 1)) / DEFCOLS;   // 426 / 351（テンプレ既定・txtDiff 用）
+  const txtDiff = defCardW - c.cardTxtW;                              // PC 21 / SP 18（1件の幅 − 文字の箱の幅）
+  const cardsWidth = wOf("I_cards", c.cardsW);                        // §3 左右の辺のつまみで変えた並びの幅
+  const cardW = (cardsWidth - c.colGap * (c.cols - 1)) / c.cols;
+  const cardTxtW = cardW - txtDiff;                                   // §2.2.4 1件の幅に合わせて差を保つ
+  const cardRowGap = device === "pc" ? 64 : 40;                       // §2.2.7 段と段の間（Claude.ai が置いた）
+  const ctw = (id) => Math.min(sizes[id]?.w ?? cardTxtW, cardW);      // §2.2.5 手直しの幅も1件の幅を越えない（表示だけ縮める）
+  const cardCell = (card, cardStyle, extra) => `
+      <div class="card" style="${cardStyle}${extra || ""}">
         ${cph(`card_photo_${card.id}`, card.photo.asset)}
-        ${T(`card_name_${card.id}`, "cardName", device, c.cardTxtW, thtml(H, `I_cn_${card.id}`), `margin:${px(c.cardPhotoName)} 0 0 ${px(c.cardTxtInset)}`)}
-        ${T(`card_desc_${card.id}`, "cardDesc", device, c.cardTxtW, thtml(H, `I_cd_${card.id}`), `margin:${px(c.cardNameDesc)} 0 0 ${px(c.cardTxtInset)}`)}
-        ${T(`card_price_${card.id}`, "cardPrice", device, c.cardTxtW, thtml(H, `I_cp_${card.id}`), `margin:${px(c.cardDescPrice)} 0 0 ${px(c.cardTxtInset)}`)}
-      </div>`).join("");
-  const cardsHtml = (mt) => c.cols > 1
-    ? `<div data-el="I_cards" data-kind="group" class="cards" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);column-gap:${px(c.colGap)};grid-template-rows:auto auto auto auto;width:${px(c.cardsW)};margin:${px(mt)} auto 0${off("I_cards")}">${cardInners("display:grid;grid-template-rows:subgrid;grid-row:span 4;align-items:start")}</div>`
-    : `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;width:${px(c.cardsW)};margin:${px(mt)} auto 0${off("I_cards")}">${cardInners("display:flex;flex-direction:column;align-items:flex-start;", `margin-top:${px(c.colGap)}`)}</div>`;
+        ${T(`card_name_${card.id}`, "cardName", device, ctw(`card_name_${card.id}`), thtml(H, `I_cn_${card.id}`), `margin:${px(c.cardPhotoName)} 0 0 ${px(c.cardTxtInset)}`)}
+        ${T(`card_desc_${card.id}`, "cardDesc", device, ctw(`card_desc_${card.id}`), thtml(H, `I_cd_${card.id}`), `margin:${px(c.cardNameDesc)} 0 0 ${px(c.cardTxtInset)}`)}
+        ${T(`card_price_${card.id}`, "cardPrice", device, ctw(`card_price_${card.id}`), thtml(H, `I_cp_${card.id}`), `margin:${px(c.cardDescPrice)} 0 0 ${px(c.cardTxtInset)}`)}
+      </div>`;
+  const cardsHtml = (mt) => {
+    const cards = content.items.cards;
+    if (c.cols <= 1) {   // 縦1列（SP 既定）＝従来の flex・段間は colGap
+      const inner = cards.map((card, i) => cardCell(card, "display:flex;flex-direction:column;align-items:flex-start;", i ? `margin-top:${px(c.colGap)}` : "")).join("");
+      return `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;width:${px(cardsWidth)};margin:${px(mt)} auto 0${off("I_cards")}">${inner}</div>`;
+    }
+    // 複数列：段ごとにグリッド（段の中で subgrid そろえ）。段と段は flex の row-gap（段の中のそろえと分離）。既定（3列1段）は従来と同位置。
+    const rows = []; for (let i = 0; i < cards.length; i += c.cols) rows.push(cards.slice(i, i + c.cols));
+    const rowGrid = (rc) => `<div class="cardrow" style="display:grid;grid-template-columns:repeat(${c.cols},1fr);grid-template-rows:auto auto auto auto;column-gap:${px(c.colGap)};width:100%">${rc.map((card) => cardCell(card, "display:grid;grid-template-rows:subgrid;grid-row:span 4;align-items:start")).join("")}</div>`;
+    const gapStyle = rows.length > 1 ? `row-gap:${px(cardRowGap)};` : "";
+    return `<div data-el="I_cards" data-kind="group" class="cards" style="display:flex;flex-direction:column;${gapStyle}width:${px(cardsWidth)};margin:${px(mt)} auto 0${off("I_cards")}">${rows.map(rowGrid).join("")}</div>`;
+  };
 
   const dividerInner = LINE("I_divider", wOf("I_divider", c.dividerW), 1, 0.5);
   const kanmiInner = T("I_kanmi", "kanmiLbl", device, wOf("I_kanmi", c.kanmiW), thtml(H, "I_kanmi"), pbOf("I_kanmi"));
   const timeInner = T("I_time", "kanmiTime", device, wOf("I_time", c.kanmiW), thtml(H, "I_time"), pbOf("I_time"));
-  const rows = content.items.table.map((r) => rowHtml(r, device, c, H)).join("");
+  // §3.2.5 表の幅を変えたとき：PC は名前の欄が伸び縮み・値段は右端に付く（既定では ±0）。SP は全欄が幅いっぱい
+  const tableWidth = wOf("I_table", c.tableW);
+  const tableNameW = device === "pc" ? (tableWidth - c.tablePriceW - (c.tableW - c.tableNameW - c.tablePriceW)) : tableWidth;
+  const cTable = { ...c, tableW: tableWidth, tableNameW, vlineLeft: device === "pc" ? tableNameW + (c.vlineLeft - c.tableNameW) : c.vlineLeft };
+  const rows = content.items.table.map((r) => rowHtml(r, device, cTable, H)).join("");
   const pillInner = T("I_pilltext", "pill", device, "auto", thtml(H, "I_pill"));
 
   // §2 縦積みの間隔：テンプレの隣接と「今の並び」だけから決める（手直しの数字を持たない）。
@@ -177,7 +200,7 @@ export function buildItems(content, device, H, edits = {}) {
     if (id === "I_divider") return `<div style="margin-top:${px(mt)};width:${px(wOf("I_divider", c.dividerW))};align-self:center${off("I_divider")}">${dividerInner}</div>`;
     if (id === "I_kanmi") return T("I_kanmi", "kanmiLbl", device, wOf("I_kanmi", c.kanmiW), thtml(H, "I_kanmi"), `margin-top:${px(mt)};align-self:center${off("I_kanmi")}${pbOf("I_kanmi")}`);
     if (id === "I_time") return T("I_time", "kanmiTime", device, wOf("I_time", c.kanmiW), thtml(H, "I_time"), `margin-top:${px(mt)};align-self:center${off("I_time")}${pbOf("I_time")}`);
-    if (id === "I_table") return `<div data-el="I_table" class="row-lines" style="width:${px(c.tableW)};margin:${px(mt)} auto 0${off("I_table")}">${rows}</div>`;
+    if (id === "I_table") return `<div data-el="I_table" class="row-lines" style="width:${px(wOf("I_table", c.tableW))};margin:${px(mt)} auto 0${off("I_table")}">${rows}</div>`;
     return `<div data-el="I_pillbg" data-kind="pill" style="margin-top:${px(mt)};width:${px(wOf("I_pillbg", c.pillW))};height:${px(c.pillH)};align-self:center;border:1px solid ${COLORS.textMuted};border-radius:32px;background:${COLORS.background};display:flex;align-items:center;justify-content:center${off("I_pillbg")}">${pillInner}</div>`;
   };
   const stackOrder = (order.Istack || STACK).filter((id) => !isOut(id));
