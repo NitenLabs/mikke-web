@@ -3210,6 +3210,15 @@ const PG = (function () {
       L22: [{ act: "winOnly" }],                                                                              // 幅500 で 列 を その他 から（窓幅）
       L23: [{ act: "winOnly" }],                                                                              // スマホの長押しの箱に 列（指）
       L24: [{ act: "winOnly" }],                                                                              // スマホで辺のつまみを指で（指）
+      // ===== 試験台20b（L25〜L32）=====
+      L25: [{ act: "setDev", d: "pc" }, { act: "moveCenterToRef", id: "I_divider", ref: "I_cards", edge: "top", off: -20 }],        // §1(X26) 区切り線を品の並びの上端−20へ＝一番上に並び替え（SP も同じ操作で確認）
+      L26: [{ act: "setDev", d: "pc" }, { act: "moveCenterToRef", id: "I_divider", ref: "I_pillbg", edge: "bottom", off: 20 }],     // §1(X26) ボタンの下端＋20へ＝一番下に並び替え
+      L27: [{ act: "setDev", d: "sp" }, { act: "dropOverlap", id: "F_h0", onto: "F_p0" }],                   // L12 の再確認（写真の箱へ＝重なる）。L13(帯で並び替え)は既存 L13 プリセットで
+      L28: [{ act: "winOnly" }],                                                                              // 窓幅500 で その他▾ の『PC』行が読める（X25・窓幅＝再現なし）
+      L29: [{ act: "setDev", d: "pc" }, { act: "resize", id: "I_table", handle: "e", by: [-2000, 0], alt: true }],                  // §2 表を最小幅（値段1行・≈687）まで
+      L30: [{ act: "setDev", d: "pc" }, { act: "resize", id: "I_table", handle: "e", by: [-2000, 0], alt: true }, { act: "edit", id: "row_price_t_matcha", text: "1,100円（税込・上生菓子付き）" }],  // §2.4 最小の後に値段を長く＝表示だけ広がる（記録は不変）。終状態＝書き換え後
+      L31: [{ act: "setDev", d: "sp" }, { act: "resize", id: "I_table", handle: "e", by: [-2000, 0], alt: true }],                  // §2.6 SP 表を最小幅（200 と値段1行の広い方）まで
+      L32: [{ act: "setDev", d: "pc" }, { act: "resize", id: "I_cards", handle: "e", by: [-918, 0], alt: true }, { act: "select", id: "I_cards" }],  // §3 品の並び幅408＝列の見本で4列が灰色（見本UI・その他経由は窓幅で再現なし）
     };
   }
   let lastSec = null;   // プリセットで直前に作った（複製・追加した）セクションの ID。@dup/@add が指す。
