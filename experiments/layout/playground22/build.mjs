@@ -678,7 +678,9 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
       if(!isCleared){ add("見せる範囲",()=>enterCrop(one)); add("写真を外す",()=>PG.commit({t:"clear",id:one})); }   // N4：外していない写真は「外す」だけ
       else { add("写真を戻す",()=>PG.commit({t:"unclear",id:one})); } }                                            // N4：外した空枠は「戻す」だけ
     // §22 §8 最前面/最背面へ移動（いつも出す）。重なり相手がいなければ灰色・▸箱なし。スマホは ▸ を使わず前面/背面の2つ
-    { const hasOv=PG.hasOverlapPartner();
+    // §22a X30：品の並び・表（I_cards/I_table。中の写真を右クリックするとこの群が選ばれる）とその中の部品には出さない（位置を動かせない／繰り返しの入れ物。§8.5）
+    const bareOne=PG.canonId(one).replace(/.*__/,"");
+    if(!PG.REPEAT.test(one) && bareOne!=="I_cards" && bareOne!=="I_table"){ const hasOv=PG.hasOverlapPartner();
       if(ph){ add("前面へ",()=>{ if(hasOv){PG.bringToFront(); showFmenu();} }); add("背面へ",()=>{ if(hasOv){PG.sendToBack(); showFmenu();} });
         const bs=[...fmenu.querySelectorAll("button")].slice(-2); if(!hasOv) for(const b of bs) b.disabled=true; }
       else { addDiv();

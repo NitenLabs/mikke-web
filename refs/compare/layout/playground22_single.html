@@ -2418,7 +2418,7 @@ const PG = (function () {
     let g = geometry();
     const single = drag.ids.length === 1;
     // 並び替えになる位置なら、割り込む所に横線を出す（§6）。「付いていく先」の札は§2で出さない
-    const ro = single ? reorderLineOrder(g, drag.ids[0]) : null;   // §22 X27：帯の中なら no-op でも横線を出す（縦は並び替えが勝つ）
+    const ro = single ? reorderActive(g, drag.ids[0]) : null;   // §22a X29：40px 内の小さなずらし（M1）には横線を出さない。帯の縁の reorder だけ出す
     // §2 そろえる（単体・Alt でない）。並び替えのときは縦は並び替えが勝つ＝横だけ吸い付く
     drag.snapDX = 0; drag.snapDY = 0;
     if (single && !alt) { const id = drag.ids[0]; const e = g[id];
@@ -2436,7 +2436,7 @@ const PG = (function () {
   function dropTarget() {
     if (!drag || drag.ids.length !== 1) return null;
     const id = drag.ids[0]; const g = geometry();
-    if (reorderBandIdx(g, id) >= 0) return "reorder";
+    if (reorderActive(g, id)) return "reorder";   // §22a X29：M1（40px 内）より後では見ない＝小さなずらしは M1
     const mode = classify(g, id); if (mode === "M1") return "M1";
     const rc = reorderClusterOf(id); const cy = g[id].y + g[id].h / 2;
     if (rc) { const og = drag.origGeom; const sibs = rc.sibs.filter((s) => og[s] && s !== id); if (sibs.length) { const top = Math.min(...sibs.map((s) => og[s].y)), bot = Math.max(...sibs.map((s) => og[s].y + og[s].h)); if (cy >= top && cy <= bot) return "overlap"; } }   // クラスタの中で M2＝重なる（②/③）
@@ -2504,6 +2504,15 @@ const PG = (function () {
     if (ro.order.join() === curOrder.join()) return null;   // 位置が変わらない＝並び替えなし（no-op）
     return ro;
   }
+  // §22a X29：並び替えとして扱うか。判定の順は試験台20 のとおり「40px 内のずらし（M1）」を先に見る＝小さなずらしは並び替えにしない。
+  // ①実際に並びが変わる→reorder。②変わらなくても、40px の外（＝M1 でない）で帯の中なら reorder（X27 の縁の no-op）。自分の元の場所の上下は M1 が先に拾うので相手にしない。
+  function reorderActive(g, id, ogArg) {
+    const roReal = reorderPreview(g, id, ogArg); if (roReal) return roReal;
+    const orig = ogArg || (drag ? drag.origGeom : g);
+    if (classifyDropX(g, id, drag ? drag.ids : [id], orig) === "M1") return null;   // 40px 内の小さなずらし＝M1（並び替えにしない）
+    if (reorderBandIdx(g, id, ogArg) >= 0) return reorderLineOrder(g, id, ogArg);   // 40px 外で帯の中＝縁の no-op も reorder
+    return null;
+  }
   // §4.2.1 ③で落とした先の子（縦の中心がその子の箱の中）。重なる M2 の付いていく先にする。
   function droppedOnChild(g, id) {
     const rc = reorderClusterOf(id); if (!rc) return null; const cy = g[id].y + g[id].h / 2;
@@ -2527,8 +2536,8 @@ const PG = (function () {
     const g = geometry();
     const prior = reduce(activeOps()).m1;   // 既に M1 を持つ部品を更に動かすときは積む（テンプレ位置からの総ずれ＝prior+今回）
     // 並び替え（単体・同一塊の中・兄弟を越えた）＝M1 でなく並び順の変更（§6／§10.1）
-    // §22 X27：帯の中に離したら並び替え扱い（深い所の②=M2 にしない）。順が変わるときだけコミット、変わらない no-op は元の流れに戻す（render で吸着を戻す）
-    if (drag.ids.length === 1 && reorderBandIdx(g, drag.ids[0]) >= 0) { const ro = reorderPreview(g, drag.ids[0]); const id = drag.ids[0]; drag = null; if (ro) commit({ t: "reorder", device: state.device, key: ro.key, id, order: ro.order }); else render(); return; }
+    // §22a X29：順の判定は「40px 内のずらし（M1）」が先。実際に並びが変われば reorder をコミット。40px 外の帯の no-op（縁）だけ流れに戻す（M2 にしない）。小さなずらしは下の M1 へ落とす。
+    if (drag.ids.length === 1) { const id = drag.ids[0]; const roReal = reorderPreview(g, id); if (roReal) { drag = null; commit({ t: "reorder", device: state.device, key: roReal.key, id, order: roReal.order }); return; } if (reorderActive(g, id)) { drag = null; render(); return; } }
     // M1/M2 を判定。M2 の付いていく先・間隔は「離した瞬間（元の場所を詰める前）の配置」で決める（§2.2）。
     const decided = drag.ids.map((id) => ({ id, mode: classify(g, id) }));
     if (decided.some((d) => d.mode === "M2")) {
@@ -3398,7 +3407,7 @@ const PG = (function () {
     let g2 = geometry();   // 離した瞬間（詰める前）
     if (opts.snap && ids.length === 1) { const id = ids[0]; const e = g2[id]; const ro0 = reorderPreview(g2, id, g);
       if (e) { const snap = snapBox(secOf(id), e, true, !ro0, new Set([id])); if (snap.dx || snap.dy) { const n = elNode(id); const tg = targetOf(id, 0); if (n) n.style.transform = `translate(${tg.x - g[id].x + snap.dx}px,${tg.y - g[id].y + snap.dy}px)`; g2 = geometry(); } } }
-    if (ids.length === 1 && reorderBandIdx(g2, ids[0], g) >= 0) { const ro = reorderPreview(g2, ids[0], g); if (ro) commit({ t: "reorder", device: state.device, key: ro.key, id: ids[0], order: ro.order }); else render(); return; }   // §22 X27：帯の中は並び替え扱い（no-op は流れに戻す）
+    if (ids.length === 1) { const roReal = reorderPreview(g2, ids[0], g); if (roReal) { commit({ t: "reorder", device: state.device, key: roReal.key, id: ids[0], order: roReal.order }); return; } if (reorderActive(g2, ids[0], g)) { render(); return; } }   // §22a X29：M1(40px内)が先・順が変われば reorder・縁の no-op は流れに戻す
     const m1Of = (d) => ({ id: d.id, mode: "M1", dx: Math.round((prior[d.id]?.dx || 0) + g2[d.id].x - g[d.id].x), dy: Math.round((prior[d.id]?.dy || 0) + g2[d.id].y - g[d.id].y) });
     const decided = ids.map((id) => ({ id, mode: isAdded(id) ? "M2" : classifyDropX(g2, id, ids, g) }));
     if (decided.some((d) => d.mode === "M2")) {
@@ -3901,7 +3910,9 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
       if(!isCleared){ add("見せる範囲",()=>enterCrop(one)); add("写真を外す",()=>PG.commit({t:"clear",id:one})); }   // N4：外していない写真は「外す」だけ
       else { add("写真を戻す",()=>PG.commit({t:"unclear",id:one})); } }                                            // N4：外した空枠は「戻す」だけ
     // §22 §8 最前面/最背面へ移動（いつも出す）。重なり相手がいなければ灰色・▸箱なし。スマホは ▸ を使わず前面/背面の2つ
-    { const hasOv=PG.hasOverlapPartner();
+    // §22a X30：品の並び・表（I_cards/I_table。中の写真を右クリックするとこの群が選ばれる）とその中の部品には出さない（位置を動かせない／繰り返しの入れ物。§8.5）
+    const bareOne=PG.canonId(one).replace(/.*__/,"");
+    if(!PG.REPEAT.test(one) && bareOne!=="I_cards" && bareOne!=="I_table"){ const hasOv=PG.hasOverlapPartner();
       if(ph){ add("前面へ",()=>{ if(hasOv){PG.bringToFront(); showFmenu();} }); add("背面へ",()=>{ if(hasOv){PG.sendToBack(); showFmenu();} });
         const bs=[...fmenu.querySelectorAll("button")].slice(-2); if(!hasOv) for(const b of bs) b.disabled=true; }
       else { addDiv();
