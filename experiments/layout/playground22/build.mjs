@@ -88,6 +88,19 @@ body{margin:0;font:14px/1.6 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",
 #publishToast.on{display:block}
 #moreMenu .morestat{font:12px system-ui;color:#666;padding:4px 10px;min-height:30px;display:flex;align-items:center;cursor:default}
 #moreMenu .morestat.warn{color:#e08a00;font-weight:700}
+/* §22 §4.1 公開前の確認の箱 */
+#publishBox{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
+#publishBox.on{display:flex}
+#publishBox .pbox-inner{background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.3);width:min(560px,92vw);max-height:84vh;display:flex;flex-direction:column;padding:20px 22px;font:14px system-ui}
+#publishBox .pbox-title{font-size:16px;font-weight:700;color:#222;margin-bottom:12px}
+#publishBox .pbox-list{overflow-y:auto;flex:1}
+#publishBox .pbox-kind{font-size:12px;color:#888;margin:12px 0 4px;font-weight:700}
+#publishBox .pbox-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid #eee}
+#publishBox .pbox-rowtext{flex:1;color:#333;line-height:1.5}
+#publishBox .pbox-see{flex:0 0 auto;font:13px system-ui;padding:4px 12px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
+#publishBox .pbox-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+#publishBox .pbox-btns button{font:14px system-ui;padding:8px 16px;border-radius:8px;border:1px solid #bbb;background:#fff;cursor:pointer}
+#publishBox .pbox-go{background:#06c;color:#fff;border-color:#06c}
 button{font:13px system-ui;padding:5px 9px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
 button.on{background:#333;color:#fff;border-color:#333}
 button:active{transform:translateY(1px)}
@@ -356,6 +369,7 @@ const UI_BODY = `
 <div id="linkChip" data-link-chip></div>
 <div id="moreMenu"></div>
 <div id="publishToast"></div>
+<div id="publishBox"></div>
 <button id="photoChangeBtn" type="button" data-photo-change></button>
 <div id="brightPop" class="tspop"></div>
 <div id="pbar"></div>
@@ -447,7 +461,30 @@ function updateSaveUI(){ const st=PG.saveState(); const el=document.getElementBy
   if(st.status==="saved") _lastPubEnabled = !st.publishedEqual;   // §3.2 公開中と同じ→押せない／それ以外→押せる。保存中・失敗は前の状態のまま
   pub.disabled = !_lastPubEnabled;
   updateMoreStatus(); }
-document.getElementById("tPublish").onclick=()=>{ const pub=document.getElementById("tPublish"); if(pub.disabled) return; PG.publish({force:true}); const t=document.getElementById("publishToast"); t.textContent="公開しました"; t.classList.add("on"); clearTimeout(_pubToastT); _pubToastT=setTimeout(()=>t.classList.remove("on"),3000); updateSaveUI(); };
+function showPublishToast(){ const t=document.getElementById("publishToast"); t.textContent="公開しました"; t.classList.add("on"); clearTimeout(_pubToastT); _pubToastT=setTimeout(()=>t.classList.remove("on"),3000); }
+function afterPublish(){ updateSaveUI(); if(isPhone()) refreshPhoneUI(); }
+// §22 §4.1 公開を押したとき：PC/SP の確認（publishCheck）。何もなければすぐ公開しトースト、あれば確認の箱
+function doPublishFlow(){ const items=PG.publishCheck(); if(!items.length){ PG.publish({force:true}); showPublishToast(); afterPublish(); } else showPublishBox(items); }
+document.getElementById("tPublish").onclick=()=>{ if(document.getElementById("tPublish").disabled) return; doPublishFlow(); };
+function closePublishBox(){ document.getElementById("publishBox").classList.remove("on"); }
+function scrollPartToCenter(part){ const n=PG.elNode(PG.canonId(part)); if(!n) return; n.scrollIntoView({block:"center"}); const r=n.getBoundingClientRect(); window.scrollBy(0,(r.top+r.height/2)-innerHeight/2); }   // §4.1.5 部品の真ん中が画面の真ん中
+function seeItem(it){ closePublishBox(); PG.setDevice(it.device); const dSP=document.getElementById("dSP"),dPC=document.getElementById("dPC"); if(it.device==="sp"){dSP.classList.add("on");dPC.classList.remove("on");}else{dPC.classList.add("on");dSP.classList.remove("on");} const part=it.parts[0]; PG.selectOnly(PG.canonId(part)); scrollPartToCenter(part); }
+function showPublishBox(items){ const box=document.getElementById("publishBox"); box.innerHTML="";
+  const inner=document.createElement("div"); inner.className="pbox-inner";
+  const title=document.createElement("div"); title.className="pbox-title"; title.setAttribute("data-pbox-title",String(items.length)); title.textContent="公開する前に、見てほしい所が "+items.length+" つあります"; inner.appendChild(title);
+  const KIND={overlap:"重なっている所",long:"長い文",emptyPhoto:"写真のない枠",system:"仕組みの重なり・はみ出し"};
+  const list=document.createElement("div"); list.className="pbox-list";
+  for(const kind of ["overlap","long","emptyPhoto","system"]){ const grp=items.filter(i=>i.kind===kind); if(!grp.length) continue;
+    const h=document.createElement("div"); h.className="pbox-kind"; h.textContent=KIND[kind]; list.appendChild(h);
+    for(const it of grp){ const row=document.createElement("div"); row.className="pbox-row"; row.setAttribute("data-pbox-kind",kind); row.setAttribute("data-pbox-dev",it.device);
+      const t=document.createElement("span"); t.className="pbox-rowtext"; t.textContent=it.text; row.appendChild(t);
+      const see=document.createElement("button"); see.className="pbox-see"; see.setAttribute("data-pbox-see","1"); see.textContent="見る"; see.onclick=()=>seeItem(it); row.appendChild(see); list.appendChild(row); } }
+  inner.appendChild(list);
+  const btns=document.createElement("div"); btns.className="pbox-btns";
+  const back=document.createElement("button"); back.setAttribute("data-pbox-back","1"); back.textContent="戻って直す"; back.onclick=closePublishBox; btns.appendChild(back);
+  const go=document.createElement("button"); go.className="pbox-go"; go.setAttribute("data-pbox-go","1"); go.textContent="このまま公開する"; go.onclick=()=>{ closePublishBox(); PG.publish({force:true}); showPublishToast(); afterPublish(); }; btns.appendChild(go);
+  inner.appendChild(btns); box.appendChild(inner); box.classList.add("on"); }
+window.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&document.getElementById("publishBox").classList.contains("on")){ e.preventDefault(); closePublishBox(); } },true);   // §4.1.4 Esc＝戻って直す
 document.getElementById("tHistory").onclick=()=>{ /* §6 履歴の板は 22d */ };
 document.getElementById("tPreview").onclick=()=>{ /* §5 プレビューは 22c */ };
 // §3.3 状態の文字が並びに入らないときは「その他」の一番上に押せない行として出す
@@ -1168,7 +1205,7 @@ function buildPbar(){ pbar.innerHTML="";
   const sp=document.createElement("span"); sp.className="sp"; pbar.appendChild(sp);   // §22 §3.4 右端に公開
   pbar.appendChild(pbtn("公開",()=>phonePublish(),"data-pbar-publish"));
 }
-function phonePublish(){ const st=PG.saveState(); if(st.label==="公開中と同じです") return; PG.publish({force:true}); const t=document.getElementById("publishToast"); t.textContent="公開しました"; t.classList.add("on"); clearTimeout(_pubToastT); _pubToastT=setTimeout(()=>t.classList.remove("on"),3000); refreshPhoneUI(); }
+function phonePublish(){ const st=PG.saveState(); if(st.label==="公開中と同じです") return; doPublishFlow(); }   // §22 §4.1 スマホの公開も確認の箱を通す
 function setPhoneDevice(d){ pmore.classList.remove("on"); PG.setDevice(d); const sp=document.getElementById("dSP"), pc=document.getElementById("dPC"); if(d==="sp"){ sp.classList.add("on"); pc.classList.remove("on"); } else { pc.classList.add("on"); sp.classList.remove("on"); } }
 function togglePmore(){ if(pmore.classList.contains("on")){ pmore.classList.remove("on"); return; } buildPmore(); pmore.classList.add("on"); placeAboveBar(pmore); }
 function buildPmore(){ pmore.innerHTML="";   // §2.3 一覧の中身（上から）

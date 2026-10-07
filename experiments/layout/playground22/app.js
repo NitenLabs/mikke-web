@@ -1025,6 +1025,61 @@ const PG = (function () {
     list.push({ id: "initial", kind: "initial", at: null, current: false });
     return list;
   }
+
+  // ===================== §22 §4.2 公開前チェック・長い文の目安 =====================
+  const LONG_RE = /(?:^|__)(F_[hb][01]|card_name_.+|card_desc_.+|row_name_.+|row_desc_.+)$/;   // 長い文の対象＝特集の見出し/本文・品の名前/説明・表の行の名前/説明
+  function lineCountOf(el) {
+    const cs = getComputedStyle(el); let lh = parseFloat(cs.lineHeight);
+    if (!lh || isNaN(lh)) lh = (parseFloat(cs.fontSize) || 16) * 1.5;
+    const padT = parseFloat(cs.paddingTop) || 0, padB = parseFloat(cs.paddingBottom) || 0;
+    const h = (el.clientHeight || 0) - padT - padB;
+    return Math.max(1, Math.round(h / lh));
+  }
+  function measureTextLines() {   // 今の端末の描画から、対象の文字箱の行数を測る（canonId → 行数）
+    const out = {};
+    for (const inst of state.secList) { const host = document.getElementById(secHostId(inst)); if (!host) continue;
+      for (const el of host.querySelectorAll('[data-el]')) { const id = el.getAttribute("data-el"); if (!LONG_RE.test(id)) continue; out[canonId(id)] = lineCountOf(el); } }
+    return out;
+  }
+  // §4.2 目安＝テンプレの見本の文の行数×1.5 の切り上げ（見本1行なら2）。今の行数とともに部品ごと・端末ごとに返す。
+  function longTextLimits() {
+    const curOps = state.ops.slice(), curCursor = state.cursor, curBase = state.undoBase, curDev = state.device;
+    const result = {};
+    for (const dev of ["pc", "sp"]) {
+      state.device = dev;
+      state.ops = []; state.cursor = 0; render(); const tmpl = measureTextLines();   // テンプレ（手直しなし）
+      state.ops = curOps; state.cursor = curCursor; render(); const cur = measureTextLines();   // 今
+      for (const p in cur) { const tl = tmpl[p] || 1; const limit = Math.max(2, Math.ceil(tl * 1.5)); (result[p] = result[p] || {})[dev] = { limit, lines: cur[p] }; }
+    }
+    state.device = curDev; state.ops = curOps; state.cursor = curCursor; state.undoBase = curBase; render();
+    return result;
+  }
+  // §4.2 公開前に見てほしい所：PC・スマホの両方で、重なり・長い文・写真のない枠・仕組みの重なり/はみ出しを集める。
+  function publishCheck() {
+    const limits = longTextLimits();
+    const curDev = state.device; const items = [];
+    for (const dev of ["pc", "sp"]) {
+      state.device = dev; render();
+      const w = warnings(); const DL = dev === "pc" ? "PC" : "スマホ";
+      // 重なり（ownerOverlaps）：動かした部品を主語にして、同じ部品が複数の相手と重なっていれば1行にまとめる（§4.2）
+      const Rd = reduce(activeOps(), dev); const movedP = (id) => !!(Rd.m1[canonId(id)] || Rd.m2[canonId(id)] || isAdded(id));
+      const pairs = (w.ownerOverlaps || []).map((o) => [canonId(o.a), canonId(o.b)]);
+      const partners = {}; for (const [a, c] of pairs) { (partners[a] = partners[a] || new Set()).add(c); (partners[c] = partners[c] || new Set()).add(a); }
+      const used = new Set(); const pk = (a, c) => [a, c].sort().join("|");
+      const subjects = Object.keys(partners).filter(movedP).sort((a, c) => partners[c].size - partners[a].size);
+      for (const subj of subjects) { const ps = [...partners[subj]].filter((q) => !used.has(pk(subj, q))); if (!ps.length) continue; for (const q of ps) used.add(pk(subj, q)); items.push({ device: dev, kind: "overlap", parts: [subj, ...ps], text: `${DL}：${M.friendly(subj)}が、${ps.map((q) => M.friendly(q)).join("と")}に重なっています` }); }
+      for (const [a, c] of pairs) { if (used.has(pk(a, c))) continue; used.add(pk(a, c)); items.push({ device: dev, kind: "overlap", parts: [a, c], text: `${DL}：${M.friendly(a)}が、${M.friendly(c)}に重なっています` }); }
+      // 長い文：今の行数が目安を越えた部品
+      for (const p in limits) { const L = limits[p][dev]; if (L && L.lines > L.limit) items.push({ device: dev, kind: "long", parts: [p], text: `${DL}：${M.friendly(p)}が、目安の長さ（${L.limit}行）を越えています（${L.lines}行）` }); }
+      // 写真のない枠（まだ写真が無い＝足したセクション等）
+      for (const ph of photosApi()) if (ph.missing) items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `足した${M.friendly(ph.part)}がまだありません。公開すると、この枠は詰めて出しません` });
+      // 仕組みの重なり・はみ出し（ふつうは空）
+      for (const o of w.overlaps || []) items.push({ device: dev, kind: "system", parts: [canonId(o.a), canonId(o.b)], text: `${DL}：${M.friendly(o.a)}が、${M.friendly(o.b)}に重なっています` });
+      for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: `${DL}：${M.friendly(o.id)}がはみ出しています` });
+    }
+    state.device = curDev; render();
+    return items;
+  }
   function setDevice(d) { if (state.editing) commitEdit(); state.device = d; render(); }
 
   // ---- §2 セクションの操作（上へ・下へ・複製・削除・足す）。ページの組み立て＝端末共通・1操作1undo。----
@@ -2225,10 +2280,12 @@ const PG = (function () {
     editingId: () => state.editing && state.editing.id,
     setFixedSections,   // §22 §7 仮の一番上・一番下セクション
     boot, saveState, simulateSaveError, publish, versions,   // §22 §2 保存・§4.3 公開の記録
+    publishCheck, longTextLimits,   // §22 §4.2 公開前チェック・長い文の目安
   };
   return {
     state, render, reset, setDevice, undo, redo, commit, api, reduce, activeOps,
     boot, saveState, simulateSaveError, publish, versions, setFixedSections,   // §22 §2 保存・§4.3 公開・§7（WIRING から使う）
+    publishCheck, longTextLimits,   // §22 §4.2（WIRING の確認の箱から使う）
     canUndo: () => state.cursor > state.undoBase, canRedo: () => state.cursor < state.ops.length,
     canonId, isDraggable, isText, REPEAT, groupOf, secOf, elNode, getScale: () => scale, isHeadingGroup, inputMode,
     sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionCan,   // §2 セクションの操作
