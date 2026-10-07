@@ -100,7 +100,7 @@ body{margin:0;font:14px/1.6 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",
 #publishBox .pbox-see{flex:0 0 auto;font:13px system-ui;padding:4px 12px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
 #publishBox .pbox-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
 #publishBox .pbox-btns button{font:14px system-ui;padding:8px 16px;border-radius:8px;border:1px solid #bbb;background:#fff;cursor:pointer}
-#publishBox .pbox-go{background:#06c;color:#fff;border-color:#06c}
+#publishBox .pbox-btns button.pbox-go{background:#06c;color:#fff;border-color:#06c}
 /* §22 §5 プレビュー（お客さんが見る形）の短い帯＝3つだけ：文字・PC/スマホ・編集に戻る */
 #previewBar{position:sticky;top:0;z-index:31;display:none;background:#222;color:#fff;padding:8px 12px;align-items:center;gap:10px;font:13px system-ui}
 #previewBar.on{display:flex}
@@ -406,7 +406,7 @@ function opText(op){ const nm=id=>C3.friendly(id);
   return op.t; }
 function refreshStudio(){ const ol=document.getElementById("oplog"); if(ol){ ol.innerHTML=""; for(const op of PG.api.ops()){ const li=document.createElement("li"); li.textContent=opText(op); ol.appendChild(li);} }
   const ul=document.getElementById("anchorlist"); if(ul){ ul.innerHTML=""; for(const a of PG.anchorsList()){ const li=document.createElement("li"); li.textContent=a.partName+"："+(a.mode==="M1"?"塊の中でずらす":a.anchorName+"の下（空き"+a.gapY+"）"); ul.appendChild(li);} } }
-window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); };
+window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); };
 // §19b（X20）上の道具を常に1段に保ち、入りきらないぶんを「その他 ▾」にしまう（窓の幅で機能を隠さない）
 const toolbarEl=document.getElementById("toolbar");
 const tMore=document.getElementById("tMore");
@@ -507,8 +507,9 @@ function buildPreviewBar(){ previewBar.innerHTML="";
   const sp=document.createElement("span"); sp.className="sp"; previewBar.appendChild(sp);
   const back=document.createElement("button"); back.textContent="編集に戻る"; back.setAttribute("data-pv-back","1"); back.onclick=exitPreviewUI; previewBar.appendChild(back);
 }
-function enterPreviewUI(){ fmenu.classList.remove("on"); pmore.classList.remove("on"); moreMenu.classList.remove("on"); PG.enterPreview(); document.body.classList.add("pg-preview"); buildPreviewBar(); previewBar.classList.add("on"); }
-function exitPreviewUI(){ PG.exitPreview(); document.body.classList.remove("pg-preview"); previewBar.classList.remove("on"); }
+function enterPreviewUI(){ fmenu.classList.remove("on"); pmore.classList.remove("on"); moreMenu.classList.remove("on"); PG.enterPreview(); }   // UI は onRender の syncPreviewUI が反映（プリセット/入口経由でも効く）
+function exitPreviewUI(){ PG.exitPreview(); }
+function syncPreviewUI(){ const on=PG.previewMode(); document.body.classList.toggle("pg-preview",on); if(on){ if(!previewBar.classList.contains("on")){ buildPreviewBar(); previewBar.classList.add("on"); } } else previewBar.classList.remove("on"); }
 window.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&PG.previewMode()){ e.preventDefault(); exitPreviewUI(); } },true);   // §5.4 Esc＝編集に戻る
 // §5.3 プレビュー中：リンクは本当に押せる（よそは新しいタブ）。部品は選ばない・動かさない（const stage はこの後で定義されるので直接取得）
 document.getElementById("stage").addEventListener("click",(e)=>{ if(!PG.previewMode()) return;

@@ -1051,7 +1051,7 @@ const PG = (function () {
       state.device = dev;
       state.ops = []; state.cursor = 0; render(); const tmpl = measureTextLines();   // テンプレ（手直しなし）
       state.ops = curOps; state.cursor = curCursor; render(); const cur = measureTextLines();   // 今
-      for (const p in cur) { const tl = tmpl[p] || 1; const limit = Math.max(2, Math.ceil(tl * 1.5)); (result[p] = result[p] || {})[dev] = { limit, lines: cur[p] }; }
+      for (const p in cur) { const base = p.replace(/.*__/, ""); const tl = tmpl[p] || tmpl[base] || 1; const limit = Math.max(2, Math.ceil(tl * 1.5)); (result[p] = result[p] || {})[dev] = { limit, lines: cur[p] }; }   // 複製/追加セクションの部品は、元の見本（base）の行数で目安を出す
     }
     state.device = curDev; state.ops = curOps; state.cursor = curCursor; state.undoBase = curBase; render();
     return result;
@@ -1059,7 +1059,7 @@ const PG = (function () {
   // §4.2 公開前に見てほしい所：PC・スマホの両方で、重なり・長い文・写真のない枠・仕組みの重なり/はみ出しを集める。
   function publishCheck() {
     const limits = longTextLimits();
-    const curDev = state.device; const items = [];
+    const curDev = state.device; const items = []; const emptySeen = new Set();   // 写真のない枠は端末に依らない＝1枠1回
     for (const dev of ["pc", "sp"]) {
       state.device = dev; render();
       const w = warnings(); const DL = dev === "pc" ? "PC" : "スマホ";
@@ -1073,8 +1073,8 @@ const PG = (function () {
       for (const [a, c] of pairs) { if (used.has(pk(a, c))) continue; used.add(pk(a, c)); items.push({ device: dev, kind: "overlap", parts: [a, c], text: `${DL}：${M.friendly(a)}が、${M.friendly(c)}に重なっています` }); }
       // 長い文：今の行数が目安を越えた部品
       for (const p in limits) { const L = limits[p][dev]; if (L && L.lines > L.limit) items.push({ device: dev, kind: "long", parts: [p], text: `${DL}：${M.friendly(p)}が、目安の長さ（${L.limit}行）を越えています（${L.lines}行）` }); }
-      // 写真のない枠（まだ写真が無い＝足したセクション等）
-      for (const ph of photosApi()) if (ph.missing) items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `足した${M.friendly(ph.part)}がまだありません。公開すると、この枠は詰めて出しません` });
+      // 写真のない枠（まだ写真が無い＝足したセクション等）。端末に依らないので1枠1回
+      for (const ph of photosApi()) if (ph.missing && !emptySeen.has(ph.part)) { emptySeen.add(ph.part); items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `足した${M.friendly(ph.part)}がまだありません。公開すると、この枠は詰めて出しません` }); }
       // 仕組みの重なり・はみ出し（ふつうは空）
       for (const o of w.overlaps || []) items.push({ device: dev, kind: "system", parts: [canonId(o.a), canonId(o.b)], text: `${DL}：${M.friendly(o.a)}が、${M.friendly(o.b)}に重なっています` });
       for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: `${DL}：${M.friendly(o.id)}がはみ出しています` });
@@ -2022,6 +2022,13 @@ const PG = (function () {
       W6: [{ act: "setDev", d: "pc" }, { act: "edit", id: "F_h0", text: "公開テスト" }, { act: "publish" }],   // §4.3 公開＝確認の箱なし・公開中と同じに
       W7: [{ act: "setDev", d: "pc" }, { act: "edit", id: "F_h0", text: "公開テスト" }, { act: "publish" }, { act: "edit", id: "F_h0", text: "さらに変更" }],   // §3.2 公開後に変更＝未公開の変更あり
       W19: Array.from({ length: 32 }, (_, i) => [{ act: "edit", id: "F_h0", text: "版" + i }, { act: "publish" }]).flat(),   // §4.3 32回公開→公開した版30＋最初の形
+      // ===== 試験台22c（W8〜W13）=====
+      W8: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [-619, 0] }, { act: "setDev", d: "sp" }, { act: "dropOverlap", id: "F_h0", onto: "F_p0" }, { act: "editAppend", id: "F_b0", add: "とても長い本文をここに足して、スマホの配置でも目安の行数をしっかり越えるようにします。季節のうつろいを、小さな菓子に写してお届けします。四季折々の意匠をお楽しみください。" }, { act: "secAdd", type: "feature" }, { act: "setDev", d: "pc" }],   // §4.1 確認の箱に PC重なり・SP重なり・長い文・写真のない枠（箱の表示は試験で公開を押す）
+      W9: [{ act: "winOnly" }],                          // §4.1 箱の「見る」＝UI（試験で）
+      W10: [{ act: "winOnly" }],                         // §4.1 戻って直す／このまま公開する＝UI（試験で）
+      W11: [{ act: "setDev", d: "pc" }],                 // §4.2 longTextLimits() を見るだけ
+      W12: [{ act: "setDev", d: "pc" }, { act: "setLink", id: "card_photo_c_warabi", link: { kind: "url", href: "https://example.com" } }, { act: "preview", on: true }],   // §5 プレビュー＋よそのリンク（押すのは試験で）
+      W13: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [-619, 0] }, { act: "secAdd", type: "feature" }, { act: "preview", on: true }],   // §5 公開の描き方＝写真のない枠は詰める
     };
   }
   let lastSec = null;   // プリセットで直前に作った（複製・追加した）セクションの ID。@dup/@add が指す。
@@ -2066,6 +2073,9 @@ const PG = (function () {
     else if (step.act === "setFixedSections") { setFixedSections(step.on); }   // §22 §7
     else if (step.act === "publish") { publish(step.opts || { force: true }); }   // §22 §4.3
     else if (step.act === "simError") { simulateSaveError(step.on); }   // §22 §2.6
+    else if (step.act === "preview") { if (step.on === false) exitPreview(); else enterPreview(); }   // §22 §5
+    else if (step.act === "setLink") { setElementLink(canonId(step.id), step.link); }   // §22 §5（リンク）
+    else if (step.act === "secAdd") { sectionAdd(step.pos != null ? step.pos : (reduce(activeOps()).secList.length), step.type || "feature"); lastSec = "sec" + state.secSeq; }   // §22 §4.2 写真のない枠
     else if (step.act === "resetSection") { resetScope("section", step.sec === "feature" ? "F_h0" : "I_kanmi", [state.device]); }
     else if (step.act === "moveCenterToCenter") { const r = g[step.ref]; if (r) { const y = r.y + r.h / 2 + (step.off || 0) - g[step.id].h / 2; programMove([step.id], () => ({ x: g[step.id].x, y })); } }
     else if (step.act === "moveCenterToGap") { const a = g[step.after], b = g[step.before]; if (a && b) { const y = (a.y + a.h + b.y) / 2 - g[step.id].h / 2; programMove([step.id], () => ({ x: g[step.id].x, y })); } }
