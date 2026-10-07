@@ -14,3 +14,7 @@ experiments/layout/playground*/index.html
 experiments/layout/playground/_bundle_test.html
 templates/wa-01/_baseline_compare_before.txt
 templates/wa-01/_compare_after_abox.txt
+
+# Claude.ai 確認スクリプトが生成する試験画像（再生成される）
+tools/verify-claudeai/img17/
+tools/verify-claudeai/testimg/
