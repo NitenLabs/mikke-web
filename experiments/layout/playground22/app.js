@@ -404,7 +404,7 @@ const PG = (function () {
 
   // §2 セクションの並び（ページの組み立て）。今は特集・品の2つ。複製・追加・削除・並べ替えはこの並びを書き換える（試験台14・第2回で操作を足す）。
   const defaultSecList = () => [{ id: "feature", type: "feature" }, { id: "items", type: "items" }];
-  let state = { device: "pc", ops: [], cursor: 0, undoBase: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null, fixedSections: false };
+  let state = { device: "pc", ops: [], cursor: 0, undoBase: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null, fixedSections: false, preview: false };
   let scale = 1, layoutCount = 0, composing = false;
   let clampGuard = false;   // §20b §2.4 表の幅クランプの再描画ガード（render の再入防止）
   let appliedPlace = {}; // id -> {top,left} 直近の絶対配置
@@ -704,6 +704,7 @@ const PG = (function () {
         const addedLocal = R.added.filter((a) => a.section === sec).map((a) => ({ ...a, section: inst.type, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined }));
         edits = { m1: pick(R.m1), m2: pick(R.m2), added: addedLocal, remove: R.remove.filter((id) => secOf(id) === sec).map(strip), clear: clearLocal, template: R.tpl, order: pick(R.order), sizes: pick(R.sizes) };
       }
+      if (state.preview || state._pubGeo) { edits.remove = [...(edits.remove || []), ...(edits.clear || [])]; edits.clear = []; }   // §22 §5 プレビュー/公開：写真のない枠は詰める（EMPTYFRAME を出さず流れから外す）
       if (inst.type === "items") { const cardsId = anchor ? "I_cards" : (pfx + "I_cards"); let cv = R.colsMap[cardsId] && R.colsMap[cardsId][state.device]; if (state.colsPreview && state.colsPreview.id === cardsId && state.colsPreview.device === state.device) cv = state.colsPreview.n; if (cv != null) edits.geom = { [state.device]: { cols: cv } }; }   // §20 列（仮表示を優先）
       if (inst.type === "feature") { const sw = R.swapMap[sec] && R.swapMap[sec][state.device]; if (sw) edits.swap = sw; }   // §5 左右入替
       // §20b §2.4 描画時クランプ：記録幅では値段が1行に入らない表を、表示だけ広い幅で描く（記録=edits.sizes には触らず transient な幅を差し込む）
@@ -917,6 +918,7 @@ const PG = (function () {
     // 足した部品：置いた端末だけ手動印
     for (const a of R.adds) if (!R.remove.includes(a.id)) { const moved = R.m2[a.id] || R.m1[a.id]; if (a.placedDevice === state.device || moved) manual.add(a.id); }
     document.querySelectorAll(".mark-manual,.mark-warn,.mark-sel,.mark-anchor,.anchor-line,.anchor-label,.sel-pad,.rz-handle,.snap-guide").forEach((n) => { if (n.classList.contains("anchor-line") || n.classList.contains("anchor-label") || n.classList.contains("sel-pad") || n.classList.contains("rz-handle") || n.classList.contains("snap-guide")) n.remove(); else n.classList.remove("mark-manual", "mark-warn", "mark-sel", "mark-anchor"); });
+    if (state.preview) return;   // §22 §5 プレビュー中は編集の飾り（選んだ枠・つまみ・手動印）を出さない
     for (const id of manual) { const n = elNode(id); if (n) n.classList.add("mark-manual"); }
     // §2：赤い枠（.mark-warn）は出さない
     for (const id of state.selected) { const n = elNode(id); if (n) n.classList.add("mark-sel"); }
@@ -1081,6 +1083,18 @@ const PG = (function () {
     return items;
   }
   function setDevice(d) { if (state.editing) commitEdit(); state.device = d; render(); }
+
+  // ===================== §22 §5 プレビュー（お客さんが見る形） =====================
+  function enterPreview() { if (state.preview) return; if (state.editing) commitEdit(); state.selected = new Set(); state.selectedSection = null; state.preview = true; render(); }
+  function exitPreview() { if (!state.preview) return; state.preview = false; render(); }   // §5.4 スクロールは保つ・選び直さない
+  function previewMode() { return state.preview; }
+  // §5.5 公開の描き方での位置（写真のない枠は詰める）。プレビューと ±0.5 で一致する基準。
+  function publishedGeometry(device) {
+    device = device || state.device;
+    if (state.preview && device === state.device) return geometry();
+    const here = state.device; state._pubGeo = true; state.device = device; render();
+    const g = geometry(); state._pubGeo = false; state.device = here; render(); return g;
+  }
 
   // ---- §2 セクションの操作（上へ・下へ・複製・削除・足す）。ページの組み立て＝端末共通・1操作1undo。----
   const isAnchorSec = (id) => (id === "feature" || id === "items");
@@ -2281,11 +2295,13 @@ const PG = (function () {
     setFixedSections,   // §22 §7 仮の一番上・一番下セクション
     boot, saveState, simulateSaveError, publish, versions,   // §22 §2 保存・§4.3 公開の記録
     publishCheck, longTextLimits,   // §22 §4.2 公開前チェック・長い文の目安
+    previewMode, publishedGeometry,   // §22 §5 プレビュー
   };
   return {
     state, render, reset, setDevice, undo, redo, commit, api, reduce, activeOps,
     boot, saveState, simulateSaveError, publish, versions, setFixedSections,   // §22 §2 保存・§4.3 公開・§7（WIRING から使う）
     publishCheck, longTextLimits,   // §22 §4.2（WIRING の確認の箱から使う）
+    enterPreview, exitPreview, previewMode, publishedGeometry,   // §22 §5 プレビュー（WIRING から使う）
     canUndo: () => state.cursor > state.undoBase, canRedo: () => state.cursor < state.ops.length,
     canonId, isDraggable, isText, REPEAT, groupOf, secOf, elNode, getScale: () => scale, isHeadingGroup, inputMode,
     sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionCan,   // §2 セクションの操作

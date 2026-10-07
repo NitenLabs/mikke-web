@@ -101,6 +101,18 @@ body{margin:0;font:14px/1.6 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",
 #publishBox .pbox-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
 #publishBox .pbox-btns button{font:14px system-ui;padding:8px 16px;border-radius:8px;border:1px solid #bbb;background:#fff;cursor:pointer}
 #publishBox .pbox-go{background:#06c;color:#fff;border-color:#06c}
+/* §22 §5 プレビュー（お客さんが見る形）の短い帯＝3つだけ：文字・PC/スマホ・編集に戻る */
+#previewBar{position:sticky;top:0;z-index:31;display:none;background:#222;color:#fff;padding:8px 12px;align-items:center;gap:10px;font:13px system-ui}
+#previewBar.on{display:flex}
+#previewBar .pv-title{font-weight:700}
+#previewBar .sp{flex:1}
+#previewBar button{font:13px system-ui;padding:5px 10px;border:1px solid #666;border-radius:6px;background:#333;color:#fff;cursor:pointer}
+#previewBar button.on{background:#fff;color:#222;border-color:#fff}
+body.pg-preview #toolbar{display:none}
+body.pg-preview .sec-add-zone{display:none!important}
+body.pg-preview #photoChangeBtn,body.pg-preview #fmenu,body.pg-preview #pbar,body.pg-preview #pmore{display:none!important}
+body.pg-preview #sectionwrap [data-el]{cursor:default}
+body.pg-preview #sectionwrap [data-lk]{cursor:pointer}
 button{font:13px system-ui;padding:5px 9px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
 button.on{background:#333;color:#fff;border-color:#333}
 button:active{transform:translateY(1px)}
@@ -321,6 +333,7 @@ const UI_BODY = `
   <button id="tPreview">プレビュー</button>
   <button id="tPublish">公開</button>
 </div>
+<div id="previewBar"></div>
 <div id="studio">
   <div class="box"><b>試験を再現</b><br>
     <button data-q="Q1">Q1</button><button data-q="Q2">Q2</button><button data-q="Q3">Q3</button><button data-q="Q4">Q4</button>
@@ -485,8 +498,28 @@ function showPublishBox(items){ const box=document.getElementById("publishBox");
   const go=document.createElement("button"); go.className="pbox-go"; go.setAttribute("data-pbox-go","1"); go.textContent="このまま公開する"; go.onclick=()=>{ closePublishBox(); PG.publish({force:true}); showPublishToast(); afterPublish(); }; btns.appendChild(go);
   inner.appendChild(btns); box.appendChild(inner); box.classList.add("on"); }
 window.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&document.getElementById("publishBox").classList.contains("on")){ e.preventDefault(); closePublishBox(); } },true);   // §4.1.4 Esc＝戻って直す
+// §22 §5 プレビュー（お客さんが見る形）
+const previewBar=document.getElementById("previewBar");
+function buildPreviewBar(){ previewBar.innerHTML="";
+  const title=document.createElement("span"); title.className="pv-title"; title.textContent="プレビュー（お客さんが見る形）"; previewBar.appendChild(title);
+  const mkDev=(label,d)=>{ const b=document.createElement("button"); b.textContent=label; b.setAttribute("data-pv-dev",d); b.classList.toggle("on",PG.state.device===d); b.onclick=()=>{ PG.setDevice(d); [...previewBar.querySelectorAll("[data-pv-dev]")].forEach(x=>x.classList.toggle("on",x.getAttribute("data-pv-dev")===d)); }; return b; };
+  previewBar.appendChild(mkDev("PC","pc")); previewBar.appendChild(mkDev("スマホ","sp"));
+  const sp=document.createElement("span"); sp.className="sp"; previewBar.appendChild(sp);
+  const back=document.createElement("button"); back.textContent="編集に戻る"; back.setAttribute("data-pv-back","1"); back.onclick=exitPreviewUI; previewBar.appendChild(back);
+}
+function enterPreviewUI(){ fmenu.classList.remove("on"); pmore.classList.remove("on"); moreMenu.classList.remove("on"); PG.enterPreview(); document.body.classList.add("pg-preview"); buildPreviewBar(); previewBar.classList.add("on"); }
+function exitPreviewUI(){ PG.exitPreview(); document.body.classList.remove("pg-preview"); previewBar.classList.remove("on"); }
+window.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&PG.previewMode()){ e.preventDefault(); exitPreviewUI(); } },true);   // §5.4 Esc＝編集に戻る
+// §5.3 プレビュー中：リンクは本当に押せる（よそは新しいタブ）。部品は選ばない・動かさない（const stage はこの後で定義されるので直接取得）
+document.getElementById("stage").addEventListener("click",(e)=>{ if(!PG.previewMode()) return;
+  let href=null, external=false;
+  const lkEl=e.target.closest&&e.target.closest("[data-lk]");
+  if(lkEl){ try{ const lk=JSON.parse(lkEl.getAttribute("data-lk")); href=PG.api.resolveHref(lk); external=/^https?:/.test(href||""); }catch(_){} }
+  if(!href){ const el=e.target.closest&&e.target.closest("[data-el]"); if(el){ const info=PG.api.elementLink(el.getAttribute("data-el")); if(info&&info.link){ href=PG.api.resolveHref(info.link); external=/^https?:/.test(href||""); } } }
+  if(href){ e.preventDefault(); e.stopPropagation(); if(external) window.open(href,"_blank"); else location.href=href; }
+},true);
 document.getElementById("tHistory").onclick=()=>{ /* §6 履歴の板は 22d */ };
-document.getElementById("tPreview").onclick=()=>{ /* §5 プレビューは 22c */ };
+document.getElementById("tPreview").onclick=()=>enterPreviewUI();   // §22 §5 プレビュー
 // §3.3 状態の文字が並びに入らないときは「その他」の一番上に押せない行として出す
 function updateMoreStatus(){ const mm=document.getElementById("moreMenu"); if(!mm) return; const old=mm.querySelector(".morestat"); if(old) old.remove();
   const el=document.getElementById("saveStatus"); const stowed = el && (el.offsetParent===null); if(!stowed) return;
@@ -768,6 +801,7 @@ let marquee=null;
 function elFrom(t){ const n=t.closest?t.closest("[data-el]"):null; return n?n.getAttribute("data-el"):null; }
 const stage=document.getElementById("stage");
 stage.addEventListener("pointerdown",(e)=>{
+  if(PG.previewMode()) return;   // §22 §5 プレビュー中は選択・移動しない（リンクは click で処理）
   if(isPhone()){ if(e.pointerType==="touch") onPhoneDown(e); return; }   // §3 スマホは指だけ（タッチ後の互換マウスは無視して箱を消させない）
   if(PG.state.editing && e.target.getAttribute && e.target.closest("[contenteditable]")) return; // 編集中の文字は素通し
   if(PG.state.editing) PG.commitEdit();
@@ -823,7 +857,7 @@ window.addEventListener("pointerup",(e)=>{
   if(wasPending && wasPending.clickInner){ PG.selectMany([wasPending.clickInner]); showFmenu(); }
 });
 // ダブルクリック＝文字はその場書き換え、写真は見せる範囲（§2.1）
-stage.addEventListener("dblclick",(e)=>{ if(isPhone()) return; const id=elFrom(e.target); if(!id)return; const c=PG.canonId(id); if(PG.isText(c)){ PG.startEdit(c); } else if(/^F_p|photo/.test(id)){ enterCrop(id); } });   // §3 スマホはダブルタップで入る（dblクリックは使わない）
+stage.addEventListener("dblclick",(e)=>{ if(isPhone()||PG.previewMode()) return; const id=elFrom(e.target); if(!id)return; const c=PG.canonId(id); if(PG.isText(c)){ PG.startEdit(c); } else if(/^F_p|photo/.test(id)){ enterCrop(id); } });   // §3 スマホはダブルタップで入る（dblクリックは使わない）
 // 右クリック＝浮遊メニュー（部品）／セクションの余白ならセクションのメニュー（§2.1）
 stage.addEventListener("contextmenu",(e)=>{
   if(isPhone()){ e.preventDefault(); return; }   // §3.2.5 スマホの長押しから来る contextmenu は出さない・右クリック扱いしない
@@ -1212,7 +1246,7 @@ function buildPmore(){ pmore.innerHTML="";   // §2.3 一覧の中身（上か�
   const mk=(label,fn)=>{ const b=document.createElement("button"); b.textContent=label; b.addEventListener("pointerdown",(e)=>e.preventDefault()); b.onclick=(e)=>{ e.stopPropagation(); pmore.classList.remove("on"); fn(); }; return b; };
   const st=PG.saveState(); const srow=document.createElement("div"); srow.className="pmorestat"+((st.status==="error"||st.label==="まだ公開していない変更があります")?" warn":""); srow.textContent=st.label; pmore.appendChild(srow);   // §22 §3.4 状態の文字＝その他の一番上
   pmore.appendChild(mk("履歴",()=>{ /* §6 履歴の板は 22d */ }));   // §22 §3.4 履歴・プレビューはその他
-  pmore.appendChild(mk("プレビュー",()=>{ /* §5 プレビューは 22c */ }));
+  pmore.appendChild(mk("プレビュー",()=>enterPreviewUI()));   // §22 §5
   pmore.appendChild(mk("テキストを足す",()=>phoneAddText()));
   pmore.appendChild(mk("PC の見え方を見る",()=>setPhoneDevice("pc")));
   const peek=document.createElement("button"); peek.textContent="元の配置を見る"; peek.setAttribute("data-pmore-peek","1"); peek.addEventListener("pointerdown",(e)=>{ e.preventDefault(); PG.peekOn(); }); const off=()=>{ if(PG.state.peek) PG.peekOff(); }; peek.addEventListener("pointerup",off); peek.addEventListener("pointerleave",off); peek.onclick=(e)=>e.stopPropagation(); pmore.appendChild(peek);
