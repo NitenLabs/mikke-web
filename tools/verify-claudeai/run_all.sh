@@ -12,7 +12,8 @@ VDIR="$(dirname "$HTML")/$NAME/verify"
 mkdir -p "$VDIR"
 run() {
   local s="$1"
-  "$PY" "$HERE/$s.py" "$HTML" > "$VDIR/$s.log" 2>&1
+  # VDIR で実行＝スクリプトが相対パスに書く診断スクショ（A*.png・B*.png 等）を作業フォルダ直下でなく VDIR に出す
+  ( cd "$VDIR" && "$PY" "$HERE/$s.py" "$HTML" > "$s.log" 2>&1 )
   local ec=$?
   local ok ng
   ok=$(grep -cE '^OK' "$VDIR/$s.log")
