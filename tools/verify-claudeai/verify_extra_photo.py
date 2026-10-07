@@ -1,4 +1,4 @@
-# verify_extra_photo.py v1（Claude.ai・2026-10-05）
+# verify_extra_photo.py v1.1（Claude.ai・2026-10-05。v1.1＝2026-10-07：確認用の写真を、走らせた場所に書き出すようにした）
 # 試験台17〜19b の「作業票の試験の外」の確認：写真を変える・足す・明るさ・もう一方の端末での位置・押し下げ・ページが飛ばないか
 # 使い方：python3 verify_extra_photo.py /path/to/playgroundNN_single.html
 # F1 の横の期待はページの中身の真ん中（12+720*0.9972）。F13・F16 は幅 1024 の確認
@@ -66,7 +66,7 @@ async def main():
     sec=await pg.evaluate(f"{P}.sectionList()")
     rec('F2 もう一方の端末',gap is not None and abs(gap-16)<=0.5 and not w['overlaps'],f'PC での付いていく先={an[0].get("anchor") if an else None} / SP の付いていく先={anc} gap={gap} SP の写真 y={g[a]["y"]:.0f} h={g[a]["h"]:.0f} / 特集の高さ={sec[0]["height"]:.0f} / overlaps={len(w["overlaps"])}')
     el=await pg.query_selector(f'[data-el="{a}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(300)
-    await pg.screenshot(path='/home/claude/F2_sp.png'); await pg.context.close()
+    await pg.screenshot(path='F2_sp.png'); await pg.context.close()
 
     # F3 右の端に落とす：中身からはみ出さない
     pg=await fresh(); await pg.evaluate(SEND,[[[b64('wide.jpg'),'wide.jpg']],'drop',1430,700]); await pg.wait_for_timeout(900)
@@ -145,7 +145,7 @@ async def main():
         await pg.click('#tBright'); await pg.wait_for_timeout(300)
         pr=await pg.evaluate("(()=>{const e=document.querySelector('[data-bright]');const p=e&&e.parentElement.parentElement;const r=(p||e).getBoundingClientRect();return [r.x,r.y,r.right,r.bottom]})()")
         rec('F13 明るさの一覧（幅 1024）',pr[0]>=0 and pr[2]<=1024,f'一覧 x={pr[0]:.0f}〜{pr[2]:.0f}')
-        await pg.screenshot(path='/home/claude/F13.png')
+        await pg.screenshot(path='F13.png')
     else: rec('F13 明るさの一覧（幅 1024）',False,'明るさ ▾ が見えない（上の並びからはみ出し？）')
     await pg.context.close()
 
@@ -172,7 +172,7 @@ async def main():
         pg=await fresh(W,800); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await pg.wait_for_timeout(300)
         ov=await pg.evaluate("(()=>{const t=document.getElementById('toolbar');return [t.scrollWidth,t.clientWidth,[...t.querySelectorAll('button')].filter(b=>b.offsetParent).map(b=>Math.round(b.getBoundingClientRect().right)).reduce((a,b)=>Math.max(a,b),0)]})()")
         rec(f'F16 上の並び（幅 {W}・文字を選んだとき）',ov[2]<=W,f'scrollWidth={ov[0]} clientWidth={ov[1]} 一番右のボタンの右端={ov[2]}')
-        await pg.screenshot(path=f'/home/claude/F16_{W}.png',clip={'x':0,'y':0,'width':W,'height':60}); await pg.context.close()
+        await pg.screenshot(path=f'F16_{W}.png',clip={'x':0,'y':0,'width':W,'height':60}); await pg.context.close()
 
     # H1 押し下げられた部品を、見えている所でクリックして選べる・動かせる（スマホの配置）
     pg=await fresh(); await pg.click('#dSP'); await pg.wait_for_timeout(500)
@@ -199,7 +199,7 @@ async def main():
     g1=(await pg.evaluate(f"{P}.geometry()"))['F_p1']; rp2=await bb(pg,'F_p1'); w=await pg.evaluate(f"{P}.warnings()")
     rec('H1 押し下げられた写真を選んで動かす',selp==['F_p1'] and abs(g1['x']-g0['x']-40)<=1 and abs(rp2['y']-rp['y'])<=1 and not w['overlaps'],
         f"PC の付いていく先={anc[0]['anchor'] if anc else None} 選んだ={selp} dx={g1['x']-g0['x']:.1f} 画面 y {rp['y']:.0f}→{rp2['y']:.0f} overlaps={w['overlaps']}")
-    await pg.screenshot(path='/home/claude/H1.png'); await pg.context.close()
+    await pg.screenshot(path='H1.png'); await pg.context.close()
 
     # H2 スマホの配置で、F_b1 を手で大きく動かして（ぶら下がり）から、PC で F_b0 の下に写真を足す
     pg=await fresh(); await pg.click('#dSP'); await pg.wait_for_timeout(500)
@@ -225,7 +225,7 @@ async def main():
     gs1=await pg.evaluate(f"{P}.geometry()"); w=await pg.evaluate(f"{P}.warnings()")
     dys={k:round(gs1[k]['y']-gs0[k]['y'],1) for k in ['F_b0','F_p1','F_h1','F_b1'] if k in gs0}
     rec('H2 ぶら下がった部品も一緒に下がる',not w['overlaps'] and not w['ownerOverlaps'],f"F_b1 の付いていく先={[(x['mode'],x['anchor']) for x in ancb]} 下がった量={dys} 写真の高さ={gs1[a]['h']:.1f} overlaps={w['overlaps']} ownerOverlaps={w['ownerOverlaps']}")
-    await pg.screenshot(path='/home/claude/H2.png',full_page=True); await pg.context.close()
+    await pg.screenshot(path='H2.png',full_page=True); await pg.context.close()
 
     # H3 矢印キーで少しずつ動かしても、ページが飛ばない
     pg=await fresh(); await pg.mouse.move(720,600); await pg.mouse.wheel(0,700); await pg.wait_for_timeout(500)
@@ -278,7 +278,7 @@ async def main():
     gs1=await pg.evaluate(f"{P}.geometry()"); w=await pg.evaluate(f"{P}.warnings()")
     dys={k:round(gs1[k]['y']-gs0[k]['y'],1) for k in ['F_b0','F_p1','F_h1','F_b1'] if k in gs0}
     rec('H2 dy=90',not w['overlaps'] and not w['ownerOverlaps'],f"F_b1 の付いていく先={[(x['mode'],x['anchor']) for x in ancb]} 下がった量={dys} 写真の高さ={gs1[a]['h']:.1f} overlaps={w['overlaps']} ownerOverlaps={w['ownerOverlaps']}")
-    await pg.screenshot(path='/home/claude/H2b_6.png',full_page=True); await pg.context.close()
+    await pg.screenshot(path='H2b_6.png',full_page=True); await pg.context.close()
 
     # H2 スマホの配置で、F_b1 を手で大きく動かして（ぶら下がり）から、PC で F_b0 の下に写真を足す
     pg=await fresh(); await pg.click('#dSP'); await pg.wait_for_timeout(500)
@@ -304,7 +304,7 @@ async def main():
     gs1=await pg.evaluate(f"{P}.geometry()"); w=await pg.evaluate(f"{P}.warnings()")
     dys={k:round(gs1[k]['y']-gs0[k]['y'],1) for k in ['F_b0','F_p1','F_h1','F_b1'] if k in gs0}
     rec('H2 dy=135',not w['overlaps'] and not w['ownerOverlaps'],f"F_b1 の付いていく先={[(x['mode'],x['anchor']) for x in ancb]} 下がった量={dys} 写真の高さ={gs1[a]['h']:.1f} overlaps={w['overlaps']} ownerOverlaps={w['ownerOverlaps']}")
-    await pg.screenshot(path='/home/claude/H2b_9.png',full_page=True); await pg.context.close()
+    await pg.screenshot(path='H2b_9.png',full_page=True); await pg.context.close()
 
 
     await br.close()

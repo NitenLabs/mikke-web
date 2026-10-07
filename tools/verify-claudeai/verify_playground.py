@@ -28,6 +28,7 @@
   v2.2（2026-10-01）T2 の期待を「並び替え（表→区切り線→ボタン）」に直した。表とボタンは同じ縦積みの直接の子なので、
     その間に落とせば並び替えになる（playground5 作業票 2.1）。下向きの M2 の関係の保持は T3（表の中）で見る
   v3.1.1（2026-10-04）C1 の行の書き損じを直した（説明書きのコメントが式を飲み込んで、スクリプトが動かなかった）
+  v3.2（2026-10-07）W3：試験台22 の右クリック「最前面へ移動 ▸／最背面へ移動 ▸」があればそちらで操作し（箱は開いたまま続けて）、zOrder で確かめる（前の試験台は今までどおり）
   v3.1（2026-10-02）試験台14（playground14 作業票）の C1〜C11 と、試験の外の E1〜E3 を足した（セクションの操作）
   v3.0（2026-10-02）試験台13（playground13 作業票）の D1〜D12 を足した（文の一部の見た目・ページを元に戻す）
     - D4 の日本語入力の途中は、Chromium の CDP（Input.imeSetComposition）で作る
@@ -581,6 +582,17 @@ async def main():
                 cx, cyy = bb['x'] + bb['width'] / 2, bb['y'] + bb['height'] / 2
                 hit = f"(()=>{{const e=document.elementFromPoint({cx},{cyy});const d=e&&e.closest('[data-el]');return d?d.dataset.el:null}})()"
                 try:
+                  if await pg.evaluate("!!document.querySelector('#fmenu [data-zsub]')"):
+                    # 試験台22 以降：▸ の小さな箱から。見た目は表の地が透けるので、zOrder で前後を確かめる
+                    await pg.locator('#fmenu [data-zsub="最背面へ移動"]').hover(); await pg.wait_for_timeout(200)
+                    await pg.locator('#fmenu [data-zitem="最背面へ移動"]').first.click(); await pg.wait_for_timeout(250)
+                    z1 = await api(pg, f"{P}.zOrder()")
+                    # 箱は開いたまま（見出しは選んだまま）。後ろに回った見出しを右クリックし直すと、前の表の行が選ばれるため
+                    await pg.locator('#fmenu [data-zsub="最前面へ移動"]').hover(); await pg.wait_for_timeout(200)
+                    await pg.locator('#fmenu [data-zitem="最前面へ移動"]').first.click(); await pg.wait_for_timeout(250)
+                    z2 = await api(pg, f"{P}.zOrder()")
+                    ok(f'W3 {dev} 最背面へで見出しが一番後ろ、最前面へで一番前', z1 and z1[0] == 'I_kanmi' and z2 and z2[-1] == 'I_kanmi', f'zOrder {z1} → {z2}')
+                  else:
                     await pg.get_by_role('button', name='背面へ').first.click(); await pg.wait_for_timeout(250)
                     z1 = await api(pg, f"{P}.zOrder()"); h1 = await pg.evaluate(hit)
                     await pg.get_by_role('button', name='前面へ').first.click(); await pg.wait_for_timeout(250)

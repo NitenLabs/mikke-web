@@ -1,4 +1,5 @@
 # verify_extra_text.py v1（Claude.ai・2026-10-05）
+# v1.1（2026-10-07）B3：その他の中の「書体」を data-more-name でも探す（試験台22 で名前が ::after に出るため）
 # 試験台19・19b の「作業票の試験の外」の確認：リンク・書体・上の並び（その他 ▾）
 # 使い方：python3 verify_extra_text.py /path/to/playgroundNN_single.html （先に verify_extra_photo.py を一度走らせて img17/ を作っておく）
 # A3・A6・A8 は値を出すだけ（合否なし）。A8 は headless で Ctrl+V が貼らないため参考
@@ -141,7 +142,9 @@ async def main():
         vis=await pg.evaluate("(()=>{const b=document.querySelector('[data-text-tool=\"font\"]');return b&&b.offsetParent&&b.getBoundingClientRect().right<=innerWidth?1:0})()")
         if not vis:
             mb=await find_more(pg); await pg.mouse.click(*mb); await pg.wait_for_timeout(300)
-            await pg.locator('#moreMenu button',has_text='書体').first.click()
+            # しまったボタンの名前は ::after（data-more-name）に出ることがあるので、textContent と data-more-name の両方で探す
+            hit=await pg.evaluate("""(()=>{const b=[...document.querySelectorAll('#moreMenu button')].find(b=>b.offsetParent&&((b.dataset.moreName||'').includes('書体')||b.textContent.includes('書体')||b.querySelector('[data-text-tool=\\"font\\"]')||b.matches('[data-text-tool=\\"font\\"]')));if(!b)return null;const r=b.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()""")
+            if hit: await pg.mouse.click(*hit)
         else: await pg.click('[data-text-tool="font"]')
         await pg.wait_for_timeout(400)
         pr=await pg.evaluate("(()=>{const e=[...document.querySelectorAll('.tspop')].find(e=>e.offsetWidth&&e.classList.contains('on'))||[...document.querySelectorAll('.tspop')].find(e=>e.offsetWidth);if(!e)return null;const r=e.getBoundingClientRect();return [Math.round(r.left),Math.round(r.top),Math.round(r.right),Math.round(r.bottom)]})()")
