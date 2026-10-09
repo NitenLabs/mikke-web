@@ -1779,7 +1779,10 @@ const PG = (function () {
     else if (kind === "scale") { runs = applyRunRange(runs, s, e, (r) => { if (value === 1) delete r.scale; else r.scale = value; }); }
     else if (kind === "font") { runs = applyRunRange(runs, s, e, (r) => { if (!value) delete r.font; else r.font = value; }); }
     else if (kind === "link") { runs = applyRunRange(runs, s, e, (r) => { if (!value) delete r.link; else r.link = clone(value); }); }
-    state.editing.runs = runs; n.innerHTML = runsToEditHtml(runs); setCaretOffsets(n, s, e); liveReflow(); return true;
+    state.editing.runs = runs; n.innerHTML = runsToEditHtml(runs); setCaretOffsets(n, s, e); liveReflow();
+    if (state.editing.mode) flushCheckpoint();   // §23b 打っていた分を先に区切る
+    flushCheckpoint();   // §23b 文の一部の見た目を変えたら、それで1区切り
+    return true;
   }
   // §19 書き換え中：範囲を指定してリンク/書体を当てる（自動リンク・貼り付けリンク用）。commit しない。
   function applyPartStyleRange(kind, value, s, e) {
@@ -2431,10 +2434,29 @@ const PG = (function () {
 
   // ---- 履歴 ----
   function commit(op) { state.restoreUndo = null; state.ops = state.ops.slice(0, state.cursor); state.ops.push(op); state.cursor++; render(); scheduleSave(); }
-  function undo() { if (state.editing || state.viewing) return;
+  function undo() {
+    if (state.viewing) return;
     if (state.restoreUndo) { const r = state.restoreUndo; state.restoreUndo = null; state.ops = r.ops; state.cursor = r.cursor; state.undoBase = r.undoBase; state.secSeq = r.secSeq; state.addSeq = r.addSeq; for (const id in (r.assets || {})) ASSET[id] = r.assets[id]; render(); scheduleSave(); return; }   // §22 §6.5「この版を下書きにする」は戻す1回で元の下書きへ
-    if (state.cursor > state.undoBase) { state.cursor--; render(); scheduleSave(); } }   // §22 §2.4 開き直した後の「戻す」は undoBase（＝復元した所）まで
-  function redo() { if (state.editing || state.viewing || state.restoreUndo) return; if (state.cursor < state.ops.length) { state.cursor++; render(); scheduleSave(); } }
+    if (state.editing) { reconcileEdit(); flushCheckpoint(); }   // §23b 末尾の打ち分を1区切りにしてから1つ戻す
+    if (state.cursor <= state.undoBase) { if (state.editing) endEditSilently(); return; }   // §22 §2.4 開き直した後の「戻す」は undoBase まで
+    state.cursor--;
+    const op = state.ops[state.cursor];
+    render();
+    if (op && op.t === "edit" && op._ses) reenterEditSession(op.id, diffIndex(op.runs ? runsPlain(op.runs) : (op.text || ""), rawText(op.id)));   // §23b 戻すと書き換えに入り直し、戻した所にカーソル
+    else if (state.editing) endEditSilently();
+    scheduleSave();
+  }
+  function redo() {
+    if (state.viewing || state.restoreUndo) return;
+    if (state.editing) { reconcileEdit(); flushCheckpoint(); }
+    if (state.cursor >= state.ops.length) return;
+    const op = state.ops[state.cursor];
+    state.cursor++;
+    render();
+    if (op && op.t === "edit" && op._ses) reenterEditSession(op.id, op.editCaret != null ? op.editCaret : rawText(op.id).length);   // §23b やり直しも細かく・入り直す
+    else if (state.editing) endEditSilently();
+    scheduleSave();
+  }
   function reset() { state.ops = []; state.cursor = 0; state.undoBase = 0; state.selected = new Set(); state.selectedSection = null; state.editing = null; state.secList = defaultSecList(); _versions = initialVersions(); _saveStatus = "saved"; _simErr = false; render(); }
 
   // ===================== §22 §2 保存（IndexedDB・自動保存）／§4.3 公開の記録 =====================
@@ -2980,13 +3002,70 @@ const PG = (function () {
     const a = R.adds.find((a) => a.id === id); if (a) return R.editMap[id] != null ? R.editMap[id] : a.text;
     return elNode(id)?.textContent || "";
   }
+  // ===================== §23b 書き換え中の「戻す」を細かくする（記録 0.6：打った分を少しずつ戻す） =====================
+  let _breakTimer = null;
+  function clearBreakTimer() { if (_breakTimer) { clearTimeout(_breakTimer); _breakTimer = null; } }
+  function resetBreakTimer() { clearBreakTimer(); _breakTimer = setTimeout(() => { if (state.editing) flushCheckpoint(); }, 1000); }   // 1秒止まったら区切る
+  const runsPlain = (runs) => (runs || []).map((r) => r.text).join("");
+  function diffIndex(a, b) { const m = Math.min(a.length, b.length); let i = 0; while (i < m && a[i] === b[i]) i++; return i; }
+  function pushOpNoRender(op) { state.restoreUndo = null; state.ops = state.ops.slice(0, state.cursor); state.ops.push(op); state.cursor++; scheduleSave(); if (typeof onRender === "function") onRender(); }   // DOM は既に正しい＝render しない
+  // 今の書き換えの状態を1区切り（undo の1単位）として記録。前の区切りから変わっていなければ何もしない。
+  // 変換の境目（開始・確定）。要素の oncomposition* が届かない経路でも、WIRING の document 監視からここを呼ぶ。
+  function imeBoundary(kind) {
+    if (!state.editing) return;
+    if (kind === "start") { composing = true; flushCheckpoint(); }
+    else { composing = false; reconcileEdit(); liveReflow(); flushCheckpoint(); }
+  }
+  function flushCheckpoint() {
+    if (!state.editing) return; clearBreakTimer();
+    const id = state.editing.id;
+    if (state.pendingNewText === id) { state.editing.mode = null; return; }   // 足したばかりの文字は commitEdit で add に焼き込む（1追加=1undo）
+    const cur = state.editing.runs || rawRuns(id);
+    if (JSON.stringify(cur) === JSON.stringify(state.editing.lastRuns)) { state.editing.mode = null; return; }
+    const n = elNode(id); const c = n ? caretOffsets(n) : null;
+    const styled = runStyled(cur);
+    const op = styled ? { t: "edit", id, runs: clone(cur), _ses: 1 } : { t: "edit", id, text: runsPlain(cur), _ses: 1 };
+    op.editCaret = c ? c.e : runsPlain(cur).length;
+    pushOpNoRender(op);
+    state.editing.lastRuns = clone(cur); state.editing.mode = null;
+  }
+  // 入力ごとの区切り判定（変換中でないとき）：打つ↔消すの切り替え・区切り文字（空白・句読点）・改行・1秒止まりで区切る。
+  function handleEditInput(e) {
+    const it = (e && e.inputType) || "";
+    const isDelete = /delete/i.test(it);
+    const isBreakChar = !!(e && e.data && /[\s　、。，．・,.!?！？;:；：]/.test(e.data));
+    const isEnter = /insertParagraph|insertLineBreak/i.test(it);
+    const newMode = isDelete ? "del" : "type";
+    if (state.editing.mode && state.editing.mode !== newMode) flushCheckpoint();   // 打つ↔消すの切り替えで区切る
+    reconcileEdit(); liveReflow();
+    state.editing.mode = newMode;
+    if (isBreakChar || isEnter) flushCheckpoint();   // 区切り文字・改行を打ったら区切る
+    else resetBreakTimer();
+  }
+  // 戻す／やり直しで、その区切りの書き換えの状態に入り直す。入り直した所にカーソルを置く（記録 0.6）。
+  function reenterEditSession(id, caretOff) {
+    if (state.editing) { if (state.editing.selWatch) document.removeEventListener("selectionchange", state.editing.selWatch); state.editing = null; }
+    clearBreakTimer();
+    startEdit(id);   // 今の ops から runs を読み直して書き換えに入る
+    const n = elNode(id); if (!n || !state.editing) return;
+    const off = Math.max(0, Math.min(caretOff, runsPlain(state.editing.runs).length));
+    setCaretOffsets(n, off, off); state.editing.lastSel = { s: off, e: off };
+    state.editing.lastRuns = clone(state.editing.runs); state.editing.mode = null;
+  }
+  function endEditSilently() {   // 区切りの外へ戻った＝書き換えを静かに抜ける（新しい区切りは作らない）
+    if (!state.editing) return; const n = elNode(state.editing.id);
+    if (state.editing.selWatch) document.removeEventListener("selectionchange", state.editing.selWatch);
+    clearBreakTimer(); state.editing = null;
+    if (n) { n.oninput = n.oncompositionstart = n.oncompositionend = n.onkeydown = null; n.removeAttribute("contenteditable"); }
+  }
+
   function startEdit(id, selectAll) {
     const c = canonId(id); const n = elNode(c); if (!n || !isText(c)) return;
     if (state.editing) commitEdit();
     // X3：書き換えに入ったら、その部品を選んだ状態にする（PowerPoint と同じ）＝上の文字の道具が出る。品・表の中の1件の文字でも同じ。
     state.selectedSection = null; state.selected = new Set([c]);
     const runs = rawRuns(c);
-    state.editing = { id: c, runs };
+    state.editing = { id: c, runs, lastRuns: clone(runs), mode: null };   // §23b lastRuns＝直前の区切り、mode＝打つ/消す
     n.innerHTML = runsToEditHtml(runs);         // 見た目つきの切れ目（文の一部の見た目）を見せて編集（§13）
     n.setAttribute("contenteditable", "true");
     n.style.whiteSpace = "pre-wrap"; n.style.wordBreak = "normal"; n.style.outline = "2px solid #06c";
@@ -2997,22 +3076,26 @@ const PG = (function () {
     // 道具に触れて選択が外れても使えるよう、選択を覚えておく
     state.editing.selWatch = () => { if (!state.editing) return; const nn = elNode(state.editing.id); if (!nn) return; const o = caretOffsets(nn); if (o && o.e > o.s) state.editing.lastSel = o; };
     document.addEventListener("selectionchange", state.editing.selWatch);
-    n.oninput = (e) => { if (composing || (e && e.isComposing)) return; reconcileEdit(); liveReflow(); if (typeof onEditInput === "function") onEditInput(e); };  // 変換中は取り込まない（§2.1）。§19 自動リンクは onEditInput で
-    n.oncompositionstart = () => { composing = true; };
-    n.oncompositionend = () => { composing = false; reconcileEdit(); liveReflow(); };   // 変換の決定で取り込む（見た目は引き継ぐ）
+    n.oninput = (e) => { if (composing || (e && e.isComposing)) return; handleEditInput(e); if (typeof onEditInput === "function") onEditInput(e); };  // 変換中は取り込まない（§2.1/§23a）。区切り判定は handleEditInput（§23b）。§19 自動リンクは onEditInput で
+    n.oncompositionstart = () => imeBoundary("start");
+    n.oncompositionend = () => imeBoundary("end");   // §23b 変換を決めたら1区切り（1変換=1undo）
     n.onkeydown = (e) => { if (e.isComposing || e.keyCode === 229) return;   /* §23a X33 日本語の変換中のキーはページで拾わない（preventDefault もしない） */
+      if (/^(Arrow|Home|End|PageUp|PageDown)/.test(e.key)) flushCheckpoint();   // §23b カーソルを動かしたら区切る
       if (e.key === "Escape") { e.preventDefault(); commitEdit(); } };
     refreshSel();   // X3：選択の印と、上の文字の道具を今の状態に更新する（書き換えに入った部品が選ばれている）
   }
   function liveReflow() { placeAbsolute(); if (typeof onRender === "function") onRender(); }
   function commitEdit() {
     if (!state.editing) return; const id = state.editing.id; const n = elNode(id);
+    clearBreakTimer();
     if (n) reconcileEdit();
+    const wasNew = state.pendingNewText === id;   // §4（試験台17）この書き換えが「足したばかりの文字」の最初の書き換えか
+    if (!wasNew) flushCheckpoint();   // §23b 末尾の打ち分を最後の区切りに（書き換えまるごとを1つにまとめ直さない）
     const runs = (state.editing.runs) || (n ? domToRuns(n) : [{ text: rawText(id) }]);
     if (state.editing.selWatch) document.removeEventListener("selectionchange", state.editing.selWatch);
-    const wasNew = state.pendingNewText === id;   // §4（試験台17）この書き換えが「足したばかりの文字」の最初の書き換えか
     state.editing = null; if (n) { n.oninput = n.oncompositionstart = n.oncompositionend = n.onkeydown = null; n.removeAttribute("contenteditable"); }
     const styled = runStyled(runs);
+    if (!wasNew) { render(); return; }   // §23b 区切りは既に ops に記録済み。改行規則を当て直して再描画
     if (wasNew) {
       state.pendingNewText = null;
       const plain = runs.map((r) => r.text).join("");
@@ -3848,6 +3931,7 @@ const PG = (function () {
     boot, saveState, simulateSaveError, publish, versions, setFixedSections,   // §22 §2 保存・§4.3 公開・§7（WIRING から使う）
     publishCheck, longTextLimits,   // §22 §4.2（WIRING の確認の箱から使う）
     enterPreview, exitPreview, previewMode, publishedGeometry,   // §22 §5 プレビュー（WIRING から使う）
+    imeBoundary,   // §23b 変換の境目（WIRING の document 監視から呼ぶ）
     viewVersion, exitView, restoreVersion, viewingVersion,   // §22 §6 履歴（WIRING から使う）
     canUndo: () => !!state.restoreUndo || state.cursor > state.undoBase, canRedo: () => !state.restoreUndo && state.cursor < state.ops.length,
     canonId, isDraggable, isText, REPEAT, groupOf, secOf, elNode, getScale: () => scale, isHeadingGroup, inputMode,
@@ -3949,6 +4033,9 @@ document.addEventListener("selectionchange",()=>{ if(PG.state.editing){ try{ upd
 
 document.getElementById("dPC").onclick=()=>{ PG.setDevice("pc"); document.getElementById("dPC").classList.add("on"); document.getElementById("dSP").classList.remove("on"); };
 document.getElementById("dSP").onclick=()=>{ PG.setDevice("sp"); document.getElementById("dSP").classList.add("on"); document.getElementById("dPC").classList.remove("on"); };
+// §23b 変換の境目を document でも監視（要素の oncomposition* が届かない経路の保険・CDP でも効く）
+document.addEventListener("compositionstart",()=>{ if(PG.state.editing) PG.imeBoundary("start"); },true);
+document.addEventListener("compositionend",()=>{ if(PG.state.editing) PG.imeBoundary("end"); },true);
 document.getElementById("tUndo").onclick=()=>PG.undo();
 document.getElementById("tRedo").onclick=()=>PG.redo();
 document.getElementById("tResetPage").onclick=()=>PG.resetScope("page",null,["pc","sp"]);
@@ -4461,7 +4548,8 @@ window.addEventListener("keydown",(e)=>{
     if(e.key==="Escape") PG.commitEdit();
     if(meta&&e.key.toLowerCase()==="b"){ e.preventDefault(); if(PG.editingHasSelection()) PG.applyPartStyle("bold"); return; }   // §2.1 選んだ所の太字を入れ替え
     if(meta&&e.key.toLowerCase()==="k"){ e.preventDefault(); openLinkFromSelection(); return; }   // §2.1 Cmd+K
-    if(meta&&e.key.toLowerCase()==="z"&&!e.shiftKey){ if(PG.editingHasAutoUndo()){ e.preventDefault(); PG.editingUndoAutoLink(); return; } }   // §2.5 自動リンクはリンクだけ外す
+    if(meta&&e.key.toLowerCase()==="z"&&!e.shiftKey){ if(PG.editingHasAutoUndo()){ e.preventDefault(); PG.editingUndoAutoLink(); return; } e.preventDefault(); PG.undo(); return; }   // §2.5 自動リンク／§23b 書き換え中の戻す＝細かく
+    if(meta&&((e.key.toLowerCase()==="z"&&e.shiftKey)||e.key.toLowerCase()==="y")){ e.preventDefault(); PG.redo(); return; }   // §23b 書き換え中のやり直し
     if(meta&&e.key.toLowerCase()==="c"){ PG.captureEditingCopy(); return; }   // §19b §5 この編集の中のコピー＝見た目・リンクも覚える（ブラウザのコピーはそのまま＝文字も system に入る）
     if(meta&&e.key.toLowerCase()==="v"){ e.preventDefault(); const t=(window.__lastPlain||""); if(!PG.editingPasteRich(t)&&!PG.editingPasteLink(t)) document.execCommand&&document.execCommand("inserttext",false,t); }   // §5 中のコピーは見た目つき／§2.6 URL・メールはリンク／それ以外は文字だけ
     return;

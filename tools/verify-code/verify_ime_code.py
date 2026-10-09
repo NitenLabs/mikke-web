@@ -312,6 +312,77 @@ async def sec3(pg, cdp, enter=None, dev="pc"):
                    "moved_again_at_commit": any(abs(c[ax]-l[ax]) > 0.5 for ax in axes)}
     return {"dev": dev, "moved_parts": out3}
 
+# ===== §23b 書き換え中の「戻す」を細かく（記録0.6）。U1〜U6 =====
+async def body(pg): return await pg.evaluate(f"{P}.textRuns('F_b0').map(r=>r.text).join('')")
+async def caret_end(pg, part="F_b0"):
+    L = await pg.evaluate(f"{P}.textRuns('{part}').map(r=>r.text).join('').length")
+    await pg.evaluate(f"{P}.editSelect({L},{L})"); await pg.wait_for_timeout(40)
+async def ime_words(pg, cdp, pairs):
+    # 本物のIMEの確定は compositionend を出すが、CDP Input.insertText は出さない。確定イベントを明示的に発火して合わせる。
+    for r, k in pairs:
+        await cdp.send("Input.imeSetComposition", {"text": r, "selectionStart": len(r), "selectionEnd": len(r)}); await pg.wait_for_timeout(80)
+        await cdp.send("Input.insertText", {"text": k}); await pg.wait_for_timeout(80)
+        await pg.evaluate(f"{P}.textRuns('F_b0')")   # 確定後の文字を editing.runs に取り込ませてから確定イベント
+        await pg.evaluate("(()=>{const e=document.querySelector('[contenteditable=true]'); if(e) e.dispatchEvent(new CompositionEvent('compositionend',{data:'',bubbles:true}))})()"); await pg.wait_for_timeout(100)
+async def drag_part(pg, part, dx, dy):
+    el = await pg.query_selector(f'[data-el="{part}"]'); bb = await el.bounding_box()
+    g = await pg.evaluate(f"{P}.geometry()"); sc = bb["width"] / g[part]["w"]; cx, cy = bb["x"] + bb["width"] / 2, bb["y"] + bb["height"] / 2
+    await pg.mouse.move(cx, cy); await pg.mouse.down(); await pg.mouse.move(cx + dx * sc, cy + dy * sc, steps=8); await pg.mouse.up(); await pg.wait_for_timeout(150)
+async def undo_seq(pg, n, tail=14, extra=None):
+    steps = []
+    for i in range(n):
+        await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(170)
+        row = {"step": i + 1, "text": (await body(pg))[-tail:], "editing": await pg.evaluate(f"{P}.editingId()")}
+        if extra: row.update(await extra(pg))
+        steps.append(row)
+    return steps
+
+async def U1(pg, cdp):   # 5語を変換して決める → Cmd+Z ×6
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_end(pg)
+    await ime_words(pg, cdp, [("haru", "春"), ("natu", "夏"), ("aki", "秋"), ("huyu", "冬"), ("sora", "空")])
+    after = (await body(pg))[-14:]
+    return {"after_typing": after, "undo_steps": await undo_seq(pg, 6)}
+async def U2(pg, cdp):   # 「abc def」と打つ → Cmd+Z ×3
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_end(pg)
+    await pg.keyboard.type("abc def", delay=30); await pg.wait_for_timeout(120)
+    return {"after_typing": (await body(pg))[-16:], "undo_steps": await undo_seq(pg, 3, tail=16)}
+async def U3(pg, cdp):   # 5文字を Backspace で1字ずつ → Cmd+Z ×2
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_end(pg)
+    base = (await body(pg))[-16:]
+    for _ in range(5):
+        await pg.keyboard.press("Backspace"); await pg.wait_for_timeout(60)
+    return {"base": base, "after_delete": (await body(pg))[-16:], "undo_steps": await undo_seq(pg, 2, tail=16)}
+async def U4(pg, cdp):   # 3語→Esc→部品を動かす→Cmd+Z ×5
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_end(pg)
+    await ime_words(pg, cdp, [("haru", "春"), ("natu", "夏"), ("aki", "秋")])
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(150)
+    base_x = (await pg.evaluate(f"{P}.geometry()"))["F_p0"]["x"]
+    await drag_part(pg, "F_p0", 40, 0)
+    async def extra(pg):
+        g = await pg.evaluate(f"{P}.geometry()")
+        return {"F_p0_dx": round(g["F_p0"]["x"] - base_x, 1)}
+    return {"after_move_dx": round((await pg.evaluate(f"{P}.geometry()"))["F_p0"]["x"] - base_x, 1), "undo_steps": await undo_seq(pg, 5, extra=extra)}
+async def U5(pg, cdp):   # U1 の後、Cmd+Shift+Z ×6
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_end(pg)
+    await ime_words(pg, cdp, [("haru", "春"), ("natu", "夏"), ("aki", "秋"), ("huyu", "冬"), ("sora", "空")])
+    for _ in range(6):
+        await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(130)
+    steps = []
+    for i in range(6):
+        await pg.keyboard.press("Meta+Shift+z"); await pg.wait_for_timeout(170)
+        steps.append({"step": i + 1, "text": (await body(pg))[-14:], "editing": await pg.evaluate(f"{P}.editingId()")})
+    return {"after_undo6": (await body(pg))[-14:] if False else None, "redo_steps": steps}
+async def U6(pg, cdp):   # 一部を太字 → 2語打つ → Cmd+Z ×3
+    await fresh(pg); await edit_start(pg, "F_b0")
+    await pg.evaluate(f"{P}.editSelect(0,4)"); await pg.wait_for_timeout(60)
+    await pg.keyboard.press("Meta+b"); await pg.wait_for_timeout(130)
+    await caret_end(pg)
+    await pg.keyboard.type("xx yy", delay=30); await pg.wait_for_timeout(120)
+    async def extra(pg):
+        runs = await pg.evaluate(f"{P}.textRuns('F_b0')")
+        return {"bold_chars": sum(len(r["text"]) for r in runs if r.get("bold"))}
+    return {"undo_steps": await undo_seq(pg, 3, tail=16, extra=extra)}
+
 async def run(pg, cdp):
     out["tests"]["I1"] = await I1_like(pg, cdp, "F_b0", "I1 特集の本文")
     await pg.screenshot(path=os.path.join(OUT, f"I1_{MODE}.png"))
@@ -328,6 +399,9 @@ async def run(pg, cdp):
     out["tests"]["J6_card"] = await jrun(pg, cdp, "card_name_c_jonama")
     out["tests"]["J6_row"] = await jrun(pg, cdp, "row_name_t_warabi")
     out["tests"]["sec3_pc"] = await sec3(pg, cdp, dev="pc")
+    # §23b U1〜U6（戻す細かさ）
+    for name, fn in [("U1", U1), ("U2", U2), ("U3", U3), ("U4", U4), ("U5", U5), ("U6", U6)]:
+        out["tests"][name] = await fn(pg, cdp)
 
 async def run_phone(browser):
     ctx = await browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=3, has_touch=True, is_mobile=True)
@@ -448,5 +522,17 @@ async def main():
     print(f"\n[§3 sec3_sp] dev={s3.get('dev')}")
     for k, v in (s3.get("moved_parts") or {}).items():
         print(f"   {k}: 変換前 y={v['before']['y']} / 変換最後 y={v['last_composing']['y']} / 決め後500ms y={v['after_commit_500ms']['y']}  決めた瞬間に再移動={v['moved_again_at_commit']}")
+    # ===== §23b U 系 =====
+    for name in ["U1", "U2", "U3", "U4", "U5", "U6"]:
+        t = out["tests"].get(name) or {}
+        print(f"\n[{name}]")
+        if "after_typing" in t: print(f"   打った後='…{t['after_typing']}'")
+        if "after_delete" in t: print(f"   base='…{t.get('base')}' 消した後='…{t['after_delete']}'")
+        if "after_move_dx" in t: print(f"   動かした後 F_p0 dx={t['after_move_dx']}")
+        for s in t.get("undo_steps", []):
+            extra = "".join(f" {k}={v}" for k, v in s.items() if k not in ("step", "text", "editing"))
+            print(f"   戻す{s['step']}: '…{s['text']}' 書換中={s['editing']}{extra}")
+        for s in t.get("redo_steps", []):
+            print(f"   やり直し{s['step']}: '…{s['text']}' 書換中={s['editing']}")
 
 asyncio.run(main())

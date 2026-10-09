@@ -490,6 +490,9 @@ document.addEventListener("selectionchange",()=>{ if(PG.state.editing){ try{ upd
 
 document.getElementById("dPC").onclick=()=>{ PG.setDevice("pc"); document.getElementById("dPC").classList.add("on"); document.getElementById("dSP").classList.remove("on"); };
 document.getElementById("dSP").onclick=()=>{ PG.setDevice("sp"); document.getElementById("dSP").classList.add("on"); document.getElementById("dPC").classList.remove("on"); };
+// §23b 変換の境目を document でも監視（要素の oncomposition* が届かない経路の保険・CDP でも効く）
+document.addEventListener("compositionstart",()=>{ if(PG.state.editing) PG.imeBoundary("start"); },true);
+document.addEventListener("compositionend",()=>{ if(PG.state.editing) PG.imeBoundary("end"); },true);
 document.getElementById("tUndo").onclick=()=>PG.undo();
 document.getElementById("tRedo").onclick=()=>PG.redo();
 document.getElementById("tResetPage").onclick=()=>PG.resetScope("page",null,["pc","sp"]);
@@ -1002,7 +1005,8 @@ window.addEventListener("keydown",(e)=>{
     if(e.key==="Escape") PG.commitEdit();
     if(meta&&e.key.toLowerCase()==="b"){ e.preventDefault(); if(PG.editingHasSelection()) PG.applyPartStyle("bold"); return; }   // §2.1 選んだ所の太字を入れ替え
     if(meta&&e.key.toLowerCase()==="k"){ e.preventDefault(); openLinkFromSelection(); return; }   // §2.1 Cmd+K
-    if(meta&&e.key.toLowerCase()==="z"&&!e.shiftKey){ if(PG.editingHasAutoUndo()){ e.preventDefault(); PG.editingUndoAutoLink(); return; } }   // §2.5 自動リンクはリンクだけ外す
+    if(meta&&e.key.toLowerCase()==="z"&&!e.shiftKey){ if(PG.editingHasAutoUndo()){ e.preventDefault(); PG.editingUndoAutoLink(); return; } e.preventDefault(); PG.undo(); return; }   // §2.5 自動リンク／§23b 書き換え中の戻す＝細かく
+    if(meta&&((e.key.toLowerCase()==="z"&&e.shiftKey)||e.key.toLowerCase()==="y")){ e.preventDefault(); PG.redo(); return; }   // §23b 書き換え中のやり直し
     if(meta&&e.key.toLowerCase()==="c"){ PG.captureEditingCopy(); return; }   // §19b §5 この編集の中のコピー＝見た目・リンクも覚える（ブラウザのコピーはそのまま＝文字も system に入る）
     if(meta&&e.key.toLowerCase()==="v"){ e.preventDefault(); const t=(window.__lastPlain||""); if(!PG.editingPasteRich(t)&&!PG.editingPasteLink(t)) document.execCommand&&document.execCommand("inserttext",false,t); }   // §5 中のコピーは見た目つき／§2.6 URL・メールはリンク／それ以外は文字だけ
     return;
