@@ -140,4 +140,4 @@ U5（やり直し）・U6 は 23b と同じ（U5 は元から最後まで F_b0�
 ## 6. 本線・最後のコミット
 
 - 試験台22 は凍結のまま。23 は `experiments/layout/playground23/`。直したのは `app.js`（`resetTextStyle`・`undo`）と `build.mjs`（`contextmenu`）、試験は `tools/verify-code/verify_ime_code.py`（K1〜K7 を追加・K8＝U1〜U6 の再走）。
-- 最後のコミット：**（このあと push 後に追記）**
+- 最後のコミット：**`878f799`**（mikke-web・`main`。push 済み）。
