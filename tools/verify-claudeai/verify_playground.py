@@ -66,13 +66,39 @@ P = 'window.__playground'
 results = []
 anchor_log = []   # R3 用：すべての試験の後の付いていく先
 
+# §24（試験台24）環境変数で働く2つ。無ければ今までと同じ動き。
+#   ONLY=Y1,P1,J1,D1,C1 … 記録・表示する区画を、試験名の先頭の文字（区画）で絞る（例 Y/P/J/D/C）。実行自体は従来どおり通す（monolith のため）。
+#   ROUNDTRIP=1        … 区画の切れ目で roundTrip() を呼び、PC/スマホのずれを出す（試験台24 の seed/fold 突合）。
+ONLY = set(x.strip() for x in os.environ.get('ONLY', '').split(',') if x.strip())
+ONLY_LETTERS = set(o[0] for o in ONLY if o)
+ROUNDTRIP = os.environ.get('ROUNDTRIP', '') not in ('', '0', 'false', 'False')
+
+def _included(name):
+    if not ONLY: return True
+    tag = name.split()[0] if name else ''
+    return bool(tag) and tag[0] in ONLY_LETTERS
+
 def ok(name, cond, detail=''):
+    if not _included(name): return   # ONLY で絞ったときは記録も表示もしない
     results.append((name, bool(cond), str(detail)))
     detail = str(detail) if detail else ''
     print(('OK  ' if cond else 'NG  ') + name + ('  | ' + detail if detail else ''))
 
 def info(msg):
     print('    ' + msg)
+
+async def rtlog(pg, tag=''):
+    # ROUNDTRIP=1 のとき、今の画面で roundTrip() を呼んで結果を出す（draft() が無い＝試験台23 以前なら何もしない）
+    if not ROUNDTRIP: return
+    try:
+        has = await pg.evaluate(f"typeof {P}.roundTrip==='function'")
+        if not has: return
+        r = await pg.evaluate(f"{P}.roundTrip()")
+        for dev in ('pc', 'sp'):
+            d = r[dev]
+            print(f"    ROUNDTRIP[{tag}/{dev}] maxPos={d['maxPos']:.2f} maxSize={d['maxSize']:.2f} 片方のみ={d['onlyA'][:3]}{d['onlyB'][:3]} attr={[x['id'] for x in d['attrDiff']][:3]} swap={d['swapDiff'][:3]}")
+    except Exception as e:
+        print(f"    ROUNDTRIP[{tag}] 失敗 {e}")
 
 def box(G, k):
     v = G.get(k)
@@ -529,6 +555,7 @@ async def main():
         ok('Q14 書式が持ち込まれない', '<b' not in html and 'color' not in html and '太字の赤' in html, html[-60:])
         await pg.keyboard.press('Escape')
 
+        await rtlog(pg, 'Q/R')   # §24 区画の切れ目：ここまでの手直しで seed/fold が一致するか
         # ---- R プリセット（あれば流して記録）----
         for name in sorted(k for k in presets if k.startswith('R')):
             await fresh(pg)
@@ -1481,6 +1508,7 @@ async def main():
         ok('R3 付いていく先に、繰り返す部品の1件の中の部品が一度も出ない', not bad, '; '.join(f'{l}:{p}→{a}' for l, p, a in bad)[:300])
         info(f'R3 見た付いていく先 {len(anchor_log)} 件')
 
+        await rtlog(pg, 'final')   # §24 最後の状態でも seed/fold が一致するか
         ok('ページのエラーなし（プリセット以外）', not errs, '; '.join(errs)[:200])
         await b.close()
     ng = [r for r in results if not r[1]]

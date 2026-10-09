@@ -167,10 +167,14 @@ async def main():
     await drag(pg,'F_p0',30,0); await edit_append(pg,'F_b0','（試し）')
     await pg.evaluate(f"{P}.setCols && {P}.setCols('I_cards',2)"); await pg.wait_for_timeout(300)
     await pg.wait_for_timeout(1500); g1=await G(pg); o1=await pg.evaluate(f"{P}.ops()"); s1=await st(pg)
+    # 試験台24：保存するのは「今の形（draft）」で ops ではない。開き直すと ops() は空・draft() は前と同じ（記録 10.1）。
+    d1=await pg.evaluate(f"({P}.draft?JSON.stringify({P}.draft()):null)")
     await pg.reload(); await pg.wait_for_timeout(2000); g2=await G(pg); o2=await pg.evaluate(f"{P}.ops()")
+    d2=await pg.evaluate(f"({P}.draft?JSON.stringify({P}.draft()):null)")
     await pg.click('#tUndo'); await pg.wait_for_timeout(400); g3=await G(pg); und=(await maxdiff(g2,g3))[0]<=0.5   # 開き直した直後の「戻す」は何も戻さない
     d,miss=await maxdiff(g1,g2)
-    rec('V8 直して開き直す',d<=0.5 and not miss and len(o1)==len(o2) and und,f"保存の状態 {s1} 最大のずれ {d:.2f} 欠け {miss[:4]} ops {len(o1)}→{len(o2)} 戻すで何も戻らない={und}")
+    draft_same=(d1 is not None and d1==d2)
+    rec('V8 直して開き直す',d<=0.5 and not miss and len(o2)==0 and draft_same and und,f"保存の状態 {s1} 最大のずれ {d:.2f} 欠け {miss[:4]} 開き直し後 ops {len(o2)}（空=0）draft 一致={draft_same} 戻すで何も戻らない={und}")
     # V9 新しい文脈は空から（保存が混ざらない）
     ctx2=await br.new_context(viewport={'width':1440,'height':1100}); pg2=await ctx2.new_page(); await pg2.goto(URL); await pg2.wait_for_timeout(1500)
     o3=await pg2.evaluate(f"{P}.ops()"); v3=await pg2.evaluate(f"{P}.versions()")
