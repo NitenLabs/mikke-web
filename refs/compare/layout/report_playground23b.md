@@ -133,4 +133,4 @@ headless。本文は末尾のみ（`…` は前略）。
 ## 6. 本線・最後のコミット
 
 - 試験台22 は凍結のまま。23 は `experiments/layout/playground23/`。`__playground` に `imeBoundary(kind)` を追加（23b）。
-- 最後のコミット：（コミット後に追記）
+- 最後のコミット：**`f181a93`**（mikke-web・`main`。push 済み）。
