@@ -383,6 +383,108 @@ async def U6(pg, cdp):   # 一部を太字 → 2語打つ → Cmd+Z ×3
         return {"bold_chars": sum(len(r["text"]) for r in runs if r.get("bold"))}
     return {"undo_steps": await undo_seq(pg, 3, tail=16, extra=extra)}
 
+# ===== §23c K1〜K7（X34：戻すものが無いときの Cmd+Z は何もしない／X35：書き換え中の「打つ以外の操作」は先にふつうに終える）=====
+async def caret_pos(pg):
+    return await pg.evaluate("(()=>{const s=getSelection(); if(!s||!s.rangeCount) return null; const e=document.querySelector('[contenteditable=true]'); if(!e) return null; const r=s.getRangeAt(0); if(!e.contains(r.endContainer)) return null; const pre=document.createRange(); pre.selectNodeContents(e); pre.setEnd(r.endContainer,r.endOffset); return pre.toString().length;})()")
+async def selected_parts(pg):
+    return await pg.evaluate("[...document.querySelectorAll('.mark-sel,.mark-anchor')].map(n=>n.getAttribute('data-el')).filter(Boolean)")
+async def runs_of(pg, part="F_b0"):
+    return await pg.evaluate(f"{P}.textRuns('{part}')")
+async def right_click_reset(pg, part):
+    # 右クリックで浮遊メニューを出し、「文字の見た目を元に戻す」を押す（本物の操作＝X35 の経路）
+    el = await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed()
+    bb = await el.bounding_box()
+    await pg.mouse.click(bb["x"] + bb["width"] / 2, bb["y"] + 8, button="right"); await pg.wait_for_timeout(200)
+    found = await pg.evaluate("(()=>{const b=[...document.querySelectorAll('#fmenu button')].find(x=>x.textContent.includes('文字の見た目を元に戻す')); if(b){b.click(); return true;} return false;})()")
+    await pg.wait_for_timeout(200)
+    return found
+async def _d10_reenter(pg, cdp):
+    # 一部(0〜4文字目)を赤→書き換えを終える（D1 プリセット＝partRun＋commit）→戻す（入り直す）→やり直す（入り直す）
+    await fresh(pg)
+    await pg.evaluate(f"{P}.runPreset('D1')"); await pg.wait_for_timeout(200)
+    after_red = await runs_of(pg)
+    await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(220)
+    after_undo = {"runs": await runs_of(pg), "editing": await pg.evaluate(f"{P}.editingId()")}
+    await pg.keyboard.press("Meta+Shift+z"); await pg.wait_for_timeout(220)
+    after_redo = {"runs": await runs_of(pg), "editing": await pg.evaluate(f"{P}.editingId()")}
+    return after_red, after_undo, after_redo
+
+async def K1(pg, cdp):   # D10 と同じ手順。やり直し直後・メニュー押下直後の runs と書き換えの状態
+    after_red, after_undo, after_redo = await _d10_reenter(pg, cdp)
+    found = await right_click_reset(pg, "F_b0")
+    after_reset = {"runs": await runs_of(pg), "editing": await pg.evaluate(f"{P}.editingId()")}
+    return {"after_red": after_red, "editing_after_undo": after_undo["editing"],
+            "runs_after_redo": after_redo["runs"], "editing_after_redo": after_redo["editing"],
+            "reset_btn_found": found, "runs_after_reset": after_reset["runs"], "editing_after_reset": after_reset["editing"]}
+
+async def K2(pg, cdp):   # K1 の後、書き換えの外をクリック → Cmd+Z 1回（赤が戻るか・書き換えの状態）
+    await _d10_reenter(pg, cdp)
+    await right_click_reset(pg, "F_b0")
+    before = {"runs": await runs_of(pg), "editing": await pg.evaluate(f"{P}.editingId()")}
+    await pg.mouse.click(4, 400); await pg.wait_for_timeout(180)   # 書き換えの外をクリック（編集中でない＝何も起きない）
+    await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(220)
+    after = {"runs": await runs_of(pg), "editing": await pg.evaluate(f"{P}.editingId()")}
+    return {"before_undo": before, "after_undo": after}
+
+async def K3(pg, cdp):   # 春を決める→Cmd+Z(入り直す)→部品を右へ40→Cmd+Z×2（本文・位置・書き換えの状態）
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_end(pg)
+    await ime_words(pg, cdp, [("haru", "春")])
+    base_x = (await pg.evaluate(f"{P}.geometry()"))["F_p0"]["x"]
+    async def row(step):
+        g = await pg.evaluate(f"{P}.geometry()")
+        return {"step": step, "body": (await body(pg))[-10:], "F_p0_dx": round(g["F_p0"]["x"] - base_x, 1), "editing": await pg.evaluate(f"{P}.editingId()")}
+    steps = [await row("春を決める")]
+    await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(220)   # 入り直す
+    steps.append(await row("Cmd+Z(入り直す)"))
+    await drag_part(pg, "F_p0", 40, 0)   # 実ドラッグ＝pointerdown が先に書き換えをふつうに終える（X35）
+    steps.append(await row("F_p0を右へ40"))
+    for i in range(2):
+        await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(220)
+        steps.append(await row(f"Cmd+Z {i+1}"))
+    return {"base_x": round(base_x, 1), "steps": steps}
+
+async def K4(pg, cdp):   # 書き換え中に一部を選んで太字（道具）→外をクリック（太字が残るか＝選択の道具は書き換えの中・D系を崩さない）
+    await fresh(pg); await edit_start(pg, "F_b0")
+    await pg.evaluate(f"{P}.editSelect(0,4)"); await pg.wait_for_timeout(80)
+    await pg.keyboard.press("Meta+b"); await pg.wait_for_timeout(180)
+    editing_mid = await pg.evaluate(f"{P}.editingId()")
+    await pg.mouse.click(4, 400); await pg.wait_for_timeout(220)   # 書き換えの外をクリック
+    runs = await runs_of(pg)
+    bold = sum(len(r["text"]) for r in runs if r.get("bold"))
+    return {"editing_during_bold": editing_mid, "bold_chars_after_click_out": bold, "runs": runs, "editing_after": await pg.evaluate(f"{P}.editingId()")}
+
+async def K5(pg, cdp):   # 春を決める→Cmd+Z×3（2・3回目は戻すものが無い）。本文・書き換えの状態・カーソルの位置
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_end(pg)
+    await ime_words(pg, cdp, [("haru", "春")])
+    async def row(step):
+        return {"step": step, "body": (await body(pg))[-10:], "editing": await pg.evaluate(f"{P}.editingId()"), "caret": await caret_pos(pg)}
+    steps = [await row("春を決める")]
+    for i in range(3):
+        await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(220)
+        steps.append(await row(f"Cmd+Z {i+1}"))
+    return {"steps": steps}
+
+async def K6(pg, cdp):   # 書き換えていない状態で、戻すものが無いところまで Cmd+Z →もう1回（本文・選んでいる部品・書き換えの状態が変わらないか）
+    await fresh(pg)
+    await pg.evaluate(f"{P}.select('F_h0')"); await pg.wait_for_timeout(120)
+    before = {"body": (await body(pg))[-10:], "selected": await selected_parts(pg), "editing": await pg.evaluate(f"{P}.editingId()")}
+    steps = []
+    for i in range(2):
+        await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(160)
+        steps.append({"step": f"Cmd+Z {i+1}", "body": (await body(pg))[-10:], "selected": await selected_parts(pg), "editing": await pg.evaluate(f"{P}.editingId()")})
+    return {"before": before, "steps": steps}
+
+async def K7(pg, cdp):   # K5 の後、Cmd+Shift+Z×3（2・3回目はやり直すものが無い）
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_end(pg)
+    await ime_words(pg, cdp, [("haru", "春")])
+    for _ in range(3):
+        await pg.keyboard.press("Meta+z"); await pg.wait_for_timeout(200)
+    steps = []
+    for i in range(3):
+        await pg.keyboard.press("Meta+Shift+z"); await pg.wait_for_timeout(220)
+        steps.append({"step": f"Cmd+Shift+Z {i+1}", "body": (await body(pg))[-10:], "editing": await pg.evaluate(f"{P}.editingId()")})
+    return {"redo_steps": steps}
+
 async def run(pg, cdp):
     out["tests"]["I1"] = await I1_like(pg, cdp, "F_b0", "I1 特集の本文")
     await pg.screenshot(path=os.path.join(OUT, f"I1_{MODE}.png"))
@@ -399,8 +501,11 @@ async def run(pg, cdp):
     out["tests"]["J6_card"] = await jrun(pg, cdp, "card_name_c_jonama")
     out["tests"]["J6_row"] = await jrun(pg, cdp, "row_name_t_warabi")
     out["tests"]["sec3_pc"] = await sec3(pg, cdp, dev="pc")
-    # §23b U1〜U6（戻す細かさ）
+    # §23b U1〜U6（戻す細かさ）＝K8：そのまま走らせ直す
     for name, fn in [("U1", U1), ("U2", U2), ("U3", U3), ("U4", U4), ("U5", U5), ("U6", U6)]:
+        out["tests"][name] = await fn(pg, cdp)
+    # §23c K1〜K7（X34・X35）
+    for name, fn in [("K1", K1), ("K2", K2), ("K3", K3), ("K4", K4), ("K5", K5), ("K6", K6), ("K7", K7)]:
         out["tests"][name] = await fn(pg, cdp)
 
 async def run_phone(browser):
@@ -534,5 +639,50 @@ async def main():
             print(f"   戻す{s['step']}: '…{s['text']}' 書換中={s['editing']}{extra}")
         for s in t.get("redo_steps", []):
             print(f"   やり直し{s['step']}: '…{s['text']}' 書換中={s['editing']}")
+
+    # ===== §23c K 系（X34・X35）=====
+    def rb(runs):   # runs を短く：text(6字)＋色/太字の印
+        if not isinstance(runs, list):
+            return str(runs)
+        return [dict(t=r.get("text", "")[-6:], **({"色": r["color"]} if r.get("color") else {}), **({"太": 1} if r.get("bold") else {})) for r in runs]
+    k = out["tests"]
+    if "K1" in k:
+        t = k["K1"]
+        print("\n[K1] D10 と同じ手順（赤→終える→戻す→やり直す→メニューで元に戻す）")
+        print(f"   赤を付けた直後 runs={rb(t['after_red'])}")
+        print(f"   戻した直後 書換中={t['editing_after_undo']}")
+        print(f"   やり直した直後 runs={rb(t['runs_after_redo'])} 書換中={t['editing_after_redo']}")
+        print(f"   メニュー『文字の見た目を元に戻す』: ボタン検出={t['reset_btn_found']}")
+        print(f"   押した直後 runs={rb(t['runs_after_reset'])} 書換中={t['editing_after_reset']}")
+    if "K2" in k:
+        t = k["K2"]
+        print("\n[K2] K1 の後、外をクリック→Cmd+Z 1回")
+        print(f"   クリック前 runs={rb(t['before_undo']['runs'])} 書換中={t['before_undo']['editing']}")
+        print(f"   Cmd+Z 後  runs={rb(t['after_undo']['runs'])} 書換中={t['after_undo']['editing']}")
+    if "K3" in k:
+        t = k["K3"]
+        print(f"\n[K3] 春→Cmd+Z(入り直す)→右へ40→Cmd+Z×2  base_x={t['base_x']}")
+        for s in t["steps"]:
+            print(f"   {s['step']:16} 本文末='…{s['body']}' F_p0_dx={s['F_p0_dx']} 書換中={s['editing']}")
+    if "K4" in k:
+        t = k["K4"]
+        print("\n[K4] 書き換え中に一部を太字（道具）→外をクリック")
+        print(f"   太字の最中 書換中={t['editing_during_bold']} / 外をクリック後 太字の文字数={t['bold_chars_after_click_out']} 書換中={t['editing_after']} runs={rb(t['runs'])}")
+    if "K5" in k:
+        t = k["K5"]
+        print("\n[K5] 春→Cmd+Z×3（2・3回目は戻すものが無い）")
+        for s in t["steps"]:
+            print(f"   {s['step']:12} 本文末='…{s['body']}' 書換中={s['editing']} カーソル={s['caret']}")
+    if "K6" in k:
+        t = k["K6"]
+        print("\n[K6] 書き換えていない状態で戻すものが無い Cmd+Z×2")
+        print(f"   前: 本文末='…{t['before']['body']}' 選択={t['before']['selected']} 書換中={t['before']['editing']}")
+        for s in t["steps"]:
+            print(f"   {s['step']:8} 本文末='…{s['body']}' 選択={s['selected']} 書換中={s['editing']}")
+    if "K7" in k:
+        t = k["K7"]
+        print("\n[K7] K5 の後、Cmd+Shift+Z×3（2・3回目はやり直すものが無い）")
+        for s in t["redo_steps"]:
+            print(f"   {s['step']:16} 本文末='…{s['body']}' 書換中={s['editing']}")
 
 asyncio.run(main())

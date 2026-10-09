@@ -940,7 +940,8 @@ stage.addEventListener("dblclick",(e)=>{ if(isPhone()||PG.previewMode()||PG.view
 // 右クリック＝浮遊メニュー（部品）／セクションの余白ならセクションのメニュー（§2.1）
 stage.addEventListener("contextmenu",(e)=>{
   if(isPhone()){ e.preventDefault(); return; }   // §3.2.5 スマホの長押しから来る contextmenu は出さない・右クリック扱いしない
-  const id=elFrom(e.target);
+  const id=elFrom(e.target);   // §23c X35：render で元のノードが外れうるので、終える前に部品 ID を取っておく
+  if(PG.state.editing) PG.commitEdit();   // §23c X35：右クリックメニューは「文字を打つ以外でその部品を変える」操作＝先に書き換えをふつうに終える（書き換えの外をクリックと同じ）。入り直した書き換えでも同じ
   if(id){ e.preventDefault(); const grp=PG.groupOf(id); PG.selectOnly(grp||PG.canonId(id)); showFmenu(); return; }
   const host=e.target.closest&&e.target.closest("#sectionwrap .host");
   if(host){ e.preventDefault(); const sec=host.id.replace("host_",""); PG.selectSection(sec); showSectionMenu(sec,e.clientX,e.clientY); }

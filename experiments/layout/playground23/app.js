@@ -120,7 +120,9 @@ const PG = (function () {
   function canSwap(id) { if (state.device !== "pc") return false; const c = canonId(id); if (blockOfPart(c) == null) return false; const inst = reduce(activeOps()).secList.find((s) => s.id === secOf(c)); return !!(inst && inst.type === "feature"); }
   function swapHoriz(id) { const c = canonId(id); const block = blockOfPart(c); if (block == null) return; const sec = secOf(c); const pfx = isAnchorSec(sec) ? "" : sec + SEP; const clearM1 = ["F_p", "F_h", "F_b"].map((p) => pfx + p + block); commit({ t: "swap", device: state.device, sec, block, clearM1 }); }
   // 文字の見た目を元に戻す：箱まるごと（鍵）＋文の一部（この部品の runs）の両方（§2.2）
-  function resetTextStyle(id) { commit({ t: "tstyleReset", keys: [tsKeyOf(id)], parts: [id] }); }
+  // §23c X35：文字の見た目を元に戻すは「文字を打つ以外でその部品を変える」操作＝書き換え中なら先にふつうに終える（書き換えの外をクリックと同じ）。
+  // 入り直した書き換え（戻す/やり直しで入り直した状態）でも同じ＝生きている runs（赤など）を先に確定させてから tstyleReset を積む（それをしないと textRunsApi が editing.runs を返して reset が反映されない）。
+  function resetTextStyle(id) { if (state.editing) commitEdit(); commit({ t: "tstyleReset", keys: [tsKeyOf(id)], parts: [id] }); }
   function hasTextStyle(id) { return !!reduce(activeOps()).textStyles[tsKeyOf(id)]; }
   // §3.6 入口：今の端末の文字の部品の見た目（手直しのない部品も含める）
   function textStylesApi() {
@@ -980,7 +982,7 @@ const PG = (function () {
     if (state.viewing) return;
     if (state.restoreUndo) { const r = state.restoreUndo; state.restoreUndo = null; state.ops = r.ops; state.cursor = r.cursor; state.undoBase = r.undoBase; state.secSeq = r.secSeq; state.addSeq = r.addSeq; for (const id in (r.assets || {})) ASSET[id] = r.assets[id]; render(); scheduleSave(); return; }   // §22 §6.5「この版を下書きにする」は戻す1回で元の下書きへ
     if (state.editing) { reconcileEdit(); flushCheckpoint(); }   // §23b 末尾の打ち分を1区切りにしてから1つ戻す
-    if (state.cursor <= state.undoBase) { if (state.editing) endEditSilently(); return; }   // §22 §2.4 開き直した後の「戻す」は undoBase まで
+    if (state.cursor <= state.undoBase) return;   // §23c X34：戻すものが無ければ何もしない（書き換えの状態もカーソルも触らない＝PowerPoint と同じ）。§22 §2.4 開き直した後の「戻す」も undoBase まで（undoBase に着いた後の Cmd+Z も何もしない）
     state.cursor--;
     const op = state.ops[state.cursor];
     render();
