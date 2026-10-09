@@ -33,6 +33,13 @@ for (const t of ['compositionstart','compositionupdate','compositionend','input'
     window.__imelog.push({ type: t, isComposing: !!e.isComposing, data: (e.data===undefined?null:e.data), t: Math.round(performance.now()) });
   }, true);
 }
+// §23a：ページが受け取った keydown/keyup を観測（isComposing・keyCode）。ページの処理とは別に記録するだけ。
+window.__keylog = [];
+for (const t of ['keydown','keyup']) {
+  document.addEventListener(t, (e) => {
+    window.__keylog.push({ type: t, key: e.key, keyCode: e.keyCode, isComposing: !!e.isComposing, t: Math.round(performance.now()) });
+  }, true);
+}
 window.__snap = function(part){
   const el = document.querySelector('[data-el="'+part+'"]');
   if(!el) return { error: 'no el '+part };
@@ -221,6 +228,90 @@ async def I7(pg, cdp):
             "save_during(after_1.5s)": during_save, "model_text_during_after_wait": model_during2, "ops_during": ops_during,
             "save_after_commit": after_save, "model_text_after_commit": model_after}
 
+# ===== §23a X33：変換中のキーをページが拾わない。キーは CDP の dispatchKeyEvent（229 付き） =====
+async def send229(cdp, typ, extra=None):
+    d = {"type": typ, "windowsVirtualKeyCode": 229, "key": "Process"}
+    if extra: d.update(extra)
+    await cdp.send("Input.dispatchKeyEvent", d)
+
+def moved2(base, cur, thr=0.5):
+    res = []
+    for k, v in cur.get("parts", {}).items():
+        b = base.get("parts", {}).get(k)
+        if not b: continue
+        for ax in ("x", "y", "w", "h"):
+            d = round(v[ax] - b[ax], 2)
+            if abs(d) > thr: res.append({"part": k, "axis": ax, "delta": d})
+    return {"parts": res, "secΔ": round(cur.get("sectionH", 0) - base.get("sectionH", 0), 2), "pageΔ": cur.get("pageH", 0) - base.get("pageH", 0)}
+
+async def jrun(pg, cdp, part, enter=None, dev="pc"):
+    res = {"part": part}
+    cpos = 6 if part == "F_b0" else 1
+    # J1：「かし」まで変換中 → Esc（229 付き keydown/keyup）→ imeSetComposition('') で変換をやめる
+    await fresh(pg, dev); await (enter or edit_start)(pg, part); await caret_at(pg, cpos)
+    await pg.evaluate("window.__keylog=[]")
+    base = await snap(pg, part)
+    await cdp.send("Input.imeSetComposition", {"text": "かし", "selectionStart": 2, "selectionEnd": 2}); await pg.wait_for_timeout(100)
+    await send229(cdp, "keyDown"); await send229(cdp, "keyUp"); await pg.wait_for_timeout(100)
+    await cdp.send("Input.imeSetComposition", {"text": "", "selectionStart": 0, "selectionEnd": 0}); await pg.wait_for_timeout(150)
+    s1 = await snap(pg, part)
+    res["J1"] = {"base_text": base["text"], "after_text": s1["text"], "editing": await pg.evaluate(f"{P}.editingId()"),
+                 "moved": moved2(base, s1), "keylog": await pg.evaluate("window.__keylog")}
+    # J2：続けて「菓子」を変換して決め、そのあと Esc（229 なし）
+    await cdp.send("Input.imeSetComposition", {"text": "かし", "selectionStart": 2, "selectionEnd": 2}); await pg.wait_for_timeout(100)
+    await cdp.send("Input.insertText", {"text": "菓子"}); await pg.wait_for_timeout(120)
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(150)
+    s2 = await snap(pg, part)
+    res["J2"] = {"after_text": s2["text"], "editing_after_esc": await pg.evaluate(f"{P}.editingId()")}
+    # J3：「かし」まで変換中 → リターン（229 付き）→ insertText('菓子')
+    await fresh(pg, dev); await (enter or edit_start)(pg, part); await caret_at(pg, cpos)
+    await cdp.send("Input.imeSetComposition", {"text": "かし", "selectionStart": 2, "selectionEnd": 2}); await pg.wait_for_timeout(100)
+    await send229(cdp, "keyDown", {"key": "Enter"}); await send229(cdp, "keyUp", {"key": "Enter"}); await pg.wait_for_timeout(80)
+    await cdp.send("Input.insertText", {"text": "菓子"}); await pg.wait_for_timeout(120)
+    s3 = await snap(pg, part)
+    res["J3"] = {"after_text": s3["text"], "has_newline": ("\n" in s3["text"] or "\r" in s3["text"]), "editing": await pg.evaluate(f"{P}.editingId()")}
+    # J4：「かし」まで変換中 → Cmd+Z（229 付き）。戻る（10.1）が動かないこと
+    await fresh(pg, dev); await (enter or edit_start)(pg, part); await caret_at(pg, cpos)
+    opsb = await ops_len(pg)
+    await cdp.send("Input.imeSetComposition", {"text": "かし", "selectionStart": 2, "selectionEnd": 2}); await pg.wait_for_timeout(100)
+    await send229(cdp, "keyDown", {"modifiers": 4}); await send229(cdp, "keyUp", {"modifiers": 4}); await pg.wait_for_timeout(120)  # modifiers 4 = Meta(Cmd)
+    s4 = await snap(pg, part)
+    res["J4"] = {"after_text": s4["text"], "ops_before": opsb, "ops_after": await ops_len(pg), "editing": await pg.evaluate(f"{P}.editingId()")}
+    return res
+
+async def J5(pg, cdp):
+    # 前の I3 と同じ：keyboard.press('Escape')。ページが受け取った keydown の isComposing・keyCode を観測
+    await fresh(pg); await edit_start(pg, "F_b0"); await caret_at(pg, 6)
+    await pg.evaluate("window.__keylog=[]")
+    base = await snap(pg, "F_b0")
+    await cdp.send("Input.imeSetComposition", {"text": "かし", "selectionStart": 2, "selectionEnd": 2}); await pg.wait_for_timeout(100)
+    await pg.keyboard.press("Escape"); await pg.wait_for_timeout(150)
+    s = await snap(pg, "F_b0")
+    return {"base_text": base["text"], "after_text": s["text"], "editing": await pg.evaluate(f"{P}.editingId()"),
+            "keylog": await pg.evaluate("window.__keylog")}
+
+# §3：I2/I8 の「変換前・変換の最後の段階・決めた後 500ms」の3位置（動いた部品だけ）
+async def sec3(pg, cdp, enter=None, dev="pc"):
+    await fresh(pg, dev); await (enter or edit_start)(pg, "F_b0"); await caret_at(pg, 6)
+    base = await snap(pg, "F_b0")
+    for comp in ["あ"*10, "あ"*20, "あ"*30, "あ"*40]:
+        await cdp.send("Input.imeSetComposition", {"text": comp, "selectionStart": len(comp), "selectionEnd": len(comp)}); await pg.wait_for_timeout(100)
+    last = await snap(pg, "F_b0")
+    await cdp.send("Input.insertText", {"text": "菓"*40}); await pg.wait_for_timeout(120)
+    commit = await snap(pg, "F_b0")
+    await pg.wait_for_timeout(500)
+    after = await snap(pg, "F_b0")
+    axes = ("x", "y", "w", "h")
+    out3 = {}
+    for k, b in base["parts"].items():
+        l = last["parts"].get(k); c = commit["parts"].get(k); a = after["parts"].get(k)
+        if not (l and c and a): continue
+        moved_composing = any(abs(l[ax]-b[ax]) > 0.5 for ax in axes)
+        if not moved_composing: continue
+        out3[k] = {"before": b, "last_composing": l, "after_commit_500ms": a,
+                   "moved_again_at_commit": any(abs(c[ax]-l[ax]) > 0.5 for ax in axes)}
+    return {"dev": dev, "moved_parts": out3}
+
 async def run(pg, cdp):
     out["tests"]["I1"] = await I1_like(pg, cdp, "F_b0", "I1 特集の本文")
     await pg.screenshot(path=os.path.join(OUT, f"I1_{MODE}.png"))
@@ -231,6 +322,12 @@ async def run(pg, cdp):
     out["tests"]["I5"] = await I1_like(pg, cdp, "card_name_c_jonama", "I5 品の名前", caret=1)
     out["tests"]["I6"] = await I1_like(pg, cdp, "row_name_t_warabi", "I6 表の行の文字", caret=1)
     out["tests"]["I7"] = await I7(pg, cdp)
+    # §23a J1〜J5（本文）と §3（PC の位置）
+    out["tests"]["J_F_b0"] = await jrun(pg, cdp, "F_b0")
+    out["tests"]["J5"] = await J5(pg, cdp)
+    out["tests"]["J6_card"] = await jrun(pg, cdp, "card_name_c_jonama")
+    out["tests"]["J6_row"] = await jrun(pg, cdp, "row_name_t_warabi")
+    out["tests"]["sec3_pc"] = await sec3(pg, cdp, dev="pc")
 
 async def run_phone(browser):
     ctx = await browser.new_context(viewport={"width": 390, "height": 844}, device_scale_factor=3, has_touch=True, is_mobile=True)
@@ -258,6 +355,8 @@ async def run_phone(browser):
         await pg.screenshot(path=os.path.join(OUT, f"I8_I1_{MODE}.png"))
         res["I2"] = await I2(pg, cdp, "sp", enter=phone_enter)
         await pg.screenshot(path=os.path.join(OUT, f"I8_I2_{MODE}.png"))
+        res["sec3_sp"] = await sec3(pg, cdp, enter=phone_enter, dev="sp")   # §3 スマホの3位置
+        res["J_F_b0_sp"] = await jrun(pg, cdp, "F_b0", enter=phone_enter, dev="sp")   # §23a J1〜J4 スマホ
     res["pageerror"] = errs
     await ctx.close()
     return res
@@ -325,5 +424,29 @@ async def main():
                 else:
                     for s in t[sub]["stages"]:
                         print(f"      {s['stage']:10} editH={s['editH']} sectionH={s['sectionH']} moved={s['moved']['parts']}")
+
+    # ===== §23a J 系 =====
+    def show_j(tag, j):
+        print(f"\n[{tag}] part={j.get('part')}")
+        j1 = j["J1"]; print(f"   J1 Esc(229): base='…{j1['base_text'][-6:]}' after='…{j1['after_text'][-6:]}' editing={j1['editing']} moved={j1['moved']['parts']} keylog={j1['keylog']}")
+        print(f"   J2 菓子決め→Esc(229なし): after='…{j['J2']['after_text'][-8:]}' editing_after_esc={j['J2']['editing_after_esc']}")
+        print(f"   J3 Enter(229)→insertText: after='…{j['J3']['after_text'][-8:]}' has_newline={j['J3']['has_newline']} editing={j['J3']['editing']}")
+        print(f"   J4 Cmd+Z(229): after='…{j['J4']['after_text'][-6:]}' ops {j['J4']['ops_before']}→{j['J4']['ops_after']} editing={j['J4']['editing']}")
+    for tag in ["J_F_b0", "J6_card", "J6_row"]:
+        if tag in out["tests"]: show_j(tag, out["tests"][tag])
+    if "J_F_b0_sp" in out["tests"]["I8"]: show_j("J_F_b0_sp(スマホ)", out["tests"]["I8"]["J_F_b0_sp"])
+    j5 = out["tests"]["J5"]
+    print(f"\n[J5] keyboard.press('Escape'): base='…{j5['base_text'][-6:]}' after='…{j5['after_text'][-6:]}' editing={j5['editing']}")
+    print(f"   page が受けた keydown: {j5['keylog']}")
+    # ===== §3 位置（動いた部品だけ・3位置） =====
+    for tag in ["sec3_pc"]:
+        s3 = out["tests"].get(tag) or {}
+        print(f"\n[§3 {tag}] dev={s3.get('dev')}")
+        for k, v in (s3.get("moved_parts") or {}).items():
+            print(f"   {k}: 変換前 y={v['before']['y']} / 変換最後 y={v['last_composing']['y']} / 決め後500ms y={v['after_commit_500ms']['y']}  決めた瞬間に再移動={v['moved_again_at_commit']}")
+    s3 = out["tests"]["I8"].get("sec3_sp") or {}
+    print(f"\n[§3 sec3_sp] dev={s3.get('dev')}")
+    for k, v in (s3.get("moved_parts") or {}).items():
+        print(f"   {k}: 変換前 y={v['before']['y']} / 変換最後 y={v['last_composing']['y']} / 決め後500ms y={v['after_commit_500ms']['y']}  決めた瞬間に再移動={v['moved_again_at_commit']}")
 
 asyncio.run(main())
