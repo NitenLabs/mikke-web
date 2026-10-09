@@ -113,6 +113,30 @@ body.pg-preview .sec-add-zone{display:none!important}
 body.pg-preview #photoChangeBtn,body.pg-preview #fmenu,body.pg-preview #pbar,body.pg-preview #pmore{display:none!important}
 body.pg-preview #sectionwrap [data-el]{cursor:default}
 body.pg-preview #sectionwrap [data-lk]{cursor:pointer}
+/* §22 §6 履歴の板（右・幅300）と、見るだけの帯 */
+#historyBar{position:sticky;top:0;z-index:31;display:none;background:#2a2a2a;color:#fff;padding:8px 12px;align-items:center;gap:10px;font:13px system-ui}
+#historyBar.on{display:flex}
+#historyBar .hb-title{font-weight:700}
+#historyBar .sp{flex:1}
+#historyBar button{font:13px system-ui;padding:5px 10px;border:1px solid #666;border-radius:6px;background:#333;color:#fff;cursor:pointer}
+#historyBar button.go{background:#06c;border-color:#06c}
+#historyPanel{position:fixed;top:0;right:0;width:300px;height:100vh;z-index:40;background:#fff;box-shadow:-2px 0 12px rgba(0,0,0,.18);display:none;flex-direction:column;font:13px system-ui}
+#historyPanel.on{display:flex}
+#historyPanel .hp-head{padding:12px 14px;font-weight:700;border-bottom:1px solid #eee;display:flex;align-items:center}
+#historyPanel .hp-head .sp{flex:1}
+#historyPanel .hp-head button{font:13px system-ui;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;padding:3px 8px}
+#historyPanel .hp-list{overflow-y:auto;flex:1}
+#historyPanel .hp-row{padding:10px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer}
+#historyPanel .hp-row:hover{background:#f6f6f6}
+#historyPanel .hp-row.viewing{background:#eef5ff}
+#historyPanel .hp-main{color:#222}
+#historyPanel .hp-badge{display:inline-block;font-size:11px;color:#06c;border:1px solid #06c;border-radius:4px;padding:0 5px;margin-left:6px}
+#historyPanel .hp-sub{color:#999;font-size:11px;margin-top:2px}
+#historyPanel .hp-sub.warn{color:#e08a00}
+body.pg-viewing #toolbar{display:none}
+body.pg-viewing .sec-add-zone{display:none!important}
+body.pg-viewing #photoChangeBtn,body.pg-viewing #fmenu,body.pg-viewing #pbar,body.pg-viewing #pmore{display:none!important}
+body.pg-viewing #sectionwrap [data-el]{cursor:default}
 button{font:13px system-ui;padding:5px 9px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
 button.on{background:#333;color:#fff;border-color:#333}
 button:active{transform:translateY(1px)}
@@ -334,6 +358,8 @@ const UI_BODY = `
   <button id="tPublish">公開</button>
 </div>
 <div id="previewBar"></div>
+<div id="historyBar"></div>
+<div id="historyPanel"></div>
 <div id="studio">
   <div class="box"><b>試験を再現</b><br>
     <button data-q="Q1">Q1</button><button data-q="Q2">Q2</button><button data-q="Q3">Q3</button><button data-q="Q4">Q4</button>
@@ -343,6 +369,7 @@ const UI_BODY = `
     <button data-q="T1">T1</button><button data-q="T2">T2</button><button data-q="T3">T3</button><button data-q="T4">T4</button><button data-q="T5">T5</button><button data-q="V1">V1</button><br>
     <button data-q="W1">W1</button><button data-q="W2">W2</button><button data-q="W3">W3</button><button data-q="W4">W4</button><button data-q="W5">W5</button><button data-q="W6">W6</button>
     <button data-q="W7">W7</button><button data-q="W8">W8</button><button data-q="W9">W9</button><button data-q="W10">W10</button><button data-q="W11">W11</button><br>
+    <button data-q="W12">W12</button><button data-q="W13">W13</button><button data-q="W14">W14</button><button data-q="W15">W15</button><button data-q="W16">W16</button><button data-q="W17">W17</button><button data-q="W18">W18</button><button data-q="W19">W19</button><button data-q="W20">W20</button><button data-q="W21">W21</button><button data-q="W22">W22</button><button data-q="W23">W23</button><button data-q="W24">W24</button><br>
     <button data-q="Y1">Y1</button><button data-q="Y2">Y2</button><button data-q="Y3">Y3</button><button data-q="Y4">Y4</button><button data-q="Y5">Y5</button><button data-q="Y6">Y6</button><button data-q="Y7">Y7</button>
     <button data-q="Y8">Y8</button><button data-q="Y9">Y9</button><button data-q="Y10">Y10</button><button data-q="Y11">Y11</button><button data-q="Y12">Y12</button><button data-q="Y13">Y13</button><button data-q="Y14">Y14</button><br>
     <button data-q="Z1">Z1</button><button data-q="Z2">Z2</button><button data-q="Z3">Z3</button><button data-q="Z4">Z4</button><button data-q="Z5">Z5</button><button data-q="Z6">Z6</button><button data-q="Z7">Z7</button><br>
@@ -406,7 +433,7 @@ function opText(op){ const nm=id=>C3.friendly(id);
   return op.t; }
 function refreshStudio(){ const ol=document.getElementById("oplog"); if(ol){ ol.innerHTML=""; for(const op of PG.api.ops()){ const li=document.createElement("li"); li.textContent=opText(op); ol.appendChild(li);} }
   const ul=document.getElementById("anchorlist"); if(ul){ ul.innerHTML=""; for(const a of PG.anchorsList()){ const li=document.createElement("li"); li.textContent=a.partName+"："+(a.mode==="M1"?"塊の中でずらす":a.anchorName+"の下（空き"+a.gapY+"）"); ul.appendChild(li);} } }
-window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); };
+window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); if(typeof syncHistoryUI==="function") syncHistoryUI(); };
 // §19b（X20）上の道具を常に1段に保ち、入りきらないぶんを「その他 ▾」にしまう（窓の幅で機能を隠さない）
 const toolbarEl=document.getElementById("toolbar");
 const tMore=document.getElementById("tMore");
@@ -519,7 +546,55 @@ document.getElementById("stage").addEventListener("click",(e)=>{ if(!PG.previewM
   if(!href){ const el=e.target.closest&&e.target.closest("[data-el]"); if(el){ const info=PG.api.elementLink(el.getAttribute("data-el")); if(info&&info.link){ href=PG.api.resolveHref(info.link); external=/^https?:/.test(href||""); } } }
   if(href){ e.preventDefault(); e.stopPropagation(); if(external) window.open(href,"_blank"); else location.href=href; }
 },true);
-document.getElementById("tHistory").onclick=()=>{ /* §6 履歴の板は 22d */ };
+// §22 §6 公開の履歴から前の版に戻す
+const historyBar=document.getElementById("historyBar");
+const historyPanel=document.getElementById("historyPanel");
+let historyOpen=false;
+function fmtAt(at){ if(!at) return ""; const d=new Date(at); return (d.getMonth()+1)+"月"+d.getDate()+"日 "+String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"); }
+function verLabel(v){ return v.kind==="draft"?"今の下書き":v.kind==="published"?"公開した版":v.kind==="beforeRestore"?"戻す前の下書き":v.kind==="initial"?"最初の形":""; }
+function buildHistoryPanel(){
+  historyPanel.innerHTML="";
+  const head=document.createElement("div"); head.className="hp-head"; head.textContent="公開の履歴";
+  const sp=document.createElement("span"); sp.className="sp"; head.appendChild(sp);
+  const x=document.createElement("button"); x.textContent="閉じる"; x.setAttribute("data-hp-close","1"); x.onclick=closeHistory; head.appendChild(x); historyPanel.appendChild(head);
+  const list=document.createElement("div"); list.className="hp-list";
+  const viewing=PG.viewingVersion();
+  for(const v of PG.versions()){
+    const row=document.createElement("div"); row.className="hp-row"+(viewing===v.id?" viewing":""); row.setAttribute("data-hp-row",v.id); row.setAttribute("data-hp-kind",v.kind);
+    const main=document.createElement("div"); main.className="hp-main"; main.textContent=verLabel(v);
+    if(v.kind==="published"&&v.current){ const b=document.createElement("span"); b.className="hp-badge"; b.textContent="公開中"; main.appendChild(b); }
+    row.appendChild(main);
+    if(v.kind==="draft"&&v.current){ const s=document.createElement("div"); s.className="hp-sub warn"; s.textContent="まだ公開していない変更があります"; row.appendChild(s); }
+    else if(v.at){ const s=document.createElement("div"); s.className="hp-sub"; s.textContent=fmtAt(v.at); row.appendChild(s); }
+    row.onclick=()=>{ if(v.kind==="draft") exitHistoryView(); else PG.viewVersion(v.id); };   // §6.2 今の下書きで編集に戻る／他の版は見るだけ
+    list.appendChild(row);
+  }
+  historyPanel.appendChild(list);
+}
+function buildHistoryBar(){
+  historyBar.innerHTML="";
+  const viewing=PG.viewingVersion(); const v=PG.versions().find(x=>x.id===viewing);
+  const title=document.createElement("span"); title.className="hb-title";
+  let t="版を見ています（見るだけ）";
+  if(v){ if(v.kind==="published") t=fmtAt(v.at)+"に公開した版を見ています（見るだけ）"; else if(v.kind==="initial") t="最初の形を見ています（見るだけ）"; else if(v.kind==="beforeRestore") t=fmtAt(v.at)+"の戻す前の下書きを見ています（見るだけ）"; }
+  title.textContent=t; historyBar.appendChild(title);
+  const mkDev=(label,d)=>{ const b=document.createElement("button"); b.textContent=label; b.setAttribute("data-hv-dev",d); b.classList.toggle("on",PG.state.device===d); b.onclick=()=>{ PG.setDevice(d); }; return b; };
+  historyBar.appendChild(mkDev("PC","pc")); historyBar.appendChild(mkDev("スマホ","sp"));
+  const sp=document.createElement("span"); sp.className="sp"; historyBar.appendChild(sp);
+  const close=document.createElement("button"); close.textContent="閉じる"; close.setAttribute("data-hv-close","1"); close.onclick=exitHistoryView; historyBar.appendChild(close);
+  const go=document.createElement("button"); go.className="go"; go.textContent="この版を下書きにする"; go.setAttribute("data-hv-go","1"); go.onclick=()=>{ PG.restoreVersion(PG.viewingVersion()); closeHistory(); }; historyBar.appendChild(go);   // §6.3
+}
+function openHistory(){ if(PG.previewMode()) return; fmenu.classList.remove("on"); pmore.classList.remove("on"); moreMenu.classList.remove("on"); historyOpen=true; syncHistoryUI(); }
+function closeHistory(){ historyOpen=false; if(PG.viewingVersion()) PG.exitView(); syncHistoryUI(); }
+function exitHistoryView(){ if(PG.viewingVersion()) PG.exitView(); syncHistoryUI(); }   // §6.2 見るだけをやめて編集へ（板は開いたまま）
+function syncHistoryUI(){
+  const viewing=!!PG.viewingVersion();
+  document.body.classList.toggle("pg-viewing",viewing);
+  if(historyOpen){ buildHistoryPanel(); historyPanel.classList.add("on"); } else historyPanel.classList.remove("on");
+  if(viewing){ buildHistoryBar(); historyBar.classList.add("on"); } else historyBar.classList.remove("on");
+}
+window.addEventListener("keydown",(e)=>{ if(e.key==="Escape"&&PG.viewingVersion()){ e.preventDefault(); exitHistoryView(); } },true);   // §6.2 Esc＝見るだけをやめる
+document.getElementById("tHistory").onclick=()=>{ if(historyOpen) closeHistory(); else openHistory(); };   // §22 §6 履歴の板
 document.getElementById("tPreview").onclick=()=>enterPreviewUI();   // §22 §5 プレビュー
 // §3.3 状態の文字が並びに入らないときは「その他」の一番上に押せない行として出す
 function updateMoreStatus(){ const mm=document.getElementById("moreMenu"); if(!mm) return; const old=mm.querySelector(".morestat"); if(old) old.remove();
@@ -802,7 +877,7 @@ let marquee=null;
 function elFrom(t){ const n=t.closest?t.closest("[data-el]"):null; return n?n.getAttribute("data-el"):null; }
 const stage=document.getElementById("stage");
 stage.addEventListener("pointerdown",(e)=>{
-  if(PG.previewMode()) return;   // §22 §5 プレビュー中は選択・移動しない（リンクは click で処理）
+  if(PG.previewMode()||PG.viewingVersion()) return;   // §22 §5 プレビュー／§6 見るだけは選択・移動しない（リンクは click で処理）
   if(isPhone()){ if(e.pointerType==="touch") onPhoneDown(e); return; }   // §3 スマホは指だけ（タッチ後の互換マウスは無視して箱を消させない）
   if(PG.state.editing && e.target.getAttribute && e.target.closest("[contenteditable]")) return; // 編集中の文字は素通し
   if(PG.state.editing) PG.commitEdit();
@@ -858,7 +933,7 @@ window.addEventListener("pointerup",(e)=>{
   if(wasPending && wasPending.clickInner){ PG.selectMany([wasPending.clickInner]); showFmenu(); }
 });
 // ダブルクリック＝文字はその場書き換え、写真は見せる範囲（§2.1）
-stage.addEventListener("dblclick",(e)=>{ if(isPhone()||PG.previewMode()) return; const id=elFrom(e.target); if(!id)return; const c=PG.canonId(id); if(PG.isText(c)){ PG.startEdit(c); } else if(/^F_p|photo/.test(id)){ enterCrop(id); } });   // §3 スマホはダブルタップで入る（dblクリックは使わない）
+stage.addEventListener("dblclick",(e)=>{ if(isPhone()||PG.previewMode()||PG.viewingVersion()) return; const id=elFrom(e.target); if(!id)return; const c=PG.canonId(id); if(PG.isText(c)){ PG.startEdit(c); } else if(/^F_p|photo/.test(id)){ enterCrop(id); } });   // §3 スマホはダブルタップで入る（dblクリックは使わない）
 // 右クリック＝浮遊メニュー（部品）／セクションの余白ならセクションのメニュー（§2.1）
 stage.addEventListener("contextmenu",(e)=>{
   if(isPhone()){ e.preventDefault(); return; }   // §3.2.5 スマホの長押しから来る contextmenu は出さない・右クリック扱いしない
@@ -1246,7 +1321,7 @@ function togglePmore(){ if(pmore.classList.contains("on")){ pmore.classList.remo
 function buildPmore(){ pmore.innerHTML="";   // §2.3 一覧の中身（上から）
   const mk=(label,fn)=>{ const b=document.createElement("button"); b.textContent=label; b.addEventListener("pointerdown",(e)=>e.preventDefault()); b.onclick=(e)=>{ e.stopPropagation(); pmore.classList.remove("on"); fn(); }; return b; };
   const st=PG.saveState(); const srow=document.createElement("div"); srow.className="pmorestat"+((st.status==="error"||st.label==="まだ公開していない変更があります")?" warn":""); srow.textContent=st.label; pmore.appendChild(srow);   // §22 §3.4 状態の文字＝その他の一番上
-  pmore.appendChild(mk("履歴",()=>{ /* §6 履歴の板は 22d */ }));   // §22 §3.4 履歴・プレビューはその他
+  pmore.appendChild(mk("履歴",()=>{ pmore.classList.remove("on"); if(historyOpen) closeHistory(); else openHistory(); }));   // §22 §3.4/§6 履歴・プレビューはその他
   pmore.appendChild(mk("プレビュー",()=>enterPreviewUI()));   // §22 §5
   pmore.appendChild(mk("テキストを足す",()=>phoneAddText()));
   pmore.appendChild(mk("PC の見え方を見る",()=>setPhoneDevice("pc")));

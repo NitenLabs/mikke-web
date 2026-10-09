@@ -404,7 +404,7 @@ const PG = (function () {
 
   // §2 セクションの並び（ページの組み立て）。今は特集・品の2つ。複製・追加・削除・並べ替えはこの並びを書き換える（試験台14・第2回で操作を足す）。
   const defaultSecList = () => [{ id: "feature", type: "feature" }, { id: "items", type: "items" }];
-  let state = { device: "pc", ops: [], cursor: 0, undoBase: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null, fixedSections: false, preview: false };
+  let state = { device: "pc", ops: [], cursor: 0, undoBase: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null, fixedSections: false, preview: false, viewing: null, viewBackup: null, restoreUndo: null };
   let scale = 1, layoutCount = 0, composing = false;
   let clampGuard = false;   // §20b §2.4 表の幅クランプの再描画ガード（render の再入防止）
   let appliedPlace = {}; // id -> {top,left} 直近の絶対配置
@@ -918,7 +918,7 @@ const PG = (function () {
     // 足した部品：置いた端末だけ手動印
     for (const a of R.adds) if (!R.remove.includes(a.id)) { const moved = R.m2[a.id] || R.m1[a.id]; if (a.placedDevice === state.device || moved) manual.add(a.id); }
     document.querySelectorAll(".mark-manual,.mark-warn,.mark-sel,.mark-anchor,.anchor-line,.anchor-label,.sel-pad,.rz-handle,.snap-guide").forEach((n) => { if (n.classList.contains("anchor-line") || n.classList.contains("anchor-label") || n.classList.contains("sel-pad") || n.classList.contains("rz-handle") || n.classList.contains("snap-guide")) n.remove(); else n.classList.remove("mark-manual", "mark-warn", "mark-sel", "mark-anchor"); });
-    if (state.preview) return;   // §22 §5 プレビュー中は編集の飾り（選んだ枠・つまみ・手動印）を出さない
+    if (state.preview || state.viewing) return;   // §22 §5 プレビュー中／§6 見るだけは編集の飾り（選んだ枠・つまみ・手動印）を出さない
     for (const id of manual) { const n = elNode(id); if (n) n.classList.add("mark-manual"); }
     // §2：赤い枠（.mark-warn）は出さない
     for (const id of state.selected) { const n = elNode(id); if (n) n.classList.add("mark-sel"); }
@@ -972,9 +972,11 @@ const PG = (function () {
   function selectSection(sec) { state.selectedSection = sec; state.selected = new Set(); refreshSel(); }
 
   // ---- 履歴 ----
-  function commit(op) { state.ops = state.ops.slice(0, state.cursor); state.ops.push(op); state.cursor++; render(); scheduleSave(); }
-  function undo() { if (state.editing) return; if (state.cursor > state.undoBase) { state.cursor--; render(); scheduleSave(); } }   // §22 §2.4 開き直した後の「戻す」は undoBase（＝復元した所）まで
-  function redo() { if (state.editing) return; if (state.cursor < state.ops.length) { state.cursor++; render(); scheduleSave(); } }
+  function commit(op) { state.restoreUndo = null; state.ops = state.ops.slice(0, state.cursor); state.ops.push(op); state.cursor++; render(); scheduleSave(); }
+  function undo() { if (state.editing || state.viewing) return;
+    if (state.restoreUndo) { const r = state.restoreUndo; state.restoreUndo = null; state.ops = r.ops; state.cursor = r.cursor; state.undoBase = r.undoBase; state.secSeq = r.secSeq; state.addSeq = r.addSeq; for (const id in (r.assets || {})) ASSET[id] = r.assets[id]; render(); scheduleSave(); return; }   // §22 §6.5「この版を下書きにする」は戻す1回で元の下書きへ
+    if (state.cursor > state.undoBase) { state.cursor--; render(); scheduleSave(); } }   // §22 §2.4 開き直した後の「戻す」は undoBase（＝復元した所）まで
+  function redo() { if (state.editing || state.viewing || state.restoreUndo) return; if (state.cursor < state.ops.length) { state.cursor++; render(); scheduleSave(); } }
   function reset() { state.ops = []; state.cursor = 0; state.undoBase = 0; state.selected = new Set(); state.selectedSection = null; state.editing = null; state.secList = defaultSecList(); _versions = initialVersions(); _saveStatus = "saved"; _simErr = false; render(); }
 
   // ===================== §22 §2 保存（IndexedDB・自動保存）／§4.3 公開の記録 =====================
@@ -987,7 +989,9 @@ const PG = (function () {
   function idbGet(db, key) { return new Promise((res, rej) => { const t = db.transaction(IDB_STORE, "readonly"); const g = t.objectStore(IDB_STORE).get(key); g.onsuccess = () => res(g.result); g.onerror = () => rej(g.error); }); }
   function idbPut(db, key, val) { return new Promise((res, rej) => { const t = db.transaction(IDB_STORE, "readwrite"); t.objectStore(IDB_STORE).put(val, key); t.oncomplete = () => res(); t.onerror = () => rej(t.error); }); }
   function collectAssets() { const out = {}; for (const id in ASSET) if (!(id in TEMPLATE_ASSETS) && ASSET[id]) out[id] = ASSET[id]; return out; }   // §2.3 足した/差し替えた写真
-  function serializeDraft() { return { ops: activeOps(), assets: collectAssets() }; }
+  // 見るだけ（§6）の間は、画面は版を映すが「下書き」は viewBackup 側＝保存も状態判定も下書きを見る
+  function currentDraftData() { const b = state.viewing && state.viewBackup; if (b) return { ops: b.ops.slice(0, b.cursor), assets: b.assets }; return { ops: activeOps(), assets: collectAssets() }; }
+  function serializeDraft() { return currentDraftData(); }
   function applyDraftData(d) { if (!d || !Array.isArray(d.ops)) return false; for (const id in (d.assets || {})) ASSET[id] = d.assets[id]; state.ops = clone(d.ops); state.cursor = state.ops.length; state.undoBase = state.cursor; return true; }
   function scheduleSave() { if (_saveTimer) clearTimeout(_saveTimer); if (_saveStatus !== "error") _saveStatus = "saving"; if (typeof onRender === "function") onRender(); _saveTimer = setTimeout(doSave, 500); }   // §2.2 操作後 500ms 以内に保存／まとめて1回
   async function doSave() {
@@ -999,7 +1003,7 @@ const PG = (function () {
   }
   async function boot() { try { _db = await idbOpen(); const vs = await idbGet(_db, "versions"); if (Array.isArray(vs) && vs.length) { _versions = vs; _verSeq = Math.max(_verSeq, ...vs.map((v) => (+String(v.id).replace(/\D/g, "") || 0)) ) + 1; } const d = await idbGet(_db, "draft"); if (d) applyDraftData(d); } catch (e) {} render(); for (const id in collectAssets()) ensureNat(id); }
   function currentPublished() { const p = _versions.filter((v) => v.kind === "published"); return p.length ? p[p.length - 1] : null; }
-  function draftSig() { return JSON.stringify({ ops: activeOps(), assets: collectAssets() }); }
+  function draftSig() { const d = currentDraftData(); return JSON.stringify({ ops: d.ops, assets: d.assets }); }
   function publishedEqual() { const p = currentPublished(); return p ? (JSON.stringify({ ops: p.ops, assets: p.assets }) === draftSig()) : false; }   // §3.2 一度も公開していなければ false
   function statusLabel() {
     if (_saveStatus === "saving") return "保存しています…";
@@ -1026,6 +1030,53 @@ const PG = (function () {
     for (const b of _versions.filter((v) => v.kind === "beforeRestore")) list.push({ id: b.id, kind: "beforeRestore", at: b.at, current: false });
     list.push({ id: "initial", kind: "initial", at: null, current: false });
     return list;
+  }
+
+  // ===================== §22 §6 公開の履歴から前の版に戻す（見るだけ／この版を下書きにする） =====================
+  function versionById(id) { if (!id || id === "draft") return null; return _versions.find((v) => v.id === id) || null; }
+  const publishedChrono = () => _versions.filter((v) => v.kind === "published");   // 古い順
+  function resolveVerId(sel) { if (sel.id) return sel.id; const pubs = publishedChrono(); if (sel.which === "oldestPub") return pubs.length ? pubs[0].id : null; if (sel.which === "newestPub") return pubs.length ? pubs[pubs.length - 1].id : null; if (sel.which === "initial") return "initial"; return null; }
+  // 復元した ops から、連番（足したセクション sec*・足した部品 add_*）の最大値を拾い、次の採番が衝突しないようにする
+  function recountSeq(ops) { const s = JSON.stringify(ops || []); let m, a = 0, b = 0; const rs = /sec(\d+)/g; while ((m = rs.exec(s))) a = Math.max(a, +m[1]); const ra = /add_(\d+)/g; while ((m = ra.exec(s))) b = Math.max(b, +m[1]); state.secSeq = Math.max(state.secSeq, a); state.addSeq = Math.max(state.addSeq, b); }
+  function viewingVersion() { return state.viewing; }
+  // §6.2 版を「見るだけ」で出す（下書きは viewBackup に退避）。部品は選べない・動かせない・書き換えられない（render／操作側で止める）。PC・スマホは切り替えられる。
+  function viewVersion(id) {
+    if (state.editing) commitEdit();
+    if (!id || id === "draft") { exitView(); return; }
+    const v = versionById(id); if (!v) return;
+    if (!state.viewing) state.viewBackup = { ops: clone(state.ops), cursor: state.cursor, undoBase: state.undoBase, secSeq: state.secSeq, addSeq: state.addSeq, assets: clone(collectAssets()) };
+    state.viewing = id; state.selected = new Set(); state.selectedSection = null; state.editing = null;
+    for (const aid in (v.assets || {})) ASSET[aid] = v.assets[aid];
+    state.ops = clone(v.ops); state.cursor = state.ops.length;
+    render();
+  }
+  function exitView() {
+    if (!state.viewing) return;
+    const b = state.viewBackup; state.viewing = null; state.viewBackup = null;
+    if (b) { state.ops = b.ops; state.cursor = b.cursor; state.undoBase = b.undoBase; state.secSeq = b.secSeq; state.addSeq = b.addSeq; for (const aid in (b.assets || {})) ASSET[aid] = b.assets[aid]; }
+    state.selected = new Set(); state.selectedSection = null;
+    render();
+  }
+  // §6.3 「この版を下書きにする」：その版の中身・手直し・セクションの組み立てをまるごと下書きに。公開中の版（お客さんが見るサイト）は変えない。
+  function restoreVersion(id) {
+    const vid = id || state.viewing; const v = versionById(vid); if (!v) { exitView(); return; }
+    const pre = state.viewBackup || { ops: clone(state.ops), cursor: state.cursor, undoBase: state.undoBase, secSeq: state.secSeq, addSeq: state.addSeq, assets: clone(collectAssets()) };
+    const preOps = pre.ops.slice(0, pre.cursor);
+    const pub = currentPublished();
+    const preSig = JSON.stringify({ ops: preOps, assets: pre.assets });
+    const pubSig = pub ? JSON.stringify({ ops: pub.ops, assets: pub.assets }) : null;
+    if (pub && preSig !== pubSig) {   // §6.4 公開中と違う下書きだけ「戻す前の下書き」に残す（新しい方から10）
+      _versions.push({ id: "b" + (_verSeq++), kind: "beforeRestore", at: Date.now(), ops: clone(preOps), assets: clone(pre.assets) });
+      const brs = _versions.filter((x) => x.kind === "beforeRestore");
+      if (brs.length > 10) { const drop = new Set(brs.slice(0, brs.length - 10)); _versions = _versions.filter((x) => !drop.has(x)); }
+    }
+    state.restoreUndo = { ops: clone(pre.ops), cursor: pre.cursor, undoBase: pre.undoBase, secSeq: pre.secSeq, addSeq: pre.addSeq, assets: clone(pre.assets) };   // §6.5 戻す1回で置き換える前の下書きへ
+    for (const aid in (v.assets || {})) ASSET[aid] = v.assets[aid];
+    state.viewing = null; state.viewBackup = null;
+    state.ops = clone(v.ops); state.cursor = state.ops.length; state.undoBase = state.cursor;
+    recountSeq(state.ops);
+    state.selected = new Set(); state.selectedSection = null; state.editing = null;
+    render(); scheduleSave();
   }
 
   // ===================== §22 §4.2 公開前チェック・長い文の目安 =====================
@@ -1056,6 +1107,18 @@ const PG = (function () {
     state.device = curDev; state.ops = curOps; state.cursor = curCursor; state.undoBase = curBase; render();
     return result;
   }
+  // §4.2（X31）写真のない枠の呼び名＝『セクションの名前』の N つ目の写真。内部 ID（sec1__F_p0 など）は出さない。
+  // セクションの名前は足すときの型（特集／品）。N はそのセクションの写真枠の中での並び順（同じ特集に枠が2つあれば 1つ目・2つ目）。
+  const ORD_JP = ["", "1つ目", "2つ目", "3つ目", "4つ目", "5つ目", "6つ目", "7つ目", "8つ目", "9つ目"];
+  function emptyPhotoName(part, phList) {
+    const sec = secOf(part);
+    const inst = reduce(activeOps()).secList.find((s) => s.id === sec);
+    const secName = (inst && inst.type === "items") ? "品" : "特集";
+    const sameSec = phList.filter((p) => secOf(p.part) === sec);   // そのセクションの写真枠を並び順に
+    const idx = sameSec.findIndex((p) => p.part === part);
+    const n = idx >= 0 ? idx + 1 : 1;
+    return `『${secName}』の${ORD_JP[n] || (n + "つ目")}の写真`;
+  }
   // §4.2 公開前に見てほしい所：PC・スマホの両方で、重なり・長い文・写真のない枠・仕組みの重なり/はみ出しを集める。
   function publishCheck() {
     const limits = longTextLimits();
@@ -1074,7 +1137,8 @@ const PG = (function () {
       // 長い文：今の行数が目安を越えた部品
       for (const p in limits) { const L = limits[p][dev]; if (L && L.lines > L.limit) items.push({ device: dev, kind: "long", parts: [p], text: `${DL}：${M.friendly(p)}が、目安の長さ（${L.limit}行）を越えています（${L.lines}行）` }); }
       // 写真のない枠（まだ写真が無い＝足したセクション等）。端末に依らないので1枠1回
-      for (const ph of photosApi()) if (ph.missing && !emptySeen.has(ph.part)) { emptySeen.add(ph.part); items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `足した${M.friendly(ph.part)}がまだありません。公開すると、この枠は詰めて出しません` }); }
+      const phList = photosApi();
+      for (const ph of phList) if (ph.missing && !emptySeen.has(ph.part)) { emptySeen.add(ph.part); items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `足した${emptyPhotoName(ph.part, phList)}がまだありません。公開すると、この枠は詰めて出しません` }); }
       // 仕組みの重なり・はみ出し（ふつうは空）
       for (const o of w.overlaps || []) items.push({ device: dev, kind: "system", parts: [canonId(o.a), canonId(o.b)], text: `${DL}：${M.friendly(o.a)}が、${M.friendly(o.b)}に重なっています` });
       for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: `${DL}：${M.friendly(o.id)}がはみ出しています` });
@@ -2013,6 +2077,7 @@ const PG = (function () {
       W21: [],                                          // §7 開いた直後（setFixedSections=false）＝20b と一致
       W22: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [-619, 0] }, { act: "zmove", id: "F_p0", m: "back" }, { act: "zmove", id: "F_p0", m: "forward" }],   // §8 最背面→前面へ移動＝写真が見出しの前・本文の後ろ
       W23: [{ act: "winOnly" }],                         // X27 離す前の dropTarget（ドラッグ中の見た目＝再現なし）
+      W24: [{ act: "winOnly" }],                         // §3.3 窓幅での道具の畳み・スマホの並び＝再現なし（試験で確認）
       // ===== 試験台22b（W1〜W7・W19）=====
       W1: [{ act: "setDev", d: "pc" }],                  // §2/§3 新しい文脈で開く＝まだ公開していません・履歴は最初の形だけ（文脈は試験側）
       W2: [{ act: "winOnly" }],                          // §2 開き直しは文脈の外＝再現なし
@@ -2029,6 +2094,12 @@ const PG = (function () {
       W11: [{ act: "setDev", d: "pc" }],                 // §4.2 longTextLimits() を見るだけ
       W12: [{ act: "setDev", d: "pc" }, { act: "setLink", id: "card_photo_c_warabi", link: { kind: "url", href: "https://example.com" } }, { act: "preview", on: true }],   // §5 プレビュー＋よそのリンク（押すのは試験で）
       W13: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [-619, 0] }, { act: "secAdd", type: "feature" }, { act: "preview", on: true }],   // §5 公開の描き方＝写真のない枠は詰める
+      // ===== 試験台22d（W14〜W18）§6 履歴から前の版に戻す =====
+      W14: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [30, 0] }, { act: "publish" }, { act: "move", id: "F_p0", by: [30, 0] }, { act: "publish" }, { act: "editAppend", id: "F_b0", add: S1_ADD }],   // §6.1 下書き（未公開変更）＋公開2つ＋最初の形（板を出すのは試験）
+      W15: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [30, 0] }, { act: "publish" }, { act: "move", id: "F_p0", by: [30, 0] }, { act: "publish" }, { act: "editAppend", id: "F_b0", add: S1_ADD }, { act: "viewVersion", which: "oldestPub" }, { act: "setDev", d: "sp" }],   // §6.2 古い版を見るだけ（ドラッグで動かないのは試験）
+      W16: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [30, 0] }, { act: "publish" }, { act: "move", id: "F_p0", by: [30, 0] }, { act: "publish" }, { act: "editAppend", id: "F_b0", add: S1_ADD }, { act: "viewVersion", which: "oldestPub" }, { act: "restoreVersion" }],   // §6.3/§6.4 この版を下書きに＝写真は右30だけ・本文の足しは消える・戻す前の下書きが1つ
+      W17: [{ act: "setDev", d: "pc" }, { act: "move", id: "F_p0", by: [30, 0] }, { act: "publish" }, { act: "move", id: "F_p0", by: [30, 0] }, { act: "publish" }, { act: "editAppend", id: "F_b0", add: S1_ADD }, { act: "viewVersion", which: "oldestPub" }, { act: "restoreVersion" }, { act: "undo" }],   // §6.5 戻す＝置き換える前の下書きへ（本文の足し戻る・写真右60）
+      W18: [{ act: "setDev", d: "pc" }, { act: "viewVersion", which: "initial" }, { act: "restoreVersion" }],   // §6 最初の形を下書きに＝新しい文脈の直後と同じ
     };
   }
   let lastSec = null;   // プリセットで直前に作った（複製・追加した）セクションの ID。@dup/@add が指す。
@@ -2074,6 +2145,9 @@ const PG = (function () {
     else if (step.act === "publish") { publish(step.opts || { force: true }); }   // §22 §4.3
     else if (step.act === "simError") { simulateSaveError(step.on); }   // §22 §2.6
     else if (step.act === "preview") { if (step.on === false) exitPreview(); else enterPreview(); }   // §22 §5
+    else if (step.act === "viewVersion") { viewVersion(resolveVerId(step)); }   // §22 §6 見るだけ
+    else if (step.act === "restoreVersion") { restoreVersion(step.id || state.viewing); }   // §22 §6 この版を下書きにする
+    else if (step.act === "exitView") { exitView(); }   // §22 §6 見るだけをやめる
     else if (step.act === "setLink") { setElementLink(canonId(step.id), step.link); }   // §22 §5（リンク）
     else if (step.act === "secAdd") { sectionAdd(step.pos != null ? step.pos : (reduce(activeOps()).secList.length), step.type || "feature"); lastSec = "sec" + state.secSeq; }   // §22 §4.2 写真のない枠
     else if (step.act === "resetSection") { resetScope("section", step.sec === "feature" ? "F_h0" : "I_kanmi", [state.device]); }
@@ -2306,13 +2380,15 @@ const PG = (function () {
     boot, saveState, simulateSaveError, publish, versions,   // §22 §2 保存・§4.3 公開の記録
     publishCheck, longTextLimits,   // §22 §4.2 公開前チェック・長い文の目安
     previewMode, publishedGeometry,   // §22 §5 プレビュー
+    viewVersion, exitView, restoreVersion, viewingVersion,   // §22 §6 履歴から前の版に戻す
   };
   return {
     state, render, reset, setDevice, undo, redo, commit, api, reduce, activeOps,
     boot, saveState, simulateSaveError, publish, versions, setFixedSections,   // §22 §2 保存・§4.3 公開・§7（WIRING から使う）
     publishCheck, longTextLimits,   // §22 §4.2（WIRING の確認の箱から使う）
     enterPreview, exitPreview, previewMode, publishedGeometry,   // §22 §5 プレビュー（WIRING から使う）
-    canUndo: () => state.cursor > state.undoBase, canRedo: () => state.cursor < state.ops.length,
+    viewVersion, exitView, restoreVersion, viewingVersion,   // §22 §6 履歴（WIRING から使う）
+    canUndo: () => !!state.restoreUndo || state.cursor > state.undoBase, canRedo: () => !state.restoreUndo && state.cursor < state.ops.length,
     canonId, isDraggable, isText, REPEAT, groupOf, secOf, elNode, getScale: () => scale, isHeadingGroup, inputMode,
     sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionCan,   // §2 セクションの操作
     beginDrag, dragMove, endDrag, isDragging: () => !!drag, selectOnly, toggleSel, selectMany, clearSel, selectSection, selectInDesignRect, smallHit,
