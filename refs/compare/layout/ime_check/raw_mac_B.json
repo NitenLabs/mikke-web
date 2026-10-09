@@ -1,0 +1,99 @@
+{
+ "html": "/Users/ryutak1105/Desktop/芦屋みっけ/mikke-web/refs/compare/layout/playground22_single.html",
+ "aborted": null,
+ "steps": {
+  "I1": {
+   "base_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "composing_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "converted_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "committed_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "sectionH": [
+    1399.69,
+    1399.69,
+    1399.69
+   ],
+   "pageH": [
+    3044,
+    3044,
+    3044
+   ],
+   "model_after": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "events": []
+  },
+  "I2": {
+   "base": {
+    "editH": 57.43,
+    "sectionH": 1399.69,
+    "pageH": 3044
+   },
+   "stages": [
+    {
+     "after_chars": 10,
+     "editH": 57.43,
+     "moved": {
+      "parts": [],
+      "secΔ": 0.0,
+      "pageΔ": 0
+     }
+    },
+    {
+     "after_chars": 20,
+     "editH": 57.43,
+     "moved": {
+      "parts": [],
+      "secΔ": 0.0,
+      "pageΔ": 0
+     }
+    },
+    {
+     "after_chars": 35,
+     "editH": 57.43,
+     "moved": {
+      "parts": [],
+      "secΔ": 0.0,
+      "pageΔ": 0
+     }
+    }
+   ],
+   "committed": {
+    "editH": 57.43,
+    "moved_vs_base": {
+     "parts": [],
+     "secΔ": 0.0,
+     "pageΔ": 0
+    }
+   },
+   "events": []
+  },
+  "I3": {
+   "base": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "during": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "after_esc": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "editing_after_esc": "F_b0",
+   "after_second": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "moved_after_esc": {
+    "parts": [],
+    "secΔ": 0.0,
+    "pageΔ": 0
+   },
+   "events": []
+  },
+  "I4": {
+   "after_5_commits": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "undo_steps": [
+    "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+    "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+    "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+    "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+    "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+    "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。"
+   ]
+  }
+ },
+ "input_source_before": "(\n        {\n        \"Bundle ID\" = \"com.apple.PressAndHold\";\n        InputSourceK",
+ "input_source_restored": "(\n        {\n        \"Bundle ID\" = \"com.apple.PressAndHold\";\n        InputSourceK",
+ "frontmost_expected": "Google Chrome for Testing",
+ "input_source_after_switch": "(\n        {\n        \"Bundle ID\" = \"com.apple.PressAndHold\";\n        InputSourceK",
+ "restored_ok": true,
+ "log": []
+}

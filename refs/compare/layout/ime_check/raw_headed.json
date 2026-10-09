@@ -1,0 +1,1078 @@
+{
+ "mode": "headed",
+ "html": "/Users/ryutak1105/Desktop/芦屋みっけ/mikke-web/refs/compare/layout/playground22_single.html",
+ "tests": {
+  "I1": {
+   "part": "F_b0",
+   "editing_id": "F_b0",
+   "baseline_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "stages": [
+    {
+     "stage": "comp:か",
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。か",
+     "editH": 57.43,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "comp:かし",
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かし",
+     "editH": 57.43,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "comp:かしを",
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かしを",
+     "editH": 57.43,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "commit",
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。菓子を",
+     "editH": 57.43,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "commit+500ms",
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。菓子を",
+     "editH": 57.43,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    }
+   ],
+   "model_text_after": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。菓子を",
+   "events": [
+    {
+     "type": "compositionstart",
+     "isComposing": false,
+     "data": "",
+     "t": 3286
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "か",
+     "t": 3286
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "か",
+     "t": 3298
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "かし",
+     "t": 3437
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "かし",
+     "t": 3439
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "かしを",
+     "t": 3569
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "かしを",
+     "t": 3570
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "菓子を",
+     "t": 3687
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "菓子を",
+     "t": 3689
+    },
+    {
+     "type": "compositionend",
+     "isComposing": false,
+     "data": "菓子を",
+     "t": 3689
+    }
+   ]
+  },
+  "I2": {
+   "dev": "pc",
+   "baseline": {
+    "editH": 57.43,
+    "sectionH": 1399.69,
+    "pageH": 3044
+   },
+   "stages": [
+    {
+     "stage": "comp:5字",
+     "editH": 57.43,
+     "sectionH": 1399.69,
+     "pageH": 3044,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     }
+    },
+    {
+     "stage": "comp:10字",
+     "editH": 57.43,
+     "sectionH": 1399.69,
+     "pageH": 3044,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     }
+    },
+    {
+     "stage": "comp:20字",
+     "editH": 86.15,
+     "sectionH": 1399.69,
+     "pageH": 3044,
+     "moved": {
+      "parts": [
+       {
+        "part": "F_h0",
+        "axis": "y",
+        "delta": -14.36
+       },
+       {
+        "part": "F_b0",
+        "axis": "y",
+        "delta": -14.36
+       },
+       {
+        "part": "F_b0",
+        "axis": "h",
+        "delta": 28.72
+       }
+      ],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     }
+    },
+    {
+     "stage": "comp:30字",
+     "editH": 86.15,
+     "sectionH": 1399.69,
+     "pageH": 3044,
+     "moved": {
+      "parts": [
+       {
+        "part": "F_h0",
+        "axis": "y",
+        "delta": -14.36
+       },
+       {
+        "part": "F_b0",
+        "axis": "y",
+        "delta": -14.36
+       },
+       {
+        "part": "F_b0",
+        "axis": "h",
+        "delta": 28.72
+       }
+      ],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     }
+    },
+    {
+     "stage": "comp:40字",
+     "editH": 86.15,
+     "sectionH": 1399.69,
+     "pageH": 3044,
+     "moved": {
+      "parts": [
+       {
+        "part": "F_h0",
+        "axis": "y",
+        "delta": -14.36
+       },
+       {
+        "part": "F_b0",
+        "axis": "y",
+        "delta": -14.36
+       },
+       {
+        "part": "F_b0",
+        "axis": "h",
+        "delta": 28.72
+       }
+      ],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     }
+    },
+    {
+     "stage": "commit",
+     "editH": 86.15,
+     "sectionH": 1399.69,
+     "pageH": 3044,
+     "moved": {
+      "parts": [
+       {
+        "part": "F_h0",
+        "axis": "y",
+        "delta": -14.36
+       },
+       {
+        "part": "F_b0",
+        "axis": "y",
+        "delta": -14.36
+       },
+       {
+        "part": "F_b0",
+        "axis": "h",
+        "delta": 28.72
+       }
+      ],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     }
+    }
+   ],
+   "events": [
+    {
+     "type": "compositionstart",
+     "isComposing": false,
+     "data": "",
+     "t": 5666
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "あああああ",
+     "t": 5666
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "あああああ",
+     "t": 5668
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "ああああああああああ",
+     "t": 5780
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "ああああああああああ",
+     "t": 5781
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "ああああああああああああああああああああ",
+     "t": 5895
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "ああああああああああああああああああああ",
+     "t": 5896
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "ああああああああああああああああああああああああああああああ",
+     "t": 6011
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "ああああああああああああああああああああああああああああああ",
+     "t": 6011
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "ああああああああああああああああああああああああああああああああああああああああ",
+     "t": 6150
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "ああああああああああああああああああああああああああああああああああああああああ",
+     "t": 6150
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓",
+     "t": 6267
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓",
+     "t": 6268
+    },
+    {
+     "type": "compositionend",
+     "isComposing": false,
+     "data": "菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓",
+     "t": 6268
+    }
+   ]
+  },
+  "I3": {
+   "baseline_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+   "during_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かし",
+   "after_esc_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かし",
+   "after_esc_moved": {
+    "parts": [],
+    "sectionH_delta": 0.0,
+    "pageH_delta": 0
+   },
+   "editing_after_esc": null,
+   "after_second_commit_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かし",
+   "model_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かし",
+   "events": [
+    {
+     "type": "compositionstart",
+     "isComposing": false,
+     "data": "",
+     "t": 7645
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "かし",
+     "t": 7645
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "かし",
+     "t": 7647
+    }
+   ]
+  },
+  "I4": {
+   "after_5_commits_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。春夏秋冬空",
+   "undo_steps": [
+    {
+     "undo": 1,
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。"
+    },
+    {
+     "undo": 2,
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。"
+    },
+    {
+     "undo": 3,
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。"
+    },
+    {
+     "undo": 4,
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。"
+    },
+    {
+     "undo": 5,
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。"
+    },
+    {
+     "undo": 6,
+     "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。"
+    }
+   ],
+   "readings": [
+    "はる",
+    "なつ",
+    "あき",
+    "ふゆ",
+    "そら"
+   ],
+   "intermediate_reading_in_undo": []
+  },
+  "I5": {
+   "part": "card_name_c_jonama",
+   "editing_id": "card_name_c_jonama",
+   "baseline_text": "季節の上生菓子",
+   "stages": [
+    {
+     "stage": "comp:か",
+     "text": "季節の上生菓子か",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "comp:かし",
+     "text": "季節の上生菓子かし",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "comp:かしを",
+     "text": "季節の上生菓子かしを",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "commit",
+     "text": "季節の上生菓子菓子を",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "commit+500ms",
+     "text": "季節の上生菓子菓子を",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    }
+   ],
+   "model_text_after": "季節の上生菓子菓子を",
+   "events": [
+    {
+     "type": "compositionstart",
+     "isComposing": false,
+     "data": "",
+     "t": 13419
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "か",
+     "t": 13419
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "か",
+     "t": 13419
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "かし",
+     "t": 13545
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "かし",
+     "t": 13547
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "かしを",
+     "t": 13668
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "かしを",
+     "t": 13669
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "菓子を",
+     "t": 13792
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "菓子を",
+     "t": 13793
+    },
+    {
+     "type": "compositionend",
+     "isComposing": false,
+     "data": "菓子を",
+     "t": 13793
+    }
+   ]
+  },
+  "I6": {
+   "part": "row_name_t_warabi",
+   "editing_id": "row_name_t_warabi",
+   "baseline_text": "わらび餅",
+   "stages": [
+    {
+     "stage": "comp:か",
+     "text": "わらび餅か",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "comp:かし",
+     "text": "わらび餅かし",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "comp:かしを",
+     "text": "わらび餅かしを",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "commit",
+     "text": "わらび餅菓子を",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    },
+    {
+     "stage": "commit+500ms",
+     "text": "わらび餅菓子を",
+     "editH": 28.72,
+     "moved": {
+      "parts": [],
+      "sectionH_delta": 0.0,
+      "pageH_delta": 0
+     },
+     "ops": 0
+    }
+   ],
+   "model_text_after": "わらび餅菓子を",
+   "events": [
+    {
+     "type": "compositionstart",
+     "isComposing": false,
+     "data": "",
+     "t": 16211
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "か",
+     "t": 16211
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "か",
+     "t": 16217
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "かし",
+     "t": 16350
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "かし",
+     "t": 16351
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "かしを",
+     "t": 16482
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "かしを",
+     "t": 16482
+    },
+    {
+     "type": "compositionupdate",
+     "isComposing": false,
+     "data": "菓子を",
+     "t": 16598
+    },
+    {
+     "type": "input",
+     "isComposing": true,
+     "data": "菓子を",
+     "t": 16599
+    },
+    {
+     "type": "compositionend",
+     "isComposing": false,
+     "data": "菓子を",
+     "t": 16599
+    }
+   ]
+  },
+  "I7": {
+   "save_before": {
+    "status": "saved",
+    "label": "まだ公開していません",
+    "publishedEqual": false,
+    "lastSavedAt": 1791516132657
+   },
+   "dom_text_during": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かしを",
+   "model_text_during": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かしを",
+   "save_during(after_1.5s)": {
+    "status": "saved",
+    "label": "まだ公開していません",
+    "publishedEqual": false,
+    "lastSavedAt": 1791516132657
+   },
+   "model_text_during_after_wait": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かしを",
+   "ops_during": 0,
+   "save_after_commit": {
+    "status": "saved",
+    "label": "まだ公開していません",
+    "publishedEqual": false,
+    "lastSavedAt": 1791516132657
+   },
+   "model_text_after_commit": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かしを菓子を"
+  },
+  "I8": {
+   "inputMode": "phone",
+   "I1": {
+    "part": "F_b0",
+    "editing_id": "F_b0",
+    "baseline_text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。",
+    "stages": [
+     {
+      "stage": "comp:か",
+      "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。か",
+      "editH": 75.59,
+      "moved": {
+       "parts": [],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      },
+      "ops": 0
+     },
+     {
+      "stage": "comp:かし",
+      "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かし",
+      "editH": 75.59,
+      "moved": {
+       "parts": [],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      },
+      "ops": 0
+     },
+     {
+      "stage": "comp:かしを",
+      "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。かしを",
+      "editH": 75.59,
+      "moved": {
+       "parts": [],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      },
+      "ops": 0
+     },
+     {
+      "stage": "commit",
+      "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。菓子を",
+      "editH": 75.59,
+      "moved": {
+       "parts": [],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      },
+      "ops": 0
+     },
+     {
+      "stage": "commit+500ms",
+      "text": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。菓子を",
+      "editH": 75.59,
+      "moved": {
+       "parts": [],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      },
+      "ops": 0
+     }
+    ],
+    "model_text_after": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。菓子を",
+    "events": [
+     {
+      "type": "compositionstart",
+      "isComposing": false,
+      "data": "",
+      "t": 3286
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "か",
+      "t": 3287
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "か",
+      "t": 3326
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "かし",
+      "t": 3443
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "かし",
+      "t": 3444
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "かしを",
+      "t": 3558
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "かしを",
+      "t": 3559
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "菓子を",
+      "t": 3668
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "菓子を",
+      "t": 3668
+     },
+     {
+      "type": "compositionend",
+      "isComposing": false,
+      "data": "菓子を",
+      "t": 3668
+     }
+    ]
+   },
+   "I2": {
+    "dev": "sp",
+    "baseline": {
+     "editH": 75.59,
+     "sectionH": 1156.36,
+     "pageH": 3471
+    },
+    "stages": [
+     {
+      "stage": "comp:5字",
+      "editH": 75.59,
+      "sectionH": 1156.36,
+      "pageH": 3471,
+      "moved": {
+       "parts": [],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      }
+     },
+     {
+      "stage": "comp:10字",
+      "editH": 75.59,
+      "sectionH": 1156.36,
+      "pageH": 3471,
+      "moved": {
+       "parts": [],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      }
+     },
+     {
+      "stage": "comp:20字",
+      "editH": 100.78,
+      "sectionH": 1156.36,
+      "pageH": 3471,
+      "moved": {
+       "parts": [
+        {
+         "part": "F_b0",
+         "axis": "h",
+         "delta": 25.19
+        },
+        {
+         "part": "F_p1",
+         "axis": "y",
+         "delta": 25.19
+        },
+        {
+         "part": "F_h1",
+         "axis": "y",
+         "delta": 25.19
+        },
+        {
+         "part": "F_b1",
+         "axis": "y",
+         "delta": 25.2
+        }
+       ],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      }
+     },
+     {
+      "stage": "comp:30字",
+      "editH": 100.78,
+      "sectionH": 1156.36,
+      "pageH": 3471,
+      "moved": {
+       "parts": [
+        {
+         "part": "F_b0",
+         "axis": "h",
+         "delta": 25.19
+        },
+        {
+         "part": "F_p1",
+         "axis": "y",
+         "delta": 25.19
+        },
+        {
+         "part": "F_h1",
+         "axis": "y",
+         "delta": 25.19
+        },
+        {
+         "part": "F_b1",
+         "axis": "y",
+         "delta": 25.2
+        }
+       ],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      }
+     },
+     {
+      "stage": "comp:40字",
+      "editH": 100.78,
+      "sectionH": 1156.36,
+      "pageH": 3471,
+      "moved": {
+       "parts": [
+        {
+         "part": "F_b0",
+         "axis": "h",
+         "delta": 25.19
+        },
+        {
+         "part": "F_p1",
+         "axis": "y",
+         "delta": 25.19
+        },
+        {
+         "part": "F_h1",
+         "axis": "y",
+         "delta": 25.19
+        },
+        {
+         "part": "F_b1",
+         "axis": "y",
+         "delta": 25.2
+        }
+       ],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      }
+     },
+     {
+      "stage": "commit",
+      "editH": 100.78,
+      "sectionH": 1156.36,
+      "pageH": 3471,
+      "moved": {
+       "parts": [
+        {
+         "part": "F_b0",
+         "axis": "h",
+         "delta": 25.19
+        },
+        {
+         "part": "F_p1",
+         "axis": "y",
+         "delta": 25.19
+        },
+        {
+         "part": "F_h1",
+         "axis": "y",
+         "delta": 25.19
+        },
+        {
+         "part": "F_b1",
+         "axis": "y",
+         "delta": 25.2
+        }
+       ],
+       "sectionH_delta": 0.0,
+       "pageH_delta": 0
+      }
+     }
+    ],
+    "events": [
+     {
+      "type": "compositionstart",
+      "isComposing": false,
+      "data": "",
+      "t": 6908
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "あああああ",
+      "t": 6908
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "あああああ",
+      "t": 6909
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "ああああああああああ",
+      "t": 7065
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "ああああああああああ",
+      "t": 7066
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "ああああああああああああああああああああ",
+      "t": 7189
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "ああああああああああああああああああああ",
+      "t": 7190
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "ああああああああああああああああああああああああああああああ",
+      "t": 7304
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "ああああああああああああああああああああああああああああああ",
+      "t": 7304
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "ああああああああああああああああああああああああああああああああああああああああ",
+      "t": 7415
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "ああああああああああああああああああああああああああああああああああああああああ",
+      "t": 7416
+     },
+     {
+      "type": "compositionupdate",
+      "isComposing": false,
+      "data": "菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓",
+      "t": 7535
+     },
+     {
+      "type": "input",
+      "isComposing": true,
+      "data": "菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓",
+      "t": 7536
+     },
+     {
+      "type": "compositionend",
+      "isComposing": false,
+      "data": "菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓菓",
+      "t": 7536
+     }
+    ]
+   },
+   "pageerror": []
+  }
+ },
+ "pageerror": []
+}
