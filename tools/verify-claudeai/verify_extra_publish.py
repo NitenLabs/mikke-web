@@ -1,8 +1,9 @@
-# verify_extra_publish.py v1（Claude.ai・2026-10-07）
+# verify_extra_publish.py v2（Claude.ai・2026-10-09）
 # 試験台22 の「作業票の試験の外」の確認。v1＝22a（§7 動かせないセクション・§8 最前面／最背面・X28）
+# v2＝22b・22c（V8〜V19：§2 保存・§3 状態と公開・§4 公開の前の確認・§5 プレビュー）
 # 使い方：python3 verify_extra_publish.py /path/to/playground22_single.html
 # V1〜：作業票の試験の外。-- は値を出すだけ（合否なし）
-import asyncio, json, sys
+import asyncio, json, sys, re
 from playwright.async_api import async_playwright
 URL='file://'+sys.argv[1]; P='window.__playground'
 R=[]
@@ -138,6 +139,141 @@ async def main():
             await pg.context.close()
     rec('V7 X28 組でしまう（幅×選び方）',not bad,f"分かれた所 {bad[:4]} / 並びのボタン数 {seen}")
 
+
+    # ---------- v2：22b・22c ----------
+    async def st(pg): return await pg.evaluate(f"{P}.saveState()")
+    async def label(pg): return await pg.evaluate("(()=>{const e=document.getElementById('saveStatus');return e?[e.textContent.trim(),e.classList.contains('warn')]:null})()")
+    async def pubdis(pg): return await pg.evaluate("document.getElementById('tPublish').disabled")
+    async def edit_append(pg,part,text):
+        el=await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(100)
+        r=await bb(pg,part); await pg.mouse.dblclick(r['x']+r['w']-8,r['y']+r['h']-6); await pg.wait_for_timeout(400)
+        await pg.keyboard.press('Control+End'); await pg.keyboard.type(text); await pg.wait_for_timeout(200)
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(200); await pg.mouse.click(5,1050); await pg.wait_for_timeout(400)
+    async def maxdiff(a,b):
+        ks=[k for k in a if k in b]; miss=[k for k in a if k not in b]+[k for k in b if k not in a]
+        return (max([abs(a[k][q]-b[k][q]) for k in ks for q in ('x','y','w','h')] or [0]), miss)
+    async def add_feature(pg):
+        await pg.evaluate("document.querySelector('[data-sec-add-btn]').scrollIntoView({block:'center'})"); await pg.wait_for_timeout(200)
+        r=await pg.evaluate("document.querySelector('.sec-add-zone').getBoundingClientRect().toJSON()")
+        await pg.mouse.move(r['x']+r['width']/2,r['y']+r['height']/2); await pg.wait_for_timeout(200)
+        await pg.evaluate("document.querySelector('[data-sec-add-btn]').click()"); await pg.wait_for_timeout(300)
+        opts=await pg.evaluate("[...document.querySelectorAll('button')].filter(b=>b.offsetParent&&/特集/.test(b.textContent)).map(b=>b.textContent.trim())")
+        await pg.evaluate("(()=>{const b=[...document.querySelectorAll('button')].find(b=>b.offsetParent&&/特集/.test(b.textContent));b&&b.click()})()"); await pg.wait_for_timeout(500)
+        return opts
+
+    # V8 直して開き直す（同じ文脈）→ 同じ見た目。「戻す」は押せない
+    ctx=await br.new_context(viewport={'width':1440,'height':1100}); pg=await ctx.new_page(); await pg.goto(URL); await pg.wait_for_timeout(1500)
+    await drag(pg,'F_p0',30,0); await edit_append(pg,'F_b0','（試し）')
+    await pg.evaluate(f"{P}.setCols && {P}.setCols('I_cards',2)"); await pg.wait_for_timeout(300)
+    await pg.wait_for_timeout(1500); g1=await G(pg); o1=await pg.evaluate(f"{P}.ops()"); s1=await st(pg)
+    await pg.reload(); await pg.wait_for_timeout(2000); g2=await G(pg); o2=await pg.evaluate(f"{P}.ops()")
+    await pg.click('#tUndo'); await pg.wait_for_timeout(400); g3=await G(pg); und=(await maxdiff(g2,g3))[0]<=0.5   # 開き直した直後の「戻す」は何も戻さない
+    d,miss=await maxdiff(g1,g2)
+    rec('V8 直して開き直す',d<=0.5 and not miss and len(o1)==len(o2) and und,f"保存の状態 {s1} 最大のずれ {d:.2f} 欠け {miss[:4]} ops {len(o1)}→{len(o2)} 戻すで何も戻らない={und}")
+    # V9 新しい文脈は空から（保存が混ざらない）
+    ctx2=await br.new_context(viewport={'width':1440,'height':1100}); pg2=await ctx2.new_page(); await pg2.goto(URL); await pg2.wait_for_timeout(1500)
+    o3=await pg2.evaluate(f"{P}.ops()"); v3=await pg2.evaluate(f"{P}.versions()")
+    rec('V9 新しい文脈は空から',not o3 and len([v for v in v3 if v.get('kind')!='draft'])==1,f"ops {len(o3)} 履歴 {[v.get('kind') for v in v3]}")
+    await ctx2.close(); await ctx.close()
+
+    # V10 状態の文字と公開ボタン：最初→公開→直す→戻す
+    pg=await fresh(); a=(await label(pg),await pubdis(pg))
+    await pg.click('#tPublish'); await pg.wait_for_timeout(600); b=(await label(pg),await pubdis(pg))
+    toast=await pg.evaluate("(()=>{const t=document.getElementById('publishToast');return [t.textContent.trim(),t.classList.contains('on')]})()")
+    await pg.wait_for_timeout(3300); toast2=await pg.evaluate("document.getElementById('publishToast').classList.contains('on')")
+    await drag(pg,'F_p0',30,0); await pg.wait_for_timeout(800); c=(await label(pg),await pubdis(pg))
+    await pg.click('#tUndo'); await pg.wait_for_timeout(800); d_=(await label(pg),await pubdis(pg))
+    ok=a[0][0]=='まだ公開していません' and not a[1] and b[0][0]=='公開中と同じです' and b[1] and toast==['公開しました',True] and not toast2 and c[0][0]=='まだ公開していない変更があります' and c[0][1] and not c[1] and d_[0][0]=='公開中と同じです' and d_[1]
+    rec('V10 状態の文字と公開ボタン',ok,f"最初 {a} 公開後 {b} 知らせ {toast}→3.3秒後 {toast2} 直した後 {c} 戻した後 {d_}")
+    await pg.context.close()
+
+    # V11 保存の失敗と回復
+    pg=await fresh(); await pg.evaluate(f"{P}.simulateSaveError(true)"); await drag(pg,'F_p0',30,0); await pg.wait_for_timeout(1200)
+    e1=(await label(pg),(await st(pg))['status']); col=await pg.evaluate("getComputedStyle(document.getElementById('saveStatus')).color")
+    await pg.evaluate(f"{P}.simulateSaveError(false)"); await drag(pg,'F_p0',30,0); await pg.wait_for_timeout(1200); e2=(await label(pg),(await st(pg))['status'])
+    rec('V11 保存の失敗と回復','保存できませんでした' in e1[0][0] and e1[1]=='error' and '保存できませんでした' not in e2[0][0] and e2[1]=='saved',f"失敗 {e1} 色 {col} 回復 {e2}")
+    await pg.context.close()
+
+    # V12 W8 の操作を実際に：箱の中身・題の数・publishCheck と一致
+    pg=await fresh(); await drag(pg,'F_p0',-619,0)
+    await pg.evaluate(f"{P}.setDevice('sp')"); await pg.wait_for_timeout(400); g=await G(pg)
+    await drag(pg,'F_h0',0,(g['F_p0']['y']+g['F_p0']['h']*0.4)-(g['F_h0']['y']+g['F_h0']['h']/2))
+    await edit_append(pg,'F_b0','季節の移ろいを、小さな菓子に写してお届けします。四季折々の意匠をお楽しみください。店の奥の席で、ゆっくりお召し上がりいただけます。')
+    await pg.evaluate(f"{P}.setDevice('pc')"); await pg.wait_for_timeout(400)
+    addopts=await add_feature(pg); nsec=await pg.evaluate(f"{P}.sectionList().length")
+    chk=await pg.evaluate(f"{P}.publishCheck()")
+    await pg.evaluate("window.scrollTo(0,0)"); await pg.click('#tPublish'); await pg.wait_for_timeout(600)
+    rows=await pg.evaluate("[...document.querySelectorAll('#publishBox .pbox-row')].map(r=>[r.dataset.pboxKind,r.dataset.pboxDev,r.querySelector('.pbox-rowtext').textContent.trim(),!!r.querySelector('[data-pbox-see]')])")
+    title=await pg.evaluate("(()=>{const t=document.querySelector('#publishBox .pbox-title');return t?t.textContent.trim():null})()")
+    on=await pg.evaluate("document.getElementById('publishBox').classList.contains('on')")
+    import re as _re
+    n=int(_re.findall(r'(\d+)',title or '0')[0]) if title else -1
+    rec('V12 W8 の操作で確認の箱',on and n==len(rows)==len(chk) and all(r[3] for r in rows) and all(r[2].startswith(('PC：','スマホ：')) or r[0]=='emptyPhoto' for r in rows) and not any('__' in r[2] or re.search(r'sec\d',r[2]) for r in rows),f"足す特集の選び {addopts} セクション数 {nsec} 題「{title}」 行 {json.dumps(rows,ensure_ascii=False)}")
+    await pg.screenshot(path='V12_box.png')
+    # V13 スマホの重なりの「見る」
+    idx=next((i for i,r in enumerate(rows) if r[0]=='overlap' and r[1]=='sp'),None)
+    if idx is not None:
+        await pg.locator('#publishBox [data-pbox-see]').nth(idx).click(); await pg.wait_for_timeout(700)
+        dev=await pg.evaluate(f"{P}.inputMode && 1"); g=await G(pg); sel=await pg.evaluate("[...(window.__playground.peek?[]:[])]")
+        r=await bb(pg,'F_h0'); off=(r['y']+r['h']/2)-1100/2
+        boxon=await pg.evaluate("document.getElementById('publishBox').classList.contains('on')")
+        sp_on=await pg.evaluate("document.getElementById('dSP').classList.contains('on')")
+        rec('V13 スマホの重なりの「見る」',not boxon and sp_on and abs(off)<=60,f"箱が閉じた={not boxon} スマホ={sp_on} 見出しの真ん中と画面の真ん中の差 {off:.0f}")
+    else: rec('V13 スマホの重なりの「見る」',False,'スマホの重なりの行が無い')
+    # V14 Esc＝戻って直す、このまま公開する
+    nv=len(await pg.evaluate(f"{P}.versions()"))
+    await pg.evaluate("window.scrollTo(0,0)"); await pg.click('#tPublish'); await pg.wait_for_timeout(500); await pg.keyboard.press('Escape'); await pg.wait_for_timeout(400)
+    closed=not await pg.evaluate("document.getElementById('publishBox').classList.contains('on')"); nv2=len(await pg.evaluate(f"{P}.versions()"))
+    await pg.click('#tPublish'); await pg.wait_for_timeout(500); await pg.click('#publishBox [data-pbox-go]'); await pg.wait_for_timeout(600)
+    nv3=len(await pg.evaluate(f"{P}.versions()")); lb=await label(pg)
+    rec('V14 Esc と このまま公開する',closed and nv2==nv and nv3==nv+1 and lb[0]=='公開中と同じです',f"Esc で閉じた={closed} 履歴 {nv}→{nv2}→{nv3} 状態 {lb}")
+    # V15 プレビュー：公開の描き方と一致（写真のない枠は詰める）
+    await pg.click('#tPreview'); await pg.wait_for_timeout(600)
+    res=[]
+    for dv in ('pc','sp'):
+        await pg.evaluate(f"(()=>{{const b=document.querySelector('#previewBar [data-pv-dev=\"{dv}\"]');b&&b.click()}})()"); await pg.wait_for_timeout(500)
+        gp=await G(pg); gq=await pg.evaluate(f"{P}.publishedGeometry('{dv}')"); d,miss=await maxdiff(gp,gq)
+        hid=await pg.evaluate("[...document.querySelectorAll('[data-el]')].filter(e=>e.offsetParent&&/^S\\d|^s\\d/.test(e.dataset.el)&&/_p\\d$/.test(e.dataset.el)).length")
+        res.append((dv,round(d,2),len(miss)))
+    rec('V15 プレビュー＝公開の描き方（PC・スマホ）',all(x[1]<=0.5 and x[2]==0 for x in res),f"{res}")
+    await pg.context.close()
+
+    # V16 プレビューの帯・選ばない・スクロールを保つ・戻ると選び直さない
+    pg=await fresh(); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+8); await pg.wait_for_timeout(300)
+    await pg.evaluate("window.scrollTo(0,900)"); await pg.wait_for_timeout(300); y0=await pg.evaluate('scrollY'); o0=len(await pg.evaluate(f"{P}.ops()"))
+    await pg.evaluate("document.getElementById('tPreview').click()"); await pg.wait_for_timeout(600)
+    bar=await pg.evaluate("(()=>{const b=document.getElementById('previewBar');return [b.classList.contains('on'),[...b.children].filter(c=>c.offsetParent||c.getClientRects().length).map(c=>c.textContent.trim())]})()")
+    tb=await pg.evaluate("(()=>{const t=document.getElementById('toolbar');return t?getComputedStyle(t).display:null})()")
+    deco=await pg.evaluate("[...document.querySelectorAll('.rz-handle,[data-photo-change],.sel-frame,.selbox')].filter(e=>e.offsetParent&&e.getBoundingClientRect().width>0).length")
+    r=await bb(pg,'F_b0')
+    if r and r['y']>0: await pg.mouse.click(r['x']+20,r['y']+8); await pg.wait_for_timeout(300)
+    o1=len(await pg.evaluate(f"{P}.ops()")); y1=await pg.evaluate('scrollY')
+    await pg.keyboard.press('Escape'); await pg.wait_for_timeout(500)
+    pm=await pg.evaluate(f"{P}.previewMode()"); y2=await pg.evaluate('scrollY')
+    hs=await pg.evaluate("[...document.querySelectorAll('.rz-handle')].filter(e=>e.offsetParent&&e.getBoundingClientRect().width>0).length")
+    rec('V16 プレビューの出入り',bar[0] and tb=='none' or bar[0],f"帯 {bar} 上の並び display={tb} 飾り {deco} 押した後 ops {o0}→{o1} scrollY {y0}→{y1}→{y2} 戻った後 previewMode={pm} つまみ {hs}")
+    await pg.context.close()
+
+    # V17 公開して開き直す → 状態と履歴が残る
+    ctx=await br.new_context(viewport={'width':1440,'height':1100}); pg=await ctx.new_page(); await pg.goto(URL); await pg.wait_for_timeout(1500)
+    await drag(pg,'F_p0',30,0); await pg.click('#tPublish'); await pg.wait_for_timeout(600); await drag(pg,'F_p0',30,0); await pg.wait_for_timeout(1500)
+    v1=[x.get('kind') for x in await pg.evaluate(f"{P}.versions()")]; l1=await label(pg)
+    await pg.reload(); await pg.wait_for_timeout(2000)
+    v2=[x.get('kind') for x in await pg.evaluate(f"{P}.versions()")]; l2=await label(pg)
+    rec('V17 公開して開き直す',v1==v2 and l1==l2 and l2[0]=='まだ公開していない変更があります',f"履歴 {v1}→{v2} 状態 {l1}→{l2}")
+    await ctx.close()
+
+    # V18 幅 420：公開は並びに、状態の文字は「その他」の一番上（幅 500 では並びに入ることがある）
+    pg=await fresh(w=420,h=900); vis=await pg.evaluate("(()=>{const b=document.getElementById('tPublish');const r=b.getBoundingClientRect();return b.offsetParent&&r.right<=innerWidth&&r.width>0})()")
+    await pg.click('#tMore'); await pg.wait_for_timeout(300)
+    first=await pg.evaluate("(()=>{const m=document.getElementById('moreMenu');const c=[...m.children].filter(e=>e.offsetParent);return c.length?c[0].textContent.trim():null})()")
+    rec('V18 幅420 公開と状態の文字',vis and first in ('まだ公開していません','公開中と同じです','まだ公開していない変更があります'),f"公開が並びに={vis} その他の一番上「{first}」")
+    await pg.context.close()
+
+    # V19 長い文の目安は端末ごと：スマホだけ越える長さ
+    pg=await fresh(); lim=await pg.evaluate(f"{P}.longTextLimits()")
+    rec('V19 長い文の目安（値）',None,json.dumps({k:lim[k] for k in list(lim)[:6]},ensure_ascii=False)[:300])
+    await pg.context.close()
     print(f"\n合計 {sum(1 for r in R if r[1] is True)} / {sum(1 for r in R if r[1] is not None)}（-- は値だけ）")
     await br.close()
 asyncio.run(main())
