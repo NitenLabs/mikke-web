@@ -1,6 +1,7 @@
-# verify_extra_publish.py v2（Claude.ai・2026-10-09）
+# verify_extra_publish.py v3（Claude.ai・2026-10-09）
 # 試験台22 の「作業票の試験の外」の確認。v1＝22a（§7 動かせないセクション・§8 最前面／最背面・X28）
 # v2＝22b・22c（V8〜V19：§2 保存・§3 状態と公開・§4 公開の前の確認・§5 プレビュー）
+# v3＝22d（V20〜V26：§6 履歴から前の版に戻す）
 # 使い方：python3 verify_extra_publish.py /path/to/playground22_single.html
 # V1〜：作業票の試験の外。-- は値を出すだけ（合否なし）
 import asyncio, json, sys, re
@@ -273,6 +274,79 @@ async def main():
     # V19 長い文の目安は端末ごと：スマホだけ越える長さ
     pg=await fresh(); lim=await pg.evaluate(f"{P}.longTextLimits()")
     rec('V19 長い文の目安（値）',None,json.dumps({k:lim[k] for k in list(lim)[:6]},ensure_ascii=False)[:300])
+    await pg.context.close()
+
+    # ---------- v3：22d（§6 履歴） ----------
+    async def kinds(pg): return [v.get('kind') for v in await pg.evaluate(f"{P}.versions()")]
+    async def vid(pg,kind,nth=0):
+        vs=[v for v in await pg.evaluate(f"{P}.versions()") if v.get('kind')==kind]; return vs[nth]['id'] if len(vs)>nth else None
+
+    # V20 見るだけの間：書き換え・キー・戻す・公開を試しても、下書きも見ている版も変わらない。閉じると下書きのまま
+    pg=await fresh(); await drag(pg,'F_p0',30,0); await pg.click('#tPublish'); await pg.wait_for_timeout(600)
+    await drag(pg,'F_p0',30,0); await pg.wait_for_timeout(800); gd=await G(pg); od=len(await pg.evaluate(f"{P}.ops()"))
+    old=await vid(pg,'published'); await pg.evaluate(f"{P}.viewVersion('{old}')"); await pg.wait_for_timeout(500)
+    gv=await G(pg)
+    r=await bb(pg,'F_b0'); await pg.mouse.dblclick(r['x']+20,r['y']+8); await pg.wait_for_timeout(400)
+    ed=await pg.evaluate(f"{P}.editingId ? {P}.editingId() : null"); await pg.keyboard.type('X'); await pg.keyboard.press('Delete')
+    await pg.keyboard.press('ArrowRight'); await pg.keyboard.press('Control+z'); await pg.wait_for_timeout(300)
+    pubdis_=await pg.evaluate("document.getElementById('tPublish').disabled")
+    gv2=await G(pg); dv,_=await maxdiff(gv,gv2); nv=len(await pg.evaluate(f"{P}.versions()"))
+    await pg.evaluate(f"{P}.exitView()"); await pg.wait_for_timeout(500); gd2=await G(pg); dd,_=await maxdiff(gd,gd2); od2=len(await pg.evaluate(f"{P}.ops()"))
+    rec('V20 見るだけの間に触っても変わらない',ed is None and dv<=0.5 and dd<=0.5 and od==od2,f"書き換えに入った={ed} 見ている版のずれ {dv:.2f} 閉じた後の下書きのずれ {dd:.2f} ops {od}→{od2} 見ている間の公開ボタン disabled={pubdis_} 履歴の数 {nv}")
+    await pg.context.close()
+
+    # V21 下書きが公開中と同じときは「戻す前の下書き」を残さない
+    pg=await fresh(); await drag(pg,'F_p0',30,0); await pg.click('#tPublish'); await pg.wait_for_timeout(600)
+    k0=await kinds(pg); await pg.evaluate(f"{P}.restoreVersion('initial')"); await pg.wait_for_timeout(500); k1=await kinds(pg)
+    rec('V21 公開中と同じ下書きは残さない',k1.count('beforeRestore')==0,f"{k0}→{k1}")
+    await pg.context.close()
+
+    # V22 戻す前の下書きは新しい方から 10 まで
+    pg=await fresh(); await pg.evaluate(f"{P}.publish({{force:true}})")
+    for i in range(12):
+        await pg.evaluate(f"{P}.applyOps([{{t:'move',device:'pc',items:[{{id:'F_p0',mode:'M1',dx:{5+i},dy:0}}]}}])"); await pg.wait_for_timeout(100)
+        await pg.evaluate(f"{P}.restoreVersion('initial')"); await pg.wait_for_timeout(150)
+    k=await kinds(pg); ats=[v.get('at') for v in await pg.evaluate(f"{P}.versions()") if v.get('kind')=='beforeRestore']
+    rec('V22 戻す前の下書きは 10 まで',k.count('beforeRestore')==10 and ats==sorted(ats,reverse=True),f"数 {k.count('beforeRestore')} 新しい順={ats==sorted(ats,reverse=True)}")
+    await pg.context.close()
+
+    # V23 見ている途中で開き直す → 下書きに戻って開く。V24 公開中の版を下書きにしてから開き直す → 戻した形と戻す前の下書きが残り、状態は「公開中と同じです」
+    ctx=await br.new_context(viewport={'width':1440,'height':1100}); pg=await ctx.new_page(); await pg.goto(URL); await pg.wait_for_timeout(1500)
+    await drag(pg,'F_p0',30,0); await pg.click('#tPublish'); await pg.wait_for_timeout(600)
+    await drag(pg,'F_p0',30,0); await edit_append(pg,'F_b0','（足した）'); await pg.wait_for_timeout(1500); gd=await G(pg)
+    old=await vid(pg,'published'); await pg.evaluate(f"{P}.viewVersion('{old}')"); await pg.wait_for_timeout(800)
+    await pg.reload(); await pg.wait_for_timeout(2000)
+    vw=await pg.evaluate(f"{P}.viewingVersion()"); g2=await G(pg); d,_=await maxdiff(gd,g2)
+    rec('V23 見ている途中で開き直す',not vw and d<=0.5,f"開き直した後に見ている版={vw} 下書きとのずれ {d:.2f}")
+    old=await vid(pg,'published'); await pg.evaluate(f"{P}.viewVersion('{old}')"); await pg.wait_for_timeout(500); gold=await G(pg)
+    await pg.evaluate(f"{P}.restoreVersion()"); await pg.wait_for_timeout(1500); k1=await kinds(pg)
+    await pg.reload(); await pg.wait_for_timeout(2000); g3=await G(pg); k2=await kinds(pg); d3,_=await maxdiff(gold,g3)
+    lb=await label(pg)
+    rec('V24 下書きにしてから開き直す',d3<=0.5 and k1==k2 and 'beforeRestore' in k2 and lb[0]=='公開中と同じです',f"戻した版とのずれ {d3:.2f} 履歴 {k1}→{k2} 状態 {lb}")
+    await ctx.close()
+
+    # V25 セクションの組み立ても戻る：特集を足して公開 → 足した特集を消す → その版を下書きに
+    pg=await fresh(); n0=await pg.evaluate(f"{P}.sectionList().length"); await add_feature(pg); n1=await pg.evaluate(f"{P}.sectionList().length")
+    await pg.evaluate(f"{P}.publish({{force:true}})"); await pg.wait_for_timeout(300)
+    last=n1-1; m=await sec_menu(pg,last)
+    if '削除' in m:
+        await pg.locator('#fmenu [data-sec-menu="削除"]').click(); await pg.wait_for_timeout(500)
+    n2=await pg.evaluate(f"{P}.sectionList().length")
+    pv=await vid(pg,'published'); await pg.evaluate(f"{P}.restoreVersion('{pv}')"); await pg.wait_for_timeout(600); n3=await pg.evaluate(f"{P}.sectionList().length")
+    await pg.evaluate(f"{P}.undo()"); await pg.wait_for_timeout(400); n4=await pg.evaluate(f"{P}.sectionList().length")
+    rec('V25 セクションの組み立ても戻る',n1==n0+1 and n2==n0 and n3==n1 and n4==n0,f"セクション数 初め {n0} 足して {n1} 消して {n2} 下書きにして {n3} 戻して {n4} 消すメニュー {m}")
+    await pg.context.close()
+
+    # V26 履歴の板と帯（画面）：並び・帯の文字・ボタン
+    pg=await fresh(); await drag(pg,'F_p0',30,0); await pg.click('#tPublish'); await pg.wait_for_timeout(600); await drag(pg,'F_p0',30,0); await pg.click('#tPublish'); await pg.wait_for_timeout(600)
+    await drag(pg,'F_p0',30,0); await pg.wait_for_timeout(500)
+    await pg.evaluate("window.scrollTo(0,0)"); await pg.click('#tHistory'); await pg.wait_for_timeout(500)
+    rows=await pg.evaluate("[...document.querySelectorAll('#historyPanel .hp-row')].map(r=>r.textContent.replace(/\\s+/g,' ').trim())")
+    w=await pg.evaluate("Math.round(document.getElementById('historyPanel').getBoundingClientRect().width)")
+    await pg.locator('#historyPanel .hp-row').nth(2).click(); await pg.wait_for_timeout(500)
+    band=await pg.evaluate("(()=>{const b=document.getElementById('historyBar');return b?[b.classList.contains('on')||!!b.offsetParent,b.textContent.replace(/\\s+/g,' ').trim()]:null})()")
+    await pg.screenshot(path='V26.png')
+    rec('V26 履歴の板と帯',w==300 and len(rows)>=4 and band and band[0] and '見るだけ' in band[1] and 'この版を下書きにする' in band[1],f"幅 {w} 行 {rows} 帯 {band}")
     await pg.context.close()
     print(f"\n合計 {sum(1 for r in R if r[1] is True)} / {sum(1 for r in R if r[1] is not None)}（-- は値だけ）")
     await br.close()

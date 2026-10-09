@@ -1027,7 +1027,9 @@ const PG = (function () {
     const cur = currentPublished();
     const list = [{ id: "draft", kind: "draft", at: null, current: !cur || !publishedEqual() }];
     for (let i = pubs.length - 1; i >= 0; i--) list.push({ id: pubs[i].id, kind: "published", at: pubs[i].at, current: pubs[i] === cur });
-    for (const b of _versions.filter((v) => v.kind === "beforeRestore")) list.push({ id: b.id, kind: "beforeRestore", at: b.at, current: false });
+    const brs = _versions.filter((v) => v.kind === "beforeRestore");
+    for (let i = brs.length - 1; i >= 0; i--) list.push({ id: brs[i].id, kind: "beforeRestore", at: brs[i].at, current: false });   // §6.1/X32 戻す前の下書きも新しい順
+
     list.push({ id: "initial", kind: "initial", at: null, current: false });
     return list;
   }
