@@ -100,4 +100,4 @@ X33 で結果の変わった前作業票の試験（＝直しの意図どおり�
 ## 6. 本線・最後のコミット
 
 - 試験台22 は**凍結**（`experiments/layout/playground22/` も `playground22_single.html` も不変）。23 は `experiments/layout/playground23/` で作り、`playground23_single.html` を出力。
-- 最後のコミット：（コミット後に追記）
+- 最後のコミット：**`d49bf17`**（mikke-web・`main`）。push はしていない。
