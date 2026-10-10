@@ -117,4 +117,5 @@ Mac で playground24_single.html に対して実行。**試験台24 から増え
 
 ## 8. コミット
 
-（この報告の最後に追記）
+- `320f223` 試験台24b：保存の形を DATA_SPEC 4.9 に寄せる（content[] 差分・adjust[端末]・added[]）＋X36
+- （前段）作業票 playground24b を templates/wa-01/ に配置（置き場所違いの親ルートから移動）
