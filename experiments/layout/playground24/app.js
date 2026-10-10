@@ -488,6 +488,8 @@ const PG = (function () {
     let m;
     if ((m = b.match(/^card_(name|desc|price)_(.+)$/)) && c.cards) { const card = c.cards.find((x) => x.id === m[2]); if (card) card[m[1]] = text; return true; }
     if ((m = b.match(/^row_(name|desc|price)_(.+)$/)) && c.table) { const row = c.table.find((x) => x.id === m[2]); if (row) row[m[1]] = text; return true; }
+    if (b === "I_kanmi") { c.kanmiLabel = text; return true; }   // §X37 甘味処の見出し（b-anchor/model.mjs の kanmiLabel）
+    if (b === "I_time") { c.kanmiTime = text; return true; }     // §X37 提供時間（kanmiTime）
     return false;
   }
   function routeReplaceAsset(secContent, pid, asset) {
@@ -511,23 +513,28 @@ const PG = (function () {
       brightMap: {}, textStyles: {}, runsMap: {}, linkMap: {}, clearL: [], placedFollow: {}, placedCleared: new Set(),
     };
     if (!b) { S.secContent = { feature: full.feature, items: full.items }; return S; }
-    // 1. secContent＝テンプレの初めの中身に、_pg.rows（品・表の行の器ごと）を差し込む
+    // 1. secContent＝テンプレの初めの中身に、_pg.rows（品・表の行の器ごと）を差し込む。
+    // feature/items は、セクションから消されていても必ず持つ（reduce/描画が content.feature/items を前提にするため）。
+    S.secContent = { feature: clone(full.feature), items: clone(full.items) };
     for (const inst of S.secList) {
       const sc = tmplSliceOf(inst, full);
       const rows = b._pg && b._pg.rows && b._pg.rows[inst.id];
       if (rows) { if (rows.cards) sc.cards = clone(rows.cards); if (rows.table) sc.table = clone(rows.table); }
       S.secContent[inst.id] = sc;
     }
-    // 2. 足した部品＝added[]＋adjust から内部の adds エントリに戻す
+    // 2. 足した部品＝added[]＋adjust から内部の adds エントリに戻す（§2.1：下書きの全部の ID → 内部の素の ID に戻す。section は anchor から求める）
+    const addedById = {}; for (const a of (b.added || [])) addedById[a.id] = a;
+    const secOfRef = (ref) => { const t = instTag(ref); if (t) return t; if (isAdded(ref)) { const aa = addedById[ref]; return aa ? (aa.section || secOfRef(aa.anchor)) : "items"; } return (ref && ref.startsWith("F_")) ? "feature" : "items"; };
     for (const a of (b.added || [])) {
       const placedOn = a.placedOn || "pc", other = placedOn === "pc" ? "sp" : "pc", sz = a.size || {};
-      const e = { id: a.id, kind: a.kind, section: a.section, anchor: a.anchor, from: a.from,
+      const section = a.section || secOfRef(a.anchor), anchorBare = bareOf(a.anchor);
+      const e = { id: a.id, kind: a.kind, section, anchor: anchorBare, from: a.from,
         styleName: a.style || (a.kind === "photo" ? undefined : "featBody"), placedDevice: placedOn,
         w: sz[placedOn] && sz[placedOn].w, h: sz[placedOn] && sz[placedOn].h, wOther: sz[other] && sz[other].w, hOther: sz[other] && sz[other].h,
         gap: 16, gapOther: 16, x: "@left" };
       const pl = b.adjust && b.adjust[placedOn] && b.adjust[placedOn][a.id] && b.adjust[placedOn][a.id].place;
-      if (pl) { e.placed = { device: placedOn, anchor: pl.after, gapY: pl.gap, x: pl.x }; S.placedFollow[a.id] = { anchor: pl.after, device: placedOn }; }   // 付いていく先は place.after から（§2.3・保存しない）
-      else { e.placed = { device: placedOn, anchor: a.anchor, gapY: 16, x: "@left" }; S.placedCleared.add(a.id); }   // §X36/§2.3 place が無い＝「元の位置に戻した（自動）」。placedCleared で自動の位置に（開き直しでも保つ）
+      if (pl) { const ab = bareOf(pl.after); e.placed = { device: placedOn, anchor: ab, gapY: pl.gap, x: pl.x }; S.placedFollow[a.id] = { anchor: ab, device: placedOn }; }   // 付いていく先は place.after から（§2.3・保存しない）
+      else { e.placed = { device: placedOn, anchor: anchorBare, gapY: 16, x: "@left" }; S.placedCleared.add(a.id); }   // §X36/§2.3 place が無い＝「元の位置に戻した（自動）」。placedCleared で自動の位置に（開き直しでも保つ）
       S.adds.push(e);
     }
     S.removed = new Set(b.removed || []);
@@ -550,7 +557,7 @@ const PG = (function () {
         if (d === device) {
           if (e.order) S.order[key] = clone(e.order);
           if (e.move) S.m1[key] = clone(e.move);
-          if (e.place) S.m2[key] = { anchor: e.place.after, gapY: e.place.gap, x: e.place.x };
+          if (e.place) S.m2[key] = { anchor: bareOf(e.place.after), gapY: e.place.gap, x: e.place.x };   // §2.1 全部の ID → 内部の素の ID
           if (e.size) S.sizes[key] = clone(e.size);
           if (e.z != null) S.zmap[key] = e.z;
         }
@@ -703,20 +710,26 @@ const PG = (function () {
     const R = reduce(activeOps(), "pc"), Rsp = reduce(activeOps(), "sp");
     const content = {};
     const ensureObj = (id) => { if (!content[id] || Array.isArray(content[id]) || typeof content[id] !== "object") content[id] = {}; return content[id]; };
-    // 1. テンプレの特集ブロックと比べて、違う文字・写真だけ content[] に
+    // §24b/c 部品 ID を指す所は、複製・足したセクションでは全部の ID（sec*__…）で書く（4.9.3 の ID の決まり）。@印・足した部品はそのまま。
+    const pfxRef = (ref, secId) => (!ref || !secId || secId === "feature" || secId === "items" || ref[0] === "@" || isAdded(ref) || ref.indexOf(SEP) >= 0) ? ref : (secId + SEP + ref);
+    const putText = (pid, cur, tmpl) => { if (R.runsMap[pid] && runStyledRuns(R.runsMap[pid])) content[pid] = clone(R.runsMap[pid]); else if (cur != null && cur !== tmpl) content[pid] = cur; };
+    // 1. テンプレの初めの中身と比べて、違う文字・写真だけ content[] に（特集はブロック、品は甘味処の見出し・時間）
     for (const inst of R.secList) {
-      if (inst.type !== "feature") continue;
       const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP;
       const slice = R.secContent[inst.id], tmpl = tmplSliceOf(inst, full);
-      if (!slice || !slice.blocks) continue;
-      slice.blocks.forEach((bl, i) => {
-        const tb = tmpl.blocks && tmpl.blocks[i];
-        const hid = pfx + "F_h" + i, bid = pfx + "F_b" + i, pid = pfx + "F_p" + i;
-        if (R.runsMap[hid] && runStyledRuns(R.runsMap[hid])) content[hid] = clone(R.runsMap[hid]); else if (bl.heading !== (tb ? tb.heading : undefined)) content[hid] = bl.heading;
-        if (R.runsMap[bid] && runStyledRuns(R.runsMap[bid])) content[bid] = clone(R.runsMap[bid]); else if (bl.body !== (tb ? tb.body : undefined)) content[bid] = bl.body;
-        const curA = bl.photo ? bl.photo.asset : undefined, tA = tb && tb.photo ? tb.photo.asset : undefined;
-        if (curA && curA !== tA) ensureObj(pid).asset = curA;
-      });
+      if (!slice) continue;
+      if (inst.type === "feature" && slice.blocks) {
+        slice.blocks.forEach((bl, i) => {
+          const tb = tmpl.blocks && tmpl.blocks[i];
+          putText(pfx + "F_h" + i, bl.heading, tb ? tb.heading : undefined);
+          putText(pfx + "F_b" + i, bl.body, tb ? tb.body : undefined);
+          const curA = bl.photo ? bl.photo.asset : undefined, tA = tb && tb.photo ? tb.photo.asset : undefined;
+          if (curA && curA !== tA) ensureObj(pfx + "F_p" + i).asset = curA;
+        });
+      } else if (inst.type === "items") {
+        putText(pfx + "I_kanmi", slice.kanmiLabel, tmpl.kanmiLabel);   // §X37
+        putText(pfx + "I_time", slice.kanmiTime, tmpl.kanmiTime);      // §X37
+      }
     }
     // 2. 足した部品の文字・写真（4.9.3「焼き込んだ文字・写真は content[id]」）
     for (const a of R.adds) {
@@ -731,8 +744,11 @@ const PG = (function () {
     // added[]（4.9.3）。size・style・section は求められないので足す（§2.3・報告）
     const added = R.adds.map((a) => {
       const placedOn = a.placedDevice || "pc", other = placedOn === "pc" ? "sp" : "pc";
-      const o = { id: a.id, kind: a.kind, placedOn, anchor: a.anchor, section: a.section };
+      const anchor = pfxRef(a.anchor, a.section);
+      const o = { id: a.id, kind: a.kind, placedOn, anchor };
       if (a.from) o.from = a.from;
+      // §2.1 section は anchor から求まるなら書かない。anchor が足した部品を指す場合だけは辿れないことがあるので残す（報告）
+      if (isAdded(a.anchor)) o.section = a.section;
       const sz = {}; sz[placedOn] = { w: a.w }; if (a.h != null) sz[placedOn].h = a.h; sz[other] = { w: a.wOther != null ? a.wOther : a.w }; const ho = a.hOther != null ? a.hOther : a.h; if (ho != null) sz[other].h = ho;
       o.size = sz;
       if (a.kind !== "photo" && a.styleName && a.styleName !== "featBody") o.style = a.styleName;
@@ -742,27 +758,35 @@ const PG = (function () {
     const mkAdjust = (Rd, dev) => {
       const adj = {}; const set = (id, k, v) => { (adj[id] = adj[id] || {})[k] = v; };
       for (const id in Rd.m1) set(id, "move", clone(Rd.m1[id]));
-      for (const id in Rd.m2) set(id, "place", { after: Rd.m2[id].anchor, gap: Rd.m2[id].gapY, x: Rd.m2[id].x });   // テンプレの浮き（added は除去済み）
+      for (const id in Rd.m2) set(id, "place", { after: pfxRef(Rd.m2[id].anchor, secOf(id)), gap: Rd.m2[id].gapY, x: Rd.m2[id].x });   // テンプレの浮き（added は除去済み）。after は全部の ID で
       for (const id in Rd.sizes) set(id, "size", clone(Rd.sizes[id]));
       for (const id in Rd.zmap) set(id, "z", Rd.zmap[id]);
       for (const id in Rd.colsMap) if (Rd.colsMap[id][dev] != null) set(id, "cols", Rd.colsMap[id][dev]);
       for (const id in Rd.viewAll) if (Rd.viewAll[id][dev]) set(id, "view", clone(Rd.viewAll[id][dev]));
-      for (const key in Rd.order) set(key, "order", clone(Rd.order[key]));
+      for (const key in Rd.order) set(key, "order", clone(Rd.order[key]));   // 並び順の子は内部で既に全部の ID
       for (const sec in Rd.swapMap) if (Rd.swapMap[sec][dev]) set(sec, "swap", clone(Rd.swapMap[sec][dev]));
-      for (const a of Rd.added) if (!a.isAuto) set(a.id, "place", { after: a.anchor, gap: a.gap, x: a.x });   // 足した部品の置いた位置（§2.3）
+      for (const a of Rd.added) if (!a.isAuto) set(a.id, "place", { after: pfxRef(a.anchor, a.section), gap: a.gap, x: a.x });   // 足した部品の置いた位置（§2.3）。after は全部の ID で
       return adj;
     };
-    // _pg.rows：品・表の行の器ごと（文字・写真も中に含めて二重に持たない）
+    // _pg.rows：品・表の行の器ごと（文字・写真も中に含めて二重に持たない）。テンプレの初めと同じなら書かない（§2.2）
     const rows = {};
-    for (const inst of R.secList) { const slice = R.secContent[inst.id]; if (!slice) continue; const r = {}; if (slice.cards) r.cards = clone(slice.cards); if (slice.table) r.table = clone(slice.table); if (Object.keys(r).length) rows[inst.id] = r; }
-    const draft = {
-      template: { name: "wa-01", version: 1 },
-      sections: clone(R.secList),
-      seq: { sec: state.secSeq, add: state.addSeq },
-      content, added, removed: clone(R.removedAll), textStyle: clone(R.textStyles),
-      adjust: { pc: mkAdjust(R, "pc"), sp: mkAdjust(Rsp, "sp") },
-      _pg: { rows },
-    };
+    for (const inst of R.secList) {
+      const slice = R.secContent[inst.id]; if (!slice) continue; const tmpl = tmplSliceOf(inst, full); const r = {};
+      if (slice.cards && JSON.stringify(slice.cards) !== JSON.stringify(tmpl.cards)) r.cards = clone(slice.cards);
+      if (slice.table && JSON.stringify(slice.table) !== JSON.stringify(tmpl.table)) r.table = clone(slice.table);
+      if (Object.keys(r).length) rows[inst.id] = r;
+    }
+    // §2.2 空の入れ物は書かない（4.9「何もしていない所は書かない」）。何もしていない下書きは {template, sections} だけ。
+    const draft = { template: { name: "wa-01", version: 1 }, sections: clone(R.secList) };
+    if (state.secSeq || state.addSeq) draft.seq = { sec: state.secSeq, add: state.addSeq };
+    if (Object.keys(content).length) draft.content = content;
+    if (added.length) draft.added = added;
+    if (R.removedAll.length) draft.removed = clone(R.removedAll);
+    if (Object.keys(R.textStyles).length) draft.textStyle = clone(R.textStyles);
+    const apc = mkAdjust(R, "pc"), asp = mkAdjust(Rsp, "sp"), adj = {};
+    if (Object.keys(apc).length) adj.pc = apc; if (Object.keys(asp).length) adj.sp = asp;
+    if (Object.keys(adj).length) draft.adjust = adj;
+    if (Object.keys(rows).length) draft._pg = { rows };
     state.base = savedBase; state.ops = savedOps; state.cursor = savedCursor; state.device = savedDev;
     return draft;
   }

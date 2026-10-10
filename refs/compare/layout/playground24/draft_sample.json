@@ -20,96 +20,25 @@
   ],
   "seq": {
     "sec": 1,
-    "add": 1
+    "add": 0
   },
   "content": {
     "F_b0": "季節の意匠。毎朝炊いた餡を、その日のうちにお出しします。",
-    "F_b1": [
-      {
-        "text": "こだわり"
-      },
-      {
-        "text": "の餡",
-        "bold": true,
-        "color": "#C03030",
-        "scale": 1.4,
-        "font": "accent",
-        "link": {
-          "kind": "tel"
-        }
-      }
-    ],
     "sec1__F_b0": "季節の意匠。毎朝炊いた餡を、その日のうちにお出しします。",
     "sec1__F_p0": {
-      "asset": "ast_frme",
-      "bright": 20
+      "asset": "ast_frme"
     },
-    "sec1__F_b1": [
-      {
-        "text": "こだわり"
-      },
-      {
-        "text": "の餡",
-        "bold": true,
-        "color": "#C03030",
-        "scale": 1.4,
-        "font": "accent",
-        "link": {
-          "kind": "tel"
-        }
-      }
-    ],
     "sec1__F_p1": {
       "asset": "ast_frmf"
     },
-    "add_90": "貼り付けた文字",
-    "addp_91": {
-      "asset": "ast_frme"
-    },
-    "add_1": "貼り付けた文字",
-    "F_p0": {
-      "bright": 20
-    }
+    "add_1": "貼り付け"
   },
   "added": [
-    {
-      "id": "add_90",
-      "kind": "text",
-      "placedOn": "pc",
-      "anchor": "F_b0",
-      "section": "feature",
-      "size": {
-        "pc": {
-          "w": 600
-        },
-        "sp": {
-          "w": 351
-        }
-      }
-    },
-    {
-      "id": "addp_91",
-      "kind": "photo",
-      "placedOn": "pc",
-      "anchor": "I_hg",
-      "section": "items",
-      "size": {
-        "pc": {
-          "w": 300,
-          "h": 240
-        },
-        "sp": {
-          "w": 351,
-          "h": 280
-        }
-      }
-    },
     {
       "id": "add_1",
       "kind": "text",
       "placedOn": "pc",
-      "anchor": "F_b0",
-      "section": "sec1",
+      "anchor": "sec1__F_b0",
       "size": {
         "pc": {
           "w": 600
@@ -120,15 +49,13 @@
       }
     }
   ],
-  "removed": [],
   "textStyle": {
     "F_h0": {
       "weight": 700,
       "color": "#204080",
       "font": "heading",
       "size": {
-        "pc": 40,
-        "sp": 28
+        "pc": 40
       }
     },
     "sec1__F_h0": {
@@ -136,132 +63,31 @@
       "color": "#204080",
       "font": "heading",
       "size": {
-        "pc": 40,
-        "sp": 28
+        "pc": 40
       }
     }
   },
   "adjust": {
     "pc": {
-      "F_h0": {
-        "move": {
-          "dx": -8,
-          "dy": 8
-        },
-        "size": {
-          "w": 420
-        }
-      },
-      "sec1__F_h0": {
-        "move": {
-          "dx": -8,
-          "dy": 8
-        },
-        "size": {
-          "w": 420
-        }
-      },
-      "F_b0": {
-        "place": {
-          "after": "F_p0",
-          "gap": 40,
-          "x": 120
-        }
-      },
       "sec1__F_b0": {
         "place": {
-          "after": "F_p0",
+          "after": "sec1__F_p0",
           "gap": 40,
           "x": 120
         }
       },
-      "I_cards": {
-        "cols": 3
-      },
-      "F_p0": {
-        "view": {
-          "x": 0.4,
-          "y": 0.6,
-          "zoom": 2
-        }
-      },
-      "sec1__F_p0": {
-        "view": {
-          "x": 0.4,
-          "y": 0.6,
-          "zoom": 2
-        }
-      },
-      "add_90": {
-        "place": {
-          "after": "F_b0",
-          "gap": 16,
-          "x": 120
-        }
-      },
-      "addp_91": {
-        "place": {
-          "after": "I_hg",
-          "gap": 16,
-          "x": 60
-        }
+      "sec1__Ftg1": {
+        "order": [
+          "sec1__F_b1",
+          "sec1__F_h1"
+        ]
       },
       "add_1": {
         "place": {
-          "after": "F_b0",
+          "after": "sec1__F_b0",
           "gap": 16,
-          "x": 120
+          "x": 100
         }
-      }
-    },
-    "sp": {}
-  },
-  "_pg": {
-    "rows": {
-      "items": {
-        "cards": [
-          {
-            "id": "c_jonama",
-            "photo": {
-              "asset": "ast_frmg"
-            },
-            "name": "季節の上生菓子",
-            "desc": "月ごとに意匠が変わる、練り切りときんとん。",
-            "price": "380円（税込）"
-          },
-          {
-            "id": "c_warabi",
-            "photo": {
-              "asset": "ast_frmi"
-            },
-            "name": "わらび餅",
-            "desc": "本わらび粉を使い、注文ごとに切り分けます。",
-            "price": "450円（税込）"
-          },
-          {
-            "id": "c_dora",
-            "photo": {
-              "asset": "ast_frmh"
-            },
-            "name": "どら焼き",
-            "desc": "ふっくら焼いた皮に、自家製の粒餡をはさみました。",
-            "price": "250円（税込）"
-          }
-        ],
-        "table": [
-          {
-            "id": "t_warabi",
-            "name": "わらび餅",
-            "desc": "本わらび粉を使い、注文ごとに切り分けます。",
-            "price": "お茶付き 650円（税込）"
-          },
-          {
-            "id": "t_matcha",
-            "name": "抹茶（上生菓子付き）",
-            "desc": "",
-            "price": "1,100円（税込）"
-          }
-        ]
       }
     }
   }

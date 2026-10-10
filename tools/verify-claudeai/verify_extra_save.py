@@ -8,7 +8,9 @@ from playwright.async_api import async_playwright
 URL = 'file://' + sys.argv[1]
 URL23 = ('file://' + sys.argv[2]) if len(sys.argv) > 2 else None
 P = 'window.__playground'
-IMG = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'img17')
+# §24c-2.4 単独で走らせられるよう、git 追跡の playground24_testimg の画像を使う（img17 は verify_extra_photo が作るもの＝未追跡）。
+IMG = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'refs', 'compare', 'layout', 'playground24_testimg'))
+if not os.path.isdir(IMG): IMG = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'img17')   # 後方互換
 R = []
 def rec(k, ok, msg=''): R.append((k, ok, msg)); print(('OK ' if ok is True else ('NG ' if ok is False else '-- ')) + k + (' | ' + msg if msg else ''), flush=True)
 
@@ -183,7 +185,8 @@ async def main():
         async def assets_count(pg):
             await pg.wait_for_timeout(700)  # autosave 待ち
             return await pg.evaluate("new Promise(r=>{const q=indexedDB.open('mikke-playground24');q.onsuccess=()=>{const db=q.result;const t=db.transaction('state','readonly');const g=t.objectStore('state').get('assets');g.onsuccess=()=>{const a=g.result||{};const vals=Object.values(a);const dup=vals.length-new Set(vals).size;r({n:Object.keys(a).length,dup})};g.onerror=()=>r({n:-1,dup:-1})}})")
-        imgs = sorted([f for f in os.listdir(IMG)]) if os.path.isdir(IMG) else []
+        # wide.jpg/tall.jpg を優先（img17 と同じ画像＝結果が変わらない）。無ければ画像ファイルを拾う（notimage.txt 等は除く）
+        imgs = [f for f in ['wide.jpg', 'tall.jpg'] if os.path.exists(os.path.join(IMG, f))] or sorted(f for f in os.listdir(IMG) if f.lower().endswith(('.jpg', '.jpeg', '.png'))) if os.path.isdir(IMG) else []
         s6_ok = None; stages = []; pg6 = None
         if len(imgs) >= 2:
             pg = await fresh(); pg6 = pg
@@ -426,6 +429,102 @@ async def main():
         d = await draft_obj(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
         only_rows = _pg_keys_seen <= {'rows'}
         rec('S21 _pg は rows だけ', only_rows, f"S1〜S20 で見た _pg のキー={sorted(_pg_keys_seen)}（rows だけが正）")
+
+        # ===== 試験台24c（S22〜S28）=====
+        def bare_feature_refs(d):   # 複製セクションの entry が、素の（元の特集の）ID を指していないか集める
+            bad = []
+            FEAT = {'F_h0', 'F_b0', 'F_p0', 'F_h1', 'F_b1', 'F_p1', 'F_hg', 'F_lbl', 'F_h', 'F_rule'}
+            adj = d.get('adjust', {})
+            for dev in ('pc', 'sp'):
+                for key, e in (adj.get(dev) or {}).items():
+                    if not key.startswith('sec'):
+                        continue
+                    if isinstance(e.get('place'), dict) and e['place'].get('after') in FEAT: bad.append(f"adjust.{dev}.{key}.place.after={e['place']['after']}")
+                    if isinstance(e.get('order'), list):
+                        for ch in e['order']:
+                            if ch in FEAT: bad.append(f"adjust.{dev}.{key}.order⊃{ch}")
+            return bad
+
+        # S22 特集を複製 → 複製側で 塊の外へ移動・文字貼り付け・並び替え → draft() の参照がすべて sec*__…
+        pg = await fresh()
+        await ev(pg, f"{P}.sectionDuplicate('feature')"); await pg.wait_for_timeout(300)
+        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupId = next((s for s in secs if s not in ('feature', 'items')), None)
+        ops0 = await ev(pg, f"{P}.ops()")
+        extra = [
+            {'t': 'move', 'device': 'pc', 'items': [{'id': dupId + '__F_b0', 'mode': 'M2', 'anchor': 'F_p0', 'gapY': 40, 'x': 120}]},
+            {'t': 'add', 'id': 'add_1', 'section': dupId, 'kind': 'text', 'styleName': 'featBody', 'w': 600, 'wOther': 351, 'text': '貼り付け', 'anchor': 'F_b0', 'gap': 16, 'gapOther': 16, 'x': '@left', 'placedDevice': 'pc', 'placed': {'device': 'pc', 'anchor': 'F_b0', 'gapY': 16, 'x': 100}},
+            {'t': 'reorder', 'device': 'pc', 'key': dupId + '__Ftg1', 'id': dupId + '__F_h1', 'order': [dupId + '__F_b1', dupId + '__F_h1']},
+        ]
+        await apply(pg, ops0 + extra)
+        d = await draft_obj(pg); bad = bare_feature_refs(d); r1 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        apc = (d.get('adjust', {}).get('pc') or {})
+        after_ref = apc.get(dupId + '__F_b0', {}).get('place', {}).get('after')
+        add1 = next((a for a in d.get('added', []) if a['id'] == 'add_1'), {})
+        order_ref = apc.get(dupId + '__Ftg1', {}).get('order')
+        rec('S22 複製の参照はすべて全部の ID', not bad and after_ref == dupId + '__F_p0' and add1.get('anchor') == dupId + '__F_b0' and order_ref == [dupId + '__F_b1', dupId + '__F_h1'] and r1,
+            f"place.after={after_ref} add_1.anchor={add1.get('anchor')}/section={add1.get('section')} order={order_ref} 素の参照={bad}")
+
+        # S23 S22 の後、開き直す → 位置・大きさのずれ
+        await ev(pg, f"{P}.setDevice('pc')"); await pg.wait_for_timeout(100); gpc0 = await ev(pg, f"{P}.geometry()")
+        await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(200); gsp0 = await ev(pg, f"{P}.geometry()"); await ev(pg, f"{P}.setDevice('pc')")
+        await save_reopen(pg)
+        gpc1 = await ev(pg, f"{P}.geometry()"); await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(200); gsp1 = await ev(pg, f"{P}.geometry()"); await ev(pg, f"{P}.setDevice('pc')")
+        def maxd(a, b):
+            m = 0.0
+            for k in set(a) & set(b): m = max(m, abs(a[k]['x'] - b[k]['x']), abs(a[k]['y'] - b[k]['y']), abs(a[k]['w'] - b[k]['w']), abs(a[k]['h'] - b[k]['h']))
+            return m
+        dpc = maxd(gpc0, gpc1); dsp = maxd(gsp0, gsp1); r1 = await rt_ok(pg)
+        rec('S23 複製を編集して開き直す', dpc <= 0.5 and dsp <= 0.5 and r1, f"開き直し前後の最大ずれ PC={dpc:.2f} SP={dsp:.2f} roundTrip={'ok' if r1 else 'NG'}")
+
+        # S24 S22 の後、元の特集を消す → 開き直す → 複製側の位置が同じ
+        pg = await fresh()
+        await ev(pg, f"{P}.sectionDuplicate('feature')"); await pg.wait_for_timeout(300)
+        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupId = next((s for s in secs if s not in ('feature', 'items')), None)
+        ops0 = await ev(pg, f"{P}.ops()")
+        await apply(pg, ops0 + [{'t': 'move', 'device': 'pc', 'items': [{'id': dupId + '__F_b0', 'mode': 'M2', 'anchor': 'F_p0', 'gapY': 40, 'x': 120}]}])
+        g_before = (await ev(pg, f"{P}.geometry()")).get(dupId + '__F_b0')
+        await ev(pg, f"{P}.sectionDelete('feature')"); await pg.wait_for_timeout(200)
+        await save_reopen(pg)
+        g_after = (await ev(pg, f"{P}.geometry()")).get(dupId + '__F_b0'); r1 = await rt_ok(pg)
+        same = bool(g_before and g_after and abs(g_before['x'] - g_after['x']) <= 0.5 and abs(g_before['y'] - g_after['y']) <= 0.5)
+        rec('S24 元の特集を消して開き直す', same and r1, f"複製側 {dupId}__F_b0 の位置 消す前={g_before}→開き直し後={g_after} 同じ={same}")
+
+        # S25 空の入れ物を書かない
+        pg = await fresh()
+        d0 = await draft_obj(pg); keys0 = sorted(d0.keys())
+        await apply(pg, [{'t': 'move', 'device': 'pc', 'items': [{'id': 'F_h0', 'mode': 'M1', 'dx': 10, 'dy': 10}]}])
+        d1 = await draft_obj(pg); adj = d1.get('adjust', {})
+        no_empty = all(k not in d0 for k in ('content', 'added', 'removed', 'textStyle', 'adjust', '_pg', 'seq')) and ('sp' not in adj) and ('pc' in adj)
+        rec('S25 空の入れ物を書かない', keys0 == ['sections', 'template'] and no_empty, f"何もしない draft のキー={keys0}／PC1つ動かした後 adjust のキー={sorted(adj.keys())}（sp 無し）")
+
+        # S26 I_kanmi 書き換え・I_time 一部赤 → 開き直す
+        pg = await fresh()
+        await apply(pg, [{'t': 'edit', 'id': 'I_kanmi', 'text': '甘味処（季節）'}, {'t': 'edit', 'id': 'I_time', 'runs': [{'text': '提供時間 '}, {'text': '11:00〜17:00', 'color': '#C03030'}]}])
+        k1 = await ev(pg, "(()=>{const e=document.querySelector('[data-el=\"I_kanmi\"]');return e?e.innerText:null})()")
+        d = await draft_obj(pg); c_kanmi = (d.get('content') or {}).get('I_kanmi'); c_time = (d.get('content') or {}).get('I_time'); r1 = await rt_ok(pg)
+        await save_reopen(pg)
+        k2 = await ev(pg, "(()=>{const e=document.querySelector('[data-el=\"I_kanmi\"]');return e?e.innerText:null})()")
+        d2 = await draft_obj(pg); c_kanmi2 = (d2.get('content') or {}).get('I_kanmi'); c_time2 = (d2.get('content') or {}).get('I_time')
+        rec('S26 甘味処の見出し・時間（X37）', ('甘味処（季節）' in (k1 or '')) and c_kanmi == '甘味処（季節）' and isinstance(c_time, list) and k1 == k2 and c_kanmi2 == c_kanmi and c_time2 == c_time and r1,
+            f"画面={k1!r}→開き直し後={k2!r} content.I_kanmi={c_kanmi!r} content.I_time={('runs' if isinstance(c_time,list) else c_time)}")
+
+        # S27 品のセクションを複製 → 複製側の I_kanmi を書き換え（元は変わらない・キーは sec*__I_kanmi）
+        pg = await fresh()
+        await ev(pg, f"{P}.sectionDuplicate('items')"); await pg.wait_for_timeout(300)
+        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupI = next((s for s in secs if s not in ('feature', 'items')), None)
+        ops0 = await ev(pg, f"{P}.ops()")
+        await apply(pg, ops0 + [{'t': 'edit', 'id': dupI + '__I_kanmi', 'text': '複製の甘味処'}])
+        d = await draft_obj(pg); cont = d.get('content') or {}; r1 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        origK = await ev(pg, "(()=>{const hs=[...document.querySelectorAll('[data-el=\"I_kanmi\"]')];return hs.length?hs[0].innerText:null})()")
+        rec('S27 品の複製側の甘味処', (dupI + '__I_kanmi') in cont and 'I_kanmi' not in cont and r1, f"content に {dupI}__I_kanmi={cont.get(dupI+'__I_kanmi')!r}・元の I_kanmi={cont.get('I_kanmi')}（元は content に出ない＝変えていない）")
+
+        # S28 I_kanmi を太字 → 文字の見た目を元に戻す → 太字が消える
+        pg = await fresh()
+        await apply(pg, [{'t': 'tstyle', 'keys': ['I_kanmi'], 'device': 'pc', 'weight': 700}])
+        d = await draft_obj(pg); w1 = (d.get('textStyle', {}).get('I_kanmi', {}) or {}).get('weight')
+        await apply(pg, [{'t': 'tstyleReset', 'keys': ['I_kanmi'], 'parts': ['I_kanmi']}])
+        d = await draft_obj(pg); w2 = 'I_kanmi' in (d.get('textStyle') or {}); r1 = await rt_ok(pg)
+        rec('S28 甘味処の見た目を元に戻す', w1 == 700 and not w2 and r1, f"太字後 weight={w1}・戻した後 textStyle に I_kanmi={w2}（無いのが正）")
 
         await br.close()
         npass = sum(1 for _, o, _ in R if o is True); nng = sum(1 for _, o, _ in R if o is False)
