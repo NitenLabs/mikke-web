@@ -18,3 +18,6 @@ templates/wa-01/_compare_after_abox.txt
 # Claude.ai 確認スクリプトが生成する試験画像（再生成される）
 tools/verify-claudeai/img17/
 tools/verify-claudeai/testimg/
+
+# 試験 M20 が作る一時フォルダ（verify_extra_catalog.py が都度作る）
+refs/compare/layout/playground*/validate_m20/
