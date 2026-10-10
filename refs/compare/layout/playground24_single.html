@@ -1488,7 +1488,7 @@ const PG = (function () {
   const isText = (id) => { const b = bareOf(id); return /^F_[hb]\d$|^add_/.test(b) || /^card_(name|desc|price)_/.test(b) || /^row_(name|desc|price)_/.test(b) || b === "I_kanmi" || b === "I_time"; };
   // そのパーツが属するセクション（インスタンス ID）。anchor は "feature"/"items"、複製・追加は "sec3" 等。
   // §2.7（試験台24）土台にある足した部品にも効くよう、add op が記録の列に無ければ土台（state.base._pg.adds）も見る。
-  const secOf = (id) => { const t = instTag(id); if (t) return t; if (isAdded(id)) { const op = activeOps().find((o) => o.t === "add" && o.id === id); if (op) return op.section; const ba = ((state.base && state.base._pg && state.base._pg.adds) || []).find((a) => a.id === id); if (ba) return ba.section; return "items"; } return id.startsWith("F_") ? "feature" : "items"; };
+  const secOf = (id) => { const t = instTag(id); if (t) return t; if (isAdded(id)) { const op = activeOps().find((o) => o.t === "add" && o.id === id); if (op) return op.section; const ba = ((state.base && state.base.added) || []).find((a) => a.id === id); if (ba) return ba.section || secOf(ba.anchor); return "items"; } return id.startsWith("F_") ? "feature" : "items"; };
   // 並び替え（§6／§10.1）：縦に並んだ塊の中だけ。PC は文字の塊（見出し・本文）＝写真は横並びで対象外。SP はブロック（写真・見出し・本文）。
   function reorderClusterOf(id) {
     const dev = state.device; const pfx = prefixOf(id); const b = bareOf(id);
@@ -1954,33 +1954,66 @@ const PG = (function () {
     else if ((m = b.match(/^card_photo_(.+)$/)) && c.cards) { const card = c.cards.find((x) => x.id === m[1]); if (card) card.photo.asset = asset; }
   }
 
-  // ---- §24（試験台24）土台（4.9 の下書き）→ reduce の入れ物に種まきする（seed）----
-  // base が null＝最初の形（テンプレートのまま）。文字・写真・構造は _pg.secContent に焼き込み済みなので
-  // editMap/replaceMap は空で始める。runs/link/明るさ/外す は content[部品ID] から、幾何は adjust[端末] から戻す。
+  // ---- §24b（試験台24b）土台（4.9 の下書き）→ reduce の入れ物に種まきする（seed）----
+  // base が null＝最初の形。secContent はテンプレ＋_pg.rows（品・表の行）から組み、文字・写真は content[] から戻す。
+  // 幾何は adjust[端末] から（4.9.1）。足した部品は added[]＋adjust から内部の adds エントリに組み直す（描画ループは不変）。
+  const tmplSliceOf = (inst, full) => (inst.id === "feature" || inst.id === "items") ? clone(full[inst.type]) : templateSectionContent(inst.type);
+  function seedText(S, id, plain) { if (isAdded(id)) S.editMap[id] = plain; else routeSetContent(S.secContent, id, plain); }
+  function seedAsset(S, id, asset) { if (isAdded(id)) S.replaceMap[id] = asset; else routeReplaceAsset(S.secContent, id, asset); }
   function seedFromBase(b, device, full) {
     full = full || base();
     const S = {
       secList: (b && b.sections) ? clone(b.sections) : [{ id: "feature", type: "feature" }, { id: "items", type: "items" }],
-      secContent: (b && b._pg && b._pg.secContent) ? clone(b._pg.secContent) : { feature: full.feature, items: full.items },
-      editMap: {}, replaceMap: {}, adds: [], removed: new Set(),
+      secContent: {}, editMap: {}, replaceMap: {}, adds: [], removed: new Set(),
       m1: {}, m2: {}, order: {}, zmap: {}, sizes: {}, colsMap: {}, swapMap: {}, viewAll: {},
-      brightMap: {}, textStyles: {}, runsMap: {}, linkMap: {}, clearL: [], placedFollow: {},
+      brightMap: {}, textStyles: {}, runsMap: {}, linkMap: {}, clearL: [], placedFollow: {}, placedCleared: new Set(),
     };
-    if (!b) return S;
+    if (!b) { S.secContent = { feature: full.feature, items: full.items }; return S; }
+    // 1. secContent＝テンプレの初めの中身に、_pg.rows（品・表の行の器ごと）を差し込む
+    for (const inst of S.secList) {
+      const sc = tmplSliceOf(inst, full);
+      const rows = b._pg && b._pg.rows && b._pg.rows[inst.id];
+      if (rows) { if (rows.cards) sc.cards = clone(rows.cards); if (rows.table) sc.table = clone(rows.table); }
+      S.secContent[inst.id] = sc;
+    }
+    // 2. 足した部品＝added[]＋adjust から内部の adds エントリに戻す
+    for (const a of (b.added || [])) {
+      const placedOn = a.placedOn || "pc", other = placedOn === "pc" ? "sp" : "pc", sz = a.size || {};
+      const e = { id: a.id, kind: a.kind, section: a.section, anchor: a.anchor, from: a.from,
+        styleName: a.style || (a.kind === "photo" ? undefined : "featBody"), placedDevice: placedOn,
+        w: sz[placedOn] && sz[placedOn].w, h: sz[placedOn] && sz[placedOn].h, wOther: sz[other] && sz[other].w, hOther: sz[other] && sz[other].h,
+        gap: 16, gapOther: 16, x: "@left" };
+      const pl = b.adjust && b.adjust[placedOn] && b.adjust[placedOn][a.id] && b.adjust[placedOn][a.id].place;
+      if (pl) { e.placed = { device: placedOn, anchor: pl.after, gapY: pl.gap, x: pl.x }; S.placedFollow[a.id] = { anchor: pl.after, device: placedOn }; }   // 付いていく先は place.after から（§2.3・保存しない）
+      else { e.placed = { device: placedOn, anchor: a.anchor, gapY: 16, x: "@left" }; S.placedCleared.add(a.id); }   // §X36/§2.3 place が無い＝「元の位置に戻した（自動）」。placedCleared で自動の位置に（開き直しでも保つ）
+      S.adds.push(e);
+    }
+    S.removed = new Set(b.removed || []);
+    // 3. content[]＝文字（文字列/切れ目の並び）・写真 asset・明るさ・外す・部品リンク
     for (const id in (b.content || {})) {
       const v = b.content[id];
-      if (Array.isArray(v)) S.runsMap[id] = clone(v);
-      else if (v && typeof v === "object") { if (v.link) S.linkMap[id] = clone(v.link); if (v.bright) S.brightMap[id] = v.bright; if (v.cleared) S.clearL.push(id); }
+      if (Array.isArray(v)) { S.runsMap[id] = clone(v); seedText(S, id, v.map((r) => r.text).join("")); }
+      else if (typeof v === "string") { seedText(S, id, v); }
+      else if (v && typeof v === "object") { if (v.asset != null) seedAsset(S, id, v.asset); if (v.bright) S.brightMap[id] = v.bright; if (v.cleared) S.clearL.push(id); if (v.link) S.linkMap[id] = clone(v.link); }
     }
     S.textStyles = clone(b.textStyle || {});
-    S.colsMap = clone(b.cols || {});
-    S.viewAll = clone(b.view || {});
-    S.swapMap = clone(b.swap || {});
-    S.placedFollow = clone((b._pg && b._pg.placedFollow) || {});
-    S.adds = clone((b._pg && b._pg.adds) || []);
-    S.removed = new Set(b.removed || []);
-    const adj = (b.adjust && b.adjust[device]) || {};
-    S.m1 = clone(adj.m1 || {}); S.m2 = clone(adj.m2 || {}); S.order = clone(adj.order || {}); S.zmap = clone(adj.zmap || {}); S.sizes = clone(adj.sizes || {});
+    // 4. adjust[端末]→入れ物。端末共通のマップ（cols/view/swap）は両端末ぶんを集める。端末ごと（m1/m2/order/sizes/z）は今の端末だけ。
+    for (const d of ["pc", "sp"]) {
+      const adj = (b.adjust && b.adjust[d]) || {};
+      for (const key in adj) {
+        const e = adj[key];
+        if (e.swap) { (S.swapMap[key] = S.swapMap[key] || {})[d] = clone(e.swap); }
+        if (e.cols != null) { (S.colsMap[key] = S.colsMap[key] || {})[d] = e.cols; }
+        if (e.view) { (S.viewAll[key] = S.viewAll[key] || {})[d] = clone(e.view); }
+        if (d === device) {
+          if (e.order) S.order[key] = clone(e.order);
+          if (e.move) S.m1[key] = clone(e.move);
+          if (e.place) S.m2[key] = { anchor: e.place.after, gapY: e.place.gap, x: e.place.x };
+          if (e.size) S.sizes[key] = clone(e.size);
+          if (e.z != null) S.zmap[key] = e.z;
+        }
+      }
+    }
     return S;
   }
 
@@ -1994,7 +2027,7 @@ const PG = (function () {
     const secContent = S.secContent;
     const editMap = S.editMap; const adds = S.adds; const removed = S.removed;
     const m1 = S.m1, m2 = S.m2, clearL = S.clearL; const tpl = {}; const order = S.order; const zmap = S.zmap; const sizes = S.sizes; const colsMap = S.colsMap; const swapMap = S.swapMap;   // §20 列：I_cards→{pc,sp}／§5 左右入替：sec→{pc:{block:bool}}
-    const placedCleared = new Set();        // §3/§4 足した部品のうち「元に戻す」で手直し位置を捨てる（＝自動の位置に戻す）ID
+    const placedCleared = (S.placedCleared instanceof Set) ? S.placedCleared : new Set();        // §3/§4 足した部品のうち「元に戻す」で手直し位置を捨てる（＝自動の位置）。§24b：土台から種まきした分も含む
     const placedFollow = S.placedFollow;     // §X13 足した部品の「置いた端末での今の付いていく先」（どちらの端末の reduce でも覚える）
     const replaceMap = S.replaceMap, viewAll = S.viewAll;   // §1 写真の差し替え（端末共通）／§2 見せる範囲（端末ごと）
     const brightMap = S.brightMap;          // §5（試験台17）写真の明るさ：枠ごと（中身・端末共通）。-40〜+40。差し替えで0に戻す。
@@ -2118,38 +2151,75 @@ const PG = (function () {
   // ---- §24（試験台24）今の形を作る（fold）：PC・スマホの両方で畳み、1つの下書き（4.9＋_pg）にまとめる ----
   // 保存・版・「公開中と同じか」の比べ・draft()/roundTrip() で使う。state.base＋activeOps() から作る。
   function runStyledRuns(r) { return !!(r && (r.length > 1 || (r[0] && (r[0].bold || r[0].color != null || (r[0].scale && r[0].scale !== 1) || r[0].font || r[0].link)))); }
-  // §24 content[部品ID]＝4.9.3 の中身のうち、冪等に再現できるもの（見た目つき文字の切れ目の並び・差し替え写真・明るさ・外す・部品リンク）。
-  // 見た目のない「素の文字」は _pg.secContent に焼き込み済み（そちらが正）。ここに素の文字を入れると開き直しで editMap が空になり canon が揺れるため入れない（報告 §2.2）。
-  function projectContent(R) {
-    const c = {};
-    const ensureObj = (id) => { if (!c[id] || Array.isArray(c[id]) || typeof c[id] !== "object") c[id] = {}; return c[id]; };
-    for (const id in R.runsMap) if (runStyledRuns(R.runsMap[id])) c[id] = clone(R.runsMap[id]);   // 文字（見た目つき）＝切れ目の並び
-    // 写真の asset（差し替え含む）は _pg.secContent / _pg.adds に焼き込み済み（そちらが正）。content[] には入れない（開き直しで replaceMap が空＝冪等でなくなるため。報告 §2.2）
-    for (const id in R.brightMap) ensureObj(id).bright = R.brightMap[id];                            // 明るさ
-    for (const id of R.clear) ensureObj(id).cleared = true;                                          // 外した写真
-    for (const id in R.linkMap) if (!Array.isArray(c[id])) ensureObj(id).link = clone(R.linkMap[id]); // 部品まるごとのリンク
-    return c;
-  }
+  // §24b 今の形を作る（fold）。文字・写真はテンプレの初めの中身と比べて「違うものだけ」content[] に（4.9「テンプレと同じ値は書かない」）。
+  // 幾何は adjust[端末] に（4.9.1）。足した部品は added[]＋adjust に。品・表の行は _pg.rows に器ごと（4.11④が未決）。
   function foldToDraft(baseOverride, opsOverride) {
     const savedBase = state.base, savedOps = state.ops, savedCursor = state.cursor, savedDev = state.device;
     if (baseOverride !== undefined) state.base = baseOverride;
     if (opsOverride !== undefined) { state.ops = opsOverride; state.cursor = opsOverride.length; }
-    const Rpc = reduce(activeOps(), "pc"), Rsp = reduce(activeOps(), "sp");
-    const mkAdjust = (R) => { const m2 = clone(R.m2); for (const a of R.added) if (!a.isAuto) m2[a.id] = { anchor: a.anchor, gapY: a.gap, x: a.x }; return { m1: clone(R.m1), m2, order: clone(R.order), zmap: clone(R.zmap), sizes: clone(R.sizes) }; };
-    const bakeAdd = (a) => { const o = clone(a); const t = Rpc.editMap[a.id]; if (t != null) o.text = t; if (a.kind === "photo" && Rpc.replaceMap[a.id] != null) o.asset = Rpc.replaceMap[a.id]; return o; };
+    const full = base();
+    const R = reduce(activeOps(), "pc"), Rsp = reduce(activeOps(), "sp");
+    const content = {};
+    const ensureObj = (id) => { if (!content[id] || Array.isArray(content[id]) || typeof content[id] !== "object") content[id] = {}; return content[id]; };
+    // 1. テンプレの特集ブロックと比べて、違う文字・写真だけ content[] に
+    for (const inst of R.secList) {
+      if (inst.type !== "feature") continue;
+      const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP;
+      const slice = R.secContent[inst.id], tmpl = tmplSliceOf(inst, full);
+      if (!slice || !slice.blocks) continue;
+      slice.blocks.forEach((bl, i) => {
+        const tb = tmpl.blocks && tmpl.blocks[i];
+        const hid = pfx + "F_h" + i, bid = pfx + "F_b" + i, pid = pfx + "F_p" + i;
+        if (R.runsMap[hid] && runStyledRuns(R.runsMap[hid])) content[hid] = clone(R.runsMap[hid]); else if (bl.heading !== (tb ? tb.heading : undefined)) content[hid] = bl.heading;
+        if (R.runsMap[bid] && runStyledRuns(R.runsMap[bid])) content[bid] = clone(R.runsMap[bid]); else if (bl.body !== (tb ? tb.body : undefined)) content[bid] = bl.body;
+        const curA = bl.photo ? bl.photo.asset : undefined, tA = tb && tb.photo ? tb.photo.asset : undefined;
+        if (curA && curA !== tA) ensureObj(pid).asset = curA;
+      });
+    }
+    // 2. 足した部品の文字・写真（4.9.3「焼き込んだ文字・写真は content[id]」）
+    for (const a of R.adds) {
+      if (a.kind === "photo") { const asset = R.replaceMap[a.id] != null ? R.replaceMap[a.id] : a.asset; if (asset) ensureObj(a.id).asset = asset; }
+      else if (R.runsMap[a.id] && runStyledRuns(R.runsMap[a.id])) content[a.id] = clone(R.runsMap[a.id]);
+      else { const t = R.editMap[a.id] != null ? R.editMap[a.id] : a.text; if (t) content[a.id] = t; }
+    }
+    // 3. 明るさ・外す・部品リンク（端末共通マップ）
+    for (const id in R.brightMap) ensureObj(id).bright = R.brightMap[id];
+    for (const id of R.clear) ensureObj(id).cleared = true;
+    for (const id in R.linkMap) if (!Array.isArray(content[id])) ensureObj(id).link = clone(R.linkMap[id]);
+    // added[]（4.9.3）。size・style・section は求められないので足す（§2.3・報告）
+    const added = R.adds.map((a) => {
+      const placedOn = a.placedDevice || "pc", other = placedOn === "pc" ? "sp" : "pc";
+      const o = { id: a.id, kind: a.kind, placedOn, anchor: a.anchor, section: a.section };
+      if (a.from) o.from = a.from;
+      const sz = {}; sz[placedOn] = { w: a.w }; if (a.h != null) sz[placedOn].h = a.h; sz[other] = { w: a.wOther != null ? a.wOther : a.w }; const ho = a.hOther != null ? a.hOther : a.h; if (ho != null) sz[other].h = ho;
+      o.size = sz;
+      if (a.kind !== "photo" && a.styleName && a.styleName !== "featBody") o.style = a.styleName;
+      return o;
+    });
+    // adjust[端末]（4.9.1）：部品ごと {move|place,size,z,cols,view}＋縦積みの order＋左右の swap
+    const mkAdjust = (Rd, dev) => {
+      const adj = {}; const set = (id, k, v) => { (adj[id] = adj[id] || {})[k] = v; };
+      for (const id in Rd.m1) set(id, "move", clone(Rd.m1[id]));
+      for (const id in Rd.m2) set(id, "place", { after: Rd.m2[id].anchor, gap: Rd.m2[id].gapY, x: Rd.m2[id].x });   // テンプレの浮き（added は除去済み）
+      for (const id in Rd.sizes) set(id, "size", clone(Rd.sizes[id]));
+      for (const id in Rd.zmap) set(id, "z", Rd.zmap[id]);
+      for (const id in Rd.colsMap) if (Rd.colsMap[id][dev] != null) set(id, "cols", Rd.colsMap[id][dev]);
+      for (const id in Rd.viewAll) if (Rd.viewAll[id][dev]) set(id, "view", clone(Rd.viewAll[id][dev]));
+      for (const key in Rd.order) set(key, "order", clone(Rd.order[key]));
+      for (const sec in Rd.swapMap) if (Rd.swapMap[sec][dev]) set(sec, "swap", clone(Rd.swapMap[sec][dev]));
+      for (const a of Rd.added) if (!a.isAuto) set(a.id, "place", { after: a.anchor, gap: a.gap, x: a.x });   // 足した部品の置いた位置（§2.3）
+      return adj;
+    };
+    // _pg.rows：品・表の行の器ごと（文字・写真も中に含めて二重に持たない）
+    const rows = {};
+    for (const inst of R.secList) { const slice = R.secContent[inst.id]; if (!slice) continue; const r = {}; if (slice.cards) r.cards = clone(slice.cards); if (slice.table) r.table = clone(slice.table); if (Object.keys(r).length) rows[inst.id] = r; }
     const draft = {
       template: { name: "wa-01", version: 1 },
-      sections: clone(Rpc.secList),
+      sections: clone(R.secList),
       seq: { sec: state.secSeq, add: state.addSeq },
-      content: projectContent(Rpc),
-      added: Rpc.adds.map((a) => { const o = { id: a.id, kind: a.kind, placedOn: a.placedDevice, anchor: a.anchor }; if (a.from) o.from = a.from; return o; }),
-      removed: clone(Rpc.removedAll),
-      textStyle: clone(Rpc.textStyles),
-      cols: clone(Rpc.colsMap),
-      view: clone(Rpc.viewAll),
-      swap: clone(Rpc.swapMap),
-      adjust: { pc: mkAdjust(Rpc), sp: mkAdjust(Rsp) },
-      _pg: { secContent: clone(Rpc.secContent), adds: Rpc.adds.map(bakeAdd), placedFollow: clone(Rpc.placedFollow) },
+      content, added, removed: clone(R.removedAll), textStyle: clone(R.textStyles),
+      adjust: { pc: mkAdjust(R, "pc"), sp: mkAdjust(Rsp, "sp") },
+      _pg: { rows },
     };
     state.base = savedBase; state.ops = savedOps; state.cursor = savedCursor; state.device = savedDev;
     return draft;
@@ -3084,13 +3154,16 @@ const PG = (function () {
   }
 
   // ---- 矢印キー・削除（M1 として）----
+  // §X36 足した部品の矢印キー：place の gap・x を動かす（ドラッグと同じ M2 の記録。geometry から今の位置を測って dx,dy を足す）
+  function nudgeAddedItem(c, dx, dy, R, g) { const a = R.added.find((x) => x.id === c); const anchor = a ? a.anchor : c; const ab = g[anchor] ? (g[anchor].y + g[anchor].h) : 0; const curY = g[c] ? g[c].y : ab, curX = g[c] ? g[c].x : 0; return { id: c, mode: "M2", anchor, gapY: (curY - ab) + dy, x: curX + dx }; }
   function nudge(id, dx, dy) {
     const c = canonId(id); const R = reduce(activeOps());
+    if (isAdded(c)) { commit({ t: "move", device: state.device, items: [nudgeAddedItem(c, dx, dy, R, geometry())] }); return; }   // §X36
     if (R.m2[c]) { const ov = R.m2[c]; commit({ t: "move", device: state.device, items: [{ id: c, mode: "M2", anchor: ov.anchor, gapY: ov.gapY, x: ov.x + dx }] }); if (dy) { const ov2 = reduce(activeOps()).m2[c]; commit({ t: "move", device: state.device, items: [{ id: c, mode: "M2", anchor: ov2.anchor, gapY: ov2.gapY + dy, x: ov2.x }] }); } return; }
     const m = R.m1[c] || { dx: 0, dy: 0 };
     commit({ t: "move", device: state.device, items: [{ id: c, mode: "M1", dx: m.dx + dx, dy: m.dy + dy }] });
   }
-  function nudgeSelected(dx, dy) { const ids = [...state.selected].filter(isDraggable); if (!ids.length) return; const R = reduce(activeOps()); const items = ids.map((c) => { const m = R.m1[c] || { dx: 0, dy: 0 }; return { id: c, mode: "M1", dx: m.dx + dx, dy: m.dy + dy }; }); commit({ t: "move", device: state.device, items }); }
+  function nudgeSelected(dx, dy) { const ids = [...state.selected].filter(isDraggable); if (!ids.length) return; const R = reduce(activeOps()); const g = geometry(); const items = ids.map((c) => { if (isAdded(c)) return nudgeAddedItem(c, dx, dy, R, g); const m = R.m1[c] || { dx: 0, dy: 0 }; return { id: c, mode: "M1", dx: m.dx + dx, dy: m.dy + dy }; }); commit({ t: "move", device: state.device, items }); }
   function deleteSelected() { const ids = [...state.selected].filter((id) => isDraggable(id) || REPEAT.test(id)); if (!ids.length) return; for (const id of ids) commit({ t: "del", id: canonId(id) }); state.selected = new Set(); render(); }
 
   // ---- その場書き換え ----

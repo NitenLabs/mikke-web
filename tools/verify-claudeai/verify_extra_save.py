@@ -293,6 +293,140 @@ async def main():
         else:
             rec('S11 23の文脈で24を開く', None, 'pg23 のパス未指定')
 
+        # ===== 試験台24b（S12〜S21）=====
+        _pg_keys_seen = set()
+        async def dj(pg): return await ev(pg, f"JSON.stringify({P}.draft())")
+        async def draft_obj(pg): return await ev(pg, f"{P}.draft()")
+        async def save_reopen(pg):   # applyOps は保存を呼ばないので publish で保存を確実に走らせてから開き直す
+            await ev(pg, f"{P}.publish({{force:true}})"); await pg.wait_for_timeout(800)
+            await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(1200)
+        async def rt_ok(pg):
+            return not rt_bad(await rt(pg))
+
+        # S12 本文を書き換える → 開き直す → 元の文字に手で書き直す（content から消える）
+        pg = await fresh()
+        origB = await ev(pg, "document.querySelector('[data-el=\"F_b0\"]').innerText")
+        await apply(pg, [{'t': 'edit', 'id': 'F_b0', 'text': origB + 'X'}])
+        d = await draft_obj(pg); has1 = 'F_b0' in (d.get('content') or {}); r1 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        await save_reopen(pg)
+        d = await draft_obj(pg); has2 = 'F_b0' in (d.get('content') or {})
+        await apply(pg, [{'t': 'edit', 'id': 'F_b0', 'text': origB}])
+        d = await draft_obj(pg); has3 = 'F_b0' in (d.get('content') or {}); r3 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        rec('S12 本文の書き換えと復元', has1 and has2 and not has3 and r1 and r3, f"書き換え後 content に F_b0={has1}・開き直し後={has2}・元に戻した後={has3}（最後は無いのが正）")
+
+        # S13 写真を差し替える → 開き直す → 元のテンプレの写真に差し替え直す（content から消える）
+        pg = await fresh()
+        phs = await ev(pg, f"{P}.photos()")
+        tmplA = next((x['asset'] for x in phs if x['part'] == 'F_p0' and x.get('asset')), None)
+        tmplB = next((x['asset'] for x in phs if x['part'] == 'F_p1' and x.get('asset')), None)
+        await apply(pg, [{'t': 'replace', 'id': 'F_p0', 'asset': tmplB}])   # 別の素材に差し替え
+        d = await draft_obj(pg); c1 = (d.get('content') or {}).get('F_p0'); r1 = await rt_ok(pg)
+        await save_reopen(pg)
+        d = await draft_obj(pg); c2 = (d.get('content') or {}).get('F_p0')
+        await apply(pg, [{'t': 'replace', 'id': 'F_p0', 'asset': tmplA}])   # 元のテンプレの写真へ戻す
+        d = await draft_obj(pg); c3 = (d.get('content') or {}).get('F_p0'); r3 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        rec('S13 写真の差し替えと復元', c1 and c1.get('asset') == tmplB and c2 and not c3 and r1 and r3, f"差し替え後 content[F_p0]={c1}・開き直し後={c2}・テンプレに戻した後={c3}（最後は無いのが正）")
+
+        # S14 特集を複製 → 複製側の本文書き換え・写真差し替え → 開き直す（キーは sec*__… 形・元の特集は増えない）
+        pg = await fresh()
+        await ev(pg, f"{P}.sectionDuplicate('feature')"); await pg.wait_for_timeout(300)
+        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]
+        dupId = next((s for s in secs if s not in ('feature', 'items')), None)
+        ops0 = await ev(pg, f"{P}.ops()")
+        phs = await ev(pg, f"{P}.photos()"); altA = next((x['asset'] for x in phs if x.get('asset')), None)
+        await apply(pg, ops0 + [{'t': 'edit', 'id': dupId + '__F_b0', 'text': '複製の本文'}, {'t': 'replace', 'id': dupId + '__F_p0', 'asset': altA}])
+        d = await draft_obj(pg); cont = d.get('content') or {}; r1 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        dupKeys = [k for k in cont if k.startswith(dupId + '__')]
+        origGrew = 'F_b0' in cont and cont.get('F_b0') == '複製の本文'
+        rec('S14 特集の複製と編集', (dupId + '__F_b0') in cont and len(dupKeys) >= 1 and not origGrew and r1, f"複製側のキー={dupKeys[:4]} 元の F_b0={cont.get('F_b0')}（複製は sec*__ 形・元は増えない）")
+
+        # S15 列・見せる範囲・左右の入れ替え → adjust[端末]（下書き直下に cols/view/swap が無い）
+        pg = await fresh()
+        await apply(pg, [{'t': 'cols', 'device': 'pc', 'id': 'I_cards', 'n': 3}, {'t': 'view', 'device': 'sp', 'id': 'F_p0', 'x': 0.4, 'y': 0.6, 'zoom': 2}, {'t': 'swap', 'device': 'pc', 'sec': 'feature', 'block': 0, 'clearM1': []}])
+        d = await draft_obj(pg); apc = d.get('adjust', {}).get('pc', {}); asp = d.get('adjust', {}).get('sp', {})
+        has_cols = apc.get('I_cards', {}).get('cols') == 3
+        has_view = bool(asp.get('F_p0', {}).get('view'))
+        has_swap = bool(apc.get('feature', {}).get('swap'))
+        no_top = not any(k in d for k in ('cols', 'view', 'swap'))
+        rec('S15 列・見せる範囲・左右入替は adjust へ', has_cols and has_view and has_swap and no_top, f"adjust.pc.I_cards.cols={apc.get('I_cards',{}).get('cols')} adjust.sp.F_p0.view={asp.get('F_p0',{}).get('view')} adjust.pc.feature.swap={apc.get('feature',{}).get('swap')} 直下に cols/view/swap 無し={no_top}")
+
+        # S16 PC で写真を足して置く → SP で見せる範囲 → 開き直す → SP の位置・大きさが同じか
+        pg = await fresh()
+        before16 = set(x['part'] for x in await ev(pg, f"{P}.photos()") if x['part'].startswith('addp_'))
+        async with pg.expect_file_chooser() as fc: await pg.click('#tPhoto')
+        await (await fc.value).set_files(os.path.join(IMG, imgs[0])); await pg.wait_for_timeout(1000)
+        addp = list(set(x['part'] for x in await ev(pg, f"{P}.photos()") if x['part'].startswith('addp_')) - before16)[0]
+        ops0 = await ev(pg, f"{P}.ops()")
+        await apply(pg, ops0 + [{'t': 'view', 'device': 'sp', 'id': addp, 'x': 0.3, 'y': 0.7, 'zoom': 2}])
+        await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(300); gsp_before = (await ev(pg, f"{P}.geometry()")).get(addp); await ev(pg, f"{P}.setDevice('pc')")
+        d = await draft_obj(pg); in_added = any(a['id'] == addp for a in d.get('added', [])); sp_view = d.get('adjust', {}).get('sp', {}).get(addp, {}).get('view'); r1 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        await save_reopen(pg)
+        await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(300); gsp_after = (await ev(pg, f"{P}.geometry()")).get(addp); await ev(pg, f"{P}.setDevice('pc')")
+        same = bool(gsp_before and gsp_after and abs(gsp_before['x'] - gsp_after['x']) <= 0.5 and abs(gsp_before['y'] - gsp_after['y']) <= 0.5 and abs(gsp_before['w'] - gsp_after['w']) <= 0.5 and abs(gsp_before['h'] - gsp_after['h']) <= 0.5)
+        rec('S16 足した写真＋SP見せる範囲＋開き直し', in_added and bool(sp_view) and same and r1, f"added に入る={in_added} adjust.sp[{addp}].view={sp_view} SP 位置大きさ 開き直し前後一致={same}")
+
+        # S17 S16 の後、テンプレ写真 F_p0 を SP で大きさ変更 → 足した写真の SP 大きさは変わらない（独立・今の動き）
+        await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(300)
+        a_before = (await ev(pg, f"{P}.geometry()")).get(addp)
+        ops0 = await ev(pg, f"{P}.ops()")
+        await apply(pg, ops0 + [{'t': 'size', 'device': 'sp', 'id': 'F_p0', 'w': 120}])
+        a_after = (await ev(pg, f"{P}.geometry()")).get(addp); await ev(pg, f"{P}.setDevice('pc')")
+        unchanged = bool(a_before and a_after and abs(a_before['w'] - a_after['w']) <= 0.5)
+        rec('S17 コピー元の大きさ変更は足した写真に効かない', unchanged, f"足した写真の SP 幅 {a_before['w'] if a_before else '?'}→{a_after['w'] if a_after else '?'}（独立＝変わらないのが今の動き）")
+
+        # S18 S16 の後、テンプレ写真 F_p0 を消す → 開き直す → 足した写真は出る（独立）
+        pg = await fresh()
+        before18 = set(x['part'] for x in await ev(pg, f"{P}.photos()") if x['part'].startswith('addp_'))
+        async with pg.expect_file_chooser() as fc: await pg.click('#tPhoto')
+        await (await fc.value).set_files(os.path.join(IMG, imgs[0])); await pg.wait_for_timeout(1000)
+        addp = list(set(x['part'] for x in await ev(pg, f"{P}.photos()") if x['part'].startswith('addp_')) - before18)[0]
+        await ev(pg, f"{P}.selectOnly('F_p0'); {P}.deleteSelected()"); await pg.wait_for_timeout(200)
+        await save_reopen(pg)
+        await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(300); g = await ev(pg, f"{P}.geometry()"); await ev(pg, f"{P}.setDevice('pc')")
+        shows = addp in g; r1 = await rt_ok(pg); _pg_keys_seen |= set(((await draft_obj(pg)).get('_pg') or {}).keys())
+        rec('S18 コピー元を消しても足した写真は残る', shows, f"F_p0 削除＋開き直し後に {addp} が出る={shows} 位置={g.get(addp) if shows else None}")
+
+        # S19 足した写真を PC で動かす → 元の位置に戻す → 開き直す → adjust.pc[id] が消える・自動の位置
+        pg = await fresh()
+        before19 = set(x['part'] for x in await ev(pg, f"{P}.photos()") if x['part'].startswith('addp_'))
+        async with pg.expect_file_chooser() as fc: await pg.click('#tPhoto')
+        await (await fc.value).set_files(os.path.join(IMG, imgs[0])); await pg.wait_for_timeout(1000)
+        addp = list(set(x['part'] for x in await ev(pg, f"{P}.photos()") if x['part'].startswith('addp_')) - before19)[0]
+        await ev(pg, f"{P}.selectOnly('{addp}'); {P}.nudge('{addp}',40,40)"); await pg.wait_for_timeout(200)
+        d = await draft_obj(pg); had_place = bool(d.get('adjust', {}).get('pc', {}).get(addp, {}).get('place'))
+        await ev(pg, f"{P}.resetScope('part','{addp}',['pc'])"); await pg.wait_for_timeout(200)
+        await save_reopen(pg)
+        d = await draft_obj(pg); gone = not (d.get('adjust', {}).get('pc', {}).get(addp, {}).get('place')); r1 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        rec('S19 足した写真を元の位置に戻す', had_place and gone and r1, f"動かした後 place あり={had_place}・元に戻して開き直した後 place 無し={gone}")
+
+        # S20 X36：足した文字・足した写真・テンプレ見出しを矢印キーで動かす（→×3 ↓×2 Shift+↓×1、Cmd+Z×6 で戻る）
+        pg = await fresh()
+        before20 = set(x['part'] for x in await ev(pg, f"{P}.photos()") if x['part'].startswith('addp_'))
+        async with pg.expect_file_chooser() as fc: await pg.click('#tPhoto')
+        await (await fc.value).set_files(os.path.join(IMG, imgs[0])); await pg.wait_for_timeout(1000)
+        addp = list(set(x['part'] for x in await ev(pg, f"{P}.photos()") if x['part'].startswith('addp_')) - before20)[0]
+        addt = await ev(pg, f"{P}.addTextAtPoint('feature',400,300)"); await pg.wait_for_timeout(200); await ev(pg, f"if({P}.editingId()) {P}.commitEdit()"); await pg.wait_for_timeout(150)
+        async def arrows(pg, pid):
+            await ev(pg, f"{P}.selectOnly('{pid}')"); await pg.wait_for_timeout(100)
+            g0 = (await ev(pg, f"{P}.geometry()")).get(pid)
+            for _ in range(3): await pg.keyboard.press('ArrowRight')
+            for _ in range(2): await pg.keyboard.press('ArrowDown')
+            await pg.keyboard.press('Shift+ArrowDown'); await pg.wait_for_timeout(150)
+            g1 = (await ev(pg, f"{P}.geometry()")).get(pid)
+            for _ in range(6): await pg.keyboard.press('Meta+z')
+            await pg.wait_for_timeout(200)
+            g2 = (await ev(pg, f"{P}.geometry()")).get(pid)
+            moved = bool(g0 and g1 and abs(g1['x'] - g0['x'] - 3) <= 1 and abs(g1['y'] - g0['y'] - 12) <= 1)
+            back = bool(g0 and g2 and abs(g2['x'] - g0['x']) <= 1 and abs(g2['y'] - g0['y']) <= 1)
+            return moved, back
+        mt, bt = await arrows(pg, addt); mp, bp = await arrows(pg, addp); mh, bh = await arrows(pg, 'F_h0')
+        rec('S20 矢印キー（X36 足した部品も動く）', mt and mp and mh and bt and bp and bh, f"足し文字 動いた={mt}/戻る={bt} 足し写真 動いた={mp}/戻る={bp} 見出し 動いた={mh}/戻る={bh}（→3,↓2,Shift↓1＝x+3,y+12）")
+
+        # S21 _pg に品・表の行のほかに何か残っていないか（S1〜S20 で見た _pg のキー）
+        d = await draft_obj(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())
+        only_rows = _pg_keys_seen <= {'rows'}
+        rec('S21 _pg は rows だけ', only_rows, f"S1〜S20 で見た _pg のキー={sorted(_pg_keys_seen)}（rows だけが正）")
+
         await br.close()
         npass = sum(1 for _, o, _ in R if o is True); nng = sum(1 for _, o, _ in R if o is False)
         print(f"\n合計 {npass} / {npass + nng}（-- は値のみ={sum(1 for _,o,_ in R if o is None)}）", flush=True)

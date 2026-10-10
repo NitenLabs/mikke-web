@@ -66,20 +66,13 @@ P = 'window.__playground'
 results = []
 anchor_log = []   # R3 用：すべての試験の後の付いていく先
 
-# §24（試験台24）環境変数で働く2つ。無ければ今までと同じ動き。
-#   ONLY=Y1,P1,J1,D1,C1 … 記録・表示する区画を、試験名の先頭の文字（区画）で絞る（例 Y/P/J/D/C）。実行自体は従来どおり通す（monolith のため）。
-#   ROUNDTRIP=1        … 区画の切れ目で roundTrip() を呼び、PC/スマホのずれを出す（試験台24 の seed/fold 突合）。
+# §24b 環境変数で働く2つ。無ければ今までと同じ動き。
+#   ONLY=C6,C7,...  … presets（R プリセット）を、この名前だけに絞って流す（Claude.ai が区画ごとに走らせるのと同じ）。Q・R・T・V 等の直書き試験は区画を絞っても走る（その結果も見たいので出力は絞らない）。
+#   ROUNDTRIP=1     … 各区画の切れ目で roundTrip() を呼び、PC/スマホのずれを出す（試験台24b の seed/fold 突合）。
 ONLY = set(x.strip() for x in os.environ.get('ONLY', '').split(',') if x.strip())
-ONLY_LETTERS = set(o[0] for o in ONLY if o)
 ROUNDTRIP = os.environ.get('ROUNDTRIP', '') not in ('', '0', 'false', 'False')
 
-def _included(name):
-    if not ONLY: return True
-    tag = name.split()[0] if name else ''
-    return bool(tag) and tag[0] in ONLY_LETTERS
-
 def ok(name, cond, detail=''):
-    if not _included(name): return   # ONLY で絞ったときは記録も表示もしない
     results.append((name, bool(cond), str(detail)))
     detail = str(detail) if detail else ''
     print(('OK  ' if cond else 'NG  ') + name + ('  | ' + detail if detail else ''))
@@ -287,6 +280,7 @@ async def main():
         need = ['reset','setDevice','geometry','sections','warnings','anchors','ops','presets','runPreset','select','edit','resetScope','undo','redo','layoutCount']
         ok('入口がそろっている', all(k in keys for k in need), 'なし: ' + ','.join(k for k in need if k not in keys))
         presets = await api(pg, f"{P}.presets()")
+        if ONLY: presets = {k: v for k, v in presets.items() if k in ONLY} if isinstance(presets, dict) else [k for k in presets if k in ONLY]   # §24b ONLY で流す区画を絞る
         await fresh(pg, 'sp'); GS0 = await geo(pg)
         await fresh(pg)
         G0 = await geo(pg); S0 = await api(pg, f"{P}.sections()")
@@ -691,6 +685,7 @@ async def main():
 
 
         # ======== 試験台8（playground8 作業票 5章）Y1〜Y14 ========
+        await rtlog(pg, "Y1")   # §24b 区画の切れ目
         if 'Y1' in presets:
             async def sel_ids():
                 return await pg.evaluate("[...document.querySelectorAll('.mark-sel')].map(e=>e.dataset.el)")
@@ -830,6 +825,7 @@ async def main():
 
 
         # ======== 試験台9（playground9 作業票 3章）Z1〜Z7 ========
+        await rtlog(pg, "Z1")   # §24b 区画の切れ目
         if 'Z1' in presets:
             async def zmove(part, dx, dy, alt=False, handle=None):
                 """本物のドラッグ（またはつまみ）で dx,dy（設計 px）。離す直前の guides() を返す"""
@@ -902,6 +898,7 @@ async def main():
 
 
         # ======== 試験台10（playground10 作業票 5章）P1〜P16 ========
+        await rtlog(pg, "P1")   # §24b 区画の切れ目
         if 'P1' in presets:
             import base64, io
             from PIL import Image
@@ -1081,6 +1078,7 @@ async def main():
 
 
         # ======== 試験台11（playground11 作業票 3章）U1〜U6 ========
+        await rtlog(pg, "U1")   # §24b 区画の切れ目
         if 'U1' in presets:
             MENU = "(()=>{const m=document.getElementById('fmenu');return m&&m.classList.contains('on')?[...m.querySelectorAll('button')].map(b=>b.textContent):null})()"
             async def rmenu(part):
@@ -1146,6 +1144,7 @@ async def main():
 
 
         # ======== 試験台12（playground12 作業票 4章）J1〜J13 ========
+        await rtlog(pg, "J1")   # §24b 区画の切れ目
         if 'J1' in presets:
             async def ts_all(): return await api(pg, f"{P}.textStyles()")
             def tsp(L, part):
@@ -1268,6 +1267,7 @@ async def main():
 
 
         # ======== 試験台13（playground13 作業票 3章）D1〜D12 ========
+        await rtlog(pg, "D1")   # §24b 区画の切れ目
         if 'D1' in presets:
             cdp = await pg.context.new_cdp_session(pg)
             async def runs(part): return await api(pg, f"{P}.textRuns('{part}')")
@@ -1386,6 +1386,7 @@ async def main():
 
 
         # ======== 試験台14（playground14 作業票 3章）C1〜C11・E1〜E3 ========
+        await rtlog(pg, "C1")   # §24b 区画の切れ目
         if 'C1' in presets:
             async def slist(): return await api(pg, f"{P}.sectionList()")
             async def sec_rmenu(sid, label):
@@ -1503,6 +1504,7 @@ async def main():
                 G1 = await geo(pg); A = await api(pg, f"{P}.anchors()")
                 ok(f'E3 {dev} 複製したセクションの見出しを少し動かす：その見出しだけ 10,10', abs(G1[pre + 'F_h0']['x'] - G[pre + 'F_h0']['x'] - 10) <= TOL and abs(G1[pre + 'F_h0']['y'] - G[pre + 'F_h0']['y'] - 10) <= TOL and [k for k in moved(G, G1, list(G)) if k != pre + 'F_h0'] == [], f"{box(G, pre + 'F_h0')}→{box(G1, pre + 'F_h0')} 記録 {A}")
 
+        await rtlog(pg, "R3")   # §24b 区画の切れ目
         # ---- R3 すべての試験の後の付いていく先 ----
         bad = [x for x in anchor_log if is_repeat_item(x[2])]
         ok('R3 付いていく先に、繰り返す部品の1件の中の部品が一度も出ない', not bad, '; '.join(f'{l}:{p}→{a}' for l, p, a in bad)[:300])
