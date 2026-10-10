@@ -6,6 +6,7 @@
 import asyncio, json, sys, os
 from playwright.async_api import async_playwright
 URL = 'file://' + sys.argv[1]
+DBNAME = 'mikke-' + os.path.basename(sys.argv[1]).replace('_single.html', '')   # 試験台の名前から DB 名を決める（playground25 → mikke-playground25）
 URL23 = ('file://' + sys.argv[2]) if len(sys.argv) > 2 else None
 P = 'window.__playground'
 # §24c-2.4 単独で走らせられるよう、git 追跡の playground24_testimg の画像を使う（img17 は verify_extra_photo が作るもの＝未追跡）。
@@ -31,7 +32,7 @@ async def main():
             pg._errs = errs
             await pg.goto(URL); await pg.wait_for_function(P); await pg.wait_for_timeout(1200)
             # 毎回まっさらな土台から（この文脈の IndexedDB を消して開き直す）
-            await pg.evaluate("new Promise(r=>{const q=indexedDB.deleteDatabase('mikke-playground24');q.onsuccess=q.onerror=q.onblocked=()=>r(1)})")
+            await pg.evaluate("new Promise(r=>{const q=indexedDB.deleteDatabase('"+DBNAME+"');q.onsuccess=q.onerror=q.onblocked=()=>r(1)})")
             await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(1000)
             return pg
         async def ev(pg, e): return await pg.evaluate(e)
@@ -184,7 +185,7 @@ async def main():
             return new[0] if new else None
         async def assets_count(pg):
             await pg.wait_for_timeout(700)  # autosave 待ち
-            return await pg.evaluate("new Promise(r=>{const q=indexedDB.open('mikke-playground24');q.onsuccess=()=>{const db=q.result;const t=db.transaction('state','readonly');const g=t.objectStore('state').get('assets');g.onsuccess=()=>{const a=g.result||{};const vals=Object.values(a);const dup=vals.length-new Set(vals).size;r({n:Object.keys(a).length,dup})};g.onerror=()=>r({n:-1,dup:-1})}})")
+            return await pg.evaluate("new Promise(r=>{const q=indexedDB.open('"+DBNAME+"');q.onsuccess=()=>{const db=q.result;const t=db.transaction('state','readonly');const g=t.objectStore('state').get('assets');g.onsuccess=()=>{const a=g.result||{};const vals=Object.values(a);const dup=vals.length-new Set(vals).size;r({n:Object.keys(a).length,dup})};g.onerror=()=>r({n:-1,dup:-1})}})")
         # wide.jpg/tall.jpg を優先（img17 と同じ画像＝結果が変わらない）。無ければ画像ファイルを拾う（notimage.txt 等は除く）
         imgs = [f for f in ['wide.jpg', 'tall.jpg'] if os.path.exists(os.path.join(IMG, f))] or sorted(f for f in os.listdir(IMG) if f.lower().endswith(('.jpg', '.jpeg', '.png'))) if os.path.isdir(IMG) else []
         s6_ok = None; stages = []; pg6 = None
