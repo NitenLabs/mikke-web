@@ -1,6 +1,6 @@
 <!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>wa-01 layout playground 18（試験台17 の直し：X10〜X17）</title>
+<title>wa-01 layout playground 26b</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=block">
 <style>:root{font-size:10px;--c-background:#FFFFFF;--c-surface:#EEEEEE;--c-text:#333333;--c-textMuted:#7B7B7B;--c-line:#B0B0B0}
 #sec{position:relative;overflow:visible}
@@ -46,6 +46,8 @@ body{margin:0;font:14px/1.6 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",
 #publishToast.on{display:block}
 #moreMenu .morestat{font:12px system-ui;color:#666;padding:4px 10px;min-height:30px;display:flex;align-items:center;cursor:default}
 #moreMenu .morestat.warn{color:#e08a00;font-weight:700}
+#moreMenu .mo-extra{display:flex!important;align-items:center;justify-content:flex-start;min-height:30px;width:100%;padding:4px 10px;font:13px system-ui;color:#333;text-align:left;border:none;background:none;border-radius:6px;cursor:pointer}
+#moreMenu .mo-extra:hover{background:#f3f3f3}
 /* §22 §4.1 公開前の確認の箱 */
 #publishBox{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
 #publishBox.on{display:flex}
@@ -354,7 +356,6 @@ button:active{transform:translateY(1px)}
   <span class="sp"></span>
   <button id="tStudio">制作用</button>
   <span id="saveStatus" class="savestat"></span>
-  <button id="tMenu">お品書き</button>
   <button id="tHistory">履歴</button>
   <button id="tPreview">プレビュー</button>
   <button id="tPublish">公開</button>
@@ -3599,26 +3600,25 @@ const PG = (function () {
     else { const om = cat.placements[others[0]]; pgToastMsg(name + "を" + menuName(info.entry._menu) + "から外しました（" + menuName(om.menuId) + "には残っています）"); }
     return { alsoItem };
   }
-  // ---- 品の並び（絞り込んで並べる所）：案A（ラベル）／案C（直接選ぶ） ----
-  const LIST_MODE = (() => { try { return new URLSearchParams(location.search).get("list") === "pick" ? "pick" : "label"; } catch (e) { return "label"; } })();
-  // 案C：初めて触ったとき、今出ている品で pick を作る
+  // ---- 品の並び（絞り込んで並べる所）：案C（触った並びだけが変わる＝直接選ぶ）に決定（26b） ----
+  // まだ一度も触っていない並びは絞り込み（① で「おすすめ」を付けた品が自動で出る）のまま。
+  // 足す・複製・消すを初めてしたとき、その並びは「今出ている品を直接選んだ」並び（pick）に変わる。
+  const LIST_MODE = "pick";   // 26b：案A（ラベル・件数）はやめた。?list=pick の切り替えも廃止
+  // 初めて触ったとき、今出ている品で pick を作る
   function ensurePickSpec(gid) { const spec = curSpec(gid); if (spec.pick) return clone(spec); const R = reduce(activeOps(), "pc"); const sec = gid.indexOf(SEP) >= 0 ? instTag(gid) : "items"; const c = R.secContent[sec]; const arr = (c && c.cards) || []; return { menu: spec.menu, pick: arr.map((e) => e._itemId) }; }
-  // 品の並びに品を加える（一覧で選んだ品）。案A＝ラベルを付けて count++／案C＝pick に足す
+  // 品の並びに、一覧で選んだ品を足す（pick に足す。① は変えない）
   function cardsAddExisting(gid, itemId) {
     const cat = curCat(); const item = cat.items[itemId]; const name = (item && item.name) || "品";
-    if (LIST_MODE === "pick") { const spec = ensurePickSpec(gid); if (!spec.pick.includes(itemId)) spec.pick.push(itemId); commit({ t: "catAct", src: { gid, spec } }); }
-    else { const spec = clone(curSpec(gid)); const labels = ((item && item.labels) || []).slice(); const lbl = spec.label || "lbl_recommended"; if (!labels.includes(lbl)) labels.push(lbl); spec.count = (spec.count || 0) + 1; commit({ t: "catAct", shops: [{ t: "shopLabels", itemId, labels }], src: { gid, spec } }); pgToastMsg(name + "に『" + ((cat.labels[lbl] || {}).name || "おすすめ") + "』を付けました"); }
+    const spec = ensurePickSpec(gid); if (!spec.pick.includes(itemId)) spec.pick.push(itemId); commit({ t: "catAct", src: { gid, spec } });
     if (!isDisplayable(item)) pgToastMsg(name + "は今は並びに出ません（" + outReason(item) + "）");
   }
-  // 新しい品を作って並びに加える（案A＝ラベル付き／案C＝ラベルなし）。括り categoryId を選ぶ
+  // 新しい品を作って並びに足す（お品書きに新しい品＝ラベルなし、この並びの pick に足す）
   function cardsAddNew(gid, categoryId) {
     const spec0 = curSpec(gid); const menuId = spec0.menu; const cat = curCat();
     const itemId = mintShopId("itm"), plcId = mintShopId("plc");
-    const labels = []; if (LIST_MODE === "label") labels.push(spec0.label || "lbl_recommended");
-    const item = { id: itemId, name: "新しい品", status: "onSale", labels };   // 値段は空のまま
+    const item = { id: itemId, name: "新しい品", status: "onSale" };   // 値段は空のまま・おすすめ等の印は付けない
     const placement = { id: plcId, itemId, menuId, categoryId, order: orderAfter(cat, menuId, categoryId, null) };
-    if (LIST_MODE === "pick") { const spec = ensurePickSpec(gid); spec.pick.push(itemId); commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid, spec } }); }
-    else { const spec = clone(spec0); spec.count = (spec.count || 0) + 1; commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid, spec } }); }
+    const spec = ensurePickSpec(gid); spec.pick.push(itemId); commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid, spec } });
     return { itemId, partId: cardPartId(itemId) };
   }
   function cardsDuplicate(fullId) {
@@ -3629,15 +3629,15 @@ const PG = (function () {
     const item = clone(srcItem); item.id = itemId; if (item.prices) item.prices = item.prices.map((p) => Object.assign(clone(p), { id: mintShopId("prc") }));
     const placement = { id: plcId, itemId, menuId, categoryId, order: orderAfter(cat, menuId, categoryId, srcPlc) };
     if (srcPlc && srcPlc.prices) placement.prices = srcPlc.prices.map((p) => Object.assign(clone(p), { id: mintShopId("prc") }));
-    if (LIST_MODE === "pick") { const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(srcItemId); if (i >= 0) spec.pick.splice(i + 1, 0, itemId); else spec.pick.push(itemId); commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid: info.gid, spec } }); }
-    else { const spec = clone(curSpec(info.gid)); spec.count = (spec.count || 0) + 1; commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid: info.gid, spec } }); }
+    const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(srcItemId); if (i >= 0) spec.pick.splice(i + 1, 0, itemId); else spec.pick.push(itemId);
+    commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid: info.gid, spec } });
     return { itemId, partId: cardPartId(itemId) };
   }
   function cardsDelete(fullId) {
     const info = partInfo(fullId); if (!info || !info.entry) return; const cat = info.R.effShop.catalog;
     const itemId = info.entry._itemId, item = cat.items[itemId]; const name = (item && item.name) || "品";
-    if (LIST_MODE === "pick") { const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(itemId); if (i >= 0) spec.pick.splice(i, 1); commit({ t: "catAct", src: { gid: info.gid, spec } }); pgToastMsg(name + "をこの並びから外しました（お品書きには残っています）"); }
-    else { const spec = clone(curSpec(info.gid)); const lbl = spec.label || "lbl_recommended"; const labels = ((item && item.labels) || []).filter((x) => x !== lbl); spec.count = Math.max(0, (spec.count || 1) - 1); commit({ t: "catAct", shops: [{ t: "shopLabels", itemId, labels }], src: { gid: info.gid, spec } }); pgToastMsg(name + "の『" + ((cat.labels[lbl] || {}).name || "おすすめ") + "』を外しました（お品書きには残っています）"); }
+    const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(itemId); if (i >= 0) spec.pick.splice(i, 1); commit({ t: "catAct", src: { gid: info.gid, spec } });
+    pgToastMsg(name + "をこの並びから外しました（お品書きには残っています）");
   }
   // 品を選ぶ一覧（そのメニューの品を括りごと。今出ている品は選べない扱い、出ない品は理由つき）
   function outReason(item) { if (!item) return ""; if (item.status === "paused") return "一時休止中"; if (item.status && item.status !== "onSale") return "販売していません"; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) { const ms = item.season.months; return ms[0] + "〜" + ms[ms.length - 1] + "月だけ"; } return "今は並びに出ません"; }
@@ -3666,15 +3666,16 @@ const PG = (function () {
     const shownCard = {}, shownRow = {};
     for (const inst of R.secList) { if (inst.type !== "items") continue; const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP; const c = R.secContent[inst.id]; if (!c) continue; for (const e of (c.cards || [])) if (!(e._itemId in shownCard)) shownCard[e._itemId] = pfx + "card_name_" + e.id; for (const e of (c.table || [])) if (!(e._itemId in shownRow)) shownRow[e._itemId] = pfx + "row_name_" + e.id; }
     const labelName = (lid) => (cur.labels[lid] || baseCat.labels[lid] || {}).name || lid;
-    const mkItem = (src, itemId, state) => { const it = src.items[itemId]; const plcAny = Object.keys(src.placements).find((k) => src.placements[k].itemId === itemId); const prices = priceOf({ catalog: src }, itemId, plcAny); return { itemId, name: it.name || "", price: formatPrices(prices), labels: (it.labels || []).map(labelName), status: it.status || "", season: (it.season && it.season.months) ? it.season.months : null, display: isDisplayable(it), state, part: shownCard[itemId] || shownRow[itemId] || null }; };
+    // 値段は「そのメニューで出す値段」（載せ方の価格があればそれ、なければ品の価格。3.4）＝その括りの載せ方で見る
+    const mkItem = (src, itemId, placementId, state) => { const it = src.items[itemId]; const prices = priceOf({ catalog: src }, itemId, placementId); return { itemId, name: it.name || "", price: formatPrices(prices), labels: (it.labels || []).map(labelName), status: it.status || "", season: (it.season && it.season.months) ? it.season.months : null, display: isDisplayable(it), state, part: shownCard[itemId] || shownRow[itemId] || null }; };
     const menuIds = Object.keys(cur.menus).sort((a, b) => (cur.menus[a].order || 0) - (cur.menus[b].order || 0));
     const menus = menuIds.map((mid) => {
       const cats = Object.keys(cur.categories).filter((c) => cur.categories[c].menuId === mid).sort((a, b) => (cur.categories[a].order || 0) - (cur.categories[b].order || 0));
       const categories = cats.map((cid) => {
         const plcs = Object.keys(cur.placements).filter((k) => cur.placements[k].menuId === mid && cur.placements[k].categoryId === cid).sort((a, b) => (cur.placements[a].order || 0) - (cur.placements[b].order || 0));
-        const items = plcs.map((k) => { const itemId = cur.placements[k].itemId; const st = !baseCat.items[itemId] ? "new" : (itemSig(cur, itemId) !== itemSig(baseCat, itemId) ? "changed" : "same"); return mkItem(cur, itemId, st); });
+        const items = plcs.map((k) => { const itemId = cur.placements[k].itemId; const st = !baseCat.items[itemId] ? "new" : (itemSig(cur, itemId) !== itemSig(baseCat, itemId) ? "changed" : "same"); return mkItem(cur, itemId, k, st); });
         const delPlcs = Object.keys(baseCat.placements).filter((bk) => baseCat.placements[bk].menuId === mid && baseCat.placements[bk].categoryId === cid && baseCat.items[baseCat.placements[bk].itemId] && !Object.keys(cur.placements).some((ck) => cur.placements[ck].itemId === baseCat.placements[bk].itemId && cur.placements[ck].menuId === mid && cur.placements[ck].categoryId === cid));
-        const delItems = delPlcs.map((bk) => mkItem(baseCat, baseCat.placements[bk].itemId, "deleted"));
+        const delItems = delPlcs.map((bk) => mkItem(baseCat, baseCat.placements[bk].itemId, bk, "deleted"));
         return { categoryId: cid, name: cur.categories[cid].name, items: items.concat(delItems) };
       });
       return { menuId: mid, name: cur.menus[mid].name || "", categories };
@@ -4566,6 +4567,11 @@ window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); p
 const toolbarEl=document.getElementById("toolbar");
 const tMore=document.getElementById("tMore");
 const moreMenu=document.getElementById("moreMenu");
+// 26b：「お品書きを見る」は上の並びのボタンをやめ、「その他 ▾」の中に常に置く（記録 13.2）
+const moOshinaga=document.createElement("button"); moOshinaga.className="mo-extra"; moOshinaga.id="moOshinaga"; moOshinaga.textContent="お品書きを見る";
+moOshinaga.onmousedown=(e)=>e.preventDefault();
+moOshinaga.onclick=(e)=>{ e.stopPropagation(); moreMenu.classList.remove("on"); if(typeof menuOpen!=="undefined"&&menuOpen) closeMenuPanel(); else openMenuPanel(); };
+moreMenu.appendChild(moOshinaga);
 let movedToMore=[];
 // §20（X23.②）しまったボタンは名前で出す（アイコンだけの物に名前・色は見本を名前の左に）
 const MORE_NAMES={tStudio:"制作用",tPeek:"元の配置を見る",tResetPage:"このページを元に戻す",dPC:"PC",dSP:"スマホ",tPhoto:"写真",tText:"テキスト",tBright:"明るさ",tCols:"列",tElemLink:"リンク"};
@@ -4595,10 +4601,10 @@ function overflowCandidates(){ const out=[]; const push=(sel)=>{ const el=typeof
   return out; }   // 「戻す」「やり直す」は最後までしまわない
 let laying=false;
 function layoutToolbar(){ if(laying) return; laying=true;
-  moreMenu.classList.remove("on"); restoreFromMore(); tMore.style.display="none"; cleanupDividers();
+  moreMenu.classList.remove("on"); restoreFromMore(); cleanupDividers();
   const stat=document.getElementById("saveStatus"); if(stat) stat.style.display="";   // §22 §3.3 まず状態の文字を並びに戻す
-  if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1){ laying=false; return; }
-  tMore.style.display="inline-block";   // §19b CSS 既定が display:none のため明示的に出す（""だと none に戻る）
+  tMore.style.display="inline-block";   // 26b：その他は常に出す（「お品書きを見る」が常に入っているため）。§19b CSS 既定は display:none
+  if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1){ reorderMore(); cleanupDividers(); laying=false; return; }
   // §22 X28：PC とスマホ、テキストと写真は組＝片方だけ並びに残さない（しまうときは相方も一緒にしまう）
   const PAIR={dSP:"dPC",dPC:"dSP",tPhoto:"tText",tText:"tPhoto"};
   for(const el of overflowCandidates()){ if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1) break; if(el && el.offsetParent!==null && el!==tMore){ moveToMore(el); const pid=PAIR[el.id]; if(pid){ const pe=document.getElementById(pid); if(pe && pe.offsetParent!==null) moveToMore(pe); } } }
@@ -5148,8 +5154,8 @@ function updateConnNotice(){
 
 // ---- お品書きを見る（右の板・幅360） ----
 const menuPanel=document.getElementById("menuPanel"); let menuOpen=false;
-document.getElementById("tMenu").onclick=()=>{ if(menuOpen){ closeMenuPanel(); } else openMenuPanel(); };
-function openMenuPanel(){ if(PG.previewMode()) return; fmenu.classList.remove("on"); menuOpen=true; buildMenuPanel(); menuPanel.classList.add("on"); }
+// 26b：開く入口は「その他 ▾」の中（PC）と「その他」の板（スマホ）。上の並びのボタンは廃止
+function openMenuPanel(){ if(PG.previewMode()) return; fmenu.classList.remove("on"); if(typeof pmore!=="undefined") pmore.classList.remove("on"); menuOpen=true; buildMenuPanel(); menuPanel.classList.add("on"); }
 function closeMenuPanel(){ menuOpen=false; menuPanel.classList.remove("on"); }
 function buildMenuPanel(){
   const v=PG.catalogView(); menuPanel.innerHTML="";
@@ -5563,6 +5569,7 @@ function buildPmore(){ pmore.innerHTML="";   // §2.3 一覧の中身（上か�
   const st=PG.saveState(); const srow=document.createElement("div"); srow.className="pmorestat"+((st.status==="error"||st.label==="まだ公開していない変更があります")?" warn":""); srow.textContent=st.label; pmore.appendChild(srow);   // §22 §3.4 状態の文字＝その他の一番上
   pmore.appendChild(mk("履歴",()=>{ pmore.classList.remove("on"); if(historyOpen) closeHistory(); else openHistory(); }));   // §22 §3.4/§6 履歴・プレビューはその他
   pmore.appendChild(mk("プレビュー",()=>enterPreviewUI()));   // §22 §5
+  pmore.appendChild(mk("お品書きを見る",()=>openMenuPanel()));   // 26b：スマホの「その他」にも入れる
   pmore.appendChild(mk("テキストを足す",()=>phoneAddText()));
   pmore.appendChild(mk("PC の見え方を見る",()=>setPhoneDevice("pc")));
   const peek=document.createElement("button"); peek.textContent="元の配置を見る"; peek.setAttribute("data-pmore-peek","1"); peek.addEventListener("pointerdown",(e)=>{ e.preventDefault(); PG.peekOn(); }); const off=()=>{ if(PG.state.peek) PG.peekOff(); }; peek.addEventListener("pointerup",off); peek.addEventListener("pointerleave",off); peek.onclick=(e)=>e.stopPropagation(); pmore.appendChild(peek);

@@ -90,6 +90,8 @@ body{margin:0;font:14px/1.6 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",
 #publishToast.on{display:block}
 #moreMenu .morestat{font:12px system-ui;color:#666;padding:4px 10px;min-height:30px;display:flex;align-items:center;cursor:default}
 #moreMenu .morestat.warn{color:#e08a00;font-weight:700}
+#moreMenu .mo-extra{display:flex!important;align-items:center;justify-content:flex-start;min-height:30px;width:100%;padding:4px 10px;font:13px system-ui;color:#333;text-align:left;border:none;background:none;border-radius:6px;cursor:pointer}
+#moreMenu .mo-extra:hover{background:#f3f3f3}
 /* §22 §4.1 公開前の確認の箱 */
 #publishBox{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
 #publishBox.on{display:flex}
@@ -398,7 +400,6 @@ const UI_BODY = `
   <span class="sp"></span>
   <button id="tStudio">制作用</button>
   <span id="saveStatus" class="savestat"></span>
-  <button id="tMenu">お品書き</button>
   <button id="tHistory">履歴</button>
   <button id="tPreview">プレビュー</button>
   <button id="tPublish">公開</button>
@@ -485,6 +486,11 @@ window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); p
 const toolbarEl=document.getElementById("toolbar");
 const tMore=document.getElementById("tMore");
 const moreMenu=document.getElementById("moreMenu");
+// 26b：「お品書きを見る」は上の並びのボタンをやめ、「その他 ▾」の中に常に置く（記録 13.2）
+const moOshinaga=document.createElement("button"); moOshinaga.className="mo-extra"; moOshinaga.id="moOshinaga"; moOshinaga.textContent="お品書きを見る";
+moOshinaga.onmousedown=(e)=>e.preventDefault();
+moOshinaga.onclick=(e)=>{ e.stopPropagation(); moreMenu.classList.remove("on"); if(typeof menuOpen!=="undefined"&&menuOpen) closeMenuPanel(); else openMenuPanel(); };
+moreMenu.appendChild(moOshinaga);
 let movedToMore=[];
 // §20（X23.②）しまったボタンは名前で出す（アイコンだけの物に名前・色は見本を名前の左に）
 const MORE_NAMES={tStudio:"制作用",tPeek:"元の配置を見る",tResetPage:"このページを元に戻す",dPC:"PC",dSP:"スマホ",tPhoto:"写真",tText:"テキスト",tBright:"明るさ",tCols:"列",tElemLink:"リンク"};
@@ -514,10 +520,10 @@ function overflowCandidates(){ const out=[]; const push=(sel)=>{ const el=typeof
   return out; }   // 「戻す」「やり直す」は最後までしまわない
 let laying=false;
 function layoutToolbar(){ if(laying) return; laying=true;
-  moreMenu.classList.remove("on"); restoreFromMore(); tMore.style.display="none"; cleanupDividers();
+  moreMenu.classList.remove("on"); restoreFromMore(); cleanupDividers();
   const stat=document.getElementById("saveStatus"); if(stat) stat.style.display="";   // §22 §3.3 まず状態の文字を並びに戻す
-  if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1){ laying=false; return; }
-  tMore.style.display="inline-block";   // §19b CSS 既定が display:none のため明示的に出す（""だと none に戻る）
+  tMore.style.display="inline-block";   // 26b：その他は常に出す（「お品書きを見る」が常に入っているため）。§19b CSS 既定は display:none
+  if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1){ reorderMore(); cleanupDividers(); laying=false; return; }
   // §22 X28：PC とスマホ、テキストと写真は組＝片方だけ並びに残さない（しまうときは相方も一緒にしまう）
   const PAIR={dSP:"dPC",dPC:"dSP",tPhoto:"tText",tText:"tPhoto"};
   for(const el of overflowCandidates()){ if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1) break; if(el && el.offsetParent!==null && el!==tMore){ moveToMore(el); const pid=PAIR[el.id]; if(pid){ const pe=document.getElementById(pid); if(pe && pe.offsetParent!==null) moveToMore(pe); } } }
@@ -1067,8 +1073,8 @@ function updateConnNotice(){
 
 // ---- お品書きを見る（右の板・幅360） ----
 const menuPanel=document.getElementById("menuPanel"); let menuOpen=false;
-document.getElementById("tMenu").onclick=()=>{ if(menuOpen){ closeMenuPanel(); } else openMenuPanel(); };
-function openMenuPanel(){ if(PG.previewMode()) return; fmenu.classList.remove("on"); menuOpen=true; buildMenuPanel(); menuPanel.classList.add("on"); }
+// 26b：開く入口は「その他 ▾」の中（PC）と「その他」の板（スマホ）。上の並びのボタンは廃止
+function openMenuPanel(){ if(PG.previewMode()) return; fmenu.classList.remove("on"); if(typeof pmore!=="undefined") pmore.classList.remove("on"); menuOpen=true; buildMenuPanel(); menuPanel.classList.add("on"); }
 function closeMenuPanel(){ menuOpen=false; menuPanel.classList.remove("on"); }
 function buildMenuPanel(){
   const v=PG.catalogView(); menuPanel.innerHTML="";
@@ -1482,6 +1488,7 @@ function buildPmore(){ pmore.innerHTML="";   // §2.3 一覧の中身（上か�
   const st=PG.saveState(); const srow=document.createElement("div"); srow.className="pmorestat"+((st.status==="error"||st.label==="まだ公開していない変更があります")?" warn":""); srow.textContent=st.label; pmore.appendChild(srow);   // §22 §3.4 状態の文字＝その他の一番上
   pmore.appendChild(mk("履歴",()=>{ pmore.classList.remove("on"); if(historyOpen) closeHistory(); else openHistory(); }));   // §22 §3.4/§6 履歴・プレビューはその他
   pmore.appendChild(mk("プレビュー",()=>enterPreviewUI()));   // §22 §5
+  pmore.appendChild(mk("お品書きを見る",()=>openMenuPanel()));   // 26b：スマホの「その他」にも入れる
   pmore.appendChild(mk("テキストを足す",()=>phoneAddText()));
   pmore.appendChild(mk("PC の見え方を見る",()=>setPhoneDevice("pc")));
   const peek=document.createElement("button"); peek.textContent="元の配置を見る"; peek.setAttribute("data-pmore-peek","1"); peek.addEventListener("pointerdown",(e)=>{ e.preventDefault(); PG.peekOn(); }); const off=()=>{ if(PG.state.peek) PG.peekOff(); }; peek.addEventListener("pointerup",off); peek.addEventListener("pointerleave",off); peek.onclick=(e)=>e.stopPropagation(); pmore.appendChild(peek);
@@ -1575,7 +1582,7 @@ async function buildFull() {
   const photos = await encodePhotos();
   const html = `<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>wa-01 layout playground 18（試験台17 の直し：X10〜X17）</title>
+<title>wa-01 layout playground 26b</title>
 ${FONT_LINK}
 <style>${ROOTVARS}${BASE_CSS}${UI_CSS}</style></head>
 <body>

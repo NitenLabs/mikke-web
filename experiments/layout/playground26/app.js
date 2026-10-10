@@ -2095,26 +2095,25 @@ const PG = (function () {
     else { const om = cat.placements[others[0]]; pgToastMsg(name + "を" + menuName(info.entry._menu) + "から外しました（" + menuName(om.menuId) + "には残っています）"); }
     return { alsoItem };
   }
-  // ---- 品の並び（絞り込んで並べる所）：案A（ラベル）／案C（直接選ぶ） ----
-  const LIST_MODE = (() => { try { return new URLSearchParams(location.search).get("list") === "pick" ? "pick" : "label"; } catch (e) { return "label"; } })();
-  // 案C：初めて触ったとき、今出ている品で pick を作る
+  // ---- 品の並び（絞り込んで並べる所）：案C（触った並びだけが変わる＝直接選ぶ）に決定（26b） ----
+  // まだ一度も触っていない並びは絞り込み（① で「おすすめ」を付けた品が自動で出る）のまま。
+  // 足す・複製・消すを初めてしたとき、その並びは「今出ている品を直接選んだ」並び（pick）に変わる。
+  const LIST_MODE = "pick";   // 26b：案A（ラベル・件数）はやめた。?list=pick の切り替えも廃止
+  // 初めて触ったとき、今出ている品で pick を作る
   function ensurePickSpec(gid) { const spec = curSpec(gid); if (spec.pick) return clone(spec); const R = reduce(activeOps(), "pc"); const sec = gid.indexOf(SEP) >= 0 ? instTag(gid) : "items"; const c = R.secContent[sec]; const arr = (c && c.cards) || []; return { menu: spec.menu, pick: arr.map((e) => e._itemId) }; }
-  // 品の並びに品を加える（一覧で選んだ品）。案A＝ラベルを付けて count++／案C＝pick に足す
+  // 品の並びに、一覧で選んだ品を足す（pick に足す。① は変えない）
   function cardsAddExisting(gid, itemId) {
     const cat = curCat(); const item = cat.items[itemId]; const name = (item && item.name) || "品";
-    if (LIST_MODE === "pick") { const spec = ensurePickSpec(gid); if (!spec.pick.includes(itemId)) spec.pick.push(itemId); commit({ t: "catAct", src: { gid, spec } }); }
-    else { const spec = clone(curSpec(gid)); const labels = ((item && item.labels) || []).slice(); const lbl = spec.label || "lbl_recommended"; if (!labels.includes(lbl)) labels.push(lbl); spec.count = (spec.count || 0) + 1; commit({ t: "catAct", shops: [{ t: "shopLabels", itemId, labels }], src: { gid, spec } }); pgToastMsg(name + "に『" + ((cat.labels[lbl] || {}).name || "おすすめ") + "』を付けました"); }
+    const spec = ensurePickSpec(gid); if (!spec.pick.includes(itemId)) spec.pick.push(itemId); commit({ t: "catAct", src: { gid, spec } });
     if (!isDisplayable(item)) pgToastMsg(name + "は今は並びに出ません（" + outReason(item) + "）");
   }
-  // 新しい品を作って並びに加える（案A＝ラベル付き／案C＝ラベルなし）。括り categoryId を選ぶ
+  // 新しい品を作って並びに足す（お品書きに新しい品＝ラベルなし、この並びの pick に足す）
   function cardsAddNew(gid, categoryId) {
     const spec0 = curSpec(gid); const menuId = spec0.menu; const cat = curCat();
     const itemId = mintShopId("itm"), plcId = mintShopId("plc");
-    const labels = []; if (LIST_MODE === "label") labels.push(spec0.label || "lbl_recommended");
-    const item = { id: itemId, name: "新しい品", status: "onSale", labels };   // 値段は空のまま
+    const item = { id: itemId, name: "新しい品", status: "onSale" };   // 値段は空のまま・おすすめ等の印は付けない
     const placement = { id: plcId, itemId, menuId, categoryId, order: orderAfter(cat, menuId, categoryId, null) };
-    if (LIST_MODE === "pick") { const spec = ensurePickSpec(gid); spec.pick.push(itemId); commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid, spec } }); }
-    else { const spec = clone(spec0); spec.count = (spec.count || 0) + 1; commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid, spec } }); }
+    const spec = ensurePickSpec(gid); spec.pick.push(itemId); commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid, spec } });
     return { itemId, partId: cardPartId(itemId) };
   }
   function cardsDuplicate(fullId) {
@@ -2125,15 +2124,15 @@ const PG = (function () {
     const item = clone(srcItem); item.id = itemId; if (item.prices) item.prices = item.prices.map((p) => Object.assign(clone(p), { id: mintShopId("prc") }));
     const placement = { id: plcId, itemId, menuId, categoryId, order: orderAfter(cat, menuId, categoryId, srcPlc) };
     if (srcPlc && srcPlc.prices) placement.prices = srcPlc.prices.map((p) => Object.assign(clone(p), { id: mintShopId("prc") }));
-    if (LIST_MODE === "pick") { const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(srcItemId); if (i >= 0) spec.pick.splice(i + 1, 0, itemId); else spec.pick.push(itemId); commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid: info.gid, spec } }); }
-    else { const spec = clone(curSpec(info.gid)); spec.count = (spec.count || 0) + 1; commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid: info.gid, spec } }); }
+    const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(srcItemId); if (i >= 0) spec.pick.splice(i + 1, 0, itemId); else spec.pick.push(itemId);
+    commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid: info.gid, spec } });
     return { itemId, partId: cardPartId(itemId) };
   }
   function cardsDelete(fullId) {
     const info = partInfo(fullId); if (!info || !info.entry) return; const cat = info.R.effShop.catalog;
     const itemId = info.entry._itemId, item = cat.items[itemId]; const name = (item && item.name) || "品";
-    if (LIST_MODE === "pick") { const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(itemId); if (i >= 0) spec.pick.splice(i, 1); commit({ t: "catAct", src: { gid: info.gid, spec } }); pgToastMsg(name + "をこの並びから外しました（お品書きには残っています）"); }
-    else { const spec = clone(curSpec(info.gid)); const lbl = spec.label || "lbl_recommended"; const labels = ((item && item.labels) || []).filter((x) => x !== lbl); spec.count = Math.max(0, (spec.count || 1) - 1); commit({ t: "catAct", shops: [{ t: "shopLabels", itemId, labels }], src: { gid: info.gid, spec } }); pgToastMsg(name + "の『" + ((cat.labels[lbl] || {}).name || "おすすめ") + "』を外しました（お品書きには残っています）"); }
+    const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(itemId); if (i >= 0) spec.pick.splice(i, 1); commit({ t: "catAct", src: { gid: info.gid, spec } });
+    pgToastMsg(name + "をこの並びから外しました（お品書きには残っています）");
   }
   // 品を選ぶ一覧（そのメニューの品を括りごと。今出ている品は選べない扱い、出ない品は理由つき）
   function outReason(item) { if (!item) return ""; if (item.status === "paused") return "一時休止中"; if (item.status && item.status !== "onSale") return "販売していません"; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) { const ms = item.season.months; return ms[0] + "〜" + ms[ms.length - 1] + "月だけ"; } return "今は並びに出ません"; }
@@ -2162,15 +2161,16 @@ const PG = (function () {
     const shownCard = {}, shownRow = {};
     for (const inst of R.secList) { if (inst.type !== "items") continue; const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP; const c = R.secContent[inst.id]; if (!c) continue; for (const e of (c.cards || [])) if (!(e._itemId in shownCard)) shownCard[e._itemId] = pfx + "card_name_" + e.id; for (const e of (c.table || [])) if (!(e._itemId in shownRow)) shownRow[e._itemId] = pfx + "row_name_" + e.id; }
     const labelName = (lid) => (cur.labels[lid] || baseCat.labels[lid] || {}).name || lid;
-    const mkItem = (src, itemId, state) => { const it = src.items[itemId]; const plcAny = Object.keys(src.placements).find((k) => src.placements[k].itemId === itemId); const prices = priceOf({ catalog: src }, itemId, plcAny); return { itemId, name: it.name || "", price: formatPrices(prices), labels: (it.labels || []).map(labelName), status: it.status || "", season: (it.season && it.season.months) ? it.season.months : null, display: isDisplayable(it), state, part: shownCard[itemId] || shownRow[itemId] || null }; };
+    // 値段は「そのメニューで出す値段」（載せ方の価格があればそれ、なければ品の価格。3.4）＝その括りの載せ方で見る
+    const mkItem = (src, itemId, placementId, state) => { const it = src.items[itemId]; const prices = priceOf({ catalog: src }, itemId, placementId); return { itemId, name: it.name || "", price: formatPrices(prices), labels: (it.labels || []).map(labelName), status: it.status || "", season: (it.season && it.season.months) ? it.season.months : null, display: isDisplayable(it), state, part: shownCard[itemId] || shownRow[itemId] || null }; };
     const menuIds = Object.keys(cur.menus).sort((a, b) => (cur.menus[a].order || 0) - (cur.menus[b].order || 0));
     const menus = menuIds.map((mid) => {
       const cats = Object.keys(cur.categories).filter((c) => cur.categories[c].menuId === mid).sort((a, b) => (cur.categories[a].order || 0) - (cur.categories[b].order || 0));
       const categories = cats.map((cid) => {
         const plcs = Object.keys(cur.placements).filter((k) => cur.placements[k].menuId === mid && cur.placements[k].categoryId === cid).sort((a, b) => (cur.placements[a].order || 0) - (cur.placements[b].order || 0));
-        const items = plcs.map((k) => { const itemId = cur.placements[k].itemId; const st = !baseCat.items[itemId] ? "new" : (itemSig(cur, itemId) !== itemSig(baseCat, itemId) ? "changed" : "same"); return mkItem(cur, itemId, st); });
+        const items = plcs.map((k) => { const itemId = cur.placements[k].itemId; const st = !baseCat.items[itemId] ? "new" : (itemSig(cur, itemId) !== itemSig(baseCat, itemId) ? "changed" : "same"); return mkItem(cur, itemId, k, st); });
         const delPlcs = Object.keys(baseCat.placements).filter((bk) => baseCat.placements[bk].menuId === mid && baseCat.placements[bk].categoryId === cid && baseCat.items[baseCat.placements[bk].itemId] && !Object.keys(cur.placements).some((ck) => cur.placements[ck].itemId === baseCat.placements[bk].itemId && cur.placements[ck].menuId === mid && cur.placements[ck].categoryId === cid));
-        const delItems = delPlcs.map((bk) => mkItem(baseCat, baseCat.placements[bk].itemId, "deleted"));
+        const delItems = delPlcs.map((bk) => mkItem(baseCat, baseCat.placements[bk].itemId, bk, "deleted"));
         return { categoryId: cid, name: cur.categories[cid].name, items: items.concat(delItems) };
       });
       return { menuId: mid, name: cur.menus[mid].name || "", categories };

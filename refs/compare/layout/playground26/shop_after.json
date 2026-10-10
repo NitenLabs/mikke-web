@@ -292,6 +292,7 @@
           "ast_frmg"
         ],
         "labels": [
+          "lbl_recommended",
           "lbl_limited"
         ],
         "prices": [
@@ -307,8 +308,7 @@
         "name": "芦屋最中",
         "description": "香ばしい皮に、つぶ餡をたっぷり。",
         "labels": [
-          "lbl_gift",
-          "lbl_recommended"
+          "lbl_gift"
         ],
         "prices": [
           {
@@ -441,10 +441,7 @@
       },
       "itm_x0006": {
         "name": "新しい品",
-        "status": "onSale",
-        "labels": [
-          "lbl_recommended"
-        ]
+        "status": "onSale"
       }
     },
     "placements": {

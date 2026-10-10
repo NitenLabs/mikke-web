@@ -1,8 +1,9 @@
-# verify_extra_catalog.py v1（試験台26・2026-10-10）
-# 作業票 wa-01 layout-playground 26（品の並びを ① お店の情報とつなぐ）の §3 試験 M1〜M21。
+# verify_extra_catalog.py v2（試験台26b・2026-10-10）
+# 作業票 wa-01 layout-playground 26/26b（品の並びを ① お店の情報とつなぐ）の §3 試験 M1〜M25。
 # ほかの確認スクリプトと同じ作り（rec で OK/NG/--、合計を出す）。1本 290 秒以内。
 # 使い方：python3 verify_extra_catalog.py /path/to/playground26_single.html
-# 案A（既定）と案C（?list=pick）の両方で M10〜M16 を走らせる。① の下書きは __playground.shop() で読む。
+# 26b：品の並び（絞り込んで並べる所）は案C（触った並びだけが変わる）に決定。?list の切り替え・案Aは廃止。
+# ① の下書きは __playground.shop() で読む。
 import asyncio, json, sys, os, subprocess
 from playwright.async_api import async_playwright
 
@@ -22,8 +23,10 @@ def rec(k, ok, msg=''):
 async def main():
     async with async_playwright() as p:
         br = await p.chromium.launch()
-        async def fresh(pick=False, w=1440, h=1100):
-            ctx = await br.new_context(viewport={'width': w, 'height': h}); pg = await ctx.new_page()
+        async def fresh(pick=False, w=1440, h=1100, touch=False):
+            opts = {'viewport': {'width': w, 'height': h}}
+            if touch: opts.update({'is_mobile': True, 'has_touch': True, 'device_scale_factor': 3})
+            ctx = await br.new_context(**opts); pg = await ctx.new_page()
             errs = []; pg.on('pageerror', lambda e: errs.append(str(e))); pg._errs = errs
             await pg.goto(URL + ('?list=pick' if pick else '')); await pg.wait_for_function(P); await pg.wait_for_timeout(500)
             await pg.evaluate("new Promise(r=>{const q=indexedDB.deleteDatabase('" + DBNAME + "');q.onsuccess=q.onerror=q.onblocked=()=>r(1)})")
@@ -34,11 +37,11 @@ async def main():
         async def txt(pg, elid): return await pg.evaluate(f"(document.querySelector('[data-el=\"{elid}\"]')||{{}}).textContent")
         async def cardNames(pg, sec=''):
             geom = await ev(pg, f"{P}.geometry()")
-            ks = [k for k in geom if k.startswith('card_name_') and (k.startswith(sec + '__card_name_') if sec else ('__' not in k))]
+            ks = [k for k in geom if (k.startswith(sec + '__card_name_') if sec else (k.startswith('card_name_') and '__' not in k))]
             return [await txt(pg, k) for k in ks]
         async def rowNames(pg, sec=''):
             geom = await ev(pg, f"{P}.geometry()")
-            ks = [k for k in geom if k.startswith('row_name_') and (k.startswith(sec + '__row_name_') if sec else ('__' not in k))]
+            ks = [k for k in geom if (k.startswith(sec + '__row_name_') if sec else (k.startswith('row_name_') and '__' not in k))]
             return [await txt(pg, k) for k in ks]
         async def settle(pg): await pg.wait_for_timeout(650)   # 自動保存（500ms）の後で状態の文字を読む
 
@@ -129,84 +132,70 @@ async def main():
         shop = await ev(pg, f"{P}.shop()")
         rec('M9 戻す1回で ① と表が戻る', 'itm_matcha' in shop['catalog']['items'] and '抹茶（上生菓子付き）' in (await rowNames(pg)), f"delAfter={before} undoAfter={await rowNames(pg)}")
 
-        # ---------- M10〜M16：案A・案C の両方 ----------
-        for pick in (False, True):
-            tag = 'C' if pick else 'A'
-            # M10：品を足す… → 芦屋最中
-            pg = await fresh(pick)
-            await ev(pg, f"{P}.cardsAddExisting('I_cards','itm_monaka')"); await pg.wait_for_timeout(70)
-            spec = await ev(pg, f"{P}.curSpec('I_cards')"); shop = await ev(pg, f"{P}.shop()"); cards = await cardNames(pg)
-            if pick:
-                ok = spec.get('pick') == ['itm_jonama', 'itm_warabi', 'itm_dorayaki', 'itm_monaka'] and 'lbl_recommended' not in shop['catalog']['items']['itm_monaka'].get('labels', []) and cards == ['季節の上生菓子', 'わらび餅', 'どら焼き', '芦屋最中']
-            else:
-                ok = spec.get('count') == 4 and 'lbl_recommended' in shop['catalog']['items']['itm_monaka'].get('labels', []) and cards == ['季節の上生菓子', 'わらび餅', '芦屋最中', 'どら焼き']
-            rec(f'M10[{tag}] 品を足す…芦屋最中', ok, f"spec={spec} monakaLabels={shop['catalog']['items']['itm_monaka'].get('labels')} cards={cards}")
+        # ---------- M10〜M16：品の並び（絞り込んで並べる所）＝案C（触った並びだけが変わる）を既定で確かめる ----------
+        # M10：品を足す… → 芦屋最中（pick に足す・① のラベルは触らない・並びの末尾に付く）
+        pg = await fresh()
+        await ev(pg, f"{P}.cardsAddExisting('I_cards','itm_monaka')"); await pg.wait_for_timeout(70)
+        spec = await ev(pg, f"{P}.curSpec('I_cards')"); shop = await ev(pg, f"{P}.shop()"); cards = await cardNames(pg)
+        ok = spec.get('pick') == ['itm_jonama', 'itm_warabi', 'itm_dorayaki', 'itm_monaka'] and 'lbl_recommended' not in shop['catalog']['items']['itm_monaka'].get('labels', []) and cards == ['季節の上生菓子', 'わらび餅', 'どら焼き', '芦屋最中']
+        rec('M10 品を足す…芦屋最中（pick・ラベルは触らない）', ok, f"spec={spec} monakaLabels={shop['catalog']['items']['itm_monaka'].get('labels')} cards={cards}")
 
-            # M11：新しい品を作る → 焼き菓子
-            pg = await fresh(pick)
-            r = await ev(pg, f"{P}.cardsAddNew('I_cards','cat_yakigashi')"); await pg.wait_for_timeout(70)
-            ni = r['itemId']; shop = await ev(pg, f"{P}.shop()")
-            plc = [v for v in shop['catalog']['placements'].values() if v['itemId'] == ni]
-            lab = shop['catalog']['items'][ni].get('labels', [])
-            cards = await cardNames(pg)
-            if pick:
-                ok = len(plc) == 1 and plc[0]['categoryId'] == 'cat_yakigashi' and 'lbl_recommended' not in lab and ni in [e for e in (await ev(pg, f"{P}.curSpec('I_cards')")).get('pick', [])]
-            else:
-                ok = len(plc) == 1 and plc[0]['categoryId'] == 'cat_yakigashi' and 'lbl_recommended' in lab
-            rec(f'M11[{tag}] 新しい品を焼き菓子に作る', ok, f"item={ni} plc={plc} labels={lab} newInList={'新しい品' in cards}")
+        # M11：新しい品を作る → 焼き菓子（ラベルなし・pick に足す）
+        pg = await fresh()
+        r = await ev(pg, f"{P}.cardsAddNew('I_cards','cat_yakigashi')"); await pg.wait_for_timeout(70)
+        ni = r['itemId']; shop = await ev(pg, f"{P}.shop()")
+        plc = [v for v in shop['catalog']['placements'].values() if v['itemId'] == ni]
+        lab = shop['catalog']['items'][ni].get('labels', [])
+        inPick = ni in (await ev(pg, f"{P}.curSpec('I_cards')")).get('pick', [])
+        ok = len(plc) == 1 and plc[0]['categoryId'] == 'cat_yakigashi' and 'lbl_recommended' not in lab and inPick
+        rec('M11 新しい品を焼き菓子に作る（ラベルなし・pick）', ok, f"item={ni} plc={plc} labels={lab} inPick={inPick}")
 
-            # M12：わらび餅を複製
-            pg = await fresh(pick)
-            await ev(pg, f"{U}.fmenuFor('card_name_c_warabi')"); await ev(pg, f"{P}.duplicate()"); await pg.wait_for_timeout(70)
-            shop = await ev(pg, f"{P}.shop()")
-            dup = [k for k in shop['catalog']['items'] if k.startswith('itm_x')]
-            cards = await cardNames(pg)
-            ok = len(dup) == 1 and shop['catalog']['items'][dup[0]]['name'] == 'わらび餅' and cards.count('わらび餅') == 2
-            rec(f'M12[{tag}] わらび餅を複製', ok, f"dup={dup} cards={cards}")
+        # M12：わらび餅を複製
+        pg = await fresh()
+        await ev(pg, f"{U}.fmenuFor('card_name_c_warabi')"); await ev(pg, f"{P}.duplicate()"); await pg.wait_for_timeout(70)
+        shop = await ev(pg, f"{P}.shop()")
+        dup = [k for k in shop['catalog']['items'] if k.startswith('itm_x')]
+        cards = await cardNames(pg)
+        ok = len(dup) == 1 and shop['catalog']['items'][dup[0]]['name'] == 'わらび餅' and cards.count('わらび餅') == 2
+        rec('M12 わらび餅を複製', ok, f"dup={dup} cards={cards}")
 
-            # M13：季節の上生菓子を削除
-            pg = await fresh(pick)
-            await ev(pg, f"{U}.fmenuFor('card_name_c_jonama')"); await ev(pg, f"{P}.deleteSelected()"); await pg.wait_for_timeout(70)
-            spec = await ev(pg, f"{P}.curSpec('I_cards')"); shop = await ev(pg, f"{P}.shop()"); cards = await cardNames(pg)
-            jlab = shop['catalog']['items']['itm_jonama'].get('labels', [])
-            toast = await ev(pg, "(document.getElementById('pgToast')||{}).textContent")
-            if pick:
-                ok = spec.get('pick') == ['itm_warabi', 'itm_dorayaki'] and 'lbl_recommended' in jlab and cards == ['わらび餅', 'どら焼き']
-            else:
-                ok = spec.get('count') == 2 and 'lbl_recommended' not in jlab and cards == ['わらび餅', 'どら焼き']
-            rec(f'M13[{tag}] 季節の上生菓子を削除', ok, f"spec={spec} jonamaLabels={jlab} cards={cards} toast={toast}")
+        # M13：季節の上生菓子を削除（pick から外す・① のラベルはそのまま）
+        pg = await fresh()
+        await ev(pg, f"{U}.fmenuFor('card_name_c_jonama')"); await ev(pg, f"{P}.deleteSelected()"); await pg.wait_for_timeout(70)
+        spec = await ev(pg, f"{P}.curSpec('I_cards')"); shop = await ev(pg, f"{P}.shop()"); cards = await cardNames(pg)
+        jlab = shop['catalog']['items']['itm_jonama'].get('labels', [])
+        toast = await ev(pg, "(document.getElementById('pgToast')||{}).textContent")
+        ok = spec.get('pick') == ['itm_warabi', 'itm_dorayaki'] and 'lbl_recommended' in jlab and cards == ['わらび餅', 'どら焼き']
+        rec('M13 季節の上生菓子を削除（pick から外す・ラベルは残る）', ok, f"spec={spec} jonamaLabels={jlab} cards={cards} toast={toast}")
 
-            # M14：M13 の後セクション複製 → 複製側でどら焼き削除
-            pg = await fresh(pick)
-            await ev(pg, f"{P}.sectionDuplicate('items')"); await pg.wait_for_timeout(100)
-            seclist = await ev(pg, f"{P}.sectionList()")
-            dupsec = next((s['id'] for s in seclist if s['id'] != 'items' and s['type'] == 'items'), None)
-            await ev(pg, f"{P}.cardsDelete('{dupsec}__card_name_c_dora')"); await pg.wait_for_timeout(100)
-            orig = await cardNames(pg, ''); copy = await cardNames(pg, dupsec)
-            if pick:
-                ok = orig == ['季節の上生菓子', 'わらび餅', 'どら焼き'] and 'どら焼き' not in copy
-            else:
-                ok = 'どら焼き' not in orig and 'どら焼き' not in copy
-            rec(f'M14[{tag}] 複製側でどら焼き削除（A=元も変わる／C=元は変わらない）', ok, f"orig={orig} copy={copy}")
+        # M14：セクション複製 → 複製側でどら焼き削除。元の並びは変わらない（案C＝触った並びだけ）
+        pg = await fresh()
+        await ev(pg, f"{P}.sectionDuplicate('items')"); await pg.wait_for_timeout(100)
+        seclist = await ev(pg, f"{P}.sectionList()")
+        dupsec = next((s['id'] for s in seclist if s['id'] != 'items' and s['type'] == 'items'), None)
+        await ev(pg, f"{P}.cardsDelete('{dupsec}__card_name_c_dora')"); await pg.wait_for_timeout(100)
+        orig = await cardNames(pg, ''); copy = await cardNames(pg, dupsec)
+        ok = orig == ['季節の上生菓子', 'わらび餅', 'どら焼き'] and copy == ['季節の上生菓子', 'わらび餅']
+        rec('M14 複製側でどら焼き削除：元は不変・複製側だけ減る（案C）', ok, f"orig={orig} copy={copy}")
 
-            # M15：桜餅（時期外）を選ぶ → 並びに出ない
-            pg = await fresh(pick)
-            before = await cardNames(pg)
-            await ev(pg, f"{P}.cardsAddExisting('I_cards','itm_sakura')"); await pg.wait_for_timeout(70)
-            after = await cardNames(pg)
-            toast = await ev(pg, "(document.getElementById('pgToast')||{}).textContent")
-            rec(f'M15[{tag}] 桜餅（時期外）は並びに出ない', '桜餅' not in after, f"before={before} after={after} toast={toast}")
+        # M15：桜餅（時期外）を選ぶ → 並びに出ない
+        pg = await fresh()
+        before = await cardNames(pg)
+        await ev(pg, f"{P}.cardsAddExisting('I_cards','itm_sakura')"); await pg.wait_for_timeout(70)
+        after = await cardNames(pg)
+        toast = await ev(pg, "(document.getElementById('pgToast')||{}).textContent")
+        rec('M15 桜餅（時期外）は並びに出ない', '桜餅' not in after, f"before={before} after={after} toast={toast}")
 
-            # M16：M10〜M13 の後に開き直す
-            pg = await fresh(pick)
-            await ev(pg, f"{P}.cardsAddExisting('I_cards','itm_monaka')"); await pg.wait_for_timeout(50)
-            await ev(pg, f"{U}.fmenuFor('card_name_c_jonama')"); await ev(pg, f"{P}.deleteSelected()"); await pg.wait_for_timeout(50)
-            await settle(pg)
-            d1 = await ev(pg, f"{P}.draft()"); s1 = await ev(pg, f"{P}.shop()"); c1 = await cardNames(pg)
-            await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(900)
-            d2 = await ev(pg, f"{P}.draft()"); s2 = await ev(pg, f"{P}.shop()"); c2 = await cardNames(pg)
-            ok = json.dumps(d1, sort_keys=True) == json.dumps(d2, sort_keys=True) and json.dumps(s1, sort_keys=True) == json.dumps(s2, sort_keys=True) and c1 == c2
-            rec(f'M16[{tag}] 開き直して ① と並びが同じ（draft/shop も）', ok, f"cardsBefore={c1} cardsAfter={c2}")
+        # M16：M10・M13 の後に開き直す
+        pg = await fresh()
+        await ev(pg, f"{P}.cardsAddExisting('I_cards','itm_monaka')"); await pg.wait_for_timeout(50)
+        await ev(pg, f"{U}.fmenuFor('card_name_c_jonama')"); await ev(pg, f"{P}.deleteSelected()"); await pg.wait_for_timeout(50)
+        await settle(pg)
+        d1 = await ev(pg, f"{P}.draft()"); s1 = await ev(pg, f"{P}.shop()"); c1 = await cardNames(pg)
+        await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(900)
+        d2 = await ev(pg, f"{P}.draft()"); s2 = await ev(pg, f"{P}.shop()"); c2 = await cardNames(pg)
+        ok = json.dumps(d1, sort_keys=True) == json.dumps(d2, sort_keys=True) and json.dumps(s1, sort_keys=True) == json.dumps(s2, sort_keys=True) and c1 == c2
+        rec('M16 開き直して ① と並びが同じ（draft/shop も）', ok, f"cardsBefore={c1} cardsAfter={c2}")
 
         # ---------- M17：公開 → 名前を変える → 状態 ----------
         pg = await fresh()
@@ -263,7 +252,7 @@ async def main():
         rec('M20 書き出した ① が tools/validate.mjs を通る（エラー0）', res.returncode == 0 and errcount == 0, f"rc={res.returncode} out={(res.stdout.strip().splitlines() or ['(ok)'])[-3:]}")
 
         # ---------- M21：スマホ（390）で表の長押し複製・削除、品の並びで品を足す ----------
-        pg = await fresh(w=390, h=800)
+        pg = await fresh(w=390, h=800, touch=True)
         await ev(pg, f"{U}.fmenuFor('row_name_t_matcha')"); await ev(pg, f"{P}.duplicate()"); await pg.wait_for_timeout(70)
         shop = await ev(pg, f"{P}.shop()"); dup = [k for k in shop['catalog']['items'] if k.startswith('itm_x')]
         ok21a = len(dup) == 1
@@ -277,6 +266,49 @@ async def main():
         bw = await ev(pg, "(function(){const b=document.getElementById('priceBox');if(!b)return null;const r=b.getBoundingClientRect();return {l:r.left,r:r.right};})()")
         fitBox = bw is not None and bw['l'] >= -1 and bw['r'] <= 391
         rec('M21 スマホで複製・削除が PC と同じ／一覧・値段の箱が収まる', ok21a and ok21b and fitPicker and fitBox, f"dup={ok21a} del={ok21b} picker={pw} box={bw}")
+
+        # ---------- M22：?list=pick を付けずに開き、品の並びのわらび餅を削除（26b：既定で案C） ----------
+        pg = await fresh()
+        await ev(pg, f"{P}.cardsDelete('card_name_c_warabi')"); await pg.wait_for_timeout(70)
+        spec = await ev(pg, f"{P}.curSpec('I_cards')"); shop = await ev(pg, f"{P}.shop()")
+        okpick = 'pick' in spec and 'itm_warabi' not in spec.get('pick', [])
+        oklbl = 'lbl_recommended' in shop['catalog']['items']['itm_warabi'].get('labels', [])
+        rec('M22 ?list なしで削除 → content.I_cards が pick・① のラベルは不変', okpick and oklbl, f"spec={spec} warabiLabels={shop['catalog']['items']['itm_warabi'].get('labels')}")
+
+        # ---------- M23：1440×1100 の窓で、お品書きボタンが無い・プレビュー/履歴が見える・その他にお品書きを見る ----------
+        pg = await fresh(w=1440, h=1100)
+        noBtn = not (await ev(pg, "!!document.getElementById('tMenu')"))
+        prevVis = await ev(pg, "(function(){const b=document.getElementById('tPreview');return !!(b&&b.offsetParent!==null);})()")
+        histVis = await ev(pg, "(function(){const b=document.getElementById('tHistory');return !!(b&&b.offsetParent!==null);})()")
+        await ev(pg, "document.getElementById('tMore').click()"); await pg.wait_for_timeout(80)
+        inMore = await ev(pg, "document.getElementById('moreMenu').textContent.indexOf('お品書きを見る')>=0")
+        rec('M23 1440 窓：お品書きボタン無し・プレビュー/履歴見える・その他にお品書きを見る', noBtn and prevVis and histVis and inMore, f"noBtn={noBtn} prev={prevVis} hist={histVis} inMore={inMore}")
+
+        # ---------- M24：その他▾ → お品書きを見る → 甘味処/店頭のわらび餅の値段 ----------
+        pg = await fresh(w=1440, h=1100)
+        await ev(pg, "document.getElementById('tMore').click()"); await pg.wait_for_timeout(60)
+        await ev(pg, "document.getElementById('moOshinaga').click()"); await pg.wait_for_timeout(120)
+        panelOpen = await ev(pg, "document.getElementById('menuPanel').classList.contains('on')")
+        v = await ev(pg, f"{P}.catalogView()")
+        def findprice(menu, item):
+            for m in v['menus']:
+                if m['name'] == menu:
+                    for c in m['categories']:
+                        for it in c['items']:
+                            if it['name'] == item:
+                                return it['price']
+            return None
+        kanmi = findprice('甘味処', 'わらび餅'); tento = findprice('店頭販売', 'わらび餅')
+        rec('M24 お品書きの板：甘味処のわらび餅＝お茶付き650・店頭＝450', panelOpen and kanmi == 'お茶付き 650円（税込）' and tento == '450円（税込）', f"panelOpen={panelOpen} 甘味処={kanmi} 店頭={tento}")
+
+        # ---------- M25：スマホ（390）で その他の板 → お品書きを見る ----------
+        pg = await fresh(w=390, h=800, touch=True)
+        await ev(pg, "(function(){const b=document.querySelector('[data-pbar-more]');if(b)b.click();})()"); await pg.wait_for_timeout(100)
+        await ev(pg, "(function(){for(const b of document.querySelectorAll('#pmore button')){if(b.textContent.indexOf('お品書きを見る')>=0){b.click();break;}}})()"); await pg.wait_for_timeout(120)
+        panelOpen = await ev(pg, "document.getElementById('menuPanel').classList.contains('on')")
+        pr = await ev(pg, "(function(){const b=document.getElementById('menuPanel');if(!b)return null;const r=b.getBoundingClientRect();return {l:r.left,r:r.right,w:r.width};})()")
+        fit = pr is not None and pr['l'] >= -1 and pr['r'] <= 391
+        rec('M25 スマホの その他 → お品書きを見る が出て画面に収まる', panelOpen and fit, f"panelOpen={panelOpen} rect={pr}")
 
         # ---------- pageerror まとめ ----------
         rec('pageerror が無い', len(pg._errs) == 0, f"errs={pg._errs[:3]}")

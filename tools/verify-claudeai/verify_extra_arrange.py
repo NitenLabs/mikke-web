@@ -201,7 +201,8 @@ async def main():
     ok=abs(n['w']/pr['w']-560/249)<0.01 and abs(d['w']-n['w'])<=0.5 and lines==[1,1] and abs(pr['x']+pr['w']-(t['x']+t['w']))<=0.5
     rec('K12 pc 表を一番狭く',ok,f"記録 {ll} 画面 {t['w']:.1f} 名前 {n['w']:.1f} 値段 {pr['w']:.1f} 説明 {d['w']:.1f} 値段の行数 {lines} つまみ {hx} 表の右端（画面） {tr['x']+tr['w']:.0f}")
     # K13 そのまま値段を長く → 画面だけ広がる。つまみは画面の右端に付いているか
-    await edit_append(pg,'row_price_t_matcha','・上生菓子付き')
+    # 26b：値段は文字では打ち足せない（値段の箱で直す）ので、箱で選択肢の名前を長くする（表が広がって1行に収まる長さ）
+    await pg.evaluate(f"{P}.setPrices('row_price_t_matcha', [{{'name':'上生菓子付き','type':'fixed','amount':1100}}])"); await pg.wait_for_timeout(300)
     g2=await G(pg); ll2=(await pg.evaluate(f"{P}.listLayout()"))['I_table']; t2=g2['I_table']
     l2=await price_lines(pg,'row_price_t_matcha')
     await sel_table(pg); hx2=await handles(pg); tr2=await bb(pg,'I_table')

@@ -1476,7 +1476,8 @@ async def main():
             await fresh(pg, 'pc'); await sec_rmenu('items', '削除')
             m = await sec_rmenu('feature', None)
             ok('C11 セクションが1つだけなら、上へ・下へ・削除が出ない', not any(x in m for x in ['上へ', '下へ', '削除']), f'{m}')
-            # E1（試験の外）品のセクションを複製して、複製の品の名前を変えても、元の品は変わらない
+            # E1（試験の外・26b 更新）品のセクションを複製し、複製側の品の名前の色と文字を変える。
+            # 色は ② のデザイン＝複製側だけ変わる。文字は ① お品書きの事実＝元の方も同じに変わる（記録 11.5・12.5）
             await fresh(pg, 'pc'); await sec_rmenu('items', '複製')
             G = await geo(pg); dn = [k for k in G if k.endswith('card_name_c_warabi') and k != 'card_name_c_warabi']
             if dn:
@@ -1487,7 +1488,7 @@ async def main():
                 await retype(dn[0], 'わらび餅（冷）')
                 orig = [(await css(f'card_name_c_{k}'))['color'] for k in ['jonama', 'warabi', 'dora']]
                 dups = [(await css(dn[0].replace('warabi', k)))['color'] for k in ['jonama', 'warabi', 'dora']]
-                ok('E1 品のセクションの複製で、品の名前の色・文字を変えても元の品は変わらない', all(c == 'rgb(51, 51, 51)' for c in orig) and all(c == 'rgb(123, 123, 123)' for c in dups) and await text_of('card_name_c_warabi') == 'わらび餅' and await text_of(dn[0]) == 'わらび餅（冷）', f'元 {orig} 複製 {dups} 文字 {await text_of("card_name_c_warabi")}/{await text_of(dn[0])}')
+                ok('E1 品のセクションの複製：名前の色は元の方は変わらない・文字は元の方も同じに変わる（お品書き連動）', all(c == 'rgb(51, 51, 51)' for c in orig) and all(c == 'rgb(123, 123, 123)' for c in dups) and await text_of('card_name_c_warabi') == 'わらび餅（冷）' and await text_of(dn[0]) == 'わらび餅（冷）', f'元色 {orig} 複製色 {dups} 文字 元/複製 {await text_of("card_name_c_warabi")}/{await text_of(dn[0])}')
             else:
                 ok('E1 品のセクションの複製に品の名前がある', False, '見つからない')
             # E2（試験の外）複製したセクションで本文の大きさを変える
