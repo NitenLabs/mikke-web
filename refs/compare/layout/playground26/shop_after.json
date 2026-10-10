@@ -1,0 +1,575 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_ashiyado",
+  "updatedAt": "2026-09-22T10:00:00+09:00",
+  "isSample": true,
+  "basic": {
+    "name": "御菓子司 芦屋堂",
+    "nameKana": "おかしつかさ あしやどう",
+    "genre": {
+      "template": "retail",
+      "detail": "和菓子店"
+    },
+    "tagline": "季節の上生菓子と、甘味処のある和菓子店"
+  },
+  "location": {
+    "postalCode": "659-0000",
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "大原町",
+    "street": "0-0",
+    "geo": {
+      "lat": 34.728,
+      "lng": 135.305
+    },
+    "access": {
+      "acc_hanshin1": {
+        "station": "阪神芦屋駅",
+        "method": "walk",
+        "minutes": 5,
+        "note": "北出口から芦屋川沿いに北へ",
+        "order": 1
+      },
+      "acc_jr001": {
+        "station": "JR芦屋駅",
+        "method": "walk",
+        "minutes": 8,
+        "order": 2
+      }
+    },
+    "parking": {
+      "status": "nearbyPaid",
+      "note": "店の東隣にコインパーキングがあります"
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "closed"
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "09:00",
+            "end": "18:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "09:00",
+            "end": "17:00"
+          }
+        ]
+      }
+    },
+    "publicHoliday": {
+      "mode": "asWeekday"
+    },
+    "closedRules": [
+      {
+        "type": "nthWeekday",
+        "weekday": "tue",
+        "nth": [
+          3
+        ]
+      }
+    ],
+    "exceptions": {
+      "exc_newyear1": {
+        "label": "年末年始",
+        "recurring": {
+          "from": "12-31",
+          "to": "01-03"
+        },
+        "status": "closed"
+      }
+    },
+    "note": "上生菓子は売り切れ次第終了します。"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    },
+    "email": "info@example.com",
+    "sns": {
+      "instagram": "ashiyado_sample"
+    }
+  },
+  "reservation": {
+    "policy": "recommended",
+    "methods": [
+      "phone",
+      "inStore"
+    ],
+    "note": "上生菓子のご予約は前日の17時まで"
+  },
+  "externalServices": {
+    "svc_base0001": {
+      "kind": "shop",
+      "provider": "base",
+      "url": "https://ashiyado-sample.example.com/",
+      "note": "焼き菓子と干菓子の通販"
+    }
+  },
+  "payment": {
+    "cash": true,
+    "cards": [
+      "visa",
+      "mastercard",
+      "jcb"
+    ],
+    "eMoney": [
+      "transit"
+    ],
+    "qr": [
+      "paypay"
+    ]
+  },
+  "facilities": {
+    "seats": {
+      "total": 8,
+      "table": 8
+    },
+    "smoking": "none",
+    "children": "ok",
+    "wheelchair": false
+  },
+  "genreInfo": {
+    "holdForPickup": true,
+    "giftWrapping": true,
+    "shipping": true
+  },
+  "story": {
+    "foundedYear": 1978,
+    "ownerName": "芦屋 一郎（サンプル）",
+    "answers": {
+      "why_started": {
+        "question": "お店を始めたきっかけは？",
+        "answer": "京都の老舗で修業→地元芦屋で。父の代から。",
+        "answeredAt": "2026-09-20T21:14:00+09:00"
+      },
+      "commitment": {
+        "question": "いちばんこだわっていることは？",
+        "answer": "朝炊く餡。その日の分だけ。上生菓子は毎月入れ替え",
+        "answeredAt": "2026-09-20T21:16:00+09:00"
+      }
+    }
+  },
+  "faq": {
+    "faq_keep0001": {
+      "question": "日持ちはどのくらいですか？",
+      "answer": "上生菓子は当日中、最中・どら焼きは4日ほどです。",
+      "order": 1
+    },
+    "faq_noshi001": {
+      "question": "のしは付けられますか？",
+      "answer": "はい、無料でお付けします。",
+      "order": 2
+    },
+    "faq_yoyaku01": {
+      "question": "予約はできますか？",
+      "answer": "上生菓子は前日の17時までにお電話でご予約いただけます。",
+      "order": 3
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_tento": {
+        "name": "店頭販売",
+        "order": 1,
+        "orderService": "svc_base0001"
+      },
+      "mnu_kanmi": {
+        "name": "甘味処",
+        "description": "店の奥の8席でお召し上がりいただけます。",
+        "servingTime": {
+          "periods": [
+            {
+              "start": "11:00",
+              "end": "17:00",
+              "lastOrder": "16:30"
+            }
+          ]
+        },
+        "order": 2
+      }
+    },
+    "categories": {
+      "cat_namagashi": {
+        "menuId": "mnu_tento",
+        "name": "上生菓子",
+        "note": "ひと月ごとに入れ替わります",
+        "order": 1
+      },
+      "cat_mochi": {
+        "menuId": "mnu_tento",
+        "name": "餅菓子",
+        "order": 2
+      },
+      "cat_yakigashi": {
+        "menuId": "mnu_tento",
+        "name": "焼き菓子",
+        "order": 3
+      },
+      "cat_higashi": {
+        "menuId": "mnu_tento",
+        "name": "干菓子",
+        "order": 4
+      },
+      "cat_kanmi": {
+        "menuId": "mnu_kanmi",
+        "name": "甘味",
+        "order": 1
+      },
+      "cat_drink": {
+        "menuId": "mnu_kanmi",
+        "name": "お飲み物",
+        "order": 2
+      }
+    },
+    "labels": {
+      "lbl_recommended": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      },
+      "lbl_limited": {
+        "name": "数量限定",
+        "system": "limited",
+        "order": 2
+      },
+      "lbl_gift": {
+        "name": "手土産に",
+        "order": 3
+      }
+    },
+    "items": {
+      "itm_jonama": {
+        "name": "季節の上生菓子",
+        "description": "月ごとに意匠が変わる、練り切りときんとん。",
+        "photos": [
+          "ast_frmg"
+        ],
+        "labels": [
+          "lbl_limited"
+        ],
+        "prices": [
+          {
+            "id": "prc_jonama1",
+            "type": "fixed",
+            "amount": 380
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_monaka": {
+        "name": "芦屋最中",
+        "description": "香ばしい皮に、つぶ餡をたっぷり。",
+        "labels": [
+          "lbl_gift",
+          "lbl_recommended"
+        ],
+        "prices": [
+          {
+            "id": "prc_monaka1",
+            "name": "1個",
+            "type": "fixed",
+            "amount": 220
+          },
+          {
+            "id": "prc_monaka5",
+            "name": "5個入り",
+            "type": "fixed",
+            "amount": 1200
+          }
+        ],
+        "status": "onSale",
+        "orderLink": {
+          "serviceId": "svc_base0001",
+          "url": "https://ashiyado-sample.example.com/items/0001",
+          "externalId": "0001"
+        }
+      },
+      "itm_dorayaki": {
+        "name": "どら焼き",
+        "labels": [
+          "lbl_recommended",
+          "lbl_gift"
+        ],
+        "prices": [
+          {
+            "id": "prc_dorayaki1",
+            "type": "fixed",
+            "amount": 250
+          }
+        ],
+        "status": "onSale",
+        "description": "ふっくら焼いた皮に、自家製の粒餡をはさみました。",
+        "photos": [
+          "ast_frmh"
+        ]
+      },
+      "itm_warabi": {
+        "name": "わらび餅",
+        "description": "本わらび粉を使い、注文ごとに切り分けます。",
+        "prices": [
+          {
+            "id": "prc_warabi1",
+            "type": "fixed",
+            "amount": 450
+          }
+        ],
+        "status": "onSale",
+        "note": "お持ち帰りは当日中にお召し上がりください",
+        "labels": [
+          "lbl_recommended"
+        ],
+        "photos": [
+          "ast_frmi"
+        ]
+      },
+      "itm_sakura": {
+        "name": "桜餅",
+        "description": "道明寺の桜餅。",
+        "prices": [
+          {
+            "id": "prc_sakura1",
+            "type": "fixed",
+            "amount": 250
+          }
+        ],
+        "status": "onSale",
+        "season": {
+          "months": [
+            2,
+            3,
+            4
+          ]
+        }
+      },
+      "itm_wasanbon": {
+        "name": "和三盆 季節の干菓子",
+        "prices": [
+          {
+            "id": "prc_wasan01",
+            "name": "小箱",
+            "type": "fixed",
+            "amount": 864
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_anmitsu": {
+        "name": "あんみつ",
+        "prices": [
+          {
+            "id": "prc_anmitsu",
+            "type": "fixed",
+            "amount": 800
+          }
+        ],
+        "status": "paused"
+      },
+      "itm_matcha": {
+        "name": "抹茶（上生菓子付き）",
+        "labels": [],
+        "prices": [
+          {
+            "id": "prc_matcha1",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_x0001": {
+        "name": "新しい品",
+        "status": "onSale"
+      },
+      "itm_x0003": {
+        "name": "抹茶（上生菓子付き）",
+        "labels": [],
+        "prices": [
+          {
+            "id": "prc_x0005",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_x0006": {
+        "name": "新しい品",
+        "status": "onSale",
+        "labels": [
+          "lbl_recommended"
+        ]
+      }
+    },
+    "placements": {
+      "plc_jonama_t": {
+        "itemId": "itm_jonama",
+        "menuId": "mnu_tento",
+        "categoryId": "cat_namagashi",
+        "order": 1
+      },
+      "plc_sakura_t": {
+        "itemId": "itm_sakura",
+        "menuId": "mnu_tento",
+        "categoryId": "cat_mochi",
+        "order": 1
+      },
+      "plc_warabi_t": {
+        "itemId": "itm_warabi",
+        "menuId": "mnu_tento",
+        "categoryId": "cat_mochi",
+        "order": 2
+      },
+      "plc_monaka_t": {
+        "itemId": "itm_monaka",
+        "menuId": "mnu_tento",
+        "categoryId": "cat_yakigashi",
+        "order": 1
+      },
+      "plc_dora_t": {
+        "itemId": "itm_dorayaki",
+        "menuId": "mnu_tento",
+        "categoryId": "cat_yakigashi",
+        "order": 2
+      },
+      "plc_wasan_t": {
+        "itemId": "itm_wasanbon",
+        "menuId": "mnu_tento",
+        "categoryId": "cat_higashi",
+        "order": 1
+      },
+      "plc_warabi_k": {
+        "itemId": "itm_warabi",
+        "menuId": "mnu_kanmi",
+        "categoryId": "cat_kanmi",
+        "order": 1,
+        "prices": [
+          {
+            "id": "prc_warabik",
+            "name": "お茶付き",
+            "type": "fixed",
+            "amount": 650
+          }
+        ]
+      },
+      "plc_anmitsu_k": {
+        "itemId": "itm_anmitsu",
+        "menuId": "mnu_kanmi",
+        "categoryId": "cat_kanmi",
+        "order": 2
+      },
+      "plc_matcha_k": {
+        "itemId": "itm_matcha",
+        "menuId": "mnu_kanmi",
+        "categoryId": "cat_drink",
+        "order": 1
+      },
+      "plc_x0002": {
+        "itemId": "itm_x0001",
+        "menuId": "mnu_kanmi",
+        "categoryId": "cat_kanmi",
+        "order": 1.5
+      },
+      "plc_x0004": {
+        "itemId": "itm_x0003",
+        "menuId": "mnu_kanmi",
+        "categoryId": "cat_drink",
+        "order": 2
+      },
+      "plc_x0007": {
+        "itemId": "itm_x0006",
+        "menuId": "mnu_tento",
+        "categoryId": "cat_yakigashi",
+        "order": 0.5
+      }
+    }
+  },
+  "review": {
+    "/hours/weekly": {
+      "status": "conflict",
+      "question": "開店時刻は 9:00 と 9:30 のどちらですか？（出どころによって違っていました）",
+      "sources": [
+        {
+          "kind": "mikke",
+          "value": "09:00",
+          "fetchedAt": "2026-09-15T12:00:00+09:00"
+        },
+        {
+          "kind": "googleMaps",
+          "value": "09:30",
+          "fetchedAt": "2026-09-15T12:00:00+09:00"
+        }
+      ]
+    },
+    "/catalog/items/itm_monaka/prices": {
+      "status": "conflict",
+      "question": "芦屋最中の1個の価格は 220円 と 200円 のどちらですか？",
+      "sources": [
+        {
+          "kind": "menuPhoto",
+          "value": 220
+        },
+        {
+          "kind": "ownSite",
+          "url": "https://ashiyado-sample.example.com/",
+          "value": 200
+        }
+      ]
+    },
+    "/contact/phone": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "mikke",
+          "value": "0797-00-0000"
+        }
+      ]
+    }
+  }
+}
