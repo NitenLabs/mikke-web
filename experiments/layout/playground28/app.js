@@ -459,6 +459,8 @@ const PG = (function () {
   // 出ていない品（販売休止・時期外）は hidden（2a は描かない。2b で編集時だけ薄く出す）。名前・説明・価格は ① の品／載せ方から。
   const MENU_ORDER = ["mnu_tento", "mnu_kanmi"];
   function fmtServing(st) { if (!st || !st.periods || !st.periods.length) return ""; const f = (t) => { const a = String(t).split(":"); let h = +a[0]; let p = ""; if (h >= 24) { p = "翌"; h -= 24; } return p + h + ":" + a[1]; }; let s = st.periods.map((p) => f(p.start) + "〜" + f(p.end)).join("・"); const lo = st.periods.find((p) => p.lastOrder); if (lo) s += "（L.O. " + f(lo.lastOrder) + "）"; return "提供時間 " + s; }
+  // 出ていない品の理由（編集時だけ薄く添える・§2.4）。販売休止＝「休んでいます」／時期外＝「◯〜◯月だけ出ます」。
+  function hiddenReason(it) { if (it.status && it.status !== "onSale") return "休んでいます"; if (it.season && it.season.months && it.season.months.length) { const ms = [...it.season.months].sort((a, b) => a - b); return ms[0] + "〜" + ms[ms.length - 1] + "月だけ出ます"; } return ""; }
   function deriveMenuGroups(shop) {
     const cat = (shop && shop.catalog) || {}; const menus = cat.menus || {}, cats = cat.categories || {}, items = cat.items || {}, placements = cat.placements || {};
     return MENU_ORDER.filter((id) => menus[id]).map((menuId) => {
@@ -467,7 +469,7 @@ const PG = (function () {
       const catIds = Object.keys(cats).filter((c) => cats[c].menuId === menuId).sort((a, b) => (cats[a].order || 0) - (cats[b].order || 0));
       g.cats = catIds.map((cid) => {
         const plIds = Object.keys(placements).filter((k) => placements[k].menuId === menuId && placements[k].categoryId === cid).sort((a, b) => (placements[a].order || 0) - (placements[b].order || 0));
-        return { id: cid, _catId: cid, name: cats[cid].name || "", rows: plIds.map((pid) => { const p = placements[pid], it = items[p.itemId] || {}; return { id: pid, _itemId: p.itemId, _placementId: pid, name: it.name || "", desc: it.description || "", price: formatPrices(priceOf(shop, p.itemId, pid)), hidden: !isDisplayable(it) }; }) };
+        return { id: cid, _catId: cid, name: cats[cid].name || "", rows: plIds.map((pid) => { const p = placements[pid], it = items[p.itemId] || {}; const hidden = !isDisplayable(it); return { id: pid, _itemId: p.itemId, _placementId: pid, name: it.name || "", desc: it.description || "", price: formatPrices(priceOf(shop, p.itemId, pid)), hidden, reason: hidden ? hiddenReason(it) : "" }; }) };
       });
       return g;
     });
@@ -1085,6 +1087,7 @@ const PG = (function () {
       if (inst.type === "feature") { const sw = R.swapMap[sec] && R.swapMap[sec][state.device]; if (sw) edits.swap = sw; }   // §5 左右入替
       // §20b §2.4 描画時クランプ：記録幅では値段が1行に入らない表を、表示だけ広い幅で描く（記録=edits.sizes には触らず transient な幅を差し込む）
       if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tid = anchor ? "I_table" : (pfx + "I_table"); edits.sizes = Object.assign({}, edits.sizes, { [tid]: Object.assign({}, edits.sizes[tid], { w: state._tableDispW }) }); }
+      edits.editMode = !(state.preview || state._pubGeo);   // 試験台28 §2.4：編集中だけ出ていない品を薄く出す（プレビュー/公開は詰める）
       const builder = { feature: M.buildFeature, items: M.buildItems, header: M.buildHeader, footer: M.buildFooter, menu: M.buildMenu, contact: M.buildContact, menuHdr: M.buildMenuHdr, contactHdr: M.buildContactHdr }[inst.type] || M.buildFeature;
       const out = builder(content, state.device, H, edits);
       host.innerHTML = pfx ? prefixIds(out.bodyHtml, pfx) : out.bodyHtml;

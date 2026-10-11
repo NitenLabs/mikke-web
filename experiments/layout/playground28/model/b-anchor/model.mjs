@@ -111,7 +111,6 @@ export function collectTextBoxes(content, device) {
       for (const cat of g2.cats) {
         boxes.push({ key: `mc_${cat.id}`, styleName: "menuCat", device, widthPx: nameW, text: cat.name });
         for (const row of cat.rows) {
-          if (row.hidden) continue;   // 試験台28：出ていない品はこの段では測らない（2b で編集時だけ薄く）
           boxes.push({ key: `row_name_${row.id}`, styleName: "tName", device, widthPx: nameW, text: row.name });
           if (row.desc) boxes.push({ key: `row_desc_${row.id}`, styleName: "tDesc", device, widthPx: nameW, text: row.desc });
           boxes.push({ key: `row_price_${row.id}`, styleName: device === "pc" ? "tPriceR" : "tPriceL", device, widthPx: priceW, text: row.price });

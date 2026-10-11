@@ -256,23 +256,29 @@ export function buildMenu(content, device, H, edits = {}) {
   const nameW = device === "pc" ? 520 : contW;
   // 値段は1行に収める（記録 6.9）＝値段の入る幅を確保し、折り返さない（トップの表と同じ考え）
   const priceW = device === "pc" ? 420 : contW;
+  const editMode = edits.editMode !== false;   // 編集中は出ていない品も薄く出す（プレビュー/公開は edits.editMode=false で詰める）
   const rowHtml = (row) => {
     const name = T(`row_name_${row.id}`, "tName", device, nameW, thtml(H, `row_name_${row.id}`));
     const desc = row.desc ? T(`row_desc_${row.id}`, "tDesc", device, nameW, thtml(H, `row_desc_${row.id}`), "margin-top:8px") : "";
     const price = T(`row_price_${row.id}`, device === "pc" ? "tPriceR" : "tPriceL", device, priceW, thtml(H, `row_price_${row.id}`), (device === "pc" ? "white-space:nowrap" : "margin-top:8px"));
+    // §2.4 出ていない品：編集時だけ薄く（0.45）、名前の右に理由。data-hidden で選択・書き換えは普通にできる。
+    const fade = row.hidden ? "opacity:0.45;" : "";
+    const reason = (row.hidden && row.reason) ? `<span class="menu-reason" style="margin-left:8px;font:12px/1.4 'Zen Kaku Gothic New',sans-serif;color:${COLORS.textMuted};white-space:nowrap">${row.reason}</span>` : "";
+    const hattr = row.hidden ? ` data-hidden="1"` : "";
     if (device === "pc") {
-      return `<div class="krow" style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line}">
-        <div style="flex:none;width:${px(nameW)}">${name}${desc}</div>
+      return `<div class="krow"${hattr} style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line};${fade}">
+        <div style="flex:none;width:${px(nameW)}"><div style="display:flex;align-items:baseline">${name}${reason}</div>${desc}</div>
         <div style="flex:1;display:flex;justify-content:flex-end">${price}</div></div>`;
     }
-    return `<div class="krow" style="display:flex;flex-direction:column;padding:24px 0 25px;border-bottom:1px solid ${COLORS.line}">${name}${desc}${price}</div>`;
+    return `<div class="krow"${hattr} style="display:flex;flex-direction:column;padding:24px 0 25px;border-bottom:1px solid ${COLORS.line};${fade}"><div style="display:flex;align-items:baseline">${name}${reason}</div>${desc}${price}</div>`;
   };
   const groupHtml = (g, gi) => {
     const head = T(`mg_${g.id}`, "menuGroup", device, contW, thtml(H, `mg_${g.id}`));
     const time = g.time ? T(`mt_${g.id}`, "kanmiTime", device, contW, thtml(H, `mt_${g.id}`), "margin-top:4px") : "";
     const cats = g.cats.map((cat) => {
       const ch = T(`mc_${cat.id}`, "menuCat", device, nameW, thtml(H, `mc_${cat.id}`), "margin-top:40px");
-      return ch + cat.rows.filter((r) => !r.hidden).map(rowHtml).join("");   // 試験台28：出ていない品はこの段では描かない（2b で編集時だけ薄く）
+      const rows = cat.rows.filter((r) => editMode || !r.hidden);   // 編集時は薄く出す／プレビュー・公開は詰める
+      return ch + rows.map(rowHtml).join("");
     }).join("");
     return `<div class="mgroup" style="margin-top:${gi === 0 ? 0 : 64}px">${head}${time}${cats}</div>`;   // 先頭の括りは本体上端から（stack の padTop のみ）
   };
