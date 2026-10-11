@@ -836,8 +836,8 @@ function collectTextBoxes(content, device) {
     boxes.push({ key: "ctitle", styleName: "pageTitle", device, widthPx: hdW, text: content.contactHdr.title });
   }
   if (content.menu) {
-    const nameW = device === "pc" ? 560 : 351;
-    const priceW = device === "pc" ? 249 : 351;
+    const nameW = device === "pc" ? 520 : 351;
+    const priceW = device === "pc" ? 420 : 351;   // 試験台28：値段は1行（記録 6.9）＝測りも1行に収まる幅で
     for (const g2 of content.menu.groups) {
       boxes.push({ key: `mg_${g2.id}`, styleName: "menuGroup", device, widthPx: hdW, text: g2.name });
       if (g2.time) boxes.push({ key: `mt_${g2.id}`, styleName: "kanmiTime", device, widthPx: hdW, text: g2.time });
@@ -1310,33 +1310,35 @@ function buildFooter(content, device, H, edits = {}) {
 
 function buildMenu(content, device, H, edits = {}) {
   const W = DESIGN_W[device];
+  const padTop = device === "pc" ? 64 : 40;   // 試験台28：帯の下。芦屋堂に合わせ本体上の空きを詰める（旧 120＋先頭括り 64＝空きすぎ）
   const padBottom = device === "pc" ? 120 : 64;
-  const contW = device === "pc" ? W * 0.67 : W * 0.9;
-  const nameW = device === "pc" ? 560 : contW;
-  const priceW = device === "pc" ? 249 : contW;
+  const contW = device === "pc" ? W * 0.7 : W * 0.9;
+  const nameW = device === "pc" ? 520 : contW;
+  // 値段は1行に収める（記録 6.9）＝値段の入る幅を確保し、折り返さない（トップの表と同じ考え）
+  const priceW = device === "pc" ? 420 : contW;
   const rowHtml = (row) => {
     const name = T(`row_name_${row.id}`, "tName", device, nameW, thtml(H, `row_name_${row.id}`));
     const desc = row.desc ? T(`row_desc_${row.id}`, "tDesc", device, nameW, thtml(H, `row_desc_${row.id}`), "margin-top:8px") : "";
-    const price = T(`row_price_${row.id}`, device === "pc" ? "tPriceR" : "tPriceL", device, priceW, thtml(H, `row_price_${row.id}`), device === "pc" ? "" : "margin-top:8px");
+    const price = T(`row_price_${row.id}`, device === "pc" ? "tPriceR" : "tPriceL", device, priceW, thtml(H, `row_price_${row.id}`), (device === "pc" ? "white-space:nowrap" : "margin-top:8px"));
     if (device === "pc") {
-      return `<div class="krow" style="display:flex;align-items:baseline;justify-content:space-between;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line}">
+      return `<div class="krow" style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line}">
         <div style="flex:none;width:${px(nameW)}">${name}${desc}</div>
         <div style="flex:1;display:flex;justify-content:flex-end">${price}</div></div>`;
     }
     return `<div class="krow" style="display:flex;flex-direction:column;padding:24px 0 25px;border-bottom:1px solid ${COLORS.line}">${name}${desc}${price}</div>`;
   };
-  const groupHtml = (g) => {
+  const groupHtml = (g, gi) => {
     const head = T(`mg_${g.id}`, "menuGroup", device, contW, thtml(H, `mg_${g.id}`));
     const time = g.time ? T(`mt_${g.id}`, "kanmiTime", device, contW, thtml(H, `mt_${g.id}`), "margin-top:4px") : "";
     const cats = g.cats.map((cat) => {
       const ch = T(`mc_${cat.id}`, "menuCat", device, nameW, thtml(H, `mc_${cat.id}`), "margin-top:40px");
       return ch + cat.rows.map(rowHtml).join("");
     }).join("");
-    return `<div class="mgroup" style="margin-top:64px">${head}${time}${cats}</div>`;
+    return `<div class="mgroup" style="margin-top:${gi === 0 ? 0 : 64}px">${head}${time}${cats}</div>`;   // 先頭の括りは本体上端から（stack の padTop のみ）
   };
   const groups = content.menu.groups.map(groupHtml).join("");
   const body = `<div id="sec" data-sec="menu" style="width:${W}px;background:${COLORS.background};position:relative">
-    <div class="stack" style="display:flex;flex-direction:column;align-items:stretch;width:${px(contW)};margin:0 auto;padding:${device === "pc" ? 120 : 64}px 0 ${px(padBottom)}">${groups}</div></div>`;
+    <div class="stack" style="display:flex;flex-direction:column;align-items:stretch;width:${px(contW)};margin:0 auto;padding:${px(padTop)} 0 ${px(padBottom)}">${groups}</div></div>`;
   return { bodyHtml: body, extraCss: "", padBottom };
 }
 
@@ -4891,6 +4893,7 @@ const PG = (function () {
     nudge: (id, dx, dy) => nudge(id, dx, dy), nudgeSelected, deleteSelected, duplicate, commitEdit, canUndo: () => (!!state.restoreUndo || state.cursor > state.undoBase), canRedo: () => (!state.restoreUndo && state.cursor < state.ops.length),
     addTextAtPoint: (sec, cx, cy) => addTextAtPoint(sec, cx, cy), addPhotoAtPoint, setBrightness,
     sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionList: sectionListApi,
+    setPage: (id) => setPage(id), currentPage: () => currentPage(), pages: () => PAGES.map((p) => ({ ...p })),   // 試験台28：ページの移動（Claude.ai の確認用）
     setCols: (id, n) => setCols(id, n), swapHoriz: (id) => swapHoriz(id), bringToFront, sendToBack, secOf: (id) => secOf(id),
     select: (ids) => selectMany(Array.isArray(ids) ? ids : [ids]),
     edit: editApi, resetScope, undo, redo, layoutCount: () => layoutCount,

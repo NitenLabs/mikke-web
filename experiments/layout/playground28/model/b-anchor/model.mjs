@@ -103,8 +103,8 @@ export function collectTextBoxes(content, device) {
     boxes.push({ key: "ctitle", styleName: "pageTitle", device, widthPx: hdW, text: content.contactHdr.title });
   }
   if (content.menu) {
-    const nameW = device === "pc" ? 560 : 351;
-    const priceW = device === "pc" ? 249 : 351;
+    const nameW = device === "pc" ? 520 : 351;
+    const priceW = device === "pc" ? 420 : 351;   // 試験台28：値段は1行（記録 6.9）＝測りも1行に収まる幅で
     for (const g2 of content.menu.groups) {
       boxes.push({ key: `mg_${g2.id}`, styleName: "menuGroup", device, widthPx: hdW, text: g2.name });
       if (g2.time) boxes.push({ key: `mt_${g2.id}`, styleName: "kanmiTime", device, widthPx: hdW, text: g2.time });

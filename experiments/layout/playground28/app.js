@@ -3222,6 +3222,7 @@ const PG = (function () {
     nudge: (id, dx, dy) => nudge(id, dx, dy), nudgeSelected, deleteSelected, duplicate, commitEdit, canUndo: () => (!!state.restoreUndo || state.cursor > state.undoBase), canRedo: () => (!state.restoreUndo && state.cursor < state.ops.length),
     addTextAtPoint: (sec, cx, cy) => addTextAtPoint(sec, cx, cy), addPhotoAtPoint, setBrightness,
     sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionList: sectionListApi,
+    setPage: (id) => setPage(id), currentPage: () => currentPage(), pages: () => PAGES.map((p) => ({ ...p })),   // 試験台28：ページの移動（Claude.ai の確認用）
     setCols: (id, n) => setCols(id, n), swapHoriz: (id) => swapHoriz(id), bringToFront, sendToBack, secOf: (id) => secOf(id),
     select: (ids) => selectMany(Array.isArray(ids) ? ids : [ids]),
     edit: editApi, resetScope, undo, redo, layoutCount: () => layoutCount,
