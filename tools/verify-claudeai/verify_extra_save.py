@@ -335,7 +335,7 @@ async def main():
         pg = await fresh()
         await ev(pg, f"{P}.sectionDuplicate('feature')"); await pg.wait_for_timeout(300)
         secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]
-        dupId = next((s for s in secs if s not in ('feature', 'items')), None)
+        dupId = next((s for s in secs if s.startswith('sec')), None)
         ops0 = await ev(pg, f"{P}.ops()")
         phs = await ev(pg, f"{P}.photos()"); altA = next((x['asset'] for x in phs if x.get('asset')), None)
         await apply(pg, ops0 + [{'t': 'edit', 'id': dupId + '__F_b0', 'text': '複製の本文'}, {'t': 'replace', 'id': dupId + '__F_p0', 'asset': altA}])
@@ -449,7 +449,7 @@ async def main():
         # S22 特集を複製 → 複製側で 塊の外へ移動・文字貼り付け・並び替え → draft() の参照がすべて sec*__…
         pg = await fresh()
         await ev(pg, f"{P}.sectionDuplicate('feature')"); await pg.wait_for_timeout(300)
-        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupId = next((s for s in secs if s not in ('feature', 'items')), None)
+        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupId = next((s for s in secs if s.startswith('sec')), None)
         ops0 = await ev(pg, f"{P}.ops()")
         extra = [
             {'t': 'move', 'device': 'pc', 'items': [{'id': dupId + '__F_b0', 'mode': 'M2', 'anchor': 'F_p0', 'gapY': 40, 'x': 120}]},
@@ -480,7 +480,7 @@ async def main():
         # S24 S22 の後、元の特集を消す → 開き直す → 複製側の位置が同じ
         pg = await fresh()
         await ev(pg, f"{P}.sectionDuplicate('feature')"); await pg.wait_for_timeout(300)
-        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupId = next((s for s in secs if s not in ('feature', 'items')), None)
+        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupId = next((s for s in secs if s.startswith('sec')), None)
         ops0 = await ev(pg, f"{P}.ops()")
         await apply(pg, ops0 + [{'t': 'move', 'device': 'pc', 'items': [{'id': dupId + '__F_b0', 'mode': 'M2', 'anchor': 'F_p0', 'gapY': 40, 'x': 120}]}])
         g_before = (await ev(pg, f"{P}.geometry()")).get(dupId + '__F_b0')
@@ -512,7 +512,7 @@ async def main():
         # S27 品のセクションを複製 → 複製側の I_kanmi を書き換え（元は変わらない・キーは sec*__I_kanmi）
         pg = await fresh()
         await ev(pg, f"{P}.sectionDuplicate('items')"); await pg.wait_for_timeout(300)
-        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupI = next((s for s in secs if s not in ('feature', 'items')), None)
+        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupI = next((s for s in secs if s.startswith('sec')), None)
         ops0 = await ev(pg, f"{P}.ops()")
         await apply(pg, ops0 + [{'t': 'edit', 'id': dupI + '__I_kanmi', 'text': '複製の甘味処'}])
         d = await draft_obj(pg); cont = d.get('content') or {}; r1 = await rt_ok(pg); _pg_keys_seen |= set((d.get('_pg') or {}).keys())

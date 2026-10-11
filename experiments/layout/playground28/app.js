@@ -27,7 +27,10 @@ const PG = (function () {
   const canonId = (id) => { const c = HG_MEMBERS[bareOf(id)]; return c ? withPfx(prefixOf(id), c) : id; };
   const isAdded = (id) => /^addp?_/.test(id);
   const isDraggable = (id) => TEMPLATE_DRAG.includes(bareOf(canonId(id))) || isAdded(id);
-  const isText = (id) => { const b = bareOf(id); return /^F_[hb]\d$|^add_/.test(b) || /^card_(name|desc|price)_/.test(b) || /^row_(name|desc|price)_/.test(b) || b === "I_kanmi" || b === "I_time"; };
+  // 試験台28：新しいページ（ヘッダー・フッター・MENU・CONTACT）の文字の素の ID
+  const NEW_TEXT_BARE = new Set(["logo", "fname", "faddr", "fcopy", "men", "mtitle", "cen", "ctitle", "clead"]);
+  const isNewText = (b) => NEW_TEXT_BARE.has(b) || /^(mg_|mc_|mt_|cl_|ci_)/.test(b);
+  const isText = (id) => { const b = bareOf(id); return /^F_[hb]\d$|^add_/.test(b) || /^card_(name|desc|price)_/.test(b) || /^row_(name|desc|price)_/.test(b) || b === "I_kanmi" || b === "I_time" || isNewText(b); };
   // そのパーツが属するセクション（インスタンス ID）。anchor は "feature"/"items"、複製・追加は "sec3" 等。
   // §2.7（試験台24）土台にある足した部品にも効くよう、add op が記録の列に無ければ土台（state.base._pg.adds）も見る。
   const secOf = (id) => { const t = instTag(id); if (t) return t; if (isAdded(id)) { const op = activeOps().find((o) => o.t === "add" && o.id === id); if (op) return op.section; const ba = ((state.base && state.base.added) || []).find((a) => a.id === id); if (ba) return ba.section || secOf(ba.anchor); return "items"; } return id.startsWith("F_") ? "feature" : "items"; };
@@ -66,6 +69,11 @@ const PG = (function () {
     if (/^card_name_/.test(b)) return "cardName"; if (/^card_desc_/.test(b)) return "cardDesc"; if (/^card_price_/.test(b)) return "cardPrice";
     if (/^row_name_/.test(b)) return "tName"; if (/^row_desc_/.test(b)) return "tDesc"; if (/^row_price_/.test(b)) return state.device === "pc" ? "tPriceR" : "tPriceL";
     if (b === "I_kanmi") return "kanmiLbl"; if (b === "I_time") return "kanmiTime"; if (b === "I_pilltext") return "pill";
+    // 試験台28：新しいページの文字の段
+    if (b === "logo") return "navLogo"; if (b === "fname") return "footName"; if (b === "faddr" || b === "fcopy") return "footText";
+    if (b === "men" || b === "cen") return "pageEn"; if (b === "mtitle" || b === "ctitle") return "pageTitle";
+    if (/^mg_/.test(b)) return "menuGroup"; if (/^mc_/.test(b)) return "menuCat"; if (/^mt_/.test(b)) return "kanmiTime";
+    if (b === "clead" || /^ci_/.test(b)) return "featBody"; if (/^cl_/.test(b)) return "contactLabel";
     if (/^add_/.test(b)) { const a = reduce(activeOps()).added.find((a) => a.id === id); return a ? (a.styleName || "featBody") : "featBody"; }
     return null;
   }
@@ -155,9 +163,21 @@ const PG = (function () {
     map: { lat: 34.728, lng: 135.305, addr: "兵庫県芦屋市大原町0-0" },
     order: "https://example.com/order",            // 仮（見本に 品の注文先 が無い）
   };
-  // サイトのページ：site.json の pages（ナビに出る3つ）。日本語の名前はこの試験台で割り当て（報告する）。
-  const PAGES = [{ id: "pg_home", label: "トップ", slug: "/" }, { id: "pg_menu", label: "お品書き", slug: "/menu" }, { id: "pg_contact", label: "アクセス", slug: "/contact" }];
-  const SECTION_LABELS = { feature: "芦屋堂の味", items: "おすすめの品" };
+  // サイトのページ：site.json の pages（ナビに出る3つ）。ナビの名前は作業票 §1 の TOP・お品書き・アクセス。
+  const PAGES = [{ id: "pg_home", label: "TOP", slug: "/" }, { id: "pg_menu", label: "お品書き", slug: "/menu" }, { id: "pg_contact", label: "アクセス", slug: "/contact" }];
+  const PAGE_IDS = PAGES.map((p) => p.id);
+  // 試験台28：各ページの既定セクションの並び（下書きが無い・配列のときの初期値）。塊で組む・部品 ID はセクションで一意（非 anchor は prefixIds が <secId>__ を付ける）。
+  const PAGE_DEF = {
+    pg_home: [{ id: "feature", type: "feature" }, { id: "items", type: "items" }],
+    pg_menu: [{ id: "menuhdr", type: "menuHdr" }, { id: "menu", type: "menu" }],
+    pg_contact: [{ id: "contacthdr", type: "contactHdr" }, { id: "contact", type: "contact" }],
+  };
+  // ヘッダー・フッターは全ページ共通の固定セクション（動かせない・消せない＝下書きに並びを持たない。作業票 §2.3・ユーザー指示）。
+  const REGION_HEAD = { id: "header", type: "header" }, REGION_FOOT = { id: "footer", type: "footer" };
+  const pageLabelOf = (id) => (PAGES.find((p) => p.id === id) || {}).label || id;
+  // セクション ID → 置かれているページ ID（header/footer は "@region"）。duplicate(sec*)も含めて secMap から引く。
+  const PAGE_CONTENT_KEY = { menuHdr: "menuHdr", menu: "menu", contactHdr: "contactHdr", contact: "contact", header: "header", footer: "footer" };
+  const SECTION_LABELS = { feature: "芦屋堂の味", items: "おすすめの品", header: "ヘッダー", footer: "フッター", menuhdr: "お品書きの帯", menu: "お品書き", contacthdr: "アクセスの帯", contact: "アクセス" };
   const friendlySec = (sec) => SECTION_LABELS[sec] || SECTION_LABELS[secOf(sec)] || "セクション";
   const STORE_KINDS = ["tel", "mail", "instagram", "line", "map", "order"];
   function storeHas(kind) { const v = STORE[kind === "tel" ? "tel" : kind === "mail" ? "mail" : kind]; if (kind === "tel") return !!(STORE.tel && STORE.tel.digits); if (kind === "map") return !!STORE.map; return !!v; }
@@ -476,7 +496,7 @@ const PG = (function () {
   }
 
   // §24 base＝お店の下書き（4.9 の今の形）。null は「最初の形＝空の下書き（テンプレートのまま）」。reduce は base から種まきして ops を畳む。
-  let state = { device: "pc", ops: [], cursor: 0, undoBase: 0, base: null, shopBase: null, shopSeq: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), pendingNewText: null, fixedSections: false, preview: false, viewing: null, viewBackup: null, restoreUndo: null, recentColors: [], droppedRuns: [] };
+  let state = { device: "pc", page: "pg_home", ops: [], cursor: 0, undoBase: 0, base: null, shopBase: null, shopSeq: 0, selected: new Set(), selectedSection: null, editing: null, peek: false, clipboard: null, addSeq: 0, secSeq: 0, secList: defaultSecList(), secMap: null, secPageMap: {}, pendingNewText: null, fixedSections: false, preview: false, viewing: null, viewBackup: null, restoreUndo: null, recentColors: [], droppedRuns: [] };
   let scale = 1, layoutCount = 0, composing = false;
   // §25 §2.3 縮め方の切り替え：既定は見た目だけ縮める transform:scale（A）。アドレス末尾 ?scale=zoom のときだけ CSS の zoom で縮める（B）。
   //   DATA_SPEC 4.11 ②：縮めた中での書き換えは iPhone の Safari で崩れやすい。崩れたら縮め方を変える。
@@ -559,6 +579,21 @@ const PG = (function () {
     if ((m = b.match(/^row_(name|desc|price)_(.+)$/)) && c.table) { const row = c.table.find((x) => x.id === m[2]); if (row) row[m[1]] = text; return true; }
     if (b === "I_kanmi") { c.kanmiLabel = text; return true; }   // §X37 甘味処の見出し（b-anchor/model.mjs の kanmiLabel）
     if (b === "I_time") { c.kanmiTime = text; return true; }     // §X37 提供時間（kanmiTime）
+    // 試験台28：新しいページの文字（ヘッダー・フッター・MENU帯・CONTACT帯・MENU本体・CONTACT本体）
+    if (b === "logo") { c.logo = text; return true; }
+    if (b === "fname") { c.name = text; return true; } if (b === "faddr") { c.addr = text; return true; } if (b === "fcopy") { c.copy = text; return true; }
+    if (b === "men" || b === "cen") { c.en = text; return true; } if (b === "mtitle" || b === "ctitle") { c.title = text; return true; }
+    if (c.groups) {   // MENU 本体：括りの見出し・提供時間・品の名前/説明/価格
+      if ((m = b.match(/^mg_(.+)$/))) { const g = c.groups.find((x) => x.id === m[1]); if (g) g.name = text; return true; }
+      if ((m = b.match(/^mt_(.+)$/))) { const g = c.groups.find((x) => x.id === m[1]); if (g) g.time = text; return true; }
+      if ((m = b.match(/^mc_(.+)$/))) { for (const g of c.groups) { const cat = g.cats.find((x) => x.id === m[1]); if (cat) { cat.name = text; return true; } } return true; }
+      if ((m = b.match(/^row_(name|desc|price)_(.+)$/))) { for (const g of c.groups) for (const cat of g.cats) { const row = cat.rows.find((x) => x.id === m[2]); if (row) { row[m[1]] = text; return true; } } return true; }
+    }
+    if (c.rows && Array.isArray(c.rows)) {   // CONTACT 本体：リード文・各行のラベル/値
+      if (b === "clead") { c.lead = text; return true; }
+      if ((m = b.match(/^cl_(.+)$/))) { const r = c.rows.find((x) => x.id === m[1]); if (r) r.label = text; return true; }
+      if ((m = b.match(/^ci_(.+)$/))) { const r = c.rows.find((x) => x.id === m[1]); if (r) r.value = text; return true; }
+    }
     return false;
   }
   function routeReplaceAsset(secContent, pid, asset) {
@@ -570,28 +605,41 @@ const PG = (function () {
   // ---- §24b（試験台24b）土台（4.9 の下書き）→ reduce の入れ物に種まきする（seed）----
   // base が null＝最初の形。secContent はテンプレ＋_pg.rows（品・表の行）から組み、文字・写真は content[] から戻す。
   // 幾何は adjust[端末] から（4.9.1）。足した部品は added[]＋adjust から内部の adds エントリに組み直す（描画ループは不変）。
-  const tmplSliceOf = (inst, full) => (inst.id === "feature" || inst.id === "items") ? clone(full[inst.type]) : templateSectionContent(inst.type);
+  const tmplSliceOf = (inst, full) => {
+    if (inst.id === "feature" || inst.id === "items") return clone(full[inst.type]);
+    if (PAGE_CONTENT_KEY[inst.type] && full[PAGE_CONTENT_KEY[inst.type]]) return clone(full[PAGE_CONTENT_KEY[inst.type]]);
+    return templateSectionContent(inst.type);   // 複製した feature/items（sec*）
+  };
+  // 下書きの sections（4.9＋§2.3）→ ページ ID → セクションの並び。配列（試験台27 までの形）は pg_home の並びとして読む。
+  function readSecMap(b) {
+    const def = () => { const m = {}; for (const p of PAGE_IDS) m[p] = clone(PAGE_DEF[p]); return m; };
+    if (!b || !b.sections) return def();
+    if (Array.isArray(b.sections)) { const m = def(); m.pg_home = clone(b.sections); return m; }
+    const m = {}; for (const p of PAGE_IDS) m[p] = clone(b.sections[p] || PAGE_DEF[p]); return m;
+  }
   function seedText(S, id, plain) { if (isAdded(id)) S.editMap[id] = plain; else routeSetContent(S.secContent, id, plain); }
   function seedAsset(S, id, asset) { if (isAdded(id)) S.replaceMap[id] = asset; else routeReplaceAsset(S.secContent, id, asset); }
   function seedFromBase(b, device, full) {
     full = full || base();
+    const secMap = readSecMap(b);
     const S = {
-      secList: (b && b.sections) ? clone(b.sections) : [{ id: "feature", type: "feature" }, { id: "items", type: "items" }],
+      secMap, regionHead: [clone(REGION_HEAD)], regionFoot: [clone(REGION_FOOT)],
       secContent: {}, editMap: {}, replaceMap: {}, adds: [], removed: new Set(),
       m1: {}, m2: {}, order: {}, zmap: {}, sizes: {}, colsMap: {}, swapMap: {}, viewAll: {},
       brightMap: {}, textStyles: {}, runsMap: {}, linkMap: {}, clearL: [], placedFollow: {}, placedCleared: new Set(),
       baseSource: {},
     };
-    if (!b) { S.secContent = { feature: full.feature, items: full.items }; return S; }
-    // 1. secContent＝テンプレの初めの中身に、_pg.rows（品・表の行の器ごと）を差し込む。
+    // 1. secContent＝全セクション（ヘッダー・フッター＋全ページ）のテンプレの初めの中身に、_pg.rows を差し込む。
     // feature/items は、セクションから消されていても必ず持つ（reduce/描画が content.feature/items を前提にするため）。
     S.secContent = { feature: clone(full.feature), items: clone(full.items) };
-    for (const inst of S.secList) {
+    const seedSecs = [...S.regionHead, ...PAGE_IDS.flatMap((p) => secMap[p]), ...S.regionFoot];
+    for (const inst of seedSecs) {
       const sc = tmplSliceOf(inst, full);
-      const rows = b._pg && b._pg.rows && b._pg.rows[inst.id];
+      const rows = b && b._pg && b._pg.rows && b._pg.rows[inst.id];
       if (rows) { if (rows.cards) sc.cards = clone(rows.cards); if (rows.table) sc.table = clone(rows.table); }
       S.secContent[inst.id] = sc;
     }
+    if (!b) return S;
     // 2. 足した部品＝added[]＋adjust から内部の adds エントリに戻す（§2.1：下書きの全部の ID → 内部の素の ID に戻す。section は anchor から求める）
     const addedById = {}; for (const a of (b.added || [])) addedById[a.id] = a;
     const secOfRef = (ref) => { const t = instTag(ref); if (t) return t; if (isAdded(ref)) { const aa = addedById[ref]; return aa ? (aa.section || secOfRef(aa.anchor)) : "items"; } return (ref && ref.startsWith("F_")) ? "feature" : "items"; };
@@ -644,7 +692,9 @@ const PG = (function () {
     const full = base();
     // §24 土台から種まき（base が null なら最初の形）。以降の op の畳み込みは試験台23 と同一。
     const S = seedFromBase(state.base, device, full);
-    const secList = S.secList;
+    // 試験台28：セクションの並びはページごと（secMap）＋固定のヘッダー・フッター。セクション操作は op.page のページの並びに効く。
+    const secMap = S.secMap, regionHead = S.regionHead, regionFoot = S.regionFoot;
+    const pageListOf = (secId) => { for (const p of PAGE_IDS) if ((secMap[p] || []).some((s) => s.id === secId)) return secMap[p]; return null; };
     const secContent = S.secContent;
     const editMap = S.editMap; const adds = S.adds; const removed = S.removed;
     const m1 = S.m1, m2 = S.m2, clearL = S.clearL; const tpl = {}; const order = S.order; const zmap = S.zmap; const sizes = S.sizes; const colsMap = S.colsMap; const swapMap = S.swapMap;   // §20 列：I_cards→{pc,sp}／§5 左右入替：sec→{pc:{block:bool}}
@@ -682,12 +732,12 @@ const PG = (function () {
       else if (op.t === "template") Object.assign(tpl, op.v);
       else if (op.t === "addCard") { const c = secContent[op.section || "items"]; if (c && c.cards) { const i = c.cards.findIndex((x) => x.id === op.after); if (i >= 0) c.cards.splice(i + 1, 0, clone(op.card)); else c.cards.push(clone(op.card)); } }
       else if (op.t === "addRow") { const c = secContent[op.section || "items"]; if (c && c.table) { const i = c.table.findIndex((x) => x.id === op.after); if (i >= 0) c.table.splice(i + 1, 0, clone(op.row)); else c.table.push(clone(op.row)); } }
-      // §2 セクションの操作（ページの組み立て＝端末共通・1操作1undo）。「このページを元に戻す」では戻さない。
-      else if (op.t === "secMove") { const i = secList.findIndex((s) => s.id === op.id); if (i >= 0) { const j = i + op.delta; if (j >= 0 && j < secList.length) { const [x] = secList.splice(i, 1); secList.splice(j, 0, x); } } }
-      else if (op.t === "secDel") { const i = secList.findIndex((s) => s.id === op.id); if (i >= 0) secList.splice(i, 1); }
-      else if (op.t === "secAdd") { const i = secList.findIndex((s) => s.id === op.afterId); const at = (op.pos != null) ? op.pos : (i >= 0 ? i + 1 : secList.length); secList.splice(at, 0, { id: op.newId, type: op.type, from: "@new" }); secContent[op.newId] = clone(op.content); }
+      // §2 セクションの操作（ページの組み立て＝端末共通・1操作1undo）。「このページを元に戻す」では戻さない。試験台28：op.page のページの並びに効く。
+      else if (op.t === "secMove") { const list = secMap[op.page] || pageListOf(op.id); if (list) { const i = list.findIndex((s) => s.id === op.id); if (i >= 0) { const j = i + op.delta; if (j >= 0 && j < list.length) { const [x] = list.splice(i, 1); list.splice(j, 0, x); } } } }
+      else if (op.t === "secDel") { const list = secMap[op.page] || pageListOf(op.id); if (list) { const i = list.findIndex((s) => s.id === op.id); if (i >= 0) list.splice(i, 1); } }
+      else if (op.t === "secAdd") { const list = secMap[op.page] || secMap[PAGE_IDS[0]]; const i = list.findIndex((s) => s.id === op.afterId); const at = (op.pos != null) ? op.pos : (i >= 0 ? i + 1 : list.length); list.splice(at, 0, { id: op.newId, type: op.type, from: "@new" }); secContent[op.newId] = clone(op.content); }
       else if (op.t === "secDup") {
-        const i = secList.findIndex((s) => s.id === op.afterId); secList.splice(i >= 0 ? i + 1 : secList.length, 0, { id: op.newId, type: op.type, from: op.srcId });
+        const list = secMap[op.page] || pageListOf(op.srcId) || secMap[PAGE_IDS[0]]; const i = list.findIndex((s) => s.id === op.afterId); list.splice(i >= 0 ? i + 1 : list.length, 0, { id: op.newId, type: op.type, from: op.srcId });
         secContent[op.newId] = clone(op.content);
         const dev = (op.edits && op.edits[device]) || {};
         Object.assign(m1, dev.m1 || {}); Object.assign(m2, dev.m2 || {}); Object.assign(zmap, dev.zmap || {});
@@ -716,14 +766,17 @@ const PG = (function () {
       else if (op.t === "elink") { if (op.link) linkMap[op.id] = clone(op.link); else delete linkMap[op.id]; }   // §19 部品まるごとのリンク
       else if (op.t === "resetScope") { if (op.devices.includes(device)) {
         if (op.scope === "page") {
-          // §13.1「このページを元に戻す」＝全セクションのデザインに関わるもの全部（セクションの並び・追加・複製・削除は §2.2 により戻さない＝別 op のため触らない）。
-          for (const k of Object.keys(m1)) delete m1[k]; for (const k of Object.keys(m2)) delete m2[k];
-          for (const k of Object.keys(zmap)) delete zmap[k]; for (const k of Object.keys(sizes)) delete sizes[k];
-          for (const k of Object.keys(colsMap)) delete colsMap[k];   // §20.2.10 列も戻す
-          for (const k of Object.keys(swapMap)) delete swapMap[k];   // §5.2.3 左右入替も戻す
-          for (const k of Object.keys(order)) delete order[k];
-          for (const k of Object.keys(textStyles)) delete textStyles[k]; for (const k of Object.keys(viewAll)) delete viewAll[k];
-          for (const a of adds) placedCleared.add(a.id);   // §3/§4 足した部品は残し、位置だけ自動に戻す
+          // §13.1「このページを元に戻す」＝そのページの全セクションのデザインに関わるもの全部（セクションの並び・追加・複製・削除は §2.2 により戻さない）。
+          // 試験台28：今のページのセクションだけ（op.pageSecs）。古い op（pageSecs 無し）は全ページ＝従来どおり。
+          const ps = op.pageSecs ? new Set(op.pageSecs) : null;
+          const onPage = (k) => !ps || ps.has(secOf(k));
+          for (const k of Object.keys(m1)) if (onPage(k)) delete m1[k]; for (const k of Object.keys(m2)) if (onPage(k)) delete m2[k];
+          for (const k of Object.keys(zmap)) if (onPage(k)) delete zmap[k]; for (const k of Object.keys(sizes)) if (onPage(k)) delete sizes[k];
+          for (const k of Object.keys(colsMap)) if (onPage(k)) delete colsMap[k];   // §20.2.10 列も戻す
+          for (const k of Object.keys(swapMap)) if (!ps || ps.has(k)) delete swapMap[k];   // §5.2.3 左右入替も戻す（鍵はセクションID）
+          for (const k of Object.keys(order)) if (!ps || ps.has(secOf(k))) delete order[k];
+          for (const k of Object.keys(textStyles)) if (onPage(k)) delete textStyles[k]; for (const k of Object.keys(viewAll)) if (onPage(k)) delete viewAll[k];
+          for (const a of adds) if (onPage(a.id)) placedCleared.add(a.id);   // §3/§4 足した部品は残し、位置だけ自動に戻す
         } else {
           const sIds = scopeIds(op.scope, op.id); for (const id of sIds) { delete m1[id]; delete m2[id]; delete zmap[id]; delete sizes[id]; delete colsMap[id]; placedCleared.add(id); }   // §20.2.10 列は大きさと同じ扱い（元の位置に戻すで戻る）
           for (const k of Object.keys(order)) { if ((op.scope === "section" && orderSec(k) === secOf(op.id)) || (op.scope === "part" && (op.id === k || scopeIds("part", op.id).some((pid) => (order[k] || []).includes(pid))))) delete order[k]; }
@@ -731,6 +784,11 @@ const PG = (function () {
         }
       } }
     }
+    // 試験台28：セクション操作のあとで、全セクション（allSecs＝ヘッダー＋全ページ＋フッター）と、今のページの見えるセクション（secList＝ヘッダー＋そのページ＋フッター）を作る。
+    const allSecs = [...regionHead, ...PAGE_IDS.flatMap((p) => secMap[p] || []), ...regionFoot];
+    const secPageMap = {}; for (const inst of regionHead) secPageMap[inst.id] = "@region"; for (const inst of regionFoot) secPageMap[inst.id] = "@region"; for (const p of PAGE_IDS) for (const inst of (secMap[p] || [])) secPageMap[inst.id] = p;
+    const curPage = secMap[state.page] ? state.page : PAGE_IDS[0];
+    const secList = [...regionHead, ...(secMap[curPage] || []), ...regionFoot];   // 今のページで描くセクション
     // 品・表の行を減らす（旧 _pg 用・試験台26 では delCards/delRows は空）
     for (const [inst, set] of Object.entries(delCards)) { const c = secContent[inst]; if (c && c.cards) c.cards = c.cards.filter((x) => !set.has(x.id)); }
     for (const [inst, set] of Object.entries(delRows)) { const c = secContent[inst]; if (c && c.table) c.table = c.table.filter((x) => !set.has(x.id)); }
@@ -741,7 +799,7 @@ const PG = (function () {
     // 並びの設定を解決（この画面の変更 → 土台 → テンプレの既定）。items セクションごとに cards/table を作る
     const effSpec = (gid) => sourceSess[gid] || baseSource[gid] || templateSource(gid);
     const sourceResolved = {};
-    for (const inst of secList) {
+    for (const inst of allSecs) {
       if (inst.type !== "items") continue;
       const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP;
       const gidC = pfx + "I_cards", gidT = pfx + "I_table";
@@ -786,11 +844,11 @@ const PG = (function () {
     }
     // template 部品の m2/remove（added でないもの）
     const remove = [...removed].filter((id) => !isAdded(id));
-    // 「元の配置を見る」：手で動かした部品・並び替えを元（今の中身からのテンプレ）に戻して見せる（記録は変えない）
-    if (peek) { for (const k in m1) delete m1[k]; for (const k in m2) delete m2[k]; for (const k in order) delete order[k]; for (const k in sizes) delete sizes[k]; }
+    // 「元の配置を見る」：手で動かした部品・並び替えを元（今の中身からのテンプレ）に戻して見せる（記録は変えない）。試験台28：今のページのセクションの部品だけ（§2.2）。
+    if (peek) { const onPage = (k) => secPageMap[secOf(k)] === curPage; for (const k in m1) if (onPage(k)) delete m1[k]; for (const k in m2) if (onPage(k)) delete m2[k]; for (const k in order) if (onPage(k)) delete order[k]; for (const k in sizes) if (onPage(k)) delete sizes[k]; }
     // content は従来どおり anchor（特集・品）のスライスを束ねたもの。インスタンス全体は secContent/secList で持つ。
     const content = { feature: secContent.feature, items: secContent.items };
-    return { content, secContent, secList, m1, m2, added, remove, clear: clearL, tpl, adds, editMap, order, zmap, sizes, colsMap, swapMap, replaceMap, viewAll, brightMap, textStyles, runsMap, linkMap, placedFollow, removedAll: [...removed], effShop, sourceResolved };
+    return { content, secContent, secList, secMap, allSecs, secPageMap, curPage, m1, m2, added, remove, clear: clearL, tpl, adds, editMap, order, zmap, sizes, colsMap, swapMap, replaceMap, viewAll, brightMap, textStyles, runsMap, linkMap, placedFollow, removedAll: [...removed], effShop, sourceResolved };
   }
 
   // ---- §24（試験台24）今の形を作る（fold）：PC・スマホの両方で畳み、1つの下書き（4.9＋_pg）にまとめる ----
@@ -810,7 +868,7 @@ const PG = (function () {
     const pfxRef = (ref, secId) => (!ref || !secId || secId === "feature" || secId === "items" || ref[0] === "@" || isAdded(ref) || ref.indexOf(SEP) >= 0) ? ref : (secId + SEP + ref);
     const putText = (pid, cur, tmpl) => { if (R.runsMap[pid] && runStyledRuns(R.runsMap[pid])) content[pid] = clone(R.runsMap[pid]); else if (cur != null && cur !== tmpl) content[pid] = cur; };
     // 1. テンプレの初めの中身と比べて、違う文字・写真だけ content[] に（特集はブロック、品は甘味処の見出し・時間）
-    for (const inst of R.secList) {
+    for (const inst of R.allSecs) {   // 試験台28：全ページ＋ヘッダー・フッターの文字の差分を拾う（今のページだけでない）
       const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP;
       const slice = R.secContent[inst.id], tmpl = tmplSliceOf(inst, full);
       if (!slice) continue;
@@ -825,6 +883,29 @@ const PG = (function () {
       } else if (inst.type === "items") {
         putText(pfx + "I_kanmi", slice.kanmiLabel, tmpl.kanmiLabel);   // §X37
         putText(pfx + "I_time", slice.kanmiTime, tmpl.kanmiTime);      // §X37
+      } else if (inst.type === "header") { putText(pfx + "logo", slice.logo, tmpl.logo); }
+      else if (inst.type === "footer") { putText(pfx + "fname", slice.name, tmpl.name); putText(pfx + "faddr", slice.addr, tmpl.addr); putText(pfx + "fcopy", slice.copy, tmpl.copy); }
+      else if (inst.type === "menuHdr") { putText(pfx + "men", slice.en, tmpl.en); putText(pfx + "mtitle", slice.title, tmpl.title); }
+      else if (inst.type === "contactHdr") { putText(pfx + "cen", slice.en, tmpl.en); putText(pfx + "ctitle", slice.title, tmpl.title); }
+      else if (inst.type === "menu" && slice.groups) {
+        slice.groups.forEach((g, gi) => { const tg = (tmpl.groups || [])[gi];
+          putText(pfx + "mg_" + g.id, g.name, tg ? tg.name : undefined);
+          if (g.time != null) putText(pfx + "mt_" + g.id, g.time, tg ? tg.time : undefined);
+          (g.cats || []).forEach((cat, ci) => { const tc = tg && tg.cats && tg.cats[ci];
+            putText(pfx + "mc_" + cat.id, cat.name, tc ? tc.name : undefined);
+            (cat.rows || []).forEach((row, ri) => { const tr = tc && tc.rows && tc.rows[ri];
+              putText(pfx + "row_name_" + row.id, row.name, tr ? tr.name : undefined);
+              putText(pfx + "row_desc_" + row.id, row.desc, tr ? tr.desc : undefined);
+              putText(pfx + "row_price_" + row.id, row.price, tr ? tr.price : undefined);
+            });
+          });
+        });
+      } else if (inst.type === "contact" && Array.isArray(slice.rows)) {
+        putText(pfx + "clead", slice.lead, tmpl.lead);
+        slice.rows.forEach((r, i) => { const tr = (tmpl.rows || [])[i];
+          putText(pfx + "cl_" + r.id, r.label, tr ? tr.label : undefined);
+          putText(pfx + "ci_" + r.id, r.value, tr ? tr.value : undefined);
+        });
       }
     }
     // 2. 足した部品の文字・写真（4.9.3「焼き込んだ文字・写真は content[id]」）
@@ -867,7 +948,7 @@ const PG = (function () {
     // 試験台26：並びの設定（② の content[並びID]）＝テンプレの既定と違うときだけ content[gid] に書く（_pg.rows はやめた）
     for (const gid in R.sourceResolved) { const spec = R.sourceResolved[gid]; const tmpl = templateSource(gid); if (canonJSON(spec) !== canonJSON(tmpl)) content[gid] = clone(spec); }
     // §2.2 空の入れ物は書かない（4.9「何もしていない所は書かない」）。何もしていない下書きは {template, sections} だけ。
-    const draft = { template: { name: "wa-01", version: 1 }, sections: clone(R.secList) };
+    const draft = { template: { name: "wa-01", version: 1 }, sections: clone(R.secMap) };   // 試験台28：ページ ID → 並び（§2.3）
     if (state.secSeq || state.addSeq) draft.seq = { sec: state.secSeq, add: state.addSeq };
     if (Object.keys(content).length) draft.content = content;
     if (added.length) draft.added = added;
@@ -893,7 +974,14 @@ const PG = (function () {
 
   function secNode(sec) { return document.getElementById("host_" + sec)?.querySelector("#sec"); }
   const secHostId = (inst) => "host_" + inst.id;
-  function secLabelText(inst) { if (inst.id === "feature") return "FEATURE（芦屋堂の味）"; if (inst.id === "items") return "ITEMS（おすすめの品）"; return (inst.type === "feature" ? "FEATURE" : "ITEMS") + "（複製／追加）"; }
+  function secLabelText(inst) {
+    if (inst.id === "feature") return "FEATURE（芦屋堂の味）"; if (inst.id === "items") return "ITEMS（おすすめの品）";
+    // 試験台28：ヘッダー・フッター（全ページ共通）・MENU・CONTACT のセクション見出し
+    if (inst.type === "header") return "ヘッダー（全ページ共通）"; if (inst.type === "footer") return "フッター（全ページ共通）";
+    if (inst.type === "menuHdr") return "お品書きの帯"; if (inst.type === "menu") return "お品書き本体";
+    if (inst.type === "contactHdr") return "アクセスの帯"; if (inst.type === "contact") return "アクセス本体";
+    return (inst.type === "feature" ? "FEATURE" : "ITEMS") + "（複製／追加）";
+  }
   // §2 複製・追加したセクションの HTML の ID を「セクションID__素のID」に付け替える（builder は素の ID を出すので出力を書き換える）。
   // 足した部品（add_/addp_）はもともと一意なので付け替えない。付いていく先の @section/@abs も付け替えない。
   function prefixIds(html, pfx) {
@@ -940,7 +1028,8 @@ const PG = (function () {
   function render() {
     curGuides = []; curGuidesSec = null;                 // §2 目安の線は離したら消す（再描画で必ずリセット）
     const R = reduce(activeOps(), state.device, state.peek);
-    state.secList = R.secList;                            // §2 今のセクションの並び（undo/redo で再計算されたもの）
+    state.secList = R.secList;                            // §2 今のページで見えるセクションの並び（undo/redo で再計算されたもの）
+    state.secMap = R.secMap; state.secPageMap = R.secPageMap;   // 試験台28：ページごとの並び・セクション→ページ
     ensureHosts();                                        // §2 セクションの並びに合わせて host を用意
     const meas = document.getElementById("meas");
     state.secList.forEach((inst, idx) => {
@@ -981,13 +1070,16 @@ const PG = (function () {
       if (inst.type === "feature") { const sw = R.swapMap[sec] && R.swapMap[sec][state.device]; if (sw) edits.swap = sw; }   // §5 左右入替
       // §20b §2.4 描画時クランプ：記録幅では値段が1行に入らない表を、表示だけ広い幅で描く（記録=edits.sizes には触らず transient な幅を差し込む）
       if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tid = anchor ? "I_table" : (pfx + "I_table"); edits.sizes = Object.assign({}, edits.sizes, { [tid]: Object.assign({}, edits.sizes[tid], { w: state._tableDispW }) }); }
-      const out = (inst.type === "feature" ? M.buildFeature : M.buildItems)(content, state.device, H, edits);
+      const builder = { feature: M.buildFeature, items: M.buildItems, header: M.buildHeader, footer: M.buildFooter, menu: M.buildMenu, contact: M.buildContact, menuHdr: M.buildMenuHdr, contactHdr: M.buildContactHdr }[inst.type] || M.buildFeature;
+      const out = builder(content, state.device, H, edits);
       host.innerHTML = pfx ? prefixIds(out.bodyHtml, pfx) : out.bodyHtml;
       // §20b §2.4 広げるのは右へ（左端は動かさない）＝中央そろえ(margin:auto)を左端固定に上書き
       if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tn = host.querySelector('#host_items [data-el="I_table"]') || host.querySelector('[data-el="I_table"]'); if (tn) { const dw = SPEC.DESIGN_W[state.device]; const recW = (R.sizes && R.sizes["I_table"] && R.sizes["I_table"].w != null) ? R.sizes["I_table"].w : 968; tn.style.marginLeft = ((dw - recW) / 2) + "px"; tn.style.marginRight = "0"; } }
       host._padBottom = out.padBottom;
-      const s = host.querySelector("#sec"); if (s) s.style.background = SPEC.COLORS[secBgName(idx)];   // §2.2 背景は並び順で
+      // §2.2 背景は並び順で（feature/items のみ）。試験台28：ヘッダー（見える並びの先頭）を除いたページ内の順で交互。新しいセクションは builder の背景を残す。
+      if (inst.type === "feature" || inst.type === "items") { const s = host.querySelector("#sec"); if (s) s.style.background = SPEC.COLORS[secBgName(idx - 1)]; }
     });
+    fillNav(R);           // 試験台28：ヘッダー・フッターのナビを今のページで組む（host の中身を作ったあと）
     applyTextStyles(R);   // §12：文字の箱まるごとの大きさ・太さ・色を当てる（実測・配置の前に）
     layoutScale();
     // §20b §2.4 記録幅では値段が1行に入らない表を、表示だけ右へ広げて描き直す（記録は変えない・左端固定・中身の右端で頭打ち）
@@ -1004,6 +1096,33 @@ const PG = (function () {
     renderFixedSections();   // §22 §7 仮の一番上・一番下（setFixedSections のときだけ）
     if (typeof onRender === "function") onRender();
   }
+
+  // ---- 試験台28：ページを移る（ヘッダー・フッターのナビ） ----
+  // ナビはページの名前から自動で作る（ダブルクリックでの書き換えはしない・§2.2）。押して離せば移る／ドラッグはしない（ナビ部品の移動は後続ステージ）。
+  function fillNav(R) {
+    const wrap = document.getElementById("sectionwrap"); if (!wrap) return;
+    const cur = (R && R.curPage) || state.page;
+    const html = PAGES.map((p) => { const on = p.id === cur; return `<span class="navitem${on ? " on" : ""}" data-page="${p.id}" style="cursor:pointer;white-space:nowrap;color:${SPEC.COLORS.onDark};font-family:${SPEC.FONT.heading};font-weight:${on ? 700 : 500};opacity:${on ? 1 : 0.8}${on ? ";text-decoration:underline;text-underline-offset:6px" : ""}">${escH(p.label)}</span>`; }).join("");
+    for (const navEl of wrap.querySelectorAll('[data-kind="nav"]')) {
+      navEl.innerHTML = html;
+      for (const sp of navEl.querySelectorAll(".navitem")) {
+        sp.addEventListener("mousedown", (e) => { e.stopPropagation(); });   // 選択・ドラッグを始めない（押して離せば移る）
+        sp.addEventListener("click", (e) => { e.stopPropagation(); e.preventDefault(); setPage(sp.getAttribute("data-page")); });
+      }
+    }
+  }
+  // ページを移る（編集の中＝よそへは飛ばない）。移る前に書き換え・見せる範囲をふつうに終える。移ったらページの一番上・選択を外す（§2.2）。
+  function setPage(pg) {
+    if (!PAGES.find((p) => p.id === pg) || state.page === pg) return false;
+    if (state.editing) commitEdit();
+    if (state.peek) peekOff();
+    state.page = pg; state.selected = new Set(); state.selectedSection = null;
+    render();
+    try { window.scrollTo(0, 0); const wrap = document.getElementById("sectionwrap"); if (wrap) wrap.scrollTop = 0; } catch (e) {}
+    if (typeof onRender === "function") onRender();
+    return true;
+  }
+  const currentPage = () => state.page;
 
   // §12：手直しのある文字の部品に、大きさ（この端末の見える値）・太さ・色を当てる。手直しが無ければ触らない（＝テンプレのまま）。
   function applyTextStyles(R) {
@@ -1166,11 +1285,13 @@ const PG = (function () {
   }
   // §2.3 入口：今の並び順のセクション `[{id, type, bg, top, height}]`（bg は背景の色の名前・top/height は今の端末の設計 px）。
   function sectionListApi() {
-    const out = []; let topAcc = 0;
-    state.secList.forEach((inst, idx) => {
+    // 試験台28：並べ替え・追加・削除できるのは今のページの中身のセクションだけ。ヘッダー・フッター（固定のチめ・§2.1）は並びに出さない。背景の交互はページ内の順で。
+    const out = []; let topAcc = 0; let pageIdx = 0;
+    state.secList.forEach((inst) => {
+      if (inst.type === "header" || inst.type === "footer") return;
       const s = secNode(inst.id); const h = s ? s.getBoundingClientRect().height / scale : 0;
-      out.push({ id: inst.id, type: inst.type, bg: secBgName(idx), top: +topAcc.toFixed(2), height: +h.toFixed(2) });
-      topAcc += h;
+      out.push({ id: inst.id, type: inst.type, bg: secBgName(pageIdx), top: +topAcc.toFixed(2), height: +h.toFixed(2) });
+      topAcc += h; pageIdx++;
     });
     return out;
   }
@@ -1270,6 +1391,18 @@ const PG = (function () {
 
   // ---- 履歴 ----
   function commit(op) { state.restoreUndo = null; state.ops = state.ops.slice(0, state.cursor); state.ops.push(op); state.cursor++; render(); scheduleSave(); }
+  // 試験台28：op が効くページ（別ページのことを戻すときは、そのページに移ってから戻す・§2.2）。section ops は op.page、部品の op は secPageMap。
+  function opPage(op) {
+    if (!op) return null;
+    if (op.page) return op.page;
+    const id = op.id || (op.items && op.items[0] && op.items[0].id) || (op.keys && partIdOfBox(op.keys[0])) || op.sec;
+    if (!id) return null;
+    const pg = (state.secPageMap || {})[secOf(id)];
+    return (pg && pg !== "@region") ? pg : null;
+  }
+  const opPartId = (op) => op && (op.id || (op.items && op.items[0] && op.items[0].id) || op.sec) || null;
+  // 別ページの op を戻す/やり直すとき、そのページに移り、戻した部品を選んだ状態にする（§2.2）
+  function crossPageFor(op) { const pg = opPage(op); if (pg && pg !== state.page) { state.page = pg; const pid = opPartId(op); state.selected = pid ? new Set([canonId(pid)]) : new Set(); state.selectedSection = null; return true; } return false; }
   function undo() {
     if (state.viewing) return;
     if (state.restoreUndo) { const r = state.restoreUndo; state.restoreUndo = null; state.base = r.base; state.ops = r.ops; state.cursor = r.cursor; state.undoBase = r.undoBase; state.secSeq = r.secSeq; state.addSeq = r.addSeq; state.shopBase = r.shopBase; render(); scheduleSave(); return; }   // §22 §6.5「この版を下書きにする」は戻す1回で元の下書き（①・②）へ
@@ -1277,6 +1410,7 @@ const PG = (function () {
     if (state.cursor <= state.undoBase) return;   // §23c X34：戻すものが無ければ何もしない（書き換えの状態もカーソルも触らない＝PowerPoint と同じ）。§22 §2.4 開き直した後の「戻す」も undoBase まで（undoBase に着いた後の Cmd+Z も何もしない）
     state.cursor--;
     const op = state.ops[state.cursor];
+    crossPageFor(op);   // 試験台28：別ページの手直しは、そのページに移って戻す
     render();
     if (op && op.t === "edit" && op._ses) reenterEditSession(op.id, diffIndex(op.runs ? runsPlain(op.runs) : (op.text || ""), rawText(op.id)));   // §23b 戻すと書き換えに入り直し、戻した所にカーソル
     else if (state.editing) endEditSilently();
@@ -1288,12 +1422,13 @@ const PG = (function () {
     if (state.cursor >= state.ops.length) return;
     const op = state.ops[state.cursor];
     state.cursor++;
+    crossPageFor(op);   // 試験台28：別ページの手直しのやり直しも、そのページに移る
     render();
     if (op && op.t === "edit" && op._ses) reenterEditSession(op.id, op.editCaret != null ? op.editCaret : rawText(op.id).length);   // §23b やり直しも細かく・入り直す
     else if (state.editing) endEditSilently();
     scheduleSave();
   }
-  function reset() { state.base = null; state.shopBase = null; state.shopSeq = 0; state.ops = []; state.cursor = 0; state.undoBase = 0; state.restoreUndo = null; state.secSeq = 0; state.addSeq = 0; state.selected = new Set(); state.selectedSection = null; state.editing = null; state.secList = defaultSecList(); _versions = initialVersions(); _saveStatus = "saved"; _simErr = false; render(); }
+  function reset() { state.base = null; state.shopBase = null; state.shopSeq = 0; state.ops = []; state.cursor = 0; state.undoBase = 0; state.restoreUndo = null; state.secSeq = 0; state.addSeq = 0; state.page = "pg_home"; state.selected = new Set(); state.selectedSection = null; state.editing = null; state.secList = defaultSecList(); _versions = initialVersions(); _saveStatus = "saved"; _simErr = false; render(); }
 
   // ===================== §24（試験台24）保存（IndexedDB・自動保存）：今の形（4.9＋_pg）を保存する =====================
   // 鍵は draft（今の形）／versions（版ごとに今の形）／assets（写真 ID→データ・5.2）／settings（編集の設定・最近使った色）。
@@ -1508,10 +1643,13 @@ const PG = (function () {
   const isAnchorSec = (id) => (id === "feature" || id === "items");
   // 足す・複製の見本：テンプレの文章そのまま。写真は「まだない写真」＝素材なし（薄い枠）。
   function templateSectionContent(type) { const c = clone(type === "feature" ? base().feature : base().items); if (type === "feature") (c.blocks || []).forEach((b) => { if (b.photo) b.photo.asset = ""; }); else (c.cards || []).forEach((cd) => { if (cd.photo) cd.photo.asset = ""; }); return c; }
-  function sectionMove(id, delta) { const list = reduce(activeOps()).secList; const i = list.findIndex((s) => s.id === id); if (i < 0 || i + delta < 0 || i + delta >= list.length) return; commit({ t: "secMove", id, delta }); }
-  function sectionDelete(id) { const list = reduce(activeOps()).secList; if (list.length <= 1 || !list.find((s) => s.id === id)) return; if (state.selectedSection === id) state.selectedSection = null; commit({ t: "secDel", id }); }
-  function sectionAdd(pos, type) { const list = reduce(activeOps()).secList; const newId = "sec" + (++state.secSeq); const afterId = pos > 0 ? (list[pos - 1] || {}).id : null; commit({ t: "secAdd", newId, type, pos, afterId, content: templateSectionContent(type) }); state.selectedSection = null; }
+  // 試験台28：セクション操作はそのセクションのあるページの並びに効く（ヘッダー・フッター＝@region は操作不可）。
+  const pageOfSec = (id) => { const pg = reduce(activeOps()).secPageMap[id]; return (pg && pg !== "@region") ? pg : null; };
+  function sectionMove(id, delta) { const pg = pageOfSec(id); if (!pg) return; const list = reduce(activeOps()).secMap[pg]; const i = list.findIndex((s) => s.id === id); if (i < 0 || i + delta < 0 || i + delta >= list.length) return; commit({ t: "secMove", id, delta, page: pg }); }
+  function sectionDelete(id) { const pg = pageOfSec(id); if (!pg) return; const list = reduce(activeOps()).secMap[pg]; if (list.length <= 1 || !list.find((s) => s.id === id)) return; if (state.selectedSection === id) state.selectedSection = null; commit({ t: "secDel", id, page: pg }); }
+  function sectionAdd(pos, type) { const pg = state.page; const list = reduce(activeOps()).secMap[pg]; const newId = "sec" + (++state.secSeq); const afterId = pos > 0 ? (list[pos - 1] || {}).id : null; commit({ t: "secAdd", newId, type, pos, afterId, content: templateSectionContent(type), page: pg }); state.selectedSection = null; }
   function sectionDuplicate(id) {
+    const pg = pageOfSec(id); if (!pg) return;   // 試験台28：ヘッダー・フッターは複製不可
     const R0 = reduce(activeOps()); const idx = R0.secList.findIndex((s) => s.id === id); if (idx < 0) return;
     const type = R0.secList[idx].type; const newId = "sec" + (++state.secSeq); const pfx = newId + SEP;
     const srcPfx = isAnchorSec(id) ? "" : id + SEP;
@@ -1537,10 +1675,10 @@ const PG = (function () {
     for (const k in Rpc.brightMap) if (ownPart(k)) shared.bright[remap(k)] = Rpc.brightMap[k];
     for (const cid of Rpc.clear) if (ownPart(cid)) shared.clear.push(remap(cid));
     const added = Rpc.adds.filter((a) => a.section === id).map((a) => ({ ...clone(a), id: (a.kind === "photo" ? "addp_" : "add_") + (++state.addSeq), section: newId }));
-    commit({ t: "secDup", srcId: id, afterId: id, newId, type, content, edits: { pc: perDev(Rpc), sp: perDev(Rsp), ...shared }, added });
+    commit({ t: "secDup", srcId: id, afterId: id, newId, type, content, edits: { pc: perDev(Rpc), sp: perDev(Rsp), ...shared }, added, page: pg });
   }
   // §2 入口の補助（操作ボタンの出し分け）：上下の端・唯一のセクションか
-  function sectionCan(id) { const list = reduce(activeOps()).secList; const i = list.findIndex((s) => s.id === id); return { up: i > 0, down: i >= 0 && i < list.length - 1, del: list.length > 1, exists: i >= 0 }; }
+  function sectionCan(id) { const R = reduce(activeOps()); const pg = R.secPageMap[id]; if (!pg || pg === "@region") return { up: false, down: false, del: false, exists: false, fixed: pg === "@region" }; const list = R.secMap[pg]; const i = list.findIndex((s) => s.id === id); return { up: i > 0, down: i >= 0 && i < list.length - 1, del: list.length > 1, exists: i >= 0 }; }
 
   // ---- ドラッグ（M1/M2 を離した位置で判定）----
   let drag = null;
@@ -1923,6 +2061,21 @@ const PG = (function () {
       if (mB[b] && c.blocks) return c.blocks[mB[b][0]][mB[b][1]];
       let m; if ((m = b.match(/^card_(name|desc|price)_(.+)$/)) && c.cards) { const x = c.cards.find((x) => x.id === m[2]); return x ? x[m[1]] : ""; }
       if ((m = b.match(/^row_(name|desc|price)_(.+)$/)) && c.table) { const x = c.table.find((x) => x.id === m[2]); return x ? (x[m[1]] || "") : ""; }
+      if (b === "I_kanmi") return c.kanmiLabel || ""; if (b === "I_time") return c.kanmiTime || "";
+      // 試験台28：新しいページの文字
+      if (b === "logo") return c.logo || ""; if (b === "fname") return c.name || ""; if (b === "faddr") return c.addr || ""; if (b === "fcopy") return c.copy || "";
+      if (b === "men" || b === "cen") return c.en || ""; if (b === "mtitle" || b === "ctitle") return c.title || "";
+      if (c.groups) {
+        if ((m = b.match(/^mg_(.+)$/))) { const g = c.groups.find((x) => x.id === m[1]); return g ? g.name : ""; }
+        if ((m = b.match(/^mt_(.+)$/))) { const g = c.groups.find((x) => x.id === m[1]); return g ? (g.time || "") : ""; }
+        if ((m = b.match(/^mc_(.+)$/))) { for (const g of c.groups) { const cat = g.cats.find((x) => x.id === m[1]); if (cat) return cat.name; } return ""; }
+        if ((m = b.match(/^row_(name|desc|price)_(.+)$/))) { for (const g of c.groups) for (const cat of g.cats) { const x = cat.rows.find((x) => x.id === m[2]); if (x) return x[m[1]] || ""; } return ""; }
+      }
+      if (c.rows && Array.isArray(c.rows)) {
+        if (b === "clead") return c.lead || "";
+        if ((m = b.match(/^cl_(.+)$/))) { const r = c.rows.find((x) => x.id === m[1]); return r ? r.label : ""; }
+        if ((m = b.match(/^ci_(.+)$/))) { const r = c.rows.find((x) => x.id === m[1]); return r ? r.value : ""; }
+      }
     }
     const a = R.adds.find((a) => a.id === id); if (a) return R.editMap[id] != null ? R.editMap[id] : a.text;
     return elNode(id)?.textContent || "";
@@ -2237,7 +2390,7 @@ const PG = (function () {
   const styleOf = (id) => (/_h\d$/.test(id) || id === "F_h0" ? "featHead" : "featBody");
 
   // ---- 戻す（§4）----
-  function resetScope(scope, id, devices) { commit({ t: "resetScope", scope, id: id || (scope === "part" ? [...state.selected][0] : "F_h0"), devices: devices || [state.device] }); }
+  function resetScope(scope, id, devices) { const op = { t: "resetScope", scope, id: id || (scope === "part" ? [...state.selected][0] : "F_h0"), devices: devices || [state.device] }; if (scope === "page") op.pageSecs = (reduce(activeOps()).secMap[state.page] || []).map((s) => s.id); commit(op); }
   // §2.1（N1）：位置・大きさ・並び順・重なり順のどれか1つでもテンプレから変わっていれば「元の位置に戻す」を出す
   function partChangedFromTemplate(id) {
     const c = canonId(id); const R = reduce(activeOps());
@@ -3120,6 +3273,8 @@ const PG = (function () {
     canUndo: () => !!state.restoreUndo || state.cursor > state.undoBase, canRedo: () => !state.restoreUndo && state.cursor < state.ops.length,
     canonId, isDraggable, isText, REPEAT, groupOf, secOf, elNode, getScale: () => scale, scaleMode: () => SCALE_MODE, isHeadingGroup, inputMode, relayout,
     sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionCan,   // §2 セクションの操作
+    setPage, currentPage, pages: () => PAGES.map((p) => ({ ...p })), pageOfSec,   // 試験台28：ページの移動
+    secMapNow: () => clone(reduce(activeOps()).secMap),
     beginDrag, dragMove, endDrag, isDragging: () => !!drag, selectOnly, toggleSel, selectMany, clearSel, selectSection, selectInDesignRect, smallHit,
     startEdit, commitEdit, nudge, nudgeSelected, deleteSelected, copySelection, cutSelection, paste, duplicate,
     // 試験台26：① 連動の操作・値段の箱・品を選ぶ一覧・お品書きを見る（WIRING から使う）

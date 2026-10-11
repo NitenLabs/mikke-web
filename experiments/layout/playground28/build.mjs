@@ -6,6 +6,9 @@ import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const L = path.resolve(here, "..");
+// 試験台28：編集の中身（spec / b-anchor / c3-edit / textlayer / _content）は playground28/model/ に写した版を読む。
+// 試験台27 と元の experiments/layout/{lib,b-anchor,c3-edit,playground} は触らない（§0 凍結）。新しいページの builder はこの写し側に足す。
+const LM = path.join(here, "model");
 const ROOT = path.resolve(here, "../../..");
 
 function wrap(name, file, prelude, exports) {
@@ -14,15 +17,15 @@ function wrap(name, file, prelude, exports) {
   return `const ${name} = (function(){\n${prelude}\n${s}\nreturn { ${exports.join(", ")} };\n})();\n`;
 }
 const modelBundle = [
-  wrap("SPEC", path.join(L, "lib/spec.mjs"), "", ["COLORS", "FONT", "FONT_URL", "ROOT_VARS", "STYLES", "DESIGN_W", "textDecls", "setLineBreak", "lbState", "lbOf"]),
-  wrap("RESOLVE", path.join(L, "b-anchor/resolve.mjs"), "", ["resolve", "rebindRemoved"]),
-  wrap("BANCHOR", path.join(L, "b-anchor/model.mjs"), "const {resolve, rebindRemoved}=RESOLVE; const {STYLES}=SPEC;", ["collectTextBoxes", "buildFeature", "buildItems"]),
-  wrap("C3", path.join(L, "c3-edit/model.mjs"), "const {textDecls, STYLES, COLORS, DESIGN_W, lbOf}=SPEC; const {collectTextBoxes: bBoxes}=BANCHOR;", ["collectTextBoxes", "buildFeature", "buildItems", "reanchor", "placeAnchored", "classifyDrop", "reorderWithin", "sectionMinHeight", "friendly", "FRIENDLY", "CLUSTER", "REPEAT_GROUP"]),
+  wrap("SPEC", path.join(LM, "lib/spec.mjs"), "", ["COLORS", "FONT", "FONT_URL", "ROOT_VARS", "STYLES", "DESIGN_W", "textDecls", "setLineBreak", "lbState", "lbOf"]),
+  wrap("RESOLVE", path.join(LM, "b-anchor/resolve.mjs"), "", ["resolve", "rebindRemoved"]),
+  wrap("BANCHOR", path.join(LM, "b-anchor/model.mjs"), "const {resolve, rebindRemoved}=RESOLVE; const {STYLES}=SPEC;", ["collectTextBoxes", "buildFeature", "buildItems"]),
+  wrap("C3", path.join(LM, "c3-edit/model.mjs"), "const {textDecls, STYLES, COLORS, DESIGN_W, lbOf}=SPEC; const {collectTextBoxes: bBoxes}=BANCHOR;", ["collectTextBoxes", "buildFeature", "buildItems", "buildHeader", "buildFooter", "buildMenu", "buildContact", "buildMenuHdr", "buildContactHdr", "reanchor", "placeAnchored", "classifyDrop", "reorderWithin", "sectionMinHeight", "friendly", "FRIENDLY", "CLUSTER", "REPEAT_GROUP"]),
 ].join("\n");
 
 function stripMod(file) { return fs.readFileSync(file, "utf8").replace(/^[ \t]*import\s[^\n]*\n/gm, "").replace(/^[ \t]*export\s+/gm, ""); }
 const budoux = `const BUDOUX = (function(){\n${stripMod(path.join(ROOT, "node_modules/budoux/module/parser.js"))}\n${stripMod(path.join(ROOT, "node_modules/budoux/module/data/models/ja.js"))}\nreturn { Parser, model };\n})();\n`;
-const textlayer = fs.readFileSync(path.join(L, "playground/textlayer.js"), "utf8");
+const textlayer = fs.readFileSync(path.join(LM, "playground/textlayer.js"), "utf8");
 
 const BASE_CSS = `
 #sec{position:relative;overflow:visible}
@@ -38,7 +41,7 @@ const BASE_CSS = `
 `;
 export function coreScript() { return `${budoux}\n${modelBundle}\n${textlayer}\n`; }
 
-const CONTENT = JSON.parse(fs.readFileSync(path.join(L, "playground/_content.json"), "utf8"));
+const CONTENT = JSON.parse(fs.readFileSync(path.join(LM, "playground/_content.json"), "utf8"));
 // 試験台26：① お店の情報（catalog を含む shop.json まるごと）を焼き込む。品の並び・表はこの catalog から作る。
 const SHOP = JSON.parse(fs.readFileSync(path.join(ROOT, "samples/ashiyado/shop.json"), "utf8"));
 const FONT_LINK = `<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=block">`;
