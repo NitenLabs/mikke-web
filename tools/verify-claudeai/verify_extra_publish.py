@@ -69,8 +69,8 @@ async def main():
     first=await pg.evaluate("document.querySelector('#sectionwrap').firstElementChild.id"); last=await pg.evaluate("document.querySelector('#sectionwrap').lastElementChild.id")
     pl=await pg.evaluate("[...document.querySelectorAll('.sec-add-zone')].map(z=>{const r=z.getBoundingClientRect();return Math.round(r.y+scrollY)})")
     ft=await pg.evaluate("document.getElementById('fixedTop').getBoundingClientRect().bottom+scrollY"); fb=await pg.evaluate("document.getElementById('fixedBottom').getBoundingClientRect().top+scrollY")
-    # 試験台28：間のセクションが特集・品の2つ＋ヘッダー・フッターの計4つになり、境目の＋は 5 か所（各セクションの上下の境目）。全部が仮セクションの中に収まることは不変
-    rec('V2 仮のセクションと右クリック',nsec==2 and '上へ' not in mf0 and '下へ' in mf0 and '下へ' not in mi0 and not mt and '上へ' not in mi and '下へ' in mi and '下へ' not in mf and first=='fixedTop' and last=='fixedBottom' and len(pl)==5 and all(ft-5<=y<=fb+5 for y in pl),
+    # 試験台28：＋は動かせる特集・品の間と上下の 3 か所のみ（記録 12.8＝動かせない・消せないセクション〔ヘッダー・フッター・仮の一番上/下〕の上下には出さない）。全部が仮セクションの中に収まる
+    rec('V2 仮のセクションと右クリック',nsec==2 and '上へ' not in mf0 and '下へ' in mf0 and '下へ' not in mi0 and not mt and '上へ' not in mi and '下へ' in mi and '下へ' not in mf and first=='fixedTop' and last=='fixedBottom' and len(pl)==3 and all(ft-5<=y<=fb+5 for y in pl),
         f"初め 特集={mf0} 品={mi0} 一番上={mt} / 品を上へ後 品={mi} 特集={mf} / 先頭={first} 末尾={last} ＋の位置={pl} 一番上の下端={ft:.0f} 一番下の上端={fb:.0f}")
     await pg.context.close()
 

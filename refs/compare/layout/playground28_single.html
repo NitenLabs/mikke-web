@@ -5873,9 +5873,17 @@ function updateAddZones(){
     const hit=document.createElement("div"); hit.className="sec-add-hit"; hit.setAttribute("data-hit","sec-add"); hit.setAttribute("data-sec-add-hit",String(n));
     hit.onclick=(ev)=>{ ev.stopPropagation(); showTypePicker(n, b.getBoundingClientRect()); }; z.appendChild(hit);
     return z; };
-  wraps.forEach((w)=>wrap.insertBefore(mk([...wrap.querySelectorAll(".sec-wrap")].indexOf(w)),w));
-  const botFixed=document.getElementById("fixedBottom");   // §22 §7：一番下（仮）の下には＋を出さない＝最後の＋はその手前へ
-  if(botFixed) wrap.insertBefore(mk(wraps.length),botFixed); else wrap.appendChild(mk(wraps.length));
+  // 試験台28：＋は「動かせるセクション（そのページの中の並び）」の間と上下だけに出す。
+  // 記録 12.8「一番上の上・一番下の下に＋を出さない」は動かせない・消せないセクションすべてに当たる
+  // ＝ヘッダー・フッター（全ページ共通の regions）や仮の一番上・一番下の外（上・間・下）には出さない。
+  // pos は sectionAdd が使うページの並びの番号（.sec-wrap の通し番号ではない）にする。
+  const page=PG.currentPage&&PG.currentPage();
+  const secMap=PG.secMapNow?PG.secMapNow():null;
+  const movable=(secMap&&page&&secMap[page])?secMap[page].map(s=>s.id):wraps.map(w=>w.getAttribute("data-sec"));
+  for(let i=0;i<movable.length;i++){ const w=wrap.querySelector('.sec-wrap[data-sec="'+movable[i]+'"]'); if(w) wrap.insertBefore(mk(i),w); }   // 各セクションの前（＝その位置に挿入）
+  const lastId=movable[movable.length-1];
+  const lastW=lastId?wrap.querySelector('.sec-wrap[data-sec="'+lastId+'"]'):null;
+  if(lastW){ const after=lastW.nextElementSibling; if(after) wrap.insertBefore(mk(movable.length),after); else wrap.appendChild(mk(movable.length)); }   // 最後の動かせるセクションの下（フッター・仮の一番下の手前）
 }
 let typePicker=null;
 function showTypePicker(pos,anchorRect){
