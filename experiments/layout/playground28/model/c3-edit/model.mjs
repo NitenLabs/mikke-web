@@ -258,12 +258,15 @@ export function buildMenu(content, device, H, edits = {}) {
   const priceW = device === "pc" ? 420 : contW;
   const editMode = edits.editMode !== false;   // 編集中は出ていない品も薄く出す（プレビュー/公開は edits.editMode=false で詰める）
   const rowHtml = (row) => {
-    const name = T(`row_name_${row.id}`, "tName", device, nameW, thtml(H, `row_name_${row.id}`));
+    // §2.4 理由を「名前のすぐ右」に添えるため、理由を出す行は名前の箱を中身ぶんに縮める（max-width で折り返しは nameW のまま）。
+    const hasReason = !!(row.hidden && row.reason);
+    const nameExtra = hasReason ? `width:fit-content;max-width:${px(nameW)}` : "";
+    const name = T(`row_name_${row.id}`, "tName", device, nameW, thtml(H, `row_name_${row.id}`), nameExtra);
     const desc = row.desc ? T(`row_desc_${row.id}`, "tDesc", device, nameW, thtml(H, `row_desc_${row.id}`), "margin-top:8px") : "";
     const price = T(`row_price_${row.id}`, device === "pc" ? "tPriceR" : "tPriceL", device, priceW, thtml(H, `row_price_${row.id}`), (device === "pc" ? "white-space:nowrap" : "margin-top:8px"));
     // §2.4 出ていない品：編集時だけ薄く（0.45）、名前の右に理由。data-hidden で選択・書き換えは普通にできる。
     const fade = row.hidden ? "opacity:0.45;" : "";
-    const reason = (row.hidden && row.reason) ? `<span class="menu-reason" style="margin-left:8px;font:12px/1.4 'Zen Kaku Gothic New',sans-serif;color:${COLORS.textMuted};white-space:nowrap">${row.reason}</span>` : "";
+    const reason = hasReason ? `<span class="menu-reason" style="margin-left:8px;font:12px/1.4 'Zen Kaku Gothic New',sans-serif;color:${COLORS.textMuted};white-space:nowrap">${row.reason}</span>` : "";
     const hattr = row.hidden ? ` data-hidden="1"` : "";
     if (device === "pc") {
       return `<div class="krow"${hattr} style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line};${fade}">

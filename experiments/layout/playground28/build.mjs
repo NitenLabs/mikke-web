@@ -120,6 +120,8 @@ body.pg-preview .sec-add-zone{display:none!important}
 body.pg-preview #photoChangeBtn,body.pg-preview #fmenu,body.pg-preview #pbar,body.pg-preview #pmore{display:none!important}
 body.pg-preview #sectionwrap [data-el]{cursor:default}
 body.pg-preview #sectionwrap [data-lk]{cursor:pointer}
+/* 記録 15.5：プレビュー（お客さんが見る形）・見るだけ（15.6）ではセクションの名前の札を出さない（編集の飾り） */
+body.pg-preview .seclabel,body.pg-viewing .seclabel{display:none}
 /* §22 §6 履歴の板（右・幅300）と、見るだけの帯 */
 #historyBar{position:sticky;top:0;z-index:31;display:none;background:#2a2a2a;color:#fff;padding:8px 12px;align-items:center;gap:10px;font:13px system-ui}
 #historyBar.on{display:flex}
