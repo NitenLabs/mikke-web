@@ -129,9 +129,13 @@ async def main():
     rec('F11 置いてから「このページを元に戻す」',bool(a) and not w2['overlaps'] and not w2['ownerOverlaps'],f'前 ownerOverlaps={len(w1["ownerOverlaps"])} → 後 overlaps={len(w2["overlaps"])} ownerOverlaps={len(w2["ownerOverlaps"])} 写真={len(a)}'); await pg.context.close()
 
     # F12 空の枠を押して、選ぶ画面を取り消す → 何も変わらない
-    pg=await fresh(); r=await bb(pg,'F_p1'); await pg.mouse.click(r['x']+20,r['y']+20); await pg.wait_for_timeout(500); await pg.mouse.click(r['x']+20,r['y']+20,button='right'); await pg.wait_for_timeout(300)
+    pg=await fresh()
+    # 試験台28：ヘッダー追加で F_p1 が下へずれ（y≈1042）、押す点が 1100 の窓の外に出る＝先に画面の真ん中へ入れてから押す（F11 と同じやり方）
+    r=await bb(pg,'F_p1'); await pg.mouse.move(720,600); await pg.mouse.wheel(0, r['y']+r['h']/2-(await tbh(pg)+1100)/2); await pg.wait_for_timeout(400); r=await bb(pg,'F_p1')
+    await pg.mouse.click(r['x']+20,r['y']+20); await pg.wait_for_timeout(500); await pg.mouse.click(r['x']+20,r['y']+20,button='right'); await pg.wait_for_timeout(300)
     await pg.locator('#fmenu button',has_text='写真を外す').first.click(); await pg.wait_for_timeout(400); await pg.mouse.click(5,500); await pg.wait_for_timeout(300)
     n0=await nops(pg)
+    r=await bb(pg,'F_p1'); await pg.mouse.move(720,600); await pg.mouse.wheel(0, r['y']+r['h']/2-(await tbh(pg)+1100)/2); await pg.wait_for_timeout(300); r=await bb(pg,'F_p1')   # 外した後も枠を画面に入れてから中心を押す
     async with pg.expect_file_chooser() as fc: await pg.mouse.click(r['x']+r['w']/2-100,r['y']+r['h']/2-100)
     await (await fc.value).set_files([]); await pg.wait_for_timeout(500)
     ph=[x for x in await pg.evaluate(f"{P}.photos()") if x['part']=='F_p1'][0]

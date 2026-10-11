@@ -34,9 +34,12 @@ async def main():
         r=await bb(pg,part); await pg.mouse.click(r['x']+dx,r['y']+dy,button='right'); await pg.wait_for_timeout(400)
         return await pg.evaluate("[...document.querySelectorAll('#fmenu button')].filter(b=>b.offsetParent).map(b=>[b.textContent.trim(),b.disabled])")
     async def sec_menu(pg,idx):
-        # idx 番目の .sec-wrap（間のセクション）の左上の余白を右クリック
-        await pg.evaluate(f"document.querySelectorAll('#sectionwrap .sec-wrap')[{idx}].scrollIntoView({{block:'start'}})"); await pg.wait_for_timeout(200)
-        r=await pg.evaluate(f"document.querySelectorAll('#sectionwrap .sec-wrap')[{idx}].getBoundingClientRect().toJSON()")
+        # idx が数字＝.sec-wrap の番目／文字＝data-sec（セクション ID）。左上の余白を右クリック
+        # 試験台28：ヘッダー・フッターのセクションが増えて番号がずれるので、特集・品は ID で指す
+        sel=(f"document.querySelector('#sectionwrap .sec-wrap[data-sec=\"{idx}\"]')" if isinstance(idx,str)
+             else f"document.querySelectorAll('#sectionwrap .sec-wrap')[{idx}]")
+        await pg.evaluate(f"{sel}.scrollIntoView({{block:'start'}})"); await pg.wait_for_timeout(200)
+        r=await pg.evaluate(f"{sel}.getBoundingClientRect().toJSON()")
         await pg.mouse.click(r['x']+40,r['y']+60,button='right'); await pg.wait_for_timeout(400)
         return await pg.evaluate("[...document.querySelectorAll('#fmenu [data-sec-menu]')].filter(b=>b.offsetParent).map(b=>b.textContent.trim())")
     async def close_menu(pg):
@@ -54,19 +57,20 @@ async def main():
 
     # V2 仮のセクションを出しているとき：右クリックの「上へ・下へ」、品を上へ動かした後
     pg=await fresh(fixed=True)
-    nsec=await pg.evaluate("document.querySelectorAll('#sectionwrap .sec-wrap').length")
-    mf0=await sec_menu(pg,0); await close_menu(pg); mi0=await sec_menu(pg,1); await close_menu(pg)
+    nsec=await pg.evaluate("[...document.querySelectorAll('#sectionwrap .sec-wrap')].filter(w=>!['header','footer'].includes(w.dataset.sec)).length")   # 試験台28：ヘッダー・フッターを除く間のセクション数（特集・品）
+    mf0=await sec_menu(pg,'feature'); await close_menu(pg); mi0=await sec_menu(pg,'items'); await close_menu(pg)
     tb=await pg.evaluate("(()=>{const r=document.getElementById('fixedTop').getBoundingClientRect();return r.toJSON()})()")
     await pg.evaluate("document.getElementById('fixedTop').scrollIntoView({block:'start'})"); await pg.wait_for_timeout(200)
     tb=await pg.evaluate("document.getElementById('fixedTop').getBoundingClientRect().toJSON()")
     await pg.mouse.click(tb['x']+40,tb['y']+40,button='right'); await pg.wait_for_timeout(400)
     mt=await pg.evaluate("document.getElementById('fmenu').classList.contains('on')?[...document.querySelectorAll('#fmenu button')].filter(b=>b.offsetParent).map(b=>b.textContent.trim()):[]"); await close_menu(pg)
-    await sec_menu(pg,1); await pg.locator('#fmenu [data-sec-menu="上へ"]').click(); await pg.wait_for_timeout(500)
-    mi=await sec_menu(pg,0); await close_menu(pg); mf=await sec_menu(pg,1); await close_menu(pg)
+    await sec_menu(pg,'items'); await pg.locator('#fmenu [data-sec-menu="上へ"]').click(); await pg.wait_for_timeout(500)
+    mi=await sec_menu(pg,'items'); await close_menu(pg); mf=await sec_menu(pg,'feature'); await close_menu(pg)
     first=await pg.evaluate("document.querySelector('#sectionwrap').firstElementChild.id"); last=await pg.evaluate("document.querySelector('#sectionwrap').lastElementChild.id")
     pl=await pg.evaluate("[...document.querySelectorAll('.sec-add-zone')].map(z=>{const r=z.getBoundingClientRect();return Math.round(r.y+scrollY)})")
     ft=await pg.evaluate("document.getElementById('fixedTop').getBoundingClientRect().bottom+scrollY"); fb=await pg.evaluate("document.getElementById('fixedBottom').getBoundingClientRect().top+scrollY")
-    rec('V2 仮のセクションと右クリック',nsec==2 and '上へ' not in mf0 and '下へ' in mf0 and '下へ' not in mi0 and not mt and '上へ' not in mi and '下へ' in mi and '下へ' not in mf and first=='fixedTop' and last=='fixedBottom' and len(pl)==3 and all(ft-5<=y<=fb+5 for y in pl),
+    # 試験台28：間のセクションが特集・品の2つ＋ヘッダー・フッターの計4つになり、境目の＋は 5 か所（各セクションの上下の境目）。全部が仮セクションの中に収まることは不変
+    rec('V2 仮のセクションと右クリック',nsec==2 and '上へ' not in mf0 and '下へ' in mf0 and '下へ' not in mi0 and not mt and '上へ' not in mi and '下へ' in mi and '下へ' not in mf and first=='fixedTop' and last=='fixedBottom' and len(pl)==5 and all(ft-5<=y<=fb+5 for y in pl),
         f"初め 特集={mf0} 品={mi0} 一番上={mt} / 品を上へ後 品={mi} 特集={mf} / 先頭={first} 末尾={last} ＋の位置={pl} 一番上の下端={ft:.0f} 一番下の上端={fb:.0f}")
     await pg.context.close()
 
@@ -233,6 +237,7 @@ async def main():
     nv3=len(await pg.evaluate(f"{P}.versions()")); lb=await label(pg)
     rec('V14 Esc と このまま公開する',closed and nv2==nv and nv3==nv+1 and lb[0]=='公開中と同じです',f"Esc で閉じた={closed} 履歴 {nv}→{nv2}→{nv3} 状態 {lb}")
     # V15 プレビュー：公開の描き方と一致（写真のない枠は詰める）
+    await pg.evaluate(f"{P}.clearSel()"); await pg.wait_for_timeout(150)   # 試験台28：直前の選択が残るとプレビュー比較がぶれる＝V15 の前に選択を外す（Claude.ai）
     await pg.click('#tPreview'); await pg.wait_for_timeout(600)
     res=[]
     for dv in ('pc','sp'):
