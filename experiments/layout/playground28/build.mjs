@@ -164,6 +164,25 @@ button:active{transform:translateY(1px)}
 #elemTools{display:none;align-items:center;gap:4px}
 #cardsTools{display:none;align-items:center;gap:4px}
 #cardsTools .div{width:1px;height:20px;background:#ddd}
+/* 試験台28 §2.5 品を選んだときの道具（販売・出す月・ラベル・メニュー） */
+#itemTools{display:none;align-items:center;gap:4px}
+#itemTools .div{width:1px;height:20px;background:#ddd}
+.itempop{padding:8px;min-width:200px;font:13px system-ui}
+.itempop .ip-opt{display:flex;align-items:center;gap:8px;width:100%;min-height:30px;padding:5px 10px;border:none;background:none;border-radius:6px;cursor:pointer;font:13px system-ui;color:#333;text-align:left}
+.itempop .ip-opt:hover{background:#f3f3f3}
+.itempop .ip-opt[disabled]{opacity:.4;cursor:default;background:none}
+.itempop .ip-opt .ck{flex:0 0 16px;width:16px;height:16px;border:1.5px solid #999;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#06c;background:#fff}
+.itempop .ip-opt.on .ck{border-color:#06c;background:#eef4ff}
+.itempop .ip-opt.cur{color:#06c;font-weight:600}
+.itempop .ip-months{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:4px}
+.itempop .ip-m{min-height:30px;border:1.5px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font:13px system-ui;color:#333}
+.itempop .ip-m.on{border-color:#06c;background:#06c;color:#fff}
+.itempop .ip-any{margin:6px 4px 2px;width:calc(100% - 8px);min-height:30px;border:1.5px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font:13px system-ui;color:#333}
+.itempop .ip-any.on{border-color:#06c;background:#eef4ff;color:#06c;font-weight:600}
+.itempop .ip-newlabel{display:flex;gap:6px;align-items:center;padding:6px 8px;border-top:1px solid #eee;margin-top:4px}
+.itempop .ip-newlabel input{flex:1;min-width:0;border:1px solid #ccc;border-radius:6px;padding:5px 8px;font:13px system-ui}
+.itempop .ip-addbtn{border:none;background:none;color:#06c;font:13px system-ui;cursor:pointer;padding:6px 10px;width:100%;text-align:left;border-radius:6px}
+.itempop .ip-addbtn:hover{background:#eef4ff}
 /* §27 配置（揃え・整列） */
 #alignTools{display:none;align-items:center;gap:4px}
 #alignTools .div{width:1px;height:20px;background:#ddd}
@@ -331,8 +350,11 @@ button:active{transform:translateY(1px)}
 .pmenu{position:fixed;left:0;top:0;z-index:76;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.18);padding:6px;display:none;transform-origin:top left;max-height:260px;overflow:auto}
 .pmenu.on{display:block}
 /* 試験台26：知らせ・値段の箱・品を選ぶ一覧・連動の知らせ・お品書きの板 */
-.pg-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:95;background:#2a2a2a;color:#fff;font:13px/1.5 system-ui;padding:9px 16px;border-radius:8px;box-shadow:0 3px 14px rgba(0,0,0,.3);opacity:0;transition:opacity .15s;pointer-events:none;max-width:84vw;text-align:center}
+.pg-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:95;background:#2a2a2a;color:#fff;font:13px/1.5 system-ui;padding:9px 16px;border-radius:8px;box-shadow:0 3px 14px rgba(0,0,0,.3);opacity:0;transition:opacity .15s;pointer-events:none;max-width:84vw;text-align:center;display:flex;align-items:center;gap:12px;justify-content:center}
 .pg-toast.on{opacity:1}
+.pg-toast.has-undo{pointer-events:auto}
+.pg-toast-undo{background:none;border:none;color:#7fb3ff;font:600 13px system-ui;cursor:pointer;padding:2px 4px;white-space:nowrap}
+.pg-toast-undo:hover{text-decoration:underline}
 .price-box{position:fixed;z-index:88;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 6px 22px rgba(0,0,0,.2);padding:10px;font:13px/1.5 system-ui;width:320px;max-width:92vw}
 .price-box .pb-head{font-weight:700;margin-bottom:8px}
 .price-box .pb-row{display:flex;gap:6px;margin-bottom:6px;align-items:center}
@@ -411,6 +433,7 @@ const UI_BODY = `
   </span>
   <span id="photoTools"><span class="div"></span><button id="tBright" data-photo-tool="brightness">明るさ ▾</button></span>
   <span id="cardsTools"><span class="div"></span><button id="tCols" data-cards-tool="cols">列 ▾</button></span>
+  <span id="itemTools"><span class="div"></span><button id="tSell" data-item-tool="sell">販売 ▾</button><button id="tMonth" data-item-tool="month">出す月 ▾</button><button id="tLabels" data-item-tool="labels">ラベル ▾</button><button id="tMenus" data-item-tool="menus">メニュー ▾</button></span>
   <span id="elemTools"><span class="div"></span><button id="tElemLink" data-elem-tool="link">リンク</button></span>
   <span id="alignTools"><span class="div"></span><button id="tAlign" data-align-tool>配置 ▾</button></span>
   <button id="tMore" data-more-btn>その他 ▾</button>
@@ -470,6 +493,10 @@ const UI_BODY = `
 <div id="colorPop" class="tspop"></div>
 <div id="fontPop" class="tspop"></div>
 <div id="colsPop" class="tspop"></div>
+<div id="sellPop" class="tspop itempop"></div>
+<div id="monthPop" class="tspop itempop"></div>
+<div id="labelPop" class="tspop itempop"></div>
+<div id="menuPop" class="tspop itempop"></div>
 <div id="alignMenu" class="pmenu"></div>
 <div id="linkPanel" data-link-panel></div>
 <div id="linkChip" data-link-chip></div>
@@ -499,7 +526,7 @@ function opText(op){ const nm=id=>C3.friendly(id);
   return op.t; }
 function refreshStudio(){ const ol=document.getElementById("oplog"); if(ol){ ol.innerHTML=""; for(const op of PG.api.ops()){ const li=document.createElement("li"); li.textContent=opText(op); ol.appendChild(li);} }
   const ul=document.getElementById("anchorlist"); if(ul){ ul.innerHTML=""; for(const a of PG.anchorsList()){ const li=document.createElement("li"); li.textContent=a.partName+"："+(a.mode==="M1"?"塊の中でずらす":a.anchorName+"の下（空き"+a.gapY+"）"); ul.appendChild(li);} } }
-window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); if(typeof updateAlignTools==="function") updateAlignTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); if(typeof syncHistoryUI==="function") syncHistoryUI(); };
+window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); if(typeof updateItemTools==="function") updateItemTools(); if(typeof updateAlignTools==="function") updateAlignTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); if(typeof syncHistoryUI==="function") syncHistoryUI(); };
 // §19b（X20）上の道具を常に1段に保ち、入りきらないぶんを「その他 ▾」にしまう（窓の幅で機能を隠さない）
 const toolbarEl=document.getElementById("toolbar");
 const tMore=document.getElementById("tMore");
@@ -511,17 +538,17 @@ moOshinaga.onclick=(e)=>{ e.stopPropagation(); moreMenu.classList.remove("on"); 
 moreMenu.appendChild(moOshinaga);
 let movedToMore=[];
 // §20（X23.②）しまったボタンは名前で出す（アイコンだけの物に名前・色は見本を名前の左に）
-const MORE_NAMES={tStudio:"制作用",tPeek:"元の配置を見る",tResetPage:"このページを元に戻す",dPC:"PC",dSP:"スマホ",tPhoto:"写真",tText:"テキスト",tBright:"明るさ",tCols:"列",tElemLink:"リンク",tAlign:"配置"};
+const MORE_NAMES={tStudio:"制作用",tPeek:"元の配置を見る",tResetPage:"このページを元に戻す",dPC:"PC",dSP:"スマホ",tPhoto:"写真",tText:"テキスト",tBright:"明るさ",tCols:"列",tSell:"販売",tMonth:"出す月",tLabels:"ラベル",tMenus:"メニュー",tElemLink:"リンク",tAlign:"配置"};
 const TS_NAMES={font:"書体",shrink:"小さく","size":"大きさ","size-list":"よく使う大きさ",grow:"大きく",bold:"太字",color:"文字の色",link:"リンク"};
 function moreNameOf(el){ if(el.id&&MORE_NAMES[el.id]) return MORE_NAMES[el.id]; const ts=el.getAttribute&&el.getAttribute("data-ts"); if(ts&&TS_NAMES[ts]) return TS_NAMES[ts]; return (el.textContent||"").trim(); }
 // §20（X23.④）並びと同じ順（PC→スマホ）。左→右＝上→下
-const TB_ORDER=["tText","tPhoto","dPC","dSP","tPeek","tResetPage","ts:font","ts:shrink","ts:size","ts:grow","ts:size-list","ts:bold","ts:color","ts:link","tBright","tCols","tElemLink","tStudio"];
+const TB_ORDER=["tText","tPhoto","dPC","dSP","tPeek","tResetPage","ts:font","ts:shrink","ts:size","ts:grow","ts:size-list","ts:bold","ts:color","ts:link","tBright","tCols","tSell","tMonth","tLabels","tMenus","tElemLink","tStudio"];
 function orderKey(el){ if(el.id){ const i=TB_ORDER.indexOf(el.id); if(i>=0) return i; } const ts=el.getAttribute&&el.getAttribute("data-ts"); if(ts){ const i=TB_ORDER.indexOf("ts:"+ts); if(i>=0) return i; } return 999; }
 function restoreFromMore(){ for(let i=movedToMore.length-1;i>=0;i--){ const m=movedToMore[i]; m.el.removeAttribute("data-more-name"); try{ m.parent.insertBefore(m.el, m.next&&m.next.parentNode===m.parent?m.next:null); }catch(_){ m.parent.appendChild(m.el); } } movedToMore=[]; }
 function moveToMore(el){ movedToMore.push({el, parent:el.parentNode, next:el.nextSibling}); el.setAttribute("data-more-name", moreNameOf(el)); moreMenu.appendChild(el); }
 function reorderMore(){ const kids=[...moreMenu.children]; kids.sort((a,b)=>orderKey(a)-orderKey(b)); for(const k of kids) moreMenu.appendChild(k); }
 // §20（X23.③）並びに残った区切りは、先頭・末尾・続けて出さない
-function cleanupDividers(){ for(const host of [toolbarEl, document.getElementById("tstools"), document.getElementById("photoTools"), document.getElementById("cardsTools"), document.getElementById("elemTools")]){ if(!host) continue;
+function cleanupDividers(){ for(const host of [toolbarEl, document.getElementById("tstools"), document.getElementById("photoTools"), document.getElementById("cardsTools"), document.getElementById("itemTools"), document.getElementById("elemTools")]){ if(!host) continue;
   const vis=[...host.children].filter(c=>c.offsetParent!==null||c===toolbarEl); let seenBtn=false, lastWasDiv=false;
   const list=[...host.children];
   for(const c of list){ if(!c.classList||!c.classList.contains("div")) continue; c.style.display=""; }
@@ -534,7 +561,7 @@ function cleanupDividers(){ for(const host of [toolbarEl, document.getElementByI
     if(!prevBtn||!nextBtn||prevIsDiv) c.style.display="none"; } } }
 function overflowCandidates(){ const out=[]; const push=(sel)=>{ const el=typeof sel==="string"?document.querySelector(sel):sel; if(el) out.push(el); };
   push("#tStudio"); push("#tHistory"); push("#tPreview"); push("#tPeek"); push("#tResetPage"); push("#dSP"); push("#dPC"); push("#tPhoto"); push("#tText");   // §22 §3.3 しまう順：制作用→履歴→プレビュー→元の配置→このページ→PC/スマホ→テキスト/写真（公開・戻す・やり直すはしまわない）
-  for(const sel of ['#tAlign','#tstools [data-ts="link"]','#tstools [data-ts="color"]','#tstools [data-ts="bold"]','#tstools [data-ts="size-list"]','#tstools [data-ts="grow"]','#tstools [data-ts="size"]','#tstools [data-ts="shrink"]','#tstools [data-ts="font"]','#tBright','#tCols','#tElemLink']) push(sel);   // それでも入らなければ道具の右から（配置を先に＝記録 13.2）
+  for(const sel of ['#tAlign','#tstools [data-ts="link"]','#tstools [data-ts="color"]','#tstools [data-ts="bold"]','#tstools [data-ts="size-list"]','#tstools [data-ts="grow"]','#tstools [data-ts="size"]','#tstools [data-ts="shrink"]','#tstools [data-ts="font"]','#tBright','#tMenus','#tLabels','#tMonth','#tSell','#tCols','#tElemLink']) push(sel);   // それでも入らなければ道具の右から（配置を先に＝記録 13.2）
   return out; }   // 「戻す」「やり直す」は最後までしまわない
 let laying=false;
 function layoutToolbar(){ if(laying) return; laying=true;
@@ -870,6 +897,43 @@ document.getElementById("tCols").onclick=(e)=>{ e.stopPropagation(); if(colsPop.
 window.addEventListener("pointerdown",(e)=>{ if(colsPop.classList.contains("on")&&!colsPop.contains(e.target)&&!document.getElementById("tCols").contains(e.target)&&!(e.target.closest&&e.target.closest("#moreMenu"))) closeColsPop(); },true);
 window.addEventListener("keydown",(e)=>{ if(e.isComposing||e.keyCode===229)return;/*§23a X33*/ if(e.key==="Escape"&&colsPop.classList.contains("on")) closeColsPop(); },true);
 
+// ===== 試験台28 §2.5：品を選んだときの道具（販売 ▾・出す月 ▾・ラベル ▾・メニュー ▾）=====
+// 出し方は「明るさ ▾」「列 ▾」と同じ（押すと下に一覧。外・Esc で閉じる）。品の1件（または中の部品）を選んでいる間だけ出す。
+const itemTools=document.getElementById("itemTools");
+const sellPop=document.getElementById("sellPop"), monthPop=document.getElementById("monthPop"), labelPop=document.getElementById("labelPop"), menuPop=document.getElementById("menuPop");
+const SELL_OPTS=[["onSale","販売中"],["paused","休んでいる"],["ended","終わり"]];
+let _openItemPop=null;   // {pop, build, btn}
+function itemSelId(){ const sel=[...PG.state.selected]; const one=sel.length===1?sel[0]:null; if(!one||!PG.isRepeat(one)) return null; return PG.itemCtx(one)?one:null; }
+function closeItemPops(){ for(const p of [sellPop,monthPop,labelPop,menuPop]) p.classList.remove("on"); _openItemPop=null; }
+function itemToolsSelected(){ return !!itemSelId() && !PG.state.editing && !isPhone(); }
+function updateItemTools(){ const show=itemToolsSelected(); itemTools.style.display=show?"inline-flex":"none"; if(!show){ closeItemPops(); return; }
+  if(_openItemPop){ const id=itemSelId(); if(id) _openItemPop.build(id); else closeItemPops(); } }
+// 一覧の中身
+function buildSellPop(id){ sellPop.innerHTML=""; const c=PG.itemCtx(id); if(!c) return; for(const [v,label] of SELL_OPTS){ const b=document.createElement("button"); b.className="ip-opt"+(c.status===v?" cur":""); b.setAttribute("data-sell-opt",v); b.textContent=(c.status===v?"✓ ":"　")+label; b.onmousedown=(e)=>e.preventDefault(); b.onclick=(e)=>{ e.stopPropagation(); PG.setItemStatus(id,v); closeItemPops(); }; sellPop.appendChild(b); } }
+function buildMonthPop(id){ monthPop.innerHTML=""; const c=PG.itemCtx(id); if(!c) return; const ms=new Set(c.months);
+  const any=document.createElement("button"); any.className="ip-any"+(ms.size?"":" on"); any.setAttribute("data-month-any","1"); any.textContent="いつでも"; any.onmousedown=(e)=>e.preventDefault(); any.onclick=(e)=>{ e.stopPropagation(); PG.setItemMonths(id,[]); }; monthPop.appendChild(any);
+  const grid=document.createElement("div"); grid.className="ip-months";
+  for(let m=1;m<=12;m++){ const b=document.createElement("button"); b.className="ip-m"+(ms.has(m)?" on":""); b.setAttribute("data-month",String(m)); b.textContent=m+"月"; b.onmousedown=(e)=>e.preventDefault(); b.onclick=(e)=>{ e.stopPropagation(); const nm=new Set(PG.itemCtx(id).months); if(nm.has(m)) nm.delete(m); else nm.add(m); PG.setItemMonths(id,[...nm]); }; grid.appendChild(b); }
+  monthPop.appendChild(grid); }
+function buildLabelPop(id){ labelPop.innerHTML=""; const c=PG.itemCtx(id); if(!c) return;
+  for(const l of c.labels){ const b=document.createElement("button"); b.className="ip-opt"+(l.on?" on":""); b.setAttribute("data-label-opt",l.id); const ck=document.createElement("span"); ck.className="ck"; ck.textContent=l.on?"✓":""; b.appendChild(ck); const nm=document.createElement("span"); nm.textContent=l.name; b.appendChild(nm); b.onmousedown=(e)=>e.preventDefault(); b.onclick=(e)=>{ e.stopPropagation(); const cur=PG.itemCtx(id).labels.filter(x=>x.on).map(x=>x.id); const next=l.on?cur.filter(x=>x!==l.id):[...cur,l.id]; PG.setItemLabels(id,next); }; labelPop.appendChild(b); }
+  const wrap=document.createElement("div"); wrap.className="ip-newlabel";
+  const addb=document.createElement("button"); addb.className="ip-addbtn"; addb.setAttribute("data-label-add","1"); addb.textContent="＋ 新しいラベル";
+  addb.onmousedown=(e)=>e.preventDefault(); addb.onclick=(e)=>{ e.stopPropagation(); wrap.innerHTML=""; const inp=document.createElement("input"); inp.type="text"; inp.placeholder="ラベルの名前"; inp.setAttribute("data-label-input","1"); const ok=document.createElement("button"); ok.className="ip-addbtn"; ok.style.width="auto"; ok.textContent="足す"; const commitNew=()=>{ const nm=inp.value.trim(); if(nm){ PG.addItemLabel(id,nm); } }; ok.onmousedown=(ev)=>ev.preventDefault(); ok.onclick=(ev)=>{ ev.stopPropagation(); commitNew(); }; inp.onkeydown=(ev)=>{ if(ev.key==="Enter"){ ev.preventDefault(); commitNew(); } ev.stopPropagation(); }; wrap.appendChild(inp); wrap.appendChild(ok); inp.focus(); };
+  wrap.appendChild(addb); labelPop.appendChild(wrap); }
+function buildMenuPop(id){ menuPop.innerHTML=""; const c=PG.itemCtx(id); if(!c) return;
+  for(const m of c.menus){ const canRemove=m.on?PG.canRemoveMenu(id,m.id):true; const b=document.createElement("button"); b.className="ip-opt"+(m.on?" on":""); b.setAttribute("data-menu-opt",m.id); if(m.on&&!canRemove) b.disabled=true;   // §2.5 最後の1つは外せない＝灰色
+    const ck=document.createElement("span"); ck.className="ck"; ck.textContent=m.on?"✓":""; b.appendChild(ck); const nm=document.createElement("span"); nm.textContent=m.name; b.appendChild(nm);
+    b.onmousedown=(e)=>e.preventDefault(); if(!b.disabled) b.onclick=(e)=>{ e.stopPropagation(); PG.setItemMenu(id,m.id,!m.on); }; menuPop.appendChild(b); } }
+// 開く・閉じる（colsPop と同じ出し方）
+function openItemPop(pop,btn,build){ const id=itemSelId(); if(!id) return; closeItemPops(); build(id); const r=btn.getBoundingClientRect(); pop.classList.add("on"); const pw=pop.offsetWidth||200; let left=Math.min(r.left, innerWidth-8-pw); left=Math.max(8,left); pop.style.left=Math.round(left)+"px"; let top=r.bottom+4; const ph=pop.offsetHeight||0; if(top+ph>innerHeight-8) top=Math.max(8, innerHeight-8-ph); pop.style.top=Math.round(top)+"px"; _openItemPop={pop,build,btn}; }
+function wireItemBtn(btnId,pop,build){ const btn=document.getElementById(btnId); btn.onmousedown=(e)=>e.preventDefault(); btn.onclick=(e)=>{ e.stopPropagation(); if(pop.classList.contains("on")){ closeItemPops(); return; } openItemPop(pop,btn,build); }; }
+wireItemBtn("tSell",sellPop,buildSellPop); wireItemBtn("tMonth",monthPop,buildMonthPop); wireItemBtn("tLabels",labelPop,buildLabelPop); wireItemBtn("tMenus",menuPop,buildMenuPop);
+window.addEventListener("pointerdown",(e)=>{ if(!_openItemPop) return; const p=_openItemPop.pop; if(!p.contains(e.target)&&!_openItemPop.btn.contains(e.target)&&!(e.target.closest&&e.target.closest("#moreMenu"))) closeItemPops(); },true);
+window.addEventListener("keydown",(e)=>{ if(e.isComposing||e.keyCode===229)return; if(e.key==="Escape"&&_openItemPop) closeItemPops(); },true);
+// 試験の窓口：道具の一覧をプログラムから開く
+window.__itemtool=(which)=>{ const map={sell:["tSell",sellPop,buildSellPop],month:["tMonth",monthPop,buildMonthPop],labels:["tLabels",labelPop,buildLabelPop],menus:["tMenus",menuPop,buildMenuPop]}; const m=map[which]; if(!m) return; const btn=document.getElementById(m[0]); openItemPop(m[1],btn,m[2]); };
+
 // ===== §27 配置（揃え・整列）の「配置 ▾」=====
 const alignTools=document.getElementById("alignTools");
 const tAlign=document.getElementById("tAlign");
@@ -917,6 +981,20 @@ function closeAnyOpenUI(){ let closed=false;
 // スマホ：長押しの箱に「配置」→ 8つの一覧（箱を差し替える）
 function showAlignSheet(){ fmenu.innerHTML=""; const c=PG.canAlign();
   for(const it of ALIGN_ITEMS){ if(it.div) continue; const b=document.createElement("button"); b.textContent=it.n; const en=c.enabled&&(!it.need3||c.distribute); if(!en){ b.disabled=true; } else b.onclick=(ev)=>{ ev.stopPropagation(); PG.align(it.k); fmenu.classList.remove("on"); }; fmenu.appendChild(b); }
+  fmenu.classList.add("on"); positionFmenu(); }
+// 試験台28 §2.5 スマホ：品の長押しの箱から「販売／出す月／ラベル／メニュー」→ 下からの板に同じ中身（箱を差し替える）
+function sheetBtn(label,fn,opts){ const b=document.createElement("button"); b.textContent=label; if(opts&&opts.on) b.classList.add("cur"); if(opts&&opts.disabled){ b.disabled=true; } else b.onclick=(ev)=>{ ev.stopPropagation(); fn(); }; fmenu.appendChild(b); return b; }
+function showSellSheet(id){ fmenu.innerHTML=""; const c=PG.itemCtx(id); if(!c){ fmenu.classList.remove("on"); return; } for(const [v,label] of SELL_OPTS) sheetBtn((c.status===v?"✓ ":"")+label,()=>{ PG.setItemStatus(id,v); fmenu.classList.remove("on"); },{on:c.status===v}); fmenu.classList.add("on"); positionFmenu(); }
+function showMonthSheet(id){ fmenu.innerHTML=""; const c=PG.itemCtx(id); if(!c){ fmenu.classList.remove("on"); return; } const ms=new Set(c.months);
+  sheetBtn((ms.size?"":"✓ ")+"いつでも",()=>{ PG.setItemMonths(id,[]); showMonthSheet(id); },{on:!ms.size});
+  for(let m=1;m<=12;m++) sheetBtn((ms.has(m)?"✓ ":"")+m+"月",()=>{ const nm=new Set(PG.itemCtx(id).months); if(nm.has(m)) nm.delete(m); else nm.add(m); PG.setItemMonths(id,[...nm]); showMonthSheet(id); },{on:ms.has(m)});
+  fmenu.classList.add("on"); positionFmenu(); }
+function showLabelSheet(id){ fmenu.innerHTML=""; const c=PG.itemCtx(id); if(!c){ fmenu.classList.remove("on"); return; }
+  for(const l of c.labels) sheetBtn((l.on?"✓ ":"")+l.name,()=>{ const cur=PG.itemCtx(id).labels.filter(x=>x.on).map(x=>x.id); PG.setItemLabels(id, l.on?cur.filter(x=>x!==l.id):[...cur,l.id]); showLabelSheet(id); },{on:l.on});
+  sheetBtn("＋ 新しいラベル",()=>{ const nm=(window.prompt&&window.prompt("ラベルの名前"))||""; if(nm.trim()){ PG.addItemLabel(id,nm.trim()); } showLabelSheet(id); });
+  fmenu.classList.add("on"); positionFmenu(); }
+function showMenuSheet(id){ fmenu.innerHTML=""; const c=PG.itemCtx(id); if(!c){ fmenu.classList.remove("on"); return; }
+  for(const m of c.menus){ const canRemove=m.on?PG.canRemoveMenu(id,m.id):true; sheetBtn((m.on?"✓ ":"")+m.name,()=>{ PG.setItemMenu(id,m.id,!m.on); showMenuSheet(id); },{on:m.on,disabled:m.on&&!canRemove}); }
   fmenu.classList.add("on"); positionFmenu(); }
 
 // ===== §19 リンクの札（ホバー）=====
@@ -976,11 +1054,12 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
   const one=sel.length===1?sel[0]:null; const R=PG.reduce(PG.activeOps()); const ph=isPhone();   // §3.2.6 スマホのときだけ箱に「複製」「削除」を足す
   const moved=one&&PG.partChangedFromTemplate(one);   // N1：位置・大きさ・並び順・重なり順のどれかが変われば出す
   if(sel.length>1){ add("元の位置に戻す",()=>{ for(const id of sel) PG.resetScope("part",id,[PG.state.device]); }); add("消す",()=>PG.deleteSelected()); }
-  else if(one&&PG.REPEAT.test(one)){ const info=PG.partInfo(one); const isRow=info&&info.kind==="table"; const bare1=PG.canonId(one).replace(/.*__/,""); const isPrice=/_price_/.test(bare1);
-    if(isPrice) add("値段を変える",()=>openPriceBox(one)); else add("書き換える",()=>PG.startEdit(one));
-    add(isRow?"行を足す…":"品を足す…",()=>{ if(isRow) addRowFlow(one); else openItemPicker(one); });
-    add("複製",()=>PG.duplicate()); add("削除",()=>PG.deleteSelected());
-    add("",null,isRow?"1行の作りを変えると全部に効きます":"品は位置を動かせません"); }
+  else if(one&&PG.isRepeat(one)){ const info=PG.partInfo(one); const isRow=info&&info.kind==="table"; const bare1=PG.canonId(one).replace(/.*__/,""); const isPrice=/_price_/.test(bare1);
+    const isMenuRow=(PG.currentPage&&PG.currentPage()==="pg_menu")&&!!PG.menuRowPlc(one);   // 試験台28：お品書き本体の行（① の載せ方そのもの）
+    if(isPrice&&!isMenuRow) add("値段を変える",()=>openPriceBox(one)); else add("書き換える",()=>PG.startEdit(one));
+    if(!isMenuRow){ add(isRow?"行を足す…":"品を足す…",()=>{ if(isRow) addRowFlow(one); else openItemPicker(one); }); add("複製",()=>PG.duplicate()); }
+    add("削除",()=>PG.deleteSelected());
+    add("",null,isMenuRow?"品を選ぶと上の並びに道具が出ます":(isRow?"1行の作りを変えると全部に効きます":"品は位置を動かせません")); }
   else if(one){ const isPhoto=/^F_p|photo/.test(one); if(PG.isText(one)) add("書き換える",()=>PG.startEdit(one));
     if(PG.isText(one)&&(PG.hasTextStyle(one)||PG.hasRuns(one))) add("文字の見た目を元に戻す",()=>PG.resetTextStyle(one));   // §2.2 書式のクリア（箱まるごと＋文の一部）
     if(isPhoto){ const isCleared=(R.clear||[]).includes(one); add("写真を差し替える",()=>startReplace(one));
@@ -999,6 +1078,7 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
     if(PG.canSwap(one)) add("左右を入れ替える",()=>PG.swapHoriz(one));   // §5 横並びの組（PC 特集）
     if(ph&&PG.canonId(one)==="I_cards") addColsPhone();   // §2.2/§6.7（L23）スマホは長押しの箱に「列」の見本ボタン（44px）
     if(moved) add("元の位置に戻す",()=>PG.resetScope("part",one,[PG.state.device])); if(ph){ add("複製",()=>PG.duplicate()); add("削除",()=>PG.deleteSelected()); } else add("消す",()=>PG.commit({t:"del",id:one})); }
+  if(ph && one && PG.isRepeat(one) && PG.itemCtx(one)){ addDiv(); add("販売",()=>showSellSheet(one)); add("出す月",()=>showMonthSheet(one)); add("ラベル",()=>showLabelSheet(one)); add("メニュー",()=>showMenuSheet(one)); }   // 試験台28 §2.5 スマホ：品の長押しの箱に4つの道具
   if(ph && PG.canAlign().enabled) add("配置",()=>showAlignSheet());   // §27 スマホの長押しの箱に「配置」（PC は右クリックに入れない）
   fmenu._follow="part"; fmenu._secId=null; fmenu._place=null;   // §1/§4（試験台16）箱は部品に付いていく
   fmenu.classList.add("on"); positionFmenu();
@@ -1067,7 +1147,14 @@ window.addEventListener("pointerup",(e)=>{
 // ダブルクリック＝文字はその場書き換え、写真は見せる範囲（§2.1）
 // ===================== 試験台26：① 連動の UI（知らせ・値段の箱・品を選ぶ一覧・連動の知らせ・お品書きの板） =====================
 let _toastT=null;
-window.pgToast=function(msg){ let t=document.getElementById("pgToast"); if(!t){ t=document.createElement("div"); t.id="pgToast"; t.className="pg-toast"; document.body.appendChild(t); } t.textContent=msg; t.classList.add("on"); if(_toastT) clearTimeout(_toastT); _toastT=setTimeout(()=>{ t.classList.remove("on"); },3000); };
+window.pgToast=function(msg,undo){ let t=document.getElementById("pgToast"); if(!t){ t=document.createElement("div"); t.id="pgToast"; t.className="pg-toast"; document.body.appendChild(t); }
+  // 閉じたら中身（「戻す」ボタン）を DOM から消す＝上の並びの「戻す」(#tUndo) と役割名が二重に出ないようにする（消えている間も残ると試験の button[name=戻す] が2つになる）
+  const hide=()=>{ t.classList.remove("on"); t.classList.remove("has-undo"); t.innerHTML=""; };
+  t.innerHTML=""; const sp=document.createElement("span"); sp.textContent=msg; t.appendChild(sp);
+  // §2.7 品を消したときは「戻す」ボタンを 5 秒出す（上の並びの「戻す」と同じ1回）
+  t.classList.toggle("has-undo",!!undo);
+  if(undo){ const ub=document.createElement("button"); ub.className="pg-toast-undo"; ub.setAttribute("data-toast-undo","1"); ub.textContent="戻す"; ub.onclick=(e)=>{ e.stopPropagation(); if(PG.canUndo&&PG.canUndo()) PG.undo(); if(_toastT) clearTimeout(_toastT); hide(); }; t.appendChild(ub); }
+  t.classList.add("on"); if(_toastT) clearTimeout(_toastT); _toastT=setTimeout(hide,undo?5000:3000); };
 
 // ---- 値段の箱 ----
 let priceBox=null;
@@ -1171,6 +1258,7 @@ stage.addEventListener("contextmenu",(e)=>{
   if(id){ e.preventDefault();
     const catId=PG.menuCatId(id);   // 試験台28 §2.4：括りの見出しを右クリック → 括りを足す/消す
     if(catId){ PG.selectOnly(PG.canonId(id)); showCategoryMenu(catId,e.clientX,e.clientY); return; }
+    if((PG.currentPage&&PG.currentPage()==="pg_menu")&&PG.menuRowPlc(id)){ PG.selectOnly(PG.canonId(id)); showFmenu(); return; }   // 試験台28：お品書き本体の行は行そのものを選ぶ（偽のグループを選ばない）
     const grp=PG.groupOf(id); const sel=[...PG.state.selected]; const innerSel = grp && sel.length===1 && PG.isRepeat(sel[0]) && PG.groupOf(sel[0])===grp;   // 試験台26：中の1件を選んでいて同じ並びを右クリック → 1件のメニュー（品を足す等）
     if(!innerSel) PG.selectOnly(grp||PG.canonId(id)); showFmenu(); return; }
   const host=e.target.closest&&e.target.closest("#sectionwrap .host");
@@ -1217,6 +1305,7 @@ function showCategoryMenu(catId,cx,cy){
   function cardFrom(t){ return t&&t.closest? t.closest('.card[data-item]'):null; }
   function cardGid(cardEl){ const g=cardEl.closest('.cards[data-el]'); return g?g.getAttribute('data-el'):"I_cards"; }
   function cardNameEl(cardEl){ return cardEl.querySelector('[data-el^="card_name_"],[data-el*="__card_name_"]'); }
+  function rowNameEl(rowEl){ return rowEl.querySelector('[data-el^="row_name_"],[data-el*="__row_name_"]'); }
   // この札の中の1件が選ばれている＝PowerPoint の2回目（1回目は塊選択＝列▾・塊移動のまま）。そのときだけドラッグで並べ替える。
   function cardArmed(cardEl){ const cid=cardEl.getAttribute('data-card'); const sel=PG.state&&PG.state.selected; if(!sel) return false; return [...sel].some(id=>{ const m=id.match(/card_(?:name|desc|price|photo)_(.+)$/); return m&&m[1]===cid; }); }
   // お品書き本体：落とし先＝どの括り（.kcat）の、どの行の前か（null＝括りの最後）
@@ -1250,7 +1339,7 @@ function showCategoryMenu(catId,cx,cy){
     if(e.button!==0) return;
     if(PG.state&&PG.state.editing&&e.target.closest&&e.target.closest("[contenteditable]")) return;   // 書き換え中の文字は素通し（並べ替えにしない）
     const row=onMenuPage()?rowFrom(e.target):null;
-    if(row){ if(PG.state&&PG.state.editing) PG.commitEdit(); rd={ kind:"row", plc:row.getAttribute('data-plc'), cat:row.getAttribute('data-cat'), sx:e.clientX, sy:e.clientY, moved:false }; e.stopPropagation(); return; }
+    if(row){ if(PG.state&&PG.state.editing) PG.commitEdit(); rd={ kind:"row", plc:row.getAttribute('data-plc'), cat:row.getAttribute('data-cat'), nameEl:rowNameEl(row), sx:e.clientX, sy:e.clientY, moved:false }; e.stopPropagation(); return; }
     const card=(!onMenuPage())?cardFrom(e.target):null;
     if(card && cardArmed(card)){ if(PG.state&&PG.state.editing) PG.commitEdit(); rd={ kind:"card", item:card.getAttribute('data-item'), gid:cardGid(card), nameEl:cardNameEl(card), sx:e.clientX, sy:e.clientY, moved:false }; e.stopPropagation(); return; }
   },true);
@@ -1266,7 +1355,10 @@ function showCategoryMenu(catId,cx,cy){
   window.addEventListener("pointerup",(e)=>{
     if(!rd) return; const r=rd; rd=null; clearDropLine();
     e.stopPropagation();
-    if(!r.moved){ if(r.kind==="card" && r.nameEl){ PG.selectMany([r.nameEl.getAttribute('data-el')]); showFmenu(); } return; }   // 動かしていない＝クリック（並べ替えしない。札は中の1件を選ぶ）
+    if(!r.moved){ // 動かしていない＝クリック（並べ替えしない）
+      if(r.kind==="card" && r.nameEl){ PG.selectMany([r.nameEl.getAttribute('data-el')]); showFmenu(); }   // 札は中の1件を選ぶ（右クリックと同じ箱も出す）
+      else if(r.kind==="row" && r.nameEl){ PG.selectMany([r.nameEl.getAttribute('data-el')]); }   // 試験台28 §2.5：お品書き本体の行は1回クリックで選ぶ（上の並びに道具を出すため。箱は右クリック）
+      return; }
     if(r.kind==="row"){ const t=r.target||rowTarget(e.clientY); if(t) PG.menuMoveRow(r.plc, t.cat, t.before); }
     else { const t=r.target||cardTarget(e.clientX,e.clientY); PG.cardsMove(r.gid, r.item, t?t.before:null); }
   },true);

@@ -507,10 +507,13 @@ const PG = (function () {
       // 試験台28 §2.4：括りを足す・消す
       else if (op.t === "shopCatAdd") { cat.categories[op.categoryId] = { menuId: op.menuId, name: op.name, order: op.order }; }
       else if (op.t === "shopCatDel") { delete cat.categories[op.categoryId]; }
+      // 試験台28 §2.5：載せるメニューを増やす（既存の品に載せ方を1つ足す）・新しいラベルを作る
+      else if (op.t === "shopPlcAdd") { cat.placements[op.placementId] = { itemId: op.itemId, menuId: op.menuId, categoryId: op.categoryId, order: op.order }; }
+      else if (op.t === "shopLabelDef") { cat.labels = cat.labels || {}; cat.labels[op.labelId] = { name: op.name, order: op.order }; }
     }
     return shop;
   }
-  const isShopOp = (t) => t === "shopField" || t === "shopPrice" || t === "shopAdd" || t === "shopDel" || t === "shopLabels" || t === "shopReorder" || t === "shopCatAdd" || t === "shopCatDel";
+  const isShopOp = (t) => t === "shopField" || t === "shopPrice" || t === "shopAdd" || t === "shopDel" || t === "shopLabels" || t === "shopReorder" || t === "shopCatAdd" || t === "shopCatDel" || t === "shopPlcAdd" || t === "shopLabelDef";
   // 新しい ID を作る（2.2：英小文字・数字、使い回さない。① の下書きの中の ID の最大から続ける）
   const mintShopId = (prefix) => prefix + "_x" + String(++state.shopSeq).padStart(4, "0");
   function recomputeShopSeq(shop) {
@@ -519,6 +522,7 @@ const PG = (function () {
     for (const id in (cat.items || {})) { take(id); for (const pr of (cat.items[id].prices || [])) take(pr.id); }
     for (const id in (cat.placements || {})) { take(id); for (const pr of (cat.placements[id].prices || [])) take(pr.id); }
     for (const id in (cat.categories || {})) take(id);   // 試験台28 §2.4：足した括り（cat_x…）も使い回さない
+    for (const id in (cat.labels || {})) take(id);        // 試験台28 §2.5：足したラベル（lbl_x…）も使い回さない
     state.shopSeq = Math.max(state.shopSeq || 0, mx);
   }
 
@@ -2072,7 +2076,10 @@ const PG = (function () {
   function nudgeSelected(dx, dy) { const ids = [...state.selected].filter(isDraggable); if (!ids.length) return; const R = reduce(activeOps()); const g = geometry(); const items = ids.map((c) => { if (isAdded(c)) return nudgeAddedItem(c, dx, dy, R, g); const m = R.m1[c] || { dx: 0, dy: 0 }; return { id: c, mode: "M1", dx: m.dx + dx, dy: m.dy + dy }; }); commit({ t: "move", device: state.device, items }); }
   function deleteSelected() {
     const all = [...state.selected]; const one = all.length === 1 ? all[0] : null;
-    if (one && isRepeat(one)) { const b = bareOf(one); if (/^card_/.test(b) || /^c_/.test(b)) cardsDelete(one); else tableDelete(one); state.selected = new Set(); render(); return; }   // 試験台26：品の並び・表の1件 → ① 連動
+    if (one && isRepeat(one)) {
+      if (secOf(one) === "menu" && menuRowPlc(one)) { menuRowDelete(one); state.selected = new Set(); render(); return; }   // 試験台28 §2.7：お品書き本体の行 → 載せ方を消す（① 連動）
+      const b = bareOf(one); if (/^card_/.test(b) || /^c_/.test(b)) cardsDelete(one); else tableDelete(one); state.selected = new Set(); render(); return;   // 試験台26：品の並び・表の1件 → ① 連動
+    }
     const ids = all.filter((id) => isDraggable(id) || REPEAT.test(id)); if (!ids.length) return; for (const id of ids) commit({ t: "del", id: canonId(id) }); state.selected = new Set(); render();
   }
 
@@ -2263,7 +2270,7 @@ const PG = (function () {
   const cardIdOf = (id) => { const b = bareOf(id); return (b.match(/^(?:card|row)_(?:photo|name|desc|price|vline)?_?(.+)$/) || [])[1] || b.replace(/^(?:card|row)_[a-z]+_/, ""); };
 
   // ===================== 試験台26：① 連動の操作（品の並び・表を触ると ① が変わる） =====================
-  const pgToastMsg = (msg) => { if (typeof pgToast === "function") pgToast(msg); };
+  const pgToastMsg = (msg, undo) => { if (typeof pgToast === "function") pgToast(msg, undo); };
   // 選んだパーツの属する並び（cards/table）・1件エントリ・並びID を返す
   function partInfo(fullId) {
     const b = bareOf(fullId), sec = secOf(fullId);
@@ -2324,8 +2331,9 @@ const PG = (function () {
     const others = placementsOfItem(cat, itemId).filter((k) => k !== plcId);
     const alsoItem = others.length === 0; const name = (item && item.name) || "品";
     commit({ t: "catAct", shops: [{ t: "shopDel", placementId: plcId, itemId, alsoItem }] });
-    if (alsoItem) pgToastMsg(name + "をお品書きから消しました");
-    else { const om = cat.placements[others[0]]; pgToastMsg(name + "を" + menuName(info.entry._menu) + "から外しました（" + menuName(om.menuId) + "には残っています）"); }
+    // §2.7 消すと知らせ＋「戻す」5秒。ほかのメニューに残るときはどこに残るかを括弧で添える
+    if (alsoItem) pgToastMsg("『" + name + "』をお品書きから消しました", true);
+    else { const om = cat.placements[others[0]]; pgToastMsg("『" + name + "』を" + menuName(info.entry._menu) + "から外しました（" + menuName(om.menuId) + "には残っています）", true); }
     return { alsoItem };
   }
   // ---- 品の並び（絞り込んで並べる所）：案C（触った並びだけが変わる＝直接選ぶ）に決定（26b） ----
@@ -2365,7 +2373,7 @@ const PG = (function () {
     const info = partInfo(fullId); if (!info || !info.entry) return; const cat = info.R.effShop.catalog;
     const itemId = info.entry._itemId, item = cat.items[itemId]; const name = (item && item.name) || "品";
     const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(itemId); if (i >= 0) spec.pick.splice(i, 1); commit({ t: "catAct", src: { gid: info.gid, spec } });
-    pgToastMsg(name + "をこの並びから外しました（お品書きには残っています）");
+    pgToastMsg("『" + name + "』をこの並びから外しました（お品書きには残っています）", true);
   }
 
   // ===================== 試験台28 §2.4：品の並べ替え（お品書き本体）・括りの足す/消す =====================
@@ -2396,6 +2404,18 @@ const PG = (function () {
     commit({ t: "catAct", shops: [{ t: "shopReorder", placementId: plcId, menuId, categoryId: destCatId, order }] });
     return true;
   }
+  // §2.7 お品書き本体の行を消す＝その載せ方（placement）を消す。ほかのメニューに残らなければ品も ① から消える
+  function menuRowDelete(fullId) {
+    const plc = menuRowPlc(fullId); if (!plc) return false;
+    const cat = curCat(); const p = cat.placements[plc]; if (!p) return false;
+    const itemId = p.itemId, item = cat.items[itemId];
+    const others = placementsOfItem(cat, itemId).filter((k) => k !== plc);
+    const alsoItem = others.length === 0; const name = (item && item.name) || "品";
+    commit({ t: "catAct", shops: [{ t: "shopDel", placementId: plc, itemId, alsoItem }] });
+    if (alsoItem) pgToastMsg("『" + name + "』をお品書きから消しました", true);
+    else { const rem = [...new Set(others.map((k) => cat.placements[k].menuId))].map((m) => menuName(m)); pgToastMsg("『" + name + "』を" + menuName(p.menuId) + "から外しました（" + rem.join("・") + "に残っています）", true); }
+    return true;
+  }
   // トップのおすすめ等（絞り込んだ並び）の並べ替え＝pick の順番（4.6「触った並びだけ」）。① の載せ方・ラベルは変えない。
   function cardsMove(gid, itemId, beforeItemId) {
     const spec = ensurePickSpec(gid); const pick = spec.pick.filter((x) => x !== itemId);
@@ -2420,6 +2440,53 @@ const PG = (function () {
   function categoryDelete(catId) { if (!categoryCanDelete(catId)) return false; commit({ t: "catAct", shops: [{ t: "shopCatDel", categoryId: catId }] }); return true; }
   // 括りの見出し ID（menu__mc_{categoryId}）→ categoryId
   function menuCatId(fullId) { const m = bareOf(fullId).match(/^mc_(.+)$/); return m ? m[1] : null; }
+
+  // ===================== 試験台28 §2.5：品を選んだときの道具（販売・出す月・ラベル・載せるメニュー） =====================
+  // 選んでいる部品 → 品 ID。お品書き本体の行は placement（row_{…}_{plc}）、トップの札・表は partInfo（エイリアス）から。
+  function itemIdOfSel(fullId) {
+    const cat = curCat(); const sec = secOf(fullId); const plc = menuRowPlc(fullId);
+    if (sec === "menu" && plc && cat.placements[plc]) return cat.placements[plc].itemId;
+    const info = partInfo(fullId); return (info && info.entry) ? info.entry._itemId : null;
+  }
+  // 道具が読む：今の品の販売・出す月・ラベル・載っているメニュー
+  function itemCtx(fullId) {
+    const cat = curCat(); const itemId = itemIdOfSel(fullId); if (!itemId || !cat.items[itemId]) return null;
+    const it = cat.items[itemId];
+    const inMenus = [...new Set(Object.keys(cat.placements).filter((k) => cat.placements[k].itemId === itemId).map((k) => cat.placements[k].menuId))];
+    const menus = Object.keys(cat.menus).sort((a, b) => (cat.menus[a].order || 0) - (cat.menus[b].order || 0)).map((mid) => ({ id: mid, name: cat.menus[mid].name || mid, on: inMenus.includes(mid) }));
+    const labels = Object.keys(cat.labels || {}).sort((a, b) => ((cat.labels[a].order || 0) - (cat.labels[b].order || 0))).map((lid) => ({ id: lid, name: cat.labels[lid].name || lid, on: ((it.labels) || []).includes(lid) }));
+    return { itemId, name: it.name || "", status: it.status || "onSale", months: ((it.season && it.season.months) || []).slice(), labels, menus, menuCount: inMenus.length };
+  }
+  // 販売（販売中／休んでいる／終わり）＝品の status。1操作1undo・薄表示は連動（isDisplayable）
+  function setItemStatus(fullId, status) { const id = itemIdOfSel(fullId); if (!id) return false; commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "status", value: status }] }); return true; }
+  // 出す月＝品の season.months（空＝いつでも＝season を外す）
+  function setItemMonths(fullId, months) { const id = itemIdOfSel(fullId); if (!id) return false; const ms = (months || []).slice().sort((a, b) => a - b); const value = ms.length ? { months: ms } : null; commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "season", value }] }); return true; }
+  // ラベル＝品の labels（① の labels の ID 配列）
+  function setItemLabels(fullId, labelIds) { const id = itemIdOfSel(fullId); if (!id) return false; commit({ t: "catAct", shops: [{ t: "shopLabels", itemId: id, labels: (labelIds || []).slice() }] }); return true; }
+  // 新しいラベルを作って付ける（お店のラベル＝① の labels に足す＋この品に付ける。戻す1回でまとめて戻る）
+  function addItemLabel(fullId, name) {
+    const id = itemIdOfSel(fullId); if (!id) return null; const cat = curCat(); const it = cat.items[id];
+    const lid = mintShopId("lbl"); const mx = Math.max(0, ...Object.keys(cat.labels || {}).map((k) => cat.labels[k].order || 0));
+    const labels = ((it.labels) || []).slice(); labels.push(lid);
+    commit({ t: "catAct", shops: [{ t: "shopLabelDef", labelId: lid, name: (name || "新しいラベル"), order: mx + 1 }, { t: "shopLabels", itemId: id, labels }] });
+    return lid;
+  }
+  // 載せるメニュー：付ける＝そのメニューの一番近い（最初の）括りの最後に載せる／外す＝そのメニューの載せ方を消す（最後の1つは外せない）
+  function canRemoveMenu(fullId, menuId) { const id = itemIdOfSel(fullId); if (!id) return false; const cat = curCat(); const inMenus = [...new Set(Object.keys(cat.placements).filter((k) => cat.placements[k].itemId === id).map((k) => cat.placements[k].menuId))]; return inMenus.includes(menuId) && inMenus.length > 1; }
+  function setItemMenu(fullId, menuId, on) {
+    const id = itemIdOfSel(fullId); if (!id) return false; const cat = curCat();
+    const myInMenu = Object.keys(cat.placements).filter((k) => cat.placements[k].itemId === id && cat.placements[k].menuId === menuId);
+    const inMenus = [...new Set(Object.keys(cat.placements).filter((k) => cat.placements[k].itemId === id).map((k) => cat.placements[k].menuId))];
+    if (on) {
+      if (myInMenu.length) return false;
+      const cats = Object.keys(cat.categories).filter((c) => cat.categories[c].menuId === menuId).sort((a, b) => (cat.categories[a].order || 0) - (cat.categories[b].order || 0));
+      const categoryId = cats[0]; if (!categoryId) return false;
+      const plcId = mintShopId("plc"); const order = orderAfter(cat, menuId, categoryId, null);
+      commit({ t: "catAct", shops: [{ t: "shopPlcAdd", placementId: plcId, itemId: id, menuId, categoryId, order }] }); return true;
+    }
+    if (!myInMenu.length || inMenus.length <= 1) return false;   // 最後の1つは外せない
+    commit({ t: "catAct", shops: myInMenu.map((k) => ({ t: "shopDel", placementId: k, itemId: id, alsoItem: false })) }); return true;
+  }
   // 品を選ぶ一覧（そのメニューの品を括りごと。今出ている品は選べない扱い、出ない品は理由つき）
   function outReason(item) { if (!item) return ""; if (item.status === "paused") return "一時休止中"; if (item.status && item.status !== "onSale") return "販売していません"; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) { const ms = item.season.months; return ms[0] + "〜" + ms[ms.length - 1] + "月だけ"; } return "今は並びに出ません"; }
   function itemPickerData(gid) {
@@ -3315,6 +3382,9 @@ const PG = (function () {
     menuMoveRow: (plcId, destCatId, beforePlcId) => menuMoveRow(plcId, destCatId, beforePlcId),
     cardsMove: (gid, itemId, beforeItemId) => cardsMove(gid, itemId, beforeItemId),
     categoryAdd: (afterCatId) => categoryAdd(afterCatId), categoryDelete: (catId) => categoryDelete(catId), categoryCanDelete: (catId) => categoryCanDelete(catId),
+    // 試験台28 §2.5：品を選んだときの道具（販売・出す月・ラベル・メニュー）
+    itemCtx: (id) => itemCtx(id), setItemStatus: (id, s) => setItemStatus(id, s), setItemMonths: (id, m) => setItemMonths(id, m),
+    setItemLabels: (id, l) => setItemLabels(id, l), addItemLabel: (id, n) => addItemLabel(id, n), setItemMenu: (id, m, on) => setItemMenu(id, m, on), canRemoveMenu: (id, m) => canRemoveMenu(id, m),
     catalogView: () => catalogView(),   // 試験台26 お品書きを見る（① の下書きの差分つき）
     selected: () => [...state.selected],   // 試験台26 試験の窓口（選んでいる部品）
     align: (k) => align(k), canAlign: () => canAlign(),   // §27 配置（揃え・整列）
@@ -3364,6 +3434,7 @@ const PG = (function () {
     partInfo, effPricesOf, setPrices, tableAddRow, tableDuplicate, tableDelete,
     cardsAddExisting, cardsAddNew, cardsDuplicate, cardsDelete, itemPickerData, catalogView, curSpec, isRepeat, LIST_MODE,
     menuView, menuRowPlc, menuCatId, menuMoveRow, cardsMove, categoryAdd, categoryDelete, categoryCanDelete,   // 試験台28 §2.4：品の並べ替え・括りの足す/消す（WIRING から使う）
+    itemCtx, itemIdOfSel, setItemStatus, setItemMonths, setItemLabels, addItemLabel, setItemMenu, canRemoveMenu, menuRowDelete,   // 試験台28 §2.5/§2.7：品を選んだときの道具・行を消す（WIRING から使う）
     resetScope, peekOn, peekOff, addTextAt, anchorsList, classify: (id) => M.classifyDrop(geometry(), id, [id]),
     bringToFront, sendToBack, bringForward, sendBackward, hasOverlapPartner, zOrderList,
     beginResize, resizeMove, endResize, isResizing: () => !!rz, programResize, handlesFor,
