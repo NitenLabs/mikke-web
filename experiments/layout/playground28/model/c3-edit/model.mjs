@@ -272,7 +272,7 @@ export function buildMenu(content, device, H, edits = {}) {
     const time = g.time ? T(`mt_${g.id}`, "kanmiTime", device, contW, thtml(H, `mt_${g.id}`), "margin-top:4px") : "";
     const cats = g.cats.map((cat) => {
       const ch = T(`mc_${cat.id}`, "menuCat", device, nameW, thtml(H, `mc_${cat.id}`), "margin-top:40px");
-      return ch + cat.rows.map(rowHtml).join("");
+      return ch + cat.rows.filter((r) => !r.hidden).map(rowHtml).join("");   // 試験台28：出ていない品はこの段では描かない（2b で編集時だけ薄く）
     }).join("");
     return `<div class="mgroup" style="margin-top:${gi === 0 ? 0 : 64}px">${head}${time}${cats}</div>`;   // 先頭の括りは本体上端から（stack の padTop のみ）
   };

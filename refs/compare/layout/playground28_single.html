@@ -844,6 +844,7 @@ function collectTextBoxes(content, device) {
       for (const cat of g2.cats) {
         boxes.push({ key: `mc_${cat.id}`, styleName: "menuCat", device, widthPx: nameW, text: cat.name });
         for (const row of cat.rows) {
+          if (row.hidden) continue;   // 試験台28：出ていない品はこの段では測らない（2b で編集時だけ薄く）
           boxes.push({ key: `row_name_${row.id}`, styleName: "tName", device, widthPx: nameW, text: row.name });
           if (row.desc) boxes.push({ key: `row_desc_${row.id}`, styleName: "tDesc", device, widthPx: nameW, text: row.desc });
           boxes.push({ key: `row_price_${row.id}`, styleName: device === "pc" ? "tPriceR" : "tPriceL", device, widthPx: priceW, text: row.price });
@@ -1332,7 +1333,7 @@ function buildMenu(content, device, H, edits = {}) {
     const time = g.time ? T(`mt_${g.id}`, "kanmiTime", device, contW, thtml(H, `mt_${g.id}`), "margin-top:4px") : "";
     const cats = g.cats.map((cat) => {
       const ch = T(`mc_${cat.id}`, "menuCat", device, nameW, thtml(H, `mc_${cat.id}`), "margin-top:40px");
-      return ch + cat.rows.map(rowHtml).join("");
+      return ch + cat.rows.filter((r) => !r.hidden).map(rowHtml).join("");   // 試験台28：出ていない品はこの段では描かない（2b で編集時だけ薄く）
     }).join("");
     return `<div class="mgroup" style="margin-top:${gi === 0 ? 0 : 64}px">${head}${time}${cats}</div>`;   // 先頭の括りは本体上端から（stack の padTop のみ）
   };
@@ -1700,7 +1701,8 @@ const PG = (function () {
   const isDraggable = (id) => TEMPLATE_DRAG.includes(bareOf(canonId(id))) || isAdded(id);
   // 試験台28：新しいページ（ヘッダー・フッター・MENU・CONTACT）の文字の素の ID
   const NEW_TEXT_BARE = new Set(["logo", "fname", "faddr", "fcopy", "men", "mtitle", "cen", "ctitle", "clead"]);
-  const isNewText = (b) => NEW_TEXT_BARE.has(b) || /^(mg_|mc_|mt_|cl_|ci_)/.test(b);
+  // mt_（提供時間）はこの段では直接書き換えない（§2.6 の箱で直す＝Stage 3）。描画はする。
+  const isNewText = (b) => NEW_TEXT_BARE.has(b) || /^(mg_|mc_|cl_|ci_)/.test(b);
   const isText = (id) => { const b = bareOf(id); return /^F_[hb]\d$|^add_/.test(b) || /^card_(name|desc|price)_/.test(b) || /^row_(name|desc|price)_/.test(b) || b === "I_kanmi" || b === "I_time" || isNewText(b); };
   // そのパーツが属するセクション（インスタンス ID）。anchor は "feature"/"items"、複製・追加は "sec3" 等。
   // §2.7（試験台24）土台にある足した部品にも効くよう、add op が記録の列に無ければ土台（state.base._pg.adds）も見る。
@@ -2124,6 +2126,24 @@ const PG = (function () {
   const curMonth = () => new Date().getMonth() + 1;
   function isDisplayable(item) { if (!item) return false; if (item.status && item.status !== "onSale") return false; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) return false; return true; }
   function priceOf(shop, itemId, placementId) { const cat = (shop && shop.catalog) || {}; const plc = (placementId && cat.placements) ? cat.placements[placementId] : null; const item = cat.items ? cat.items[itemId] : null; return (plc && plc.prices) ? plc.prices : (item ? item.prices : null); }
+  // ===================== 試験台28 §2.4：お品書き本体（MENU）を ① から組む =====================
+  // メニューごと（店頭販売・甘味処）→ 括り（カテゴリ）順 → 品（placement 順）。行は placement 主キー（同じ品が両メニューでも衝突しない）。
+  // 出ていない品（販売休止・時期外）は hidden（2a は描かない。2b で編集時だけ薄く出す）。名前・説明・価格は ① の品／載せ方から。
+  const MENU_ORDER = ["mnu_tento", "mnu_kanmi"];
+  function fmtServing(st) { if (!st || !st.periods || !st.periods.length) return ""; const f = (t) => { const a = String(t).split(":"); let h = +a[0]; let p = ""; if (h >= 24) { p = "翌"; h -= 24; } return p + h + ":" + a[1]; }; let s = st.periods.map((p) => f(p.start) + "〜" + f(p.end)).join("・"); const lo = st.periods.find((p) => p.lastOrder); if (lo) s += "（L.O. " + f(lo.lastOrder) + "）"; return "提供時間 " + s; }
+  function deriveMenuGroups(shop) {
+    const cat = (shop && shop.catalog) || {}; const menus = cat.menus || {}, cats = cat.categories || {}, items = cat.items || {}, placements = cat.placements || {};
+    return MENU_ORDER.filter((id) => menus[id]).map((menuId) => {
+      const mn = menus[menuId]; const g = { id: menuId, _menuId: menuId, name: mn.name || "" };
+      if (menuId === "mnu_kanmi" && mn.servingTime) g.time = fmtServing(mn.servingTime);
+      const catIds = Object.keys(cats).filter((c) => cats[c].menuId === menuId).sort((a, b) => (cats[a].order || 0) - (cats[b].order || 0));
+      g.cats = catIds.map((cid) => {
+        const plIds = Object.keys(placements).filter((k) => placements[k].menuId === menuId && placements[k].categoryId === cid).sort((a, b) => (placements[a].order || 0) - (placements[b].order || 0));
+        return { id: cid, _catId: cid, name: cats[cid].name || "", rows: plIds.map((pid) => { const p = placements[pid], it = items[p.itemId] || {}; return { id: pid, _itemId: p.itemId, _placementId: pid, name: it.name || "", desc: it.description || "", price: formatPrices(priceOf(shop, p.itemId, pid)), hidden: !isDisplayable(it) }; }) };
+      });
+      return g;
+    });
+  }
   // 並びの設定を基に、① から品の並び・表の中身を作る。kind="cards"|"table"
   function deriveGroup(shop, spec, kind) {
     const cat = (shop && shop.catalog) || {}; const items = cat.items || {}, placements = cat.placements || {}, categories = cat.categories || {};
@@ -2467,10 +2487,18 @@ const PG = (function () {
     const effShop = applyShopOps(clone(shopBase()), shopOps);
     // 名前・説明の書き換えは ① の品へ（card/row の name/desc。両方の並びに同じ品が出ていれば、どちらも変わる）
     for (const id in editMap) { const bb = bareOf(id); let m; if ((m = bb.match(/^(card|row)_(name|desc)_(.+)$/))) { const itemId = m[1] === "card" ? itemOfCardPart(m[3]) : itemOfTablePart(m[3]); const it = effShop.catalog && effShop.catalog.items[itemId]; if (it) it[m[2] === "name" ? "name" : "description"] = editMap[id]; } }
+    // 試験台28 §2.4：MENU 本体の書き換えを ① へ。品の名前・説明（行ID=placement）／括りの見出し（カテゴリ名）／メニューの見出し（メニュー名）。
+    for (const id in editMap) {
+      const bb = bareOf(id); let m; const C = effShop.catalog || {};
+      if ((m = bb.match(/^row_(name|desc)_(.+)$/))) { const plc = C.placements && C.placements[m[2]]; if (plc) { const it = C.items[plc.itemId]; if (it) it[m[1] === "name" ? "name" : "description"] = editMap[id]; } }
+      else if ((m = bb.match(/^mc_(.+)$/))) { const ct = C.categories && C.categories[m[1]]; if (ct) ct.name = editMap[id]; }
+      else if ((m = bb.match(/^mg_(.+)$/))) { const mn = C.menus && C.menus[m[1]]; if (mn) mn.name = editMap[id]; }
+    }
     // 並びの設定を解決（この画面の変更 → 土台 → テンプレの既定）。items セクションごとに cards/table を作る
     const effSpec = (gid) => sourceSess[gid] || baseSource[gid] || templateSource(gid);
     const sourceResolved = {};
     for (const inst of allSecs) {
+      if (inst.type === "menu") { const cm = secContent[inst.id]; if (cm) cm.groups = deriveMenuGroups(effShop); continue; }   // 試験台28 §2.4：お品書き本体は ① から
       if (inst.type !== "items") continue;
       const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP;
       const gidC = pfx + "I_cards", gidT = pfx + "I_table";
@@ -2558,20 +2586,8 @@ const PG = (function () {
       else if (inst.type === "footer") { putText(pfx + "fname", slice.name, tmpl.name); putText(pfx + "faddr", slice.addr, tmpl.addr); putText(pfx + "fcopy", slice.copy, tmpl.copy); }
       else if (inst.type === "menuHdr") { putText(pfx + "men", slice.en, tmpl.en); putText(pfx + "mtitle", slice.title, tmpl.title); }
       else if (inst.type === "contactHdr") { putText(pfx + "cen", slice.en, tmpl.en); putText(pfx + "ctitle", slice.title, tmpl.title); }
-      else if (inst.type === "menu" && slice.groups) {
-        slice.groups.forEach((g, gi) => { const tg = (tmpl.groups || [])[gi];
-          putText(pfx + "mg_" + g.id, g.name, tg ? tg.name : undefined);
-          if (g.time != null) putText(pfx + "mt_" + g.id, g.time, tg ? tg.time : undefined);
-          (g.cats || []).forEach((cat, ci) => { const tc = tg && tg.cats && tg.cats[ci];
-            putText(pfx + "mc_" + cat.id, cat.name, tc ? tc.name : undefined);
-            (cat.rows || []).forEach((row, ri) => { const tr = tc && tc.rows && tc.rows[ri];
-              putText(pfx + "row_name_" + row.id, row.name, tr ? tr.name : undefined);
-              putText(pfx + "row_desc_" + row.id, row.desc, tr ? tr.desc : undefined);
-              putText(pfx + "row_price_" + row.id, row.price, tr ? tr.price : undefined);
-            });
-          });
-        });
-      } else if (inst.type === "contact" && Array.isArray(slice.rows)) {
+      // 試験台28 §2.4：MENU 本体は ① 連動（品の名前・説明・価格、括りの見出し、メニューの見出し）＝下書き content には書かない（① の下書き=shop に入る）。
+      else if (inst.type === "contact" && Array.isArray(slice.rows)) {
         putText(pfx + "clead", slice.lead, tmpl.lead);
         slice.rows.forEach((r, i) => { const tr = (tmpl.rows || [])[i];
           putText(pfx + "cl_" + r.id, r.label, tr ? tr.label : undefined);
