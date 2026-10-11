@@ -1168,7 +1168,10 @@ stage.addEventListener("contextmenu",(e)=>{
   if(isPhone()){ e.preventDefault(); return; }   // §3.2.5 スマホの長押しから来る contextmenu は出さない・右クリック扱いしない
   const id=elFrom(e.target);   // §23c X35：render で元のノードが外れうるので、終える前に部品 ID を取っておく
   if(PG.state.editing) PG.commitEdit();   // §23c X35：右クリックメニューは「文字を打つ以外でその部品を変える」操作＝先に書き換えをふつうに終える（書き換えの外をクリックと同じ）。入り直した書き換えでも同じ
-  if(id){ e.preventDefault(); const grp=PG.groupOf(id); const sel=[...PG.state.selected]; const innerSel = grp && sel.length===1 && PG.isRepeat(sel[0]) && PG.groupOf(sel[0])===grp;   // 試験台26：中の1件を選んでいて同じ並びを右クリック → 1件のメニュー（品を足す等）
+  if(id){ e.preventDefault();
+    const catId=PG.menuCatId(id);   // 試験台28 §2.4：括りの見出しを右クリック → 括りを足す/消す
+    if(catId){ PG.selectOnly(PG.canonId(id)); showCategoryMenu(catId,e.clientX,e.clientY); return; }
+    const grp=PG.groupOf(id); const sel=[...PG.state.selected]; const innerSel = grp && sel.length===1 && PG.isRepeat(sel[0]) && PG.groupOf(sel[0])===grp;   // 試験台26：中の1件を選んでいて同じ並びを右クリック → 1件のメニュー（品を足す等）
     if(!innerSel) PG.selectOnly(grp||PG.canonId(id)); showFmenu(); return; }
   const host=e.target.closest&&e.target.closest("#sectionwrap .host");
   if(host){ e.preventDefault(); const sec=host.id.replace("host_",""); PG.selectSection(sec); showSectionMenu(sec,e.clientX,e.clientY); }
@@ -1189,6 +1192,85 @@ function showSectionMenu(sec,cx,cy){
   if(isPhone()){ positionFmenu(); }   // §1(X7/X8)（試験台16）箱はセクションに付いていく・見えている範囲の中
   else { clampMenuAt(cx,cy); }   // §19（X19）画面の中に収める
 }
+
+// ---- 試験台28 §2.4：括りの見出しの右クリック（括りを足す（この下に）／括りを消す） ----
+function showCategoryMenu(catId,cx,cy){
+  fmenu.innerHTML="";
+  const add=(label,fn,disabled)=>{ const b=document.createElement("button"); b.textContent=label; b.setAttribute("data-cat-menu",label); if(disabled){ b.disabled=true; } else { b.onclick=(ev)=>{ ev.stopPropagation(); fmenu.classList.remove("on"); fn(); }; } fmenu.appendChild(b); };
+  add("括りを足す（この下に）",()=>PG.categoryAdd(catId));
+  add("括りを消す",()=>PG.categoryDelete(catId), !PG.categoryCanDelete(catId));   // §2.4 品が残っていれば灰色
+  fmenu._section=false; fmenu._secId=null; fmenu._follow=null; fmenu._place=null;
+  fmenu.classList.add("on");
+  if(isPhone()){ positionFmenu(); } else { clampMenuAt(cx,cy); }
+}
+
+// ---- 試験台28 §2.4：品のドラッグ並べ替え（お品書き本体の行＝① の載せ方／トップのおすすめ＝pick）----
+// 既存の選択・レイアウト移動（beginDrag）は塊の幾何用。品の並べ替えは ① のデータを書き換える別物。
+// capture 相で先につかみ、本体のポインタ処理より先に落とし先の線（横線＝表／縦線＝並び）を出して ① を書き換える。
+// 行は本体処理を使わない（pointerdown で止める）。札はおすすめの塊を1回選んだ後の2回目のつかみだけ奪う（1回目の塊選択・塊移動は従来どおり）。
+(function(){
+  let rd=null; const THRESH=3;
+  function dropLine(){ let l=document.getElementById("reorderDropLine"); if(!l){ l=document.createElement("div"); l.id="reorderDropLine"; l.style.cssText="position:fixed;z-index:78;background:#06c;pointer-events:none;border-radius:1.5px"; document.body.appendChild(l); } return l; }
+  function clearDropLine(){ const l=document.getElementById("reorderDropLine"); if(l) l.remove(); }
+  const onMenuPage=()=>PG.currentPage&&PG.currentPage()==="pg_menu";
+  function rowFrom(t){ return t&&t.closest? t.closest('.krow[data-plc]'):null; }
+  function cardFrom(t){ return t&&t.closest? t.closest('.card[data-item]'):null; }
+  function cardGid(cardEl){ const g=cardEl.closest('.cards[data-el]'); return g?g.getAttribute('data-el'):"I_cards"; }
+  function cardNameEl(cardEl){ return cardEl.querySelector('[data-el^="card_name_"],[data-el*="__card_name_"]'); }
+  // この札の中の1件が選ばれている＝PowerPoint の2回目（1回目は塊選択＝列▾・塊移動のまま）。そのときだけドラッグで並べ替える。
+  function cardArmed(cardEl){ const cid=cardEl.getAttribute('data-card'); const sel=PG.state&&PG.state.selected; if(!sel) return false; return [...sel].some(id=>{ const m=id.match(/card_(?:name|desc|price|photo)_(.+)$/); return m&&m[1]===cid; }); }
+  // お品書き本体：落とし先＝どの括り（.kcat）の、どの行の前か（null＝括りの最後）
+  function rowTarget(clientY){
+    const kcats=[...document.querySelectorAll('#host_menu .kcat')];
+    if(!kcats.length) return null;
+    let kc=kcats.find(k=>{ const r=k.getBoundingClientRect(); return clientY>=r.top&&clientY<=r.bottom; });
+    if(!kc){ let best=null,bd=1e9; for(const k of kcats){ const r=k.getBoundingClientRect(); const d=clientY<r.top?r.top-clientY:clientY-r.bottom; if(d<bd){bd=d;best=k;} } kc=best; }
+    const cat=kc.getAttribute('data-cat');
+    const rows=[...kc.querySelectorAll('.krow[data-plc]')].filter(r=>!rd||r.getAttribute('data-plc')!==rd.plc);
+    let before=null;
+    for(const r of rows){ const b=r.getBoundingClientRect(); if(clientY < b.top+b.height/2){ before=r.getAttribute('data-plc'); break; } }
+    let y,x,w;
+    if(before){ const r=rows.find(rr=>rr.getAttribute('data-plc')===before).getBoundingClientRect(); y=r.top; x=r.left; w=r.width; }
+    else if(rows.length){ const r=rows[rows.length-1].getBoundingClientRect(); y=r.bottom; x=r.left; w=r.width; }
+    else { const h=kc.querySelector('[data-el]'); const r=(h||kc).getBoundingClientRect(); y=r.bottom+6; x=r.left; w=Math.max(r.width,120); }
+    return { cat, before, y, x, w };
+  }
+  // トップのおすすめ：落とし先＝どの札の前か（読み順。縦線）。null＝最後
+  function cardTarget(clientX,clientY){
+    const cards=[...document.querySelectorAll('.cards[data-el] .card[data-item]')].filter(c=>!rd||c.getAttribute('data-item')!==rd.item);
+    if(!cards.length) return { before:null, line:null };
+    let before=null, ref=null, after=false;
+    for(const c of cards){ const b=c.getBoundingClientRect(); if(clientY>=b.top-8&&clientY<=b.bottom+8 && clientX < b.left+b.width/2){ before=c.getAttribute('data-item'); ref=c; break; } }
+    if(!before){ let best=null,bd=1e9; for(const c of cards){ const b=c.getBoundingClientRect(); const dy=Math.abs((b.top+b.bottom)/2-clientY); if(dy<bd){bd=dy;best=c;} } ref=best; after=true; }
+    const r=ref.getBoundingClientRect();
+    return { before, line:{ x:(after? r.right+3 : r.left-3), y:r.top, h:r.height } };
+  }
+  window.addEventListener("pointerdown",(e)=>{
+    if(isPhone()||(PG.previewMode&&PG.previewMode())||(PG.viewingVersion&&PG.viewingVersion())) return;
+    if(e.button!==0) return;
+    if(PG.state&&PG.state.editing&&e.target.closest&&e.target.closest("[contenteditable]")) return;   // 書き換え中の文字は素通し（並べ替えにしない）
+    const row=onMenuPage()?rowFrom(e.target):null;
+    if(row){ if(PG.state&&PG.state.editing) PG.commitEdit(); rd={ kind:"row", plc:row.getAttribute('data-plc'), cat:row.getAttribute('data-cat'), sx:e.clientX, sy:e.clientY, moved:false }; e.stopPropagation(); return; }
+    const card=(!onMenuPage())?cardFrom(e.target):null;
+    if(card && cardArmed(card)){ if(PG.state&&PG.state.editing) PG.commitEdit(); rd={ kind:"card", item:card.getAttribute('data-item'), gid:cardGid(card), nameEl:cardNameEl(card), sx:e.clientX, sy:e.clientY, moved:false }; e.stopPropagation(); return; }
+  },true);
+  window.addEventListener("pointermove",(e)=>{
+    if(!rd) return;
+    e.stopPropagation();
+    if(!rd.moved){ if(Math.hypot(e.clientX-rd.sx,e.clientY-rd.sy)<=THRESH){ e.preventDefault(); return; } rd.moved=true; }
+    e.preventDefault();
+    const L=dropLine();
+    if(rd.kind==="row"){ const t=rowTarget(e.clientY); rd.target=t; if(t){ L.style.left=t.x+"px"; L.style.top=(t.y-1)+"px"; L.style.width=t.w+"px"; L.style.height="2px"; } }
+    else { const t=cardTarget(e.clientX,e.clientY); rd.target=t; if(t&&t.line){ L.style.left=t.line.x+"px"; L.style.top=t.line.y+"px"; L.style.width="2px"; L.style.height=t.line.h+"px"; } }
+  },true);
+  window.addEventListener("pointerup",(e)=>{
+    if(!rd) return; const r=rd; rd=null; clearDropLine();
+    e.stopPropagation();
+    if(!r.moved){ if(r.kind==="card" && r.nameEl){ PG.selectMany([r.nameEl.getAttribute('data-el')]); showFmenu(); } return; }   // 動かしていない＝クリック（並べ替えしない。札は中の1件を選ぶ）
+    if(r.kind==="row"){ const t=r.target||rowTarget(e.clientY); if(t) PG.menuMoveRow(r.plc, t.cat, t.before); }
+    else { const t=r.target||cardTarget(e.clientX,e.clientY); PG.cardsMove(r.gid, r.item, t?t.before:null); }
+  },true);
+})();
 
 // ---- §2 セクションを足す「＋」。セクションの境目（と上端・下端）に出す。押すと型の一覧（特集／品）----
 function updateAddZones(){

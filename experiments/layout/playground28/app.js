@@ -502,10 +502,15 @@ const PG = (function () {
       else if (op.t === "shopAdd") { const it = clone(op.item); const iid = it.id; delete it.id; cat.items[iid] = it; if (op.placement) { const pl = clone(op.placement); const pid = pl.id; delete pl.id; cat.placements[pid] = pl; } }   // 品・載せ方は ID をキーにし、中には id を持たない（schema どおり）
       else if (op.t === "shopDel") { if (op.placementId) delete cat.placements[op.placementId]; if (op.alsoItem && op.itemId) delete cat.items[op.itemId]; }
       else if (op.t === "shopLabels") { const it = cat.items[op.itemId]; if (it) it.labels = clone(op.labels); }
+      // 試験台28 §2.4：品の並べ替え＝載せ方の括り・順番を書き換える（別の括り・別メニューへも）
+      else if (op.t === "shopReorder") { const p = cat.placements[op.placementId]; if (p) { if (op.menuId != null) p.menuId = op.menuId; if (op.categoryId != null) p.categoryId = op.categoryId; p.order = op.order; } }
+      // 試験台28 §2.4：括りを足す・消す
+      else if (op.t === "shopCatAdd") { cat.categories[op.categoryId] = { menuId: op.menuId, name: op.name, order: op.order }; }
+      else if (op.t === "shopCatDel") { delete cat.categories[op.categoryId]; }
     }
     return shop;
   }
-  const isShopOp = (t) => t === "shopField" || t === "shopPrice" || t === "shopAdd" || t === "shopDel" || t === "shopLabels";
+  const isShopOp = (t) => t === "shopField" || t === "shopPrice" || t === "shopAdd" || t === "shopDel" || t === "shopLabels" || t === "shopReorder" || t === "shopCatAdd" || t === "shopCatDel";
   // 新しい ID を作る（2.2：英小文字・数字、使い回さない。① の下書きの中の ID の最大から続ける）
   const mintShopId = (prefix) => prefix + "_x" + String(++state.shopSeq).padStart(4, "0");
   function recomputeShopSeq(shop) {
@@ -513,6 +518,7 @@ const PG = (function () {
     const cat = (shop && shop.catalog) || {};
     for (const id in (cat.items || {})) { take(id); for (const pr of (cat.items[id].prices || [])) take(pr.id); }
     for (const id in (cat.placements || {})) { take(id); for (const pr of (cat.placements[id].prices || [])) take(pr.id); }
+    for (const id in (cat.categories || {})) take(id);   // 試験台28 §2.4：足した括り（cat_x…）も使い回さない
     state.shopSeq = Math.max(state.shopSeq || 0, mx);
   }
 
@@ -2361,6 +2367,59 @@ const PG = (function () {
     const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(itemId); if (i >= 0) spec.pick.splice(i, 1); commit({ t: "catAct", src: { gid: info.gid, spec } });
     pgToastMsg(name + "をこの並びから外しました（お品書きには残っています）");
   }
+
+  // ===================== 試験台28 §2.4：品の並べ替え（お品書き本体）・括りの足す/消す =====================
+  // お品書き本体（全部を並べる所・4.6）は ① の載せ方そのもの。行をドラッグして並べ替え＝載せ方の括り・順番を書き換える。
+  // お品書き本体の行 ID（menu__row_{name|desc|price}_{placementId}）→ placementId
+  function menuRowPlc(fullId) { const m = bareOf(fullId).match(/^row_(?:name|desc|price)_(.+)$/); return m ? m[1] : null; }
+  // ① から今の括りごとの並び（placement 主キー）を読む（ドラッグの落とし先の計算と試験の窓口）
+  function menuView() { return deriveMenuGroups(reduce(activeOps(), "pc").effShop); }
+  // 括りの中の placement を order 順に並べた配列（自分を除ける）
+  function placementsInCat(cat, menuId, categoryId, exclude) {
+    return Object.keys(cat.placements).filter((k) => k !== exclude && cat.placements[k].menuId === menuId && cat.placements[k].categoryId === categoryId)
+      .sort((a, b) => (cat.placements[a].order || 0) - (cat.placements[b].order || 0));
+  }
+  // 行を destCategoryId の中で beforePlcId の前へ（beforePlcId が null＝括りの最後へ）。別メニューの括りへも移せる。
+  function menuMoveRow(plcId, destCatId, beforePlcId) {
+    const cat = curCat(); const plc = cat.placements[plcId]; const destCat = cat.categories[destCatId];
+    if (!plc || !destCat) return false;
+    const menuId = destCat.menuId;
+    const sibs = placementsInCat(cat, menuId, destCatId, plcId);
+    let order;
+    if (!beforePlcId || !sibs.includes(beforePlcId)) { order = sibs.length ? (cat.placements[sibs[sibs.length - 1]].order || 0) + 1 : 1; beforePlcId = null; }
+    else { const idx = sibs.indexOf(beforePlcId); const at = cat.placements[beforePlcId].order || 0; const prev = idx > 0 ? (cat.placements[sibs[idx - 1]].order || 0) : at - 1; order = (prev + at) / 2; }
+    // no-op を避ける：同じ括りで、今の並びの「beforePlcId の前」に既に居るなら commit しない
+    if (plc.categoryId === destCatId && plc.menuId === menuId) {
+      const cur = placementsInCat(cat, menuId, destCatId, null); const curNext = cur[cur.indexOf(plcId) + 1] || null;
+      if ((curNext || null) === (beforePlcId || null)) return false;
+    }
+    commit({ t: "catAct", shops: [{ t: "shopReorder", placementId: plcId, menuId, categoryId: destCatId, order }] });
+    return true;
+  }
+  // トップのおすすめ等（絞り込んだ並び）の並べ替え＝pick の順番（4.6「触った並びだけ」）。① の載せ方・ラベルは変えない。
+  function cardsMove(gid, itemId, beforeItemId) {
+    const spec = ensurePickSpec(gid); const pick = spec.pick.filter((x) => x !== itemId);
+    const idx = beforeItemId ? pick.indexOf(beforeItemId) : -1;
+    if (idx < 0) pick.push(itemId); else pick.splice(idx, 0, itemId);
+    if (spec.pick.join() === pick.join()) return false;   // no-op
+    spec.pick = pick; commit({ t: "catAct", src: { gid, spec } });
+    return true;
+  }
+  // 括りを足す（afterCatId のすぐ下・同じメニュー）
+  function categoryAdd(afterCatId) {
+    const cat = curCat(); const after = cat.categories[afterCatId]; if (!after) return null;
+    const menuId = after.menuId, catId = mintShopId("cat");
+    const sibs = Object.keys(cat.categories).filter((c) => cat.categories[c].menuId === menuId).sort((a, b) => (cat.categories[a].order || 0) - (cat.categories[b].order || 0));
+    const i = sibs.indexOf(afterCatId); const a = after.order || 0; const next = (i >= 0 && i < sibs.length - 1) ? (cat.categories[sibs[i + 1]].order || 0) : null;
+    const order = next == null ? a + 1 : (a + next) / 2;
+    commit({ t: "catAct", shops: [{ t: "shopCatAdd", categoryId: catId, menuId, name: "新しい括り", order }] });
+    return catId;
+  }
+  // 括りに品が残っていれば消せない（§2.4：灰色）
+  function categoryCanDelete(catId) { const cat = curCat(); return !Object.keys(cat.placements).some((k) => cat.placements[k].categoryId === catId); }
+  function categoryDelete(catId) { if (!categoryCanDelete(catId)) return false; commit({ t: "catAct", shops: [{ t: "shopCatDel", categoryId: catId }] }); return true; }
+  // 括りの見出し ID（menu__mc_{categoryId}）→ categoryId
+  function menuCatId(fullId) { const m = bareOf(fullId).match(/^mc_(.+)$/); return m ? m[1] : null; }
   // 品を選ぶ一覧（そのメニューの品を括りごと。今出ている品は選べない扱い、出ない品は理由つき）
   function outReason(item) { if (!item) return ""; if (item.status === "paused") return "一時休止中"; if (item.status && item.status !== "onSale") return "販売していません"; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) { const ms = item.season.months; return ms[0] + "〜" + ms[ms.length - 1] + "月だけ"; } return "今は並びに出ません"; }
   function itemPickerData(gid) {
@@ -3251,6 +3310,11 @@ const PG = (function () {
     cardsAddExisting: (gid, itemId) => cardsAddExisting(gid, itemId), cardsAddNew: (gid, categoryId) => cardsAddNew(gid, categoryId),
     cardsDuplicate: (id) => cardsDuplicate(id), cardsDelete: (id) => cardsDelete(id),
     itemPicker: (gid) => itemPickerData(gid), listMode: () => LIST_MODE, curSpec: (gid) => clone(curSpec(gid)),
+    // 試験台28 §2.4：品の並べ替え（本体＝① の載せ方／おすすめ＝pick）・括りの足す/消す
+    menuView: () => menuView(), menuRowPlc: (id) => menuRowPlc(id), menuCatId: (id) => menuCatId(id),
+    menuMoveRow: (plcId, destCatId, beforePlcId) => menuMoveRow(plcId, destCatId, beforePlcId),
+    cardsMove: (gid, itemId, beforeItemId) => cardsMove(gid, itemId, beforeItemId),
+    categoryAdd: (afterCatId) => categoryAdd(afterCatId), categoryDelete: (catId) => categoryDelete(catId), categoryCanDelete: (catId) => categoryCanDelete(catId),
     catalogView: () => catalogView(),   // 試験台26 お品書きを見る（① の下書きの差分つき）
     selected: () => [...state.selected],   // 試験台26 試験の窓口（選んでいる部品）
     align: (k) => align(k), canAlign: () => canAlign(),   // §27 配置（揃え・整列）
@@ -3299,6 +3363,7 @@ const PG = (function () {
     // 試験台26：① 連動の操作・値段の箱・品を選ぶ一覧・お品書きを見る（WIRING から使う）
     partInfo, effPricesOf, setPrices, tableAddRow, tableDuplicate, tableDelete,
     cardsAddExisting, cardsAddNew, cardsDuplicate, cardsDelete, itemPickerData, catalogView, curSpec, isRepeat, LIST_MODE,
+    menuView, menuRowPlc, menuCatId, menuMoveRow, cardsMove, categoryAdd, categoryDelete, categoryCanDelete,   // 試験台28 §2.4：品の並べ替え・括りの足す/消す（WIRING から使う）
     resetScope, peekOn, peekOff, addTextAt, anchorsList, classify: (id) => M.classifyDrop(geometry(), id, [id]),
     bringToFront, sendToBack, bringForward, sendBackward, hasOverlapPartner, zOrderList,
     beginResize, resizeMove, endResize, isResizing: () => !!rz, programResize, handlesFor,

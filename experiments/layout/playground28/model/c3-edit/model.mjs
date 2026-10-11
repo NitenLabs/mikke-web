@@ -152,7 +152,7 @@ export function buildItems(content, device, H, edits = {}) {
   const cardRowGap = device === "pc" ? 64 : 40;                       // §2.2.7 段と段の間（Claude.ai が置いた）
   const ctw = (id) => Math.min(sizes[id]?.w ?? cardTxtW, cardW);      // §2.2.5 手直しの幅も1件の幅を越えない（表示だけ縮める）
   const cardCell = (card, cardStyle, extra) => `
-      <div class="card" style="${cardStyle}${extra || ""}">
+      <div class="card" data-card="${card.id}" data-item="${card._itemId}" style="${cardStyle}${extra || ""}">
         ${cph(`card_photo_${card.id}`, card.photo.asset)}
         ${T(`card_name_${card.id}`, "cardName", device, ctw(`card_name_${card.id}`), thtml(H, `I_cn_${card.id}`), `margin:${px(c.cardPhotoName)} 0 0 ${px(c.cardTxtInset)}`)}
         ${T(`card_desc_${card.id}`, "cardDesc", device, ctw(`card_desc_${card.id}`), thtml(H, `I_cd_${card.id}`), `margin:${px(c.cardNameDesc)} 0 0 ${px(c.cardTxtInset)}`)}
@@ -257,9 +257,11 @@ export function buildMenu(content, device, H, edits = {}) {
   // 値段は1行に収める（記録 6.9）＝値段の入る幅を確保し、折り返さない（トップの表と同じ考え）
   const priceW = device === "pc" ? 420 : contW;
   const editMode = edits.editMode !== false;   // 編集中は出ていない品も薄く出す（プレビュー/公開は edits.editMode=false で詰める）
-  const rowHtml = (row) => {
+  const rowHtml = (row, catId, menuId) => {
     // §2.4 理由を「名前のすぐ右」に添えるため、理由を出す行は名前の箱を中身ぶんに縮める（max-width で折り返しは nameW のまま）。
     const hasReason = !!(row.hidden && row.reason);
+    // §2.4 品の並べ替え用：行＝placement、所属の括り・メニューを持たせる（ドラッグの落とし先の計算に使う）
+    const drag = ` data-plc="${row.id}" data-cat="${catId}" data-menu="${menuId}"`;
     const nameExtra = hasReason ? `width:fit-content;max-width:${px(nameW)}` : "";
     const name = T(`row_name_${row.id}`, "tName", device, nameW, thtml(H, `row_name_${row.id}`), nameExtra);
     const desc = row.desc ? T(`row_desc_${row.id}`, "tDesc", device, nameW, thtml(H, `row_desc_${row.id}`), "margin-top:8px") : "";
@@ -269,19 +271,20 @@ export function buildMenu(content, device, H, edits = {}) {
     const reason = hasReason ? `<span class="menu-reason" style="margin-left:8px;font:12px/1.4 'Zen Kaku Gothic New',sans-serif;color:${COLORS.textMuted};white-space:nowrap">${row.reason}</span>` : "";
     const hattr = row.hidden ? ` data-hidden="1"` : "";
     if (device === "pc") {
-      return `<div class="krow"${hattr} style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line};${fade}">
+      return `<div class="krow"${hattr}${drag} style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line};${fade}">
         <div style="flex:none;width:${px(nameW)}"><div style="display:flex;align-items:baseline">${name}${reason}</div>${desc}</div>
         <div style="flex:1;display:flex;justify-content:flex-end">${price}</div></div>`;
     }
-    return `<div class="krow"${hattr} style="display:flex;flex-direction:column;padding:24px 0 25px;border-bottom:1px solid ${COLORS.line};${fade}"><div style="display:flex;align-items:baseline">${name}${reason}</div>${desc}${price}</div>`;
+    return `<div class="krow"${hattr}${drag} style="display:flex;flex-direction:column;padding:24px 0 25px;border-bottom:1px solid ${COLORS.line};${fade}"><div style="display:flex;align-items:baseline">${name}${reason}</div>${desc}${price}</div>`;
   };
   const groupHtml = (g, gi) => {
     const head = T(`mg_${g.id}`, "menuGroup", device, contW, thtml(H, `mg_${g.id}`));
     const time = g.time ? T(`mt_${g.id}`, "kanmiTime", device, contW, thtml(H, `mt_${g.id}`), "margin-top:4px") : "";
+    // §2.4 括りごとに .kcat で包む（空の括りも落とし先・右クリックの対象になる。data-cat/data-menu を持たせる）
     const cats = g.cats.map((cat) => {
       const ch = T(`mc_${cat.id}`, "menuCat", device, nameW, thtml(H, `mc_${cat.id}`), "margin-top:40px");
       const rows = cat.rows.filter((r) => editMode || !r.hidden);   // 編集時は薄く出す／プレビュー・公開は詰める
-      return ch + rows.map(rowHtml).join("");
+      return `<div class="kcat" data-cat="${cat.id}" data-menu="${g.id}">${ch}${rows.map((r) => rowHtml(r, cat.id, g.id)).join("")}</div>`;
     }).join("");
     return `<div class="mgroup" style="margin-top:${gi === 0 ? 0 : 64}px">${head}${time}${cats}</div>`;   // 先頭の括りは本体上端から（stack の padTop のみ）
   };

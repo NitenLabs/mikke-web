@@ -1214,7 +1214,7 @@ function buildItems(content, device, H, edits = {}) {
   const cardRowGap = device === "pc" ? 64 : 40;                       // §2.2.7 段と段の間（Claude.ai が置いた）
   const ctw = (id) => Math.min(sizes[id]?.w ?? cardTxtW, cardW);      // §2.2.5 手直しの幅も1件の幅を越えない（表示だけ縮める）
   const cardCell = (card, cardStyle, extra) => `
-      <div class="card" style="${cardStyle}${extra || ""}">
+      <div class="card" data-card="${card.id}" data-item="${card._itemId}" style="${cardStyle}${extra || ""}">
         ${cph(`card_photo_${card.id}`, card.photo.asset)}
         ${T(`card_name_${card.id}`, "cardName", device, ctw(`card_name_${card.id}`), thtml(H, `I_cn_${card.id}`), `margin:${px(c.cardPhotoName)} 0 0 ${px(c.cardTxtInset)}`)}
         ${T(`card_desc_${card.id}`, "cardDesc", device, ctw(`card_desc_${card.id}`), thtml(H, `I_cd_${card.id}`), `margin:${px(c.cardNameDesc)} 0 0 ${px(c.cardTxtInset)}`)}
@@ -1319,9 +1319,11 @@ function buildMenu(content, device, H, edits = {}) {
   // 値段は1行に収める（記録 6.9）＝値段の入る幅を確保し、折り返さない（トップの表と同じ考え）
   const priceW = device === "pc" ? 420 : contW;
   const editMode = edits.editMode !== false;   // 編集中は出ていない品も薄く出す（プレビュー/公開は edits.editMode=false で詰める）
-  const rowHtml = (row) => {
+  const rowHtml = (row, catId, menuId) => {
     // §2.4 理由を「名前のすぐ右」に添えるため、理由を出す行は名前の箱を中身ぶんに縮める（max-width で折り返しは nameW のまま）。
     const hasReason = !!(row.hidden && row.reason);
+    // §2.4 品の並べ替え用：行＝placement、所属の括り・メニューを持たせる（ドラッグの落とし先の計算に使う）
+    const drag = ` data-plc="${row.id}" data-cat="${catId}" data-menu="${menuId}"`;
     const nameExtra = hasReason ? `width:fit-content;max-width:${px(nameW)}` : "";
     const name = T(`row_name_${row.id}`, "tName", device, nameW, thtml(H, `row_name_${row.id}`), nameExtra);
     const desc = row.desc ? T(`row_desc_${row.id}`, "tDesc", device, nameW, thtml(H, `row_desc_${row.id}`), "margin-top:8px") : "";
@@ -1331,19 +1333,20 @@ function buildMenu(content, device, H, edits = {}) {
     const reason = hasReason ? `<span class="menu-reason" style="margin-left:8px;font:12px/1.4 'Zen Kaku Gothic New',sans-serif;color:${COLORS.textMuted};white-space:nowrap">${row.reason}</span>` : "";
     const hattr = row.hidden ? ` data-hidden="1"` : "";
     if (device === "pc") {
-      return `<div class="krow"${hattr} style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line};${fade}">
+      return `<div class="krow"${hattr}${drag} style="display:flex;align-items:baseline;justify-content:space-between;gap:24px;padding:26px 0 23.6px;border-bottom:1px solid ${COLORS.line};${fade}">
         <div style="flex:none;width:${px(nameW)}"><div style="display:flex;align-items:baseline">${name}${reason}</div>${desc}</div>
         <div style="flex:1;display:flex;justify-content:flex-end">${price}</div></div>`;
     }
-    return `<div class="krow"${hattr} style="display:flex;flex-direction:column;padding:24px 0 25px;border-bottom:1px solid ${COLORS.line};${fade}"><div style="display:flex;align-items:baseline">${name}${reason}</div>${desc}${price}</div>`;
+    return `<div class="krow"${hattr}${drag} style="display:flex;flex-direction:column;padding:24px 0 25px;border-bottom:1px solid ${COLORS.line};${fade}"><div style="display:flex;align-items:baseline">${name}${reason}</div>${desc}${price}</div>`;
   };
   const groupHtml = (g, gi) => {
     const head = T(`mg_${g.id}`, "menuGroup", device, contW, thtml(H, `mg_${g.id}`));
     const time = g.time ? T(`mt_${g.id}`, "kanmiTime", device, contW, thtml(H, `mt_${g.id}`), "margin-top:4px") : "";
+    // §2.4 括りごとに .kcat で包む（空の括りも落とし先・右クリックの対象になる。data-cat/data-menu を持たせる）
     const cats = g.cats.map((cat) => {
       const ch = T(`mc_${cat.id}`, "menuCat", device, nameW, thtml(H, `mc_${cat.id}`), "margin-top:40px");
       const rows = cat.rows.filter((r) => editMode || !r.hidden);   // 編集時は薄く出す／プレビュー・公開は詰める
-      return ch + rows.map(rowHtml).join("");
+      return `<div class="kcat" data-cat="${cat.id}" data-menu="${g.id}">${ch}${rows.map((r) => rowHtml(r, cat.id, g.id)).join("")}</div>`;
     }).join("");
     return `<div class="mgroup" style="margin-top:${gi === 0 ? 0 : 64}px">${head}${time}${cats}</div>`;   // 先頭の括りは本体上端から（stack の padTop のみ）
   };
@@ -2184,10 +2187,15 @@ const PG = (function () {
       else if (op.t === "shopAdd") { const it = clone(op.item); const iid = it.id; delete it.id; cat.items[iid] = it; if (op.placement) { const pl = clone(op.placement); const pid = pl.id; delete pl.id; cat.placements[pid] = pl; } }   // 品・載せ方は ID をキーにし、中には id を持たない（schema どおり）
       else if (op.t === "shopDel") { if (op.placementId) delete cat.placements[op.placementId]; if (op.alsoItem && op.itemId) delete cat.items[op.itemId]; }
       else if (op.t === "shopLabels") { const it = cat.items[op.itemId]; if (it) it.labels = clone(op.labels); }
+      // 試験台28 §2.4：品の並べ替え＝載せ方の括り・順番を書き換える（別の括り・別メニューへも）
+      else if (op.t === "shopReorder") { const p = cat.placements[op.placementId]; if (p) { if (op.menuId != null) p.menuId = op.menuId; if (op.categoryId != null) p.categoryId = op.categoryId; p.order = op.order; } }
+      // 試験台28 §2.4：括りを足す・消す
+      else if (op.t === "shopCatAdd") { cat.categories[op.categoryId] = { menuId: op.menuId, name: op.name, order: op.order }; }
+      else if (op.t === "shopCatDel") { delete cat.categories[op.categoryId]; }
     }
     return shop;
   }
-  const isShopOp = (t) => t === "shopField" || t === "shopPrice" || t === "shopAdd" || t === "shopDel" || t === "shopLabels";
+  const isShopOp = (t) => t === "shopField" || t === "shopPrice" || t === "shopAdd" || t === "shopDel" || t === "shopLabels" || t === "shopReorder" || t === "shopCatAdd" || t === "shopCatDel";
   // 新しい ID を作る（2.2：英小文字・数字、使い回さない。① の下書きの中の ID の最大から続ける）
   const mintShopId = (prefix) => prefix + "_x" + String(++state.shopSeq).padStart(4, "0");
   function recomputeShopSeq(shop) {
@@ -2195,6 +2203,7 @@ const PG = (function () {
     const cat = (shop && shop.catalog) || {};
     for (const id in (cat.items || {})) { take(id); for (const pr of (cat.items[id].prices || [])) take(pr.id); }
     for (const id in (cat.placements || {})) { take(id); for (const pr of (cat.placements[id].prices || [])) take(pr.id); }
+    for (const id in (cat.categories || {})) take(id);   // 試験台28 §2.4：足した括り（cat_x…）も使い回さない
     state.shopSeq = Math.max(state.shopSeq || 0, mx);
   }
 
@@ -4043,6 +4052,59 @@ const PG = (function () {
     const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(itemId); if (i >= 0) spec.pick.splice(i, 1); commit({ t: "catAct", src: { gid: info.gid, spec } });
     pgToastMsg(name + "をこの並びから外しました（お品書きには残っています）");
   }
+
+  // ===================== 試験台28 §2.4：品の並べ替え（お品書き本体）・括りの足す/消す =====================
+  // お品書き本体（全部を並べる所・4.6）は ① の載せ方そのもの。行をドラッグして並べ替え＝載せ方の括り・順番を書き換える。
+  // お品書き本体の行 ID（menu__row_{name|desc|price}_{placementId}）→ placementId
+  function menuRowPlc(fullId) { const m = bareOf(fullId).match(/^row_(?:name|desc|price)_(.+)$/); return m ? m[1] : null; }
+  // ① から今の括りごとの並び（placement 主キー）を読む（ドラッグの落とし先の計算と試験の窓口）
+  function menuView() { return deriveMenuGroups(reduce(activeOps(), "pc").effShop); }
+  // 括りの中の placement を order 順に並べた配列（自分を除ける）
+  function placementsInCat(cat, menuId, categoryId, exclude) {
+    return Object.keys(cat.placements).filter((k) => k !== exclude && cat.placements[k].menuId === menuId && cat.placements[k].categoryId === categoryId)
+      .sort((a, b) => (cat.placements[a].order || 0) - (cat.placements[b].order || 0));
+  }
+  // 行を destCategoryId の中で beforePlcId の前へ（beforePlcId が null＝括りの最後へ）。別メニューの括りへも移せる。
+  function menuMoveRow(plcId, destCatId, beforePlcId) {
+    const cat = curCat(); const plc = cat.placements[plcId]; const destCat = cat.categories[destCatId];
+    if (!plc || !destCat) return false;
+    const menuId = destCat.menuId;
+    const sibs = placementsInCat(cat, menuId, destCatId, plcId);
+    let order;
+    if (!beforePlcId || !sibs.includes(beforePlcId)) { order = sibs.length ? (cat.placements[sibs[sibs.length - 1]].order || 0) + 1 : 1; beforePlcId = null; }
+    else { const idx = sibs.indexOf(beforePlcId); const at = cat.placements[beforePlcId].order || 0; const prev = idx > 0 ? (cat.placements[sibs[idx - 1]].order || 0) : at - 1; order = (prev + at) / 2; }
+    // no-op を避ける：同じ括りで、今の並びの「beforePlcId の前」に既に居るなら commit しない
+    if (plc.categoryId === destCatId && plc.menuId === menuId) {
+      const cur = placementsInCat(cat, menuId, destCatId, null); const curNext = cur[cur.indexOf(plcId) + 1] || null;
+      if ((curNext || null) === (beforePlcId || null)) return false;
+    }
+    commit({ t: "catAct", shops: [{ t: "shopReorder", placementId: plcId, menuId, categoryId: destCatId, order }] });
+    return true;
+  }
+  // トップのおすすめ等（絞り込んだ並び）の並べ替え＝pick の順番（4.6「触った並びだけ」）。① の載せ方・ラベルは変えない。
+  function cardsMove(gid, itemId, beforeItemId) {
+    const spec = ensurePickSpec(gid); const pick = spec.pick.filter((x) => x !== itemId);
+    const idx = beforeItemId ? pick.indexOf(beforeItemId) : -1;
+    if (idx < 0) pick.push(itemId); else pick.splice(idx, 0, itemId);
+    if (spec.pick.join() === pick.join()) return false;   // no-op
+    spec.pick = pick; commit({ t: "catAct", src: { gid, spec } });
+    return true;
+  }
+  // 括りを足す（afterCatId のすぐ下・同じメニュー）
+  function categoryAdd(afterCatId) {
+    const cat = curCat(); const after = cat.categories[afterCatId]; if (!after) return null;
+    const menuId = after.menuId, catId = mintShopId("cat");
+    const sibs = Object.keys(cat.categories).filter((c) => cat.categories[c].menuId === menuId).sort((a, b) => (cat.categories[a].order || 0) - (cat.categories[b].order || 0));
+    const i = sibs.indexOf(afterCatId); const a = after.order || 0; const next = (i >= 0 && i < sibs.length - 1) ? (cat.categories[sibs[i + 1]].order || 0) : null;
+    const order = next == null ? a + 1 : (a + next) / 2;
+    commit({ t: "catAct", shops: [{ t: "shopCatAdd", categoryId: catId, menuId, name: "新しい括り", order }] });
+    return catId;
+  }
+  // 括りに品が残っていれば消せない（§2.4：灰色）
+  function categoryCanDelete(catId) { const cat = curCat(); return !Object.keys(cat.placements).some((k) => cat.placements[k].categoryId === catId); }
+  function categoryDelete(catId) { if (!categoryCanDelete(catId)) return false; commit({ t: "catAct", shops: [{ t: "shopCatDel", categoryId: catId }] }); return true; }
+  // 括りの見出し ID（menu__mc_{categoryId}）→ categoryId
+  function menuCatId(fullId) { const m = bareOf(fullId).match(/^mc_(.+)$/); return m ? m[1] : null; }
   // 品を選ぶ一覧（そのメニューの品を括りごと。今出ている品は選べない扱い、出ない品は理由つき）
   function outReason(item) { if (!item) return ""; if (item.status === "paused") return "一時休止中"; if (item.status && item.status !== "onSale") return "販売していません"; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) { const ms = item.season.months; return ms[0] + "〜" + ms[ms.length - 1] + "月だけ"; } return "今は並びに出ません"; }
   function itemPickerData(gid) {
@@ -4933,6 +4995,11 @@ const PG = (function () {
     cardsAddExisting: (gid, itemId) => cardsAddExisting(gid, itemId), cardsAddNew: (gid, categoryId) => cardsAddNew(gid, categoryId),
     cardsDuplicate: (id) => cardsDuplicate(id), cardsDelete: (id) => cardsDelete(id),
     itemPicker: (gid) => itemPickerData(gid), listMode: () => LIST_MODE, curSpec: (gid) => clone(curSpec(gid)),
+    // 試験台28 §2.4：品の並べ替え（本体＝① の載せ方／おすすめ＝pick）・括りの足す/消す
+    menuView: () => menuView(), menuRowPlc: (id) => menuRowPlc(id), menuCatId: (id) => menuCatId(id),
+    menuMoveRow: (plcId, destCatId, beforePlcId) => menuMoveRow(plcId, destCatId, beforePlcId),
+    cardsMove: (gid, itemId, beforeItemId) => cardsMove(gid, itemId, beforeItemId),
+    categoryAdd: (afterCatId) => categoryAdd(afterCatId), categoryDelete: (catId) => categoryDelete(catId), categoryCanDelete: (catId) => categoryCanDelete(catId),
     catalogView: () => catalogView(),   // 試験台26 お品書きを見る（① の下書きの差分つき）
     selected: () => [...state.selected],   // 試験台26 試験の窓口（選んでいる部品）
     align: (k) => align(k), canAlign: () => canAlign(),   // §27 配置（揃え・整列）
@@ -4981,6 +5048,7 @@ const PG = (function () {
     // 試験台26：① 連動の操作・値段の箱・品を選ぶ一覧・お品書きを見る（WIRING から使う）
     partInfo, effPricesOf, setPrices, tableAddRow, tableDuplicate, tableDelete,
     cardsAddExisting, cardsAddNew, cardsDuplicate, cardsDelete, itemPickerData, catalogView, curSpec, isRepeat, LIST_MODE,
+    menuView, menuRowPlc, menuCatId, menuMoveRow, cardsMove, categoryAdd, categoryDelete, categoryCanDelete,   // 試験台28 §2.4：品の並べ替え・括りの足す/消す（WIRING から使う）
     resetScope, peekOn, peekOff, addTextAt, anchorsList, classify: (id) => M.classifyDrop(geometry(), id, [id]),
     bringToFront, sendToBack, bringForward, sendBackward, hasOverlapPartner, zOrderList,
     beginResize, resizeMove, endResize, isResizing: () => !!rz, programResize, handlesFor,
@@ -5689,7 +5757,10 @@ stage.addEventListener("contextmenu",(e)=>{
   if(isPhone()){ e.preventDefault(); return; }   // §3.2.5 スマホの長押しから来る contextmenu は出さない・右クリック扱いしない
   const id=elFrom(e.target);   // §23c X35：render で元のノードが外れうるので、終える前に部品 ID を取っておく
   if(PG.state.editing) PG.commitEdit();   // §23c X35：右クリックメニューは「文字を打つ以外でその部品を変える」操作＝先に書き換えをふつうに終える（書き換えの外をクリックと同じ）。入り直した書き換えでも同じ
-  if(id){ e.preventDefault(); const grp=PG.groupOf(id); const sel=[...PG.state.selected]; const innerSel = grp && sel.length===1 && PG.isRepeat(sel[0]) && PG.groupOf(sel[0])===grp;   // 試験台26：中の1件を選んでいて同じ並びを右クリック → 1件のメニュー（品を足す等）
+  if(id){ e.preventDefault();
+    const catId=PG.menuCatId(id);   // 試験台28 §2.4：括りの見出しを右クリック → 括りを足す/消す
+    if(catId){ PG.selectOnly(PG.canonId(id)); showCategoryMenu(catId,e.clientX,e.clientY); return; }
+    const grp=PG.groupOf(id); const sel=[...PG.state.selected]; const innerSel = grp && sel.length===1 && PG.isRepeat(sel[0]) && PG.groupOf(sel[0])===grp;   // 試験台26：中の1件を選んでいて同じ並びを右クリック → 1件のメニュー（品を足す等）
     if(!innerSel) PG.selectOnly(grp||PG.canonId(id)); showFmenu(); return; }
   const host=e.target.closest&&e.target.closest("#sectionwrap .host");
   if(host){ e.preventDefault(); const sec=host.id.replace("host_",""); PG.selectSection(sec); showSectionMenu(sec,e.clientX,e.clientY); }
@@ -5710,6 +5781,85 @@ function showSectionMenu(sec,cx,cy){
   if(isPhone()){ positionFmenu(); }   // §1(X7/X8)（試験台16）箱はセクションに付いていく・見えている範囲の中
   else { clampMenuAt(cx,cy); }   // §19（X19）画面の中に収める
 }
+
+// ---- 試験台28 §2.4：括りの見出しの右クリック（括りを足す（この下に）／括りを消す） ----
+function showCategoryMenu(catId,cx,cy){
+  fmenu.innerHTML="";
+  const add=(label,fn,disabled)=>{ const b=document.createElement("button"); b.textContent=label; b.setAttribute("data-cat-menu",label); if(disabled){ b.disabled=true; } else { b.onclick=(ev)=>{ ev.stopPropagation(); fmenu.classList.remove("on"); fn(); }; } fmenu.appendChild(b); };
+  add("括りを足す（この下に）",()=>PG.categoryAdd(catId));
+  add("括りを消す",()=>PG.categoryDelete(catId), !PG.categoryCanDelete(catId));   // §2.4 品が残っていれば灰色
+  fmenu._section=false; fmenu._secId=null; fmenu._follow=null; fmenu._place=null;
+  fmenu.classList.add("on");
+  if(isPhone()){ positionFmenu(); } else { clampMenuAt(cx,cy); }
+}
+
+// ---- 試験台28 §2.4：品のドラッグ並べ替え（お品書き本体の行＝① の載せ方／トップのおすすめ＝pick）----
+// 既存の選択・レイアウト移動（beginDrag）は塊の幾何用。品の並べ替えは ① のデータを書き換える別物。
+// capture 相で先につかみ、本体のポインタ処理より先に落とし先の線（横線＝表／縦線＝並び）を出して ① を書き換える。
+// 行は本体処理を使わない（pointerdown で止める）。札はおすすめの塊を1回選んだ後の2回目のつかみだけ奪う（1回目の塊選択・塊移動は従来どおり）。
+(function(){
+  let rd=null; const THRESH=3;
+  function dropLine(){ let l=document.getElementById("reorderDropLine"); if(!l){ l=document.createElement("div"); l.id="reorderDropLine"; l.style.cssText="position:fixed;z-index:78;background:#06c;pointer-events:none;border-radius:1.5px"; document.body.appendChild(l); } return l; }
+  function clearDropLine(){ const l=document.getElementById("reorderDropLine"); if(l) l.remove(); }
+  const onMenuPage=()=>PG.currentPage&&PG.currentPage()==="pg_menu";
+  function rowFrom(t){ return t&&t.closest? t.closest('.krow[data-plc]'):null; }
+  function cardFrom(t){ return t&&t.closest? t.closest('.card[data-item]'):null; }
+  function cardGid(cardEl){ const g=cardEl.closest('.cards[data-el]'); return g?g.getAttribute('data-el'):"I_cards"; }
+  function cardNameEl(cardEl){ return cardEl.querySelector('[data-el^="card_name_"],[data-el*="__card_name_"]'); }
+  // この札の中の1件が選ばれている＝PowerPoint の2回目（1回目は塊選択＝列▾・塊移動のまま）。そのときだけドラッグで並べ替える。
+  function cardArmed(cardEl){ const cid=cardEl.getAttribute('data-card'); const sel=PG.state&&PG.state.selected; if(!sel) return false; return [...sel].some(id=>{ const m=id.match(/card_(?:name|desc|price|photo)_(.+)$/); return m&&m[1]===cid; }); }
+  // お品書き本体：落とし先＝どの括り（.kcat）の、どの行の前か（null＝括りの最後）
+  function rowTarget(clientY){
+    const kcats=[...document.querySelectorAll('#host_menu .kcat')];
+    if(!kcats.length) return null;
+    let kc=kcats.find(k=>{ const r=k.getBoundingClientRect(); return clientY>=r.top&&clientY<=r.bottom; });
+    if(!kc){ let best=null,bd=1e9; for(const k of kcats){ const r=k.getBoundingClientRect(); const d=clientY<r.top?r.top-clientY:clientY-r.bottom; if(d<bd){bd=d;best=k;} } kc=best; }
+    const cat=kc.getAttribute('data-cat');
+    const rows=[...kc.querySelectorAll('.krow[data-plc]')].filter(r=>!rd||r.getAttribute('data-plc')!==rd.plc);
+    let before=null;
+    for(const r of rows){ const b=r.getBoundingClientRect(); if(clientY < b.top+b.height/2){ before=r.getAttribute('data-plc'); break; } }
+    let y,x,w;
+    if(before){ const r=rows.find(rr=>rr.getAttribute('data-plc')===before).getBoundingClientRect(); y=r.top; x=r.left; w=r.width; }
+    else if(rows.length){ const r=rows[rows.length-1].getBoundingClientRect(); y=r.bottom; x=r.left; w=r.width; }
+    else { const h=kc.querySelector('[data-el]'); const r=(h||kc).getBoundingClientRect(); y=r.bottom+6; x=r.left; w=Math.max(r.width,120); }
+    return { cat, before, y, x, w };
+  }
+  // トップのおすすめ：落とし先＝どの札の前か（読み順。縦線）。null＝最後
+  function cardTarget(clientX,clientY){
+    const cards=[...document.querySelectorAll('.cards[data-el] .card[data-item]')].filter(c=>!rd||c.getAttribute('data-item')!==rd.item);
+    if(!cards.length) return { before:null, line:null };
+    let before=null, ref=null, after=false;
+    for(const c of cards){ const b=c.getBoundingClientRect(); if(clientY>=b.top-8&&clientY<=b.bottom+8 && clientX < b.left+b.width/2){ before=c.getAttribute('data-item'); ref=c; break; } }
+    if(!before){ let best=null,bd=1e9; for(const c of cards){ const b=c.getBoundingClientRect(); const dy=Math.abs((b.top+b.bottom)/2-clientY); if(dy<bd){bd=dy;best=c;} } ref=best; after=true; }
+    const r=ref.getBoundingClientRect();
+    return { before, line:{ x:(after? r.right+3 : r.left-3), y:r.top, h:r.height } };
+  }
+  window.addEventListener("pointerdown",(e)=>{
+    if(isPhone()||(PG.previewMode&&PG.previewMode())||(PG.viewingVersion&&PG.viewingVersion())) return;
+    if(e.button!==0) return;
+    if(PG.state&&PG.state.editing&&e.target.closest&&e.target.closest("[contenteditable]")) return;   // 書き換え中の文字は素通し（並べ替えにしない）
+    const row=onMenuPage()?rowFrom(e.target):null;
+    if(row){ if(PG.state&&PG.state.editing) PG.commitEdit(); rd={ kind:"row", plc:row.getAttribute('data-plc'), cat:row.getAttribute('data-cat'), sx:e.clientX, sy:e.clientY, moved:false }; e.stopPropagation(); return; }
+    const card=(!onMenuPage())?cardFrom(e.target):null;
+    if(card && cardArmed(card)){ if(PG.state&&PG.state.editing) PG.commitEdit(); rd={ kind:"card", item:card.getAttribute('data-item'), gid:cardGid(card), nameEl:cardNameEl(card), sx:e.clientX, sy:e.clientY, moved:false }; e.stopPropagation(); return; }
+  },true);
+  window.addEventListener("pointermove",(e)=>{
+    if(!rd) return;
+    e.stopPropagation();
+    if(!rd.moved){ if(Math.hypot(e.clientX-rd.sx,e.clientY-rd.sy)<=THRESH){ e.preventDefault(); return; } rd.moved=true; }
+    e.preventDefault();
+    const L=dropLine();
+    if(rd.kind==="row"){ const t=rowTarget(e.clientY); rd.target=t; if(t){ L.style.left=t.x+"px"; L.style.top=(t.y-1)+"px"; L.style.width=t.w+"px"; L.style.height="2px"; } }
+    else { const t=cardTarget(e.clientX,e.clientY); rd.target=t; if(t&&t.line){ L.style.left=t.line.x+"px"; L.style.top=t.line.y+"px"; L.style.width="2px"; L.style.height=t.line.h+"px"; } }
+  },true);
+  window.addEventListener("pointerup",(e)=>{
+    if(!rd) return; const r=rd; rd=null; clearDropLine();
+    e.stopPropagation();
+    if(!r.moved){ if(r.kind==="card" && r.nameEl){ PG.selectMany([r.nameEl.getAttribute('data-el')]); showFmenu(); } return; }   // 動かしていない＝クリック（並べ替えしない。札は中の1件を選ぶ）
+    if(r.kind==="row"){ const t=r.target||rowTarget(e.clientY); if(t) PG.menuMoveRow(r.plc, t.cat, t.before); }
+    else { const t=r.target||cardTarget(e.clientX,e.clientY); PG.cardsMove(r.gid, r.item, t?t.before:null); }
+  },true);
+})();
 
 // ---- §2 セクションを足す「＋」。セクションの境目（と上端・下端）に出す。押すと型の一覧（特集／品）----
 function updateAddZones(){
