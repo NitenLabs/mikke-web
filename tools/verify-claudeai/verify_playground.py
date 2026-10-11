@@ -729,7 +729,10 @@ async def main():
                 for i in range(1, 11): await pg.mouse.move(x, y + 20 * s_ * i / 10)
                 await pg.mouse.up(); await pg.wait_for_timeout(300)
                 G1 = await geo(pg); sl = await sel_ids()
-                ok(f'Y1 {dev} 選んでからドラッグで表全体が20下がる・中は選ばれない', abs(G1['I_table']['y'] - G['I_table']['y'] - 20) <= TOL and not any(str(k).startswith('row_') for k in sl), f"{box(G,'I_table')}→{box(G1,'I_table')} 選択 {sl}")
+                # §27 等間隔の目安：表を 20 下げると、近くの等間隔の位置（I_time との空き＝I_pillbg との空き）に吸い付きうる。
+                # 吸い付きは上下どちらにも threshold 内（PC 6px／スマホ 10px）＝20±threshold 下がれば可（PowerPoint と同じ。中は選ばれないことは不変）
+                _dy = G1['I_table']['y'] - G['I_table']['y']; _th = 6 if dev == 'pc' else 10
+                ok(f'Y1 {dev} 選んでからドラッグで表全体が約20下がる（等間隔に吸い付きうる）・中は選ばれない', (20 - _th - TOL) <= _dy <= (20 + _th + TOL) and not any(str(k).startswith('row_') for k in sl), f"{box(G,'I_table')}→{box(G1,'I_table')} 下がり {_dy:.1f} 選択 {sl}")
                 el = await pg.query_selector('[data-el="row_name_t_warabi"]'); bb = await el.bounding_box()
                 await pg.mouse.click(bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(300)
                 sl = await sel_ids()
