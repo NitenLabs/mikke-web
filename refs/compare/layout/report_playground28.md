@@ -19,6 +19,7 @@
   - プレビュー（記録15.5）・見るだけ（15.6）で `.seclabel`（「お品書き本体」等のセクションの札）を出さない
     ＝`body.pg-preview/.pg-viewing .seclabel{display:none}`（`build.mjs` UI_CSS）。
 - `3059423` Stage 2b(2)：品のドラッグ並べ替え＋括りの足す/消す（下記）
+- `0edd4a9` Stage 2c：品を選んだときの道具4つ（販売▾・出す月▾・ラベル▾・メニュー▾）＋§2.7 消す知らせ（下記）
 
 ### Stage 2b(2) の中身
 - **データ層（app.js）**：`applyShopOps` に `shopReorder`（placement の menuId/categoryId/order 書き換え）・
@@ -65,6 +66,41 @@
 
 ---
 
+### Stage 2c の中身（§2.5 道具4つ・選択導線／§2.7 消す知らせ・2026-10-12）
+- **データ層（app.js）**：新 shop op `shopPlcAdd`（既存の品に載せ方を1つ足す）・`shopLabelDef`（新しいラベルを ① の labels に足す）。
+  `isShopOp`・`recomputeShopSeq`（`lbl_x…` も採番）更新。API：`itemCtx`（選んだ品の status/months/labels/menus を読む）／
+  `setItemStatus`・`setItemMonths`（空＝season を外す＝いつでも）・`setItemLabels`・`addItemLabel`・`setItemMenu`（一番近い=最初の括りの最後に載せる／外す）・
+  `canRemoveMenu`（最後の1つは外せない）・`menuRowDelete`（§2.7 お品書き本体の行＝載せ方を消す。ほかのメニューに残らなければ品も消える）。
+  `itemIdOfSel` はお品書き本体の行（`menu__row_…`＝placement）とトップの札・表（partInfo のエイリアス）を見分ける。
+- **道具のUI（build.mjs）**：上の並びに `#itemTools`（販売▾・出す月▾・ラベル▾・メニュー▾）を追加。**display:none で隠す**ので
+  隠れている間は AX ツリーに出ず、`get_by_role` の衝突を起こさない。出す条件は「品の1件（card_/row_）を単独選択・編集中でない・PC」。
+  一覧（`.tspop.itempop`）は列▾と同じ出し方（押す→下に一覧、外・Esc で閉じる）。開いている一覧は onRender で選択中の品に追従して作り直す。
+  販売＝status・出す月＝1〜12月＋いつでも・ラベル＝① の labels のチェック＋「＋新しいラベル」（その場で名前入力）・メニュー＝店頭/甘味のチェック（最後の1つ灰色）。
+  窓が狭いときは「その他 ▾」にしまう（TB_ORDER/MORE_NAMES/overflowCandidates に4つを追加）。
+- **選択導線**：お品書き本体の行（`.krow`）を動かさずクリック＝その行の名前部品を選ぶ（capture 相のドラッグ IIFE の pointerup で、
+  行は箱を出さず選択だけ・札は従来どおり選択＋箱）。右クリックは行そのものを選ぶ（偽の I_table グループを選ばない）ように contextmenu を直した。
+  showFmenu の品判定を `PG.REPEAT.test`→`PG.isRepeat`（接頭辞込みで判定）にし、お品書き本体の行は「書き換える／削除」だけ出す（行を足す・複製は本体では出さない）。
+- **スマホ（§2.5）**：品の長押しの箱に「販売／出す月／ラベル／メニュー」→ 下からの板（showSellSheet 等。配置の板と同じ作り）。
+- **§2.7 消す知らせ**：`pgToast(msg, undo)` に「戻す」ボタン（5秒）。削除は `tableDelete`/`cardsDelete`/`menuRowDelete` が
+  `『◯◯』を…から外しました（◯◯に残っています）`／`お品書きから消しました` を出す（4.6＝そのメニューから外す・ほかに無ければ品も消える）。
+  **閉じたら innerHTML を消す**＝上の並びの「戻す」(#tUndo) と `button[name=戻す]` が二重に出ないようにする（verify_playground の strict mode 回避）。
+
+#### §2.7 の文言について（PowerPoint／記録と作業票の食い違いの扱い）
+作業票 §2.7 の見出し例「『わらび餅』を消しました（店頭販売・甘味処の両方から）」は、**同じ §2.7 の2つ目の箇条書き
+「全部を並べる所での削除＝そのメニューから外す（4.6）。ほかのメニューに載っていなければ品も①から消える」と食い違う**
+（前者＝全メニューから消える／後者＝そのメニューだけ）。既存の `verify_extra_catalog` M7（わらび餅を甘味処から消しても店頭販売に残る）が
+後者（placement 単位＝そのメニューだけ）を固定しており、これを変えると 28/28 が崩れる。よって**後者（記録・既存試験と一致）を採用**し、
+知らせの文もそれに合わせた（「◯◯から外しました（◯◯に残っています）」／最後の載せ方なら「お品書きから消しました」）。「戻す」ボタンは追加。
+
+#### 確認結果（2026-10-12・playground28_single.html）
+- `verify_extra_save` 52/52・`catalog` 28/28・`align` 23/23・`text`/`width` 不合格0・`arrange` 29/29・`photo` 不合格0・`publish` 25/25。
+  pageerror なし。※arrange/photo/publish は3本まとめて走らせると page load/screenshot が 30 秒で落ちる（資源）＝**1本ずつなら全て合格**。
+- `verify_playground` 280 OK / **17 NG**（既知の Mac17＝D系・C3/C4/E1。172f8fd/HEAD と同集合。新規不合格なし）。
+  2c で `pgToast` に「戻す」を足した初版は、消えた後も DOM に残り Y11 の `get_by_role('button', name='戻す')` が
+  tUndo と二重一致して strict mode で落ちた→**閉じたら innerHTML を消す**修正で解消（再掲）。
+- スモーク（python playwright）：MENU でわらび餅の行を選ぶと道具が出る・販売▾で休→薄表示・出す月▾で桜餅に当月を足すと薄が消える・
+  ラベル▾で新ラベル追加・メニュー▾で甘味処に載る・削除で知らせ＋戻すボタンを確認。pageerror なし。
+
 ## 全スクリプト確認（2026-10-11・2c の前に全部最後まで走らせた）
 
 比べる相手は**試験台27（dd9168e）＝全部通っていた基準**。§2.1 でヘッダー・フッターのセクションが増えたため、
@@ -98,10 +134,23 @@
 
 ## 続きのメモ（次にやること）
 
-**いまここ：Stage 2b(2) 完了（`3059423`）＋全スクリプト確認・試験修正（`25995b5`）＋境目の＋を 3 に修正（`2884114`）まで push 済み。全スクリプト合格（verify_playground は既知 Mac17 のみ）。次は Stage 2c。**
+**いまここ：Stage 2c 完了（`0edd4a9`）まで push 済み。全スクリプト合格（verify_playground は既知 Mac17 のみ）。次は Stage 3（§2.6）。**
 
-次セッションへ：作業票（`templates/wa-01/wa-01_layout_playground28_workorder.md`）§2.5・§2.7 とこの続きのメモから 2c を始める。
-2c が終わったら Stage 3（§2.6）→ Stage 4（verify_extra_pages.py 他）へ。各段で合格したら commit/push、区切りで止まるときはこの続きのメモを更新してから止まる。
+次セッションへ：作業票（`templates/wa-01/wa-01_layout_playground28_workorder.md`）§2.6 とこの続きのメモから Stage 3 を始める。
+Stage 3 が終わったら Stage 4（verify_extra_pages.py 他）へ。各段で合格したら commit/push、区切りで止まるときはこの続きのメモを更新してから止まる。
+
+### Stage 3 の下調べ（着手前にまとまっている材料・2026-10-12）
+- **① 連動の文字とその出どころ（shop.json）**：CONTACT の各行（`_content.json` の `contact.rows`）は今は**静的テキスト**＝① と繋がっていない。§2.6 はこれを ① 連動にする。
+  - addr＝`location`（format `address`）／access＝`location.access`（`access`）／parking＝`location.parking.note`（plain・ダブルクリック）／
+    hours＝`hours`（`hoursShort`）／closed＝`hours`（`closedDays`）／tel＝`contact.phone`（`phone`＝display／発信は `digits`）／pay＝`payment`（`payment`）。lead は自由文（連動しない）。
+  - footer：name＝`basic.name`（plain・ダブルクリック）／addr＝`location`（`addressShort`）／copy＝自由文。header：logo＝`basic.name`（plain）。
+  - MENU 提供時間＝`mt_`（menus.mnu_kanmi.servingTime）／TOP I_time＝同（**今は `fmtServing` で描画済み**＝ここは箱を付けるだけ）。
+- **書き方（format）は `tools/lib/format.mjs` の純関数**（`formatHoursShort`/`formatClosedDays`/`formatAddress`/`formatAddressShort`/`formatAccess`/`formatPayment`/`formatPhone` 等）。
+  app.js には今 `fmtServing` だけ。§2.6 ではこれらを app.js に写して（ブラウザで動く形で）、reduce 時に ci_* 等の値を ① 由来の文字で上書きし、ci_* は箱/ダブルクリックで ① を直す形にする。
+- **hours の構造**（箱の中身 DATA_SPEC 3.2）：`weekly`（曜日→status open/closed/byAppointment＋periods）・`publicHoliday`（mode asWeekday 等）・`closedRules`（nthWeekday/lastWeekday/irregular）・`exceptions`（label＋recurring/期間＋status）・`note`。
+- **やることの要点**：①連動の値を ① から format で出す（連動を外す機能は今回作らない）／「そのままの値」はダブルクリックで ① を直す（電話は display＋digits、発信リンク）／
+  format 値は選ぶと「◯◯を直す」をその場の箱で（営業時間・住所・行き方・支払い）／H1〜H9 を満たす。既存の save/catalog/publish を壊さないこと（contact 行の扱いを静的→①連動へ替えるので、save の round-trip 等に注意）。
+- **衝突に注意（2c の教訓）**：新しい UI は **display:none で隠す**（opacity:0 だと AX ツリーに残り `get_by_role` が二重一致する）。消える UI（トースト等）は閉じたら DOM から中身を消す。
 
 ### 段取り（ユーザー決定 2026-10-11・各段で合格したら commit/push・止まるときはこの節を更新）
 - 2a（済 `eeab1c3`）／2b(1)（済 `172f8fd`）／修正2点（済 `10d9784`）／**2b(2)（済 `3059423`）**
