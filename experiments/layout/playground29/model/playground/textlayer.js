@@ -84,7 +84,7 @@ const TEXT = (function () {
 
   // H を作る：collectTextBoxes の各箱を tokenize→keep→join。返り値 Map key->{html}
   // measRoot: keep 実測用の隠しコンテナ（呼び出し側が用意。:root font-size 10px 配下）
-  const MEAS_BASE = "position:absolute;left:0;top:0;visibility:hidden;white-space:normal;line-break:strict;word-break:keep-all;overflow-wrap:anywhere";
+  const MEAS_BASE = "position:absolute;left:0;top:0;visibility:hidden;white-space:break-spaces;line-break:strict;word-break:keep-all;overflow-wrap:anywhere";
   function buildH(boxes, measRoot, SPEC) {
     const meas = document.createElement("div");
     measRoot.appendChild(meas);

@@ -4,9 +4,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@400;500;600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=block">
 <style>:root{font-size:10px;--c-background:#FFFFFF;--c-surface:#EEEEEE;--c-text:#333333;--c-textMuted:#7B7B7B;--c-line:#B0B0B0}
 #sec{position:relative;overflow:visible}
-.t{line-break:strict;word-break:normal;overflow-wrap:anywhere;white-space:normal}
+.t{line-break:strict;word-break:normal;overflow-wrap:anywhere;white-space:break-spaces}
 .t.lb{word-break:keep-all;overflow-wrap:anywhere}
-.t .nowrap{white-space:nowrap}
+.t .nowrap{white-space:pre}
 .t[contenteditable]{white-space:pre-wrap;word-break:normal}
 .photo{display:flex;align-items:center;justify-content:center;color:#fff;font:12px/1.4 monospace;text-align:center;background:#8a8a8a;background-size:cover;background-position:center}
 .photo.empty{background:#f2f2f2;color:#999;border:1px dashed #bbb}
@@ -1679,7 +1679,7 @@ const TEXT = (function () {
 
   // H を作る：collectTextBoxes の各箱を tokenize→keep→join。返り値 Map key->{html}
   // measRoot: keep 実測用の隠しコンテナ（呼び出し側が用意。:root font-size 10px 配下）
-  const MEAS_BASE = "position:absolute;left:0;top:0;visibility:hidden;white-space:normal;line-break:strict;word-break:keep-all;overflow-wrap:anywhere";
+  const MEAS_BASE = "position:absolute;left:0;top:0;visibility:hidden;white-space:break-spaces;line-break:strict;word-break:keep-all;overflow-wrap:anywhere";
   function buildH(boxes, measRoot, SPEC) {
     const meas = document.createElement("div");
     measRoot.appendChild(meas);
@@ -2028,7 +2028,7 @@ const PG = (function () {
     const last = rects.length ? rects[rects.length - 1] : bb;   // 最後の行
     return { left: bb.left, top: bb.top, right: bb.right, bottom: last.bottom, lastLeft: last.left };
   }
-  function editingSel() { if (!state.editing) return null; const n = elNode(state.editing.id); if (!n) return null; const o = caretOffsets(n); if (o && o.e > o.s) state.editing.lastSel = o; return o; }
+  function editingSel() { if (!state.editing) return null; const n = elNode(state.editing.id); if (!n) return null; const o = caretOffsets(n); if (o && o.e > o.s) state.editing.lastSel = o; else if (o && o.e === o.s && document.activeElement === n) state.editing.lastSel = null; return o; }   // J9 文の中にカーソルを置き直したら前の選択は忘れる（カーソルだけの操作が前の範囲に効かない）
   // 道具（上のボタン・欄）に触れると編集中の選択が外れることがあるので、直近の選択を覚えておいて使う
   function liveSel() { const o = editingSel(); if (o && o.e > o.s) return o; return state.editing && state.editing.lastSel; }
   function editingHasSelection() { const o = liveSel(); return !!(o && o.e > o.s); }
@@ -5439,17 +5439,22 @@ function beforeTs(){ if(PG.state.editing) PG.commitEdit(); }   // §3.4 カー�
 // §13：書き換え中に文字の一部を選んでいれば、その所だけに効かせる（commit しない）
 function partMode(){ return !!(PG.state.editing && PG.editingHasSelection()); }
 const sizeInp=tsEl("size");
-function commitSizeInput(){ const v=parseInt(sizeInp.value,10); if(isNaN(v)) return; const px=Math.max(8,Math.min(120,v));
+function curSizeShown(){ if(PG.state.editing){ const p=PG.editingPartSizePx(); if(p!=null) return p; } const ap=PG.api.textStyles(); const prim=PG.primaryTextSel(); const info=prim&&ap.find(x=>x.part===prim); return info?info.size:null; }
+function commitSizeInput(){ const raw=String(sizeInp.value).replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-0xFEE0)).trim();   // J34 全角数字→半角
+  const v=parseInt(raw,10);
+  if(isNaN(v)||String(v)!==raw||v<8||v>120){ const cur=curSizeShown(); if(cur!=null) sizeInp.value=String(cur); return; }   // P9/J34 数字でない・余計な字がある・範囲外（8〜120）は前の大きさに戻す
+  const px=v;
   if(partMode()){ const box=PG.boxSizePx(PG.state.editing.id)||px; PG.applyPartStyle("scale", px/box); }
   else { beforeTs(); PG.textSetSize(px); } }
 sizeInp.addEventListener("keydown",(e)=>{ if(e.isComposing||e.keyCode===229)return;/*§23a X33*/ if(e.key==="Enter"){ e.preventDefault(); commitSizeInput(); sizeInp.blur(); } });
 sizeInp.addEventListener("blur",commitSizeInput);
 function partStep(dir){ const cur=PG.editingPartSizePx(); const box=PG.boxSizePx(PG.state.editing.id); let nx; if(dir>0) nx=PG.SIZE_LIST.find(v=>v>cur); else { const less=PG.SIZE_LIST.filter(v=>v<cur); nx=less.length?less[less.length-1]:null; } if(nx==null||nx===cur) return; PG.applyPartStyle("scale", nx/box); }
 ["grow","shrink","size-list"].forEach(nm=>{ tsEl(nm).onmousedown=(e)=>e.preventDefault(); });   // 編集中の選択を失わない
-tsEl("grow").onclick=()=>{ if(partMode()) partStep(1); else { beforeTs(); PG.textStep(1); } };
-tsEl("shrink").onclick=()=>{ if(partMode()) partStep(-1); else { beforeTs(); PG.textStep(-1); } };
+// J9：書き換え中にカーソルだけ（選択なし）のときは、前に選んだ範囲に効かせない＝何もしない（P7 の「次に打つ文字に効く」は後段）。書き換え中でなければ選んだ部品の箱まるごとに効く
+tsEl("grow").onclick=()=>{ if(PG.state.editing){ if(partMode()) partStep(1); } else { PG.textStep(1); } };
+tsEl("shrink").onclick=()=>{ if(PG.state.editing){ if(partMode()) partStep(-1); } else { PG.textStep(-1); } };
 tsEl("bold").onmousedown=(e)=>e.preventDefault();
-tsEl("bold").onclick=()=>{ if(partMode()) PG.applyPartStyle("bold"); else { beforeTs(); PG.textToggleBold(); } };
+tsEl("bold").onclick=()=>{ if(PG.state.editing){ if(partMode()) PG.applyPartStyle("bold"); } else { PG.textToggleBold(); } };
 function applySizeNum(px){ if(partMode()){ const box=PG.boxSizePx(PG.state.editing.id)||px; PG.applyPartStyle("scale", px/box); } else { beforeTs(); PG.textSetSize(px); } }
 tsEl("size-list").onclick=(e)=>{ e.stopPropagation(); const open=sizePop.classList.contains("on"); colorPop.classList.remove("on"); if(open){ sizePop.classList.remove("on"); return; }
   sizePop.innerHTML=""; for(const n of PG.SIZE_LIST){ const b=document.createElement("button"); b.textContent=String(n); b.setAttribute("data-ts-size",String(n)); b.onmousedown=(ev)=>ev.preventDefault(); b.onclick=(ev)=>{ ev.stopPropagation(); applySizeNum(n); sizePop.classList.remove("on"); }; sizePop.appendChild(b); }
@@ -5603,7 +5608,7 @@ function buildLabelPop(id){ labelPop.innerHTML=""; const c=PG.itemCtx(id); if(!c
   for(const l of c.labels){ const b=document.createElement("button"); b.className="ip-opt"+(l.on?" on":""); b.setAttribute("data-label-opt",l.id); const ck=document.createElement("span"); ck.className="ck"; ck.textContent=l.on?"✓":""; b.appendChild(ck); const nm=document.createElement("span"); nm.textContent=l.name; b.appendChild(nm); b.onmousedown=(e)=>e.preventDefault(); b.onclick=(e)=>{ e.stopPropagation(); const cur=PG.itemCtx(id).labels.filter(x=>x.on).map(x=>x.id); const next=l.on?cur.filter(x=>x!==l.id):[...cur,l.id]; PG.setItemLabels(id,next); }; labelPop.appendChild(b); }
   const wrap=document.createElement("div"); wrap.className="ip-newlabel";
   const addb=document.createElement("button"); addb.className="ip-addbtn"; addb.setAttribute("data-label-add","1"); addb.textContent="＋ 新しいラベル";
-  addb.onmousedown=(e)=>e.preventDefault(); addb.onclick=(e)=>{ e.stopPropagation(); wrap.innerHTML=""; const inp=document.createElement("input"); inp.type="text"; inp.placeholder="ラベルの名前"; inp.setAttribute("data-label-input","1"); const ok=document.createElement("button"); ok.className="ip-addbtn"; ok.style.width="auto"; ok.textContent="足す"; const commitNew=()=>{ const nm=inp.value.trim(); if(nm){ PG.addItemLabel(id,nm); } }; ok.onmousedown=(ev)=>ev.preventDefault(); ok.onclick=(ev)=>{ ev.stopPropagation(); commitNew(); }; inp.onkeydown=(ev)=>{ if(ev.key==="Enter"){ ev.preventDefault(); commitNew(); } ev.stopPropagation(); }; wrap.appendChild(inp); wrap.appendChild(ok); inp.focus(); };
+  addb.onmousedown=(e)=>e.preventDefault(); addb.onclick=(e)=>{ e.stopPropagation(); wrap.innerHTML=""; const inp=document.createElement("input"); inp.type="text"; inp.placeholder="ラベルの名前"; inp.setAttribute("data-label-input","1"); const ok=document.createElement("button"); ok.className="ip-addbtn"; ok.style.width="auto"; ok.textContent="足す"; const commitNew=()=>{ const nm=inp.value.trim(); if(nm){ PG.addItemLabel(id,nm); } }; ok.onmousedown=(ev)=>ev.preventDefault(); ok.onclick=(ev)=>{ ev.stopPropagation(); commitNew(); }; inp.onkeydown=(ev)=>{ if(ev.isComposing||ev.keyCode===229){ ev.stopPropagation(); return; } if(ev.key==="Enter"){ ev.preventDefault(); commitNew(); } ev.stopPropagation(); }; wrap.appendChild(inp); wrap.appendChild(ok); inp.focus(); };   // J33 変換を決める Enter（229）ではラベルを作らない
   wrap.appendChild(addb); labelPop.appendChild(wrap); }
 function buildMenuPop(id){ menuPop.innerHTML=""; const c=PG.itemCtx(id); if(!c) return;
   for(const m of c.menus){ const canRemove=m.on?PG.canRemoveMenu(id,m.id):true; const b=document.createElement("button"); b.className="ip-opt"+(m.on?" on":""); b.setAttribute("data-menu-opt",m.id); if(m.on&&!canRemove) b.disabled=true;   // §2.5 最後の1つは外せない＝灰色
@@ -6097,13 +6102,22 @@ window.addEventListener("keydown",(e)=>{
   }
   if(PG.state.editing){ // 書き換え中：文字入力・Esc・Cmd+B・Cmd+K のみ。Cmd+Z は自動リンクの取り消しだけ受ける
     if(e.key==="Escape") PG.commitEdit();
+    if(e.key==="Tab"){ e.preventDefault(); return; }   // J5 書き換え中の Tab でフォーカスが＋へ逃げない（打った文字が捨てられない）
+    if(e.key==="Enter"&&!e.shiftKey&&!meta){ e.preventDefault(); document.execCommand&&document.execCommand("insertText",false,"\n"); return; }   // J1 改行は \n の文字として入れる（<div>/<br> にしない＝domToRuns が拾える・表示でも残る）
     if(meta&&e.key.toLowerCase()==="b"){ e.preventDefault(); if(PG.editingHasSelection()) PG.applyPartStyle("bold"); return; }   // §2.1 選んだ所の太字を入れ替え
     if(meta&&e.key.toLowerCase()==="k"){ e.preventDefault(); openLinkFromSelection(); return; }   // §2.1 Cmd+K
     if(meta&&e.key.toLowerCase()==="z"&&!e.shiftKey){ if(PG.editingHasAutoUndo()){ e.preventDefault(); PG.editingUndoAutoLink(); return; } e.preventDefault(); PG.undo(); return; }   // §2.5 自動リンク／§23b 書き換え中の戻す＝細かく
     if(meta&&((e.key.toLowerCase()==="z"&&e.shiftKey)||e.key.toLowerCase()==="y")){ e.preventDefault(); PG.redo(); return; }   // §23b 書き換え中のやり直し
     if(meta&&e.key.toLowerCase()==="c"){ PG.captureEditingCopy(); return; }   // §19b §5 この編集の中のコピー＝見た目・リンクも覚える（ブラウザのコピーはそのまま＝文字も system に入る）
-    if(meta&&e.key.toLowerCase()==="v"){ e.preventDefault(); const t=(window.__lastPlain||""); if(!PG.editingPasteRich(t)&&!PG.editingPasteLink(t)) document.execCommand&&document.execCommand("inserttext",false,t); }   // §5 中のコピーは見た目つき／§2.6 URL・メールはリンク／それ以外は文字だけ
+    // J2 Cmd+V は keydown で止めない＝ブラウザ本来の paste イベント（下の window "paste"）に任せ、今のクリップボードを貼る
     return;
+  }
+  // J6/J7/J8/J42 入力欄（大きさ・値段・ラベル等）にフォーカスがあるときは、ページの部品の操作（消す・動かす・コピー等）をしない＝ブラウザの既定（欄の編集）に任せる
+  const _ae=document.activeElement;
+  if(_ae&&(_ae.tagName==="INPUT"||_ae.tagName==="TEXTAREA"||_ae.tagName==="SELECT"||_ae.isContentEditable)){
+    // J7 ページを縦に動かすキーだけは止める（欄が短い数字で要らず、部品が画面外へ流れるのを防ぐ）。文字の編集キーは素通し
+    if(["ArrowUp","ArrowDown","Home","End","PageUp","PageDown"].includes(e.key)) e.preventDefault();
+    if(e.key!=="Escape") return;
   }
   // §27 Esc：書き換え・見せる範囲でなく、メニュー・箱が開いていなければ選択を外す。開いていれば閉じるだけ（選択は残す）
   if(e.key==="Escape"){

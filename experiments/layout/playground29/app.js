@@ -316,7 +316,7 @@ const PG = (function () {
     const last = rects.length ? rects[rects.length - 1] : bb;   // 最後の行
     return { left: bb.left, top: bb.top, right: bb.right, bottom: last.bottom, lastLeft: last.left };
   }
-  function editingSel() { if (!state.editing) return null; const n = elNode(state.editing.id); if (!n) return null; const o = caretOffsets(n); if (o && o.e > o.s) state.editing.lastSel = o; return o; }
+  function editingSel() { if (!state.editing) return null; const n = elNode(state.editing.id); if (!n) return null; const o = caretOffsets(n); if (o && o.e > o.s) state.editing.lastSel = o; else if (o && o.e === o.s && document.activeElement === n) state.editing.lastSel = null; return o; }   // J9 文の中にカーソルを置き直したら前の選択は忘れる（カーソルだけの操作が前の範囲に効かない）
   // 道具（上のボタン・欄）に触れると編集中の選択が外れることがあるので、直近の選択を覚えておいて使う
   function liveSel() { const o = editingSel(); if (o && o.e > o.s) return o; return state.editing && state.editing.lastSel; }
   function editingHasSelection() { const o = liveSel(); return !!(o && o.e > o.s); }
