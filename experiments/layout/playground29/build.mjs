@@ -1075,7 +1075,7 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
     if(!isMenuRow){ add(isRow?"行を足す…":"品を足す…",()=>{ if(isRow) addRowFlow(one); else openItemPicker(one); }); add("複製",()=>PG.duplicate()); }
     add("削除",()=>PG.deleteSelected());
     add("",null,isMenuRow?"品を選ぶと上の並びに道具が出ます":(isRow?"1行の作りを変えると全部に効きます":"品は位置を動かせません")); }
-  else if(one){ const isPhoto=/^F_p|photo/.test(one); if(PG.isText(one)) add("書き換える",()=>PG.startEdit(one));
+  else if(one){ const isPhoto=/^F_p|photo/.test(one)||/^addp_/.test(one); if(PG.isText(one)) add("書き換える",()=>PG.startEdit(one));   // J18 足した写真（addp_）にも写真の操作を出す
     if(PG.isText(one)&&(PG.hasTextStyle(one)||PG.hasRuns(one))) add("文字の見た目を元に戻す",()=>PG.resetTextStyle(one));   // §2.2 書式のクリア（箱まるごと＋文の一部）
     if(isPhoto){ const isCleared=(R.clear||[]).includes(one); add("写真を差し替える",()=>startReplace(one));
       if(!isCleared){ add("見せる範囲",()=>enterCrop(one)); add("写真を外す",()=>PG.commit({t:"clear",id:one})); }   // N4：外していない写真は「外す」だけ
@@ -1421,6 +1421,7 @@ window.addEventListener("pointerdown",(e)=>{ if(typePicker&&typePicker.classList
 window.addEventListener("keydown",(e)=>{
   if(e.isComposing||e.keyCode===229) return;   // §23a X33 日本語の変換中のキーはページで拾わない（preventDefault もしない）
   const meta=e.metaKey||e.ctrlKey;
+  if(PG.isDragging&&PG.isDragging()){ if(e.key==="Escape"){ e.preventDefault(); PG.cancelDrag(); } return; }   // J29 ドラッグ中の Esc で取り消す
   if(PG.isCropping()){ // 見せる範囲：Enter で決め、Esc で取り消す（ほかのキーは効かない）
     if(e.key==="Enter"){ e.preventDefault(); PG.cropCommit(); exitCropOverlay(); }
     else if(e.key==="Escape"){ e.preventDefault(); PG.cropCancel(); exitCropOverlay(); }

@@ -751,7 +751,7 @@ const PG = (function () {
       if (op.t === "edit") { if (op.runs) { runsMap[op.id] = op.runs; editMap[op.id] = op.runs.map((r) => r.text).join(""); } else { editMap[op.id] = op.text; delete runsMap[op.id]; } }
       else if (op.t === "catAct") { if (op.shops) for (const s of op.shops) shopOps.push(s); if (op.src) { if (op.src.spec) sourceSess[op.src.gid] = clone(op.src.spec); else delete sourceSess[op.src.gid]; } }   // 試験台26：① と ② をまとめて1回で（戻す1回）
       else if (op.t === "add") { if (!removed.has(op.id)) adds.push(op); }
-      else if (op.t === "del") { const inst = secOf(op.id); const bb = bareOf(op.id); if (/^card_/.test(bb)) (delCards[inst] = delCards[inst] || new Set()).add(cardIdOf(op.id)); else if (/^row_/.test(bb)) (delRows[inst] = delRows[inst] || new Set()).add(cardIdOf(op.id)); removed.add(op.id); for (let i = adds.length - 1; i >= 0; i--) if (adds[i].id === op.id) adds.splice(i, 1); delete m1[op.id]; delete m2[op.id]; }
+      else if (op.t === "del") { for (const did of (op.ids || [op.id])) { const inst = secOf(did); const bb = bareOf(did); if (/^card_/.test(bb)) (delCards[inst] = delCards[inst] || new Set()).add(cardIdOf(did)); else if (/^row_/.test(bb)) (delRows[inst] = delRows[inst] || new Set()).add(cardIdOf(did)); removed.add(did); for (let i = adds.length - 1; i >= 0; i--) if (adds[i].id === did) adds.splice(i, 1); delete m1[did]; delete m2[did]; } }   // J13 ids 配列（複数まとめ）にも対応
       else if (op.t === "clear") { if (!clearL.includes(op.id)) clearL.push(op.id); }
       else if (op.t === "unclear") { const i = clearL.indexOf(op.id); if (i >= 0) clearL.splice(i, 1); }
       // §1 差し替え：素材を入れ替える（端末共通）。外した印は消す。両端末の見せる範囲は真ん中・1倍に戻す（＝view を捨てる）
@@ -781,6 +781,7 @@ const PG = (function () {
         for (const k in (op.edits.bright || {})) brightMap[k] = op.edits.bright[k];
         for (const id of (op.edits.clear || [])) if (!clearL.includes(id)) clearL.push(id);
         for (const a of (op.added || [])) adds.push(clone(a));
+        for (const rid of (op.removed || [])) removed.add(rid);   // J46 複製先でも消した部品は出さない
       }
       else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; } }
         for (const it of op.items) if (it.mode === "M2" && isAdded(it.id)) placedFollow[it.id] = { anchor: it.anchor, device: op.device }; }   // §X13 置いた端末での今の付いていく先
@@ -1717,7 +1718,8 @@ const PG = (function () {
     for (const k in Rpc.brightMap) if (ownPart(k)) shared.bright[remap(k)] = Rpc.brightMap[k];
     for (const cid of Rpc.clear) if (ownPart(cid)) shared.clear.push(remap(cid));
     const added = Rpc.adds.filter((a) => a.section === id).map((a) => ({ ...clone(a), id: (a.kind === "photo" ? "addp_" : "add_") + (++state.addSeq), section: newId }));
-    commit({ t: "secDup", srcId: id, afterId: id, newId, type, content, edits: { pc: perDev(Rpc), sp: perDev(Rsp), ...shared }, added, page: pg });
+    const removed = (Rpc.removedAll || []).filter((k) => ownPart(k)).map(remap);   // J46 消した部品は複製先にも「消した」で持ち越す（元に戻らない）
+    commit({ t: "secDup", srcId: id, afterId: id, newId, type, content, edits: { pc: perDev(Rpc), sp: perDev(Rsp), ...shared }, added, removed, page: pg });
   }
   // §2 入口の補助（操作ボタンの出し分け）：上下の端・唯一のセクションか
   function sectionCan(id) { const R = reduce(activeOps()); const pg = R.secPageMap[id]; if (!pg || pg === "@region") return { up: false, down: false, del: false, exists: false, fixed: pg === "@region" }; const list = R.secMap[pg]; const i = list.findIndex((s) => s.id === id); return { up: i > 0, down: i >= 0 && i < list.length - 1, del: list.length > 1, exists: i >= 0 }; }
@@ -1864,10 +1866,17 @@ const PG = (function () {
     line.style.cssText = `position:absolute;left:${me.x}px;top:${y}px;width:${me.w}px;height:2px;background:#06c;pointer-events:none;z-index:6`;
     s.appendChild(line);
   }
+  function cancelDrag() { if (!drag) return; drag = null; clearGuides(); render(); }   // J29 ドラッグ中の Esc：取り消して元に戻す（離しても何も記録しない）
   function endDrag() {
     if (!drag) return;
-    const dx = (drag.lx - drag.sx) / scale + (drag.snapDX || 0), dy = (drag.ly - drag.sy) / scale + (drag.snapDY || 0);
+    let dx = (drag.lx - drag.sx) / scale + (drag.snapDX || 0), dy = (drag.ly - drag.sy) / scale + (drag.snapDY || 0);
     if (Math.abs(drag.lx - drag.sx) <= 0.5 && Math.abs(drag.ly - drag.sy) <= 0.5) { drag = null; clearGuides(); render(); return; }
+    // J16 ドラッグした部品を自分のセクションの中身の枠に収める（左右の外・ヘッダー〔上端より上〕へは出さない）。単体のみ
+    if (drag.ids.length === 1) { const id = drag.ids[0]; const e0 = drag.origGeom[id];
+      if (e0 && isDraggable(id)) { const { left: cL, right: cR } = contentEdges(); const nx = e0.x + dx, ny = e0.y + dy;
+        const sn = secNode(secOf(id)); const sh = sn ? sn.getBoundingClientRect().height / scale : Infinity;   // J17 自分のセクションの下端より下へは出さない（下のセクションへドラッグしても元のセクションを伸ばさない）
+        const cx = Math.min(Math.max(nx, cL), Math.max(cL, cR - e0.w)), cy = Math.min(Math.max(ny, 0), Math.max(0, sh - e0.h));
+        if (Math.abs(cx - nx) > 0.5 || Math.abs(cy - ny) > 0.5) { dx += cx - nx; dy += cy - ny; const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + dx}px,${drag.baseT[id].ty + dy}px)`; } } }
     const g = geometry();
     const prior = reduce(activeOps()).m1;   // 既に M1 を持つ部品を更に動かすときは積む（テンプレ位置からの総ずれ＝prior+今回）
     // 並び替え（単体・同一塊の中・兄弟を越えた）＝M1 でなく並び順の変更（§6／§10.1）
@@ -2093,7 +2102,7 @@ const PG = (function () {
       if (secOf(one) === "menu" && menuRowPlc(one)) { menuRowDelete(one); state.selected = new Set(); render(); return; }   // 試験台28 §2.7：お品書き本体の行 → 載せ方を消す（① 連動）
       const b = bareOf(one); if (/^card_/.test(b) || /^c_/.test(b)) cardsDelete(one); else tableDelete(one); state.selected = new Set(); render(); return;   // 試験台26：品の並び・表の1件 → ① 連動
     }
-    const ids = all.filter((id) => isDraggable(id) || REPEAT.test(id)); if (!ids.length) return; for (const id of ids) commit({ t: "del", id: canonId(id) }); state.selected = new Set(); render();
+    const ids = all.filter((id) => isDraggable(id) || REPEAT.test(id)); if (!ids.length) return; commit({ t: "del", ids: ids.map(canonId) }); state.selected = new Set(); render();   // J13 まとめて1つの del にして、戻す1回で全部戻す
   }
 
   // ---- その場書き換え ----
@@ -3443,7 +3452,7 @@ const PG = (function () {
     sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionCan,   // §2 セクションの操作
     setPage, currentPage, pages: () => PAGES.map((p) => ({ ...p })), pageOfSec,   // 試験台28：ページの移動
     secMapNow: () => clone(reduce(activeOps()).secMap),
-    beginDrag, dragMove, endDrag, isDragging: () => !!drag, selectOnly, toggleSel, selectMany, clearSel, selectSection, selectInDesignRect, smallHit,
+    beginDrag, dragMove, endDrag, cancelDrag, isDragging: () => !!drag, selectOnly, toggleSel, selectMany, clearSel, selectSection, selectInDesignRect, smallHit,
     startEdit, commitEdit, nudge, nudgeSelected, deleteSelected, copySelection, cutSelection, paste, duplicate,
     // 試験台26：① 連動の操作・値段の箱・品を選ぶ一覧・お品書きを見る（WIRING から使う）
     partInfo, effPricesOf, setPrices, tableAddRow, tableDuplicate, tableDelete,
