@@ -484,7 +484,7 @@ const UI_BODY = `
 </div>
 <div id="stage">
   <div id="sectionwrap"></div>
-  <div id="meas" style="position:absolute;left:-9999px;top:0"></div>
+  <div id="meas" style="position:fixed;left:-9999px;top:0"></div>
 </div>
 <input id="photoInput" type="file" accept="image/*" style="position:fixed;left:-9999px">
 <div id="cropwrap" style="display:none"></div>
