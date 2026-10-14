@@ -1092,7 +1092,7 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
         addDiv(); } }
     if(PG.canSwap(one)) add("左右を入れ替える",()=>PG.swapHoriz(one));   // §5 横並びの組（PC 特集）
     if(ph&&PG.canonId(one)==="I_cards") addColsPhone();   // §2.2/§6.7（L23）スマホは長押しの箱に「列」の見本ボタン（44px）
-    if(moved) add("元の位置に戻す",()=>PG.resetScope("part",one,[PG.state.device])); if(ph){ add("複製",()=>PG.duplicate()); add("削除",()=>PG.deleteSelected()); } else add("消す",()=>PG.commit({t:"del",id:one})); }
+    if(moved) add("元の位置に戻す",()=>PG.resetScope("part",one,[PG.state.device])); if(ph){ add("複製",()=>PG.duplicate()); add("削除",()=>PG.deleteSelected()); } else add("消す",()=>PG.delPart(one)); }   // J14 並び全体を消すと品が消えるなら知らせる
   if(ph && one && PG.isRepeat(one) && PG.itemCtx(one)){ addDiv(); add("販売",()=>showSellSheet(one)); add("出す月",()=>showMonthSheet(one)); add("ラベル",()=>showLabelSheet(one)); add("メニュー",()=>showMenuSheet(one)); }   // 試験台28 §2.5 スマホ：品の長押しの箱に4つの道具
   if(ph && PG.canAlign().enabled) add("配置",()=>showAlignSheet());   // §27 スマホの長押しの箱に「配置」（PC は右クリックに入れない）
   fmenu._follow="part"; fmenu._secId=null; fmenu._place=null;   // §1/§4（試験台16）箱は部品に付いていく

@@ -1689,7 +1689,7 @@ const PG = (function () {
   // 試験台28：セクション操作はそのセクションのあるページの並びに効く（ヘッダー・フッター＝@region は操作不可）。
   const pageOfSec = (id) => { const pg = reduce(activeOps()).secPageMap[id]; return (pg && pg !== "@region") ? pg : null; };
   function sectionMove(id, delta) { const pg = pageOfSec(id); if (!pg) return; const list = reduce(activeOps()).secMap[pg]; const i = list.findIndex((s) => s.id === id); if (i < 0 || i + delta < 0 || i + delta >= list.length) return; commit({ t: "secMove", id, delta, page: pg }); }
-  function sectionDelete(id) { const pg = pageOfSec(id); if (!pg) return; const list = reduce(activeOps()).secMap[pg]; if (list.length <= 1 || !list.find((s) => s.id === id)) return; if (state.selectedSection === id) state.selectedSection = null; commit({ t: "secDel", id, page: pg }); }
+  function sectionDelete(id) { const pg = pageOfSec(id); if (!pg) return; const list = reduce(activeOps()).secMap[pg]; if (list.length <= 1 || !list.find((s) => s.id === id)) return; if (state.selectedSection === id) state.selectedSection = null; withDropNotice(() => commit({ t: "secDel", id, page: pg })); }   // J22 本体を消して品が消えたら知らせる
   function sectionAdd(pos, type) { const pg = state.page; const list = reduce(activeOps()).secMap[pg]; const newId = "sec" + (++state.secSeq); const afterId = pos > 0 ? (list[pos - 1] || {}).id : null; commit({ t: "secAdd", newId, type, pos, afterId, content: templateSectionContent(type), page: pg }); state.selectedSection = null; }
   function sectionDuplicate(id) {
     const pg = pageOfSec(id); if (!pg) return;   // 試験台28：ヘッダー・フッターは複製不可
@@ -2102,7 +2102,7 @@ const PG = (function () {
       if (secOf(one) === "menu" && menuRowPlc(one)) { menuRowDelete(one); state.selected = new Set(); render(); return; }   // 試験台28 §2.7：お品書き本体の行 → 載せ方を消す（① 連動）
       const b = bareOf(one); if (/^card_/.test(b) || /^c_/.test(b)) cardsDelete(one); else tableDelete(one); state.selected = new Set(); render(); return;   // 試験台26：品の並び・表の1件 → ① 連動
     }
-    const ids = all.filter((id) => isDraggable(id) || REPEAT.test(id)); if (!ids.length) return; commit({ t: "del", ids: ids.map(canonId) }); state.selected = new Set(); render();   // J13 まとめて1つの del にして、戻す1回で全部戻す
+    const ids = all.filter((id) => isDraggable(id) || REPEAT.test(id)); if (!ids.length) return; withDropNotice(() => commit({ t: "del", ids: ids.map(canonId) })); state.selected = new Set(); render();   // J13 まとめて1つの del／J14 並び全体を消して品が消えたら知らせる
   }
 
   // ---- その場書き換え ----
@@ -2480,11 +2480,22 @@ const PG = (function () {
     return { itemId, name: it.name || "", status: it.status || "onSale", months: ((it.season && it.season.months) || []).slice(), labels, menus, menuCount: inMenus.length };
   }
   // 販売（販売中／休んでいる／終わり）＝品の status。1操作1undo・薄表示は連動（isDisplayable）
-  function setItemStatus(fullId, status) { const id = itemIdOfSel(fullId); if (!id) return false; commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "status", value: status }] }); return true; }
+  // J35-J38：トップの並び・表に出ている品（itemId→名前）。変更の前後で比べ、消えた品を知らせる
+  function shownItems() { const R = reduce(activeOps()); const m = new Map(); const rm = new Set(R.removedAll || []);   // 鍵は「場所:品ID」＝並びと表で別に数える（片方から消えたら知らせる）。入れ物（I_cards/I_table）ごと消えたときも数える
+    for (const inst of (R.allSecs || [])) { const c = R.secContent[inst.id]; if (!c) continue;
+      const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP;
+      if (!rm.has(pfx + "I_cards")) for (const row of (c.cards || [])) if (row._itemId) m.set(inst.id + ":cards:" + row._itemId, row.name || row._itemId);
+      if (!rm.has(pfx + "I_table")) for (const row of (c.table || [])) if (row._itemId) m.set(inst.id + ":table:" + row._itemId, row.name || row._itemId);
+      for (const g of (c.groups || [])) for (const ct of (g.cats || [])) for (const row of (ct.rows || [])) if (row._itemId && !row.hidden) m.set(inst.id + ":menu:" + (row._placementId || row._itemId), row.name || row._itemId); }   // J22 お品書き本体の行も数える
+    return m; }
+  function withDropNotice(fn) { const before = shownItems(); const r = fn(); const after = shownItems();
+    const names = [...new Set([...before.keys()].filter((k) => !after.has(k)).map((k) => before.get(k)))];
+    if (names.length) pgToastMsg(names.map((n) => "『" + n + "』").join("・") + "が並びに出なくなりました", true); return r; }
+  function setItemStatus(fullId, status) { const id = itemIdOfSel(fullId); if (!id) return false; return withDropNotice(() => { commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "status", value: status }] }); return true; }); }
   // 出す月＝品の season.months（空＝いつでも＝season を外す）
-  function setItemMonths(fullId, months) { const id = itemIdOfSel(fullId); if (!id) return false; const ms = (months || []).slice().sort((a, b) => a - b); const value = ms.length ? { months: ms } : null; commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "season", value }] }); return true; }
+  function setItemMonths(fullId, months) { const id = itemIdOfSel(fullId); if (!id) return false; const ms = (months || []).slice().sort((a, b) => a - b); const value = ms.length ? { months: ms } : null; return withDropNotice(() => { commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "season", value }] }); return true; }); }
   // ラベル＝品の labels（① の labels の ID 配列）
-  function setItemLabels(fullId, labelIds) { const id = itemIdOfSel(fullId); if (!id) return false; commit({ t: "catAct", shops: [{ t: "shopLabels", itemId: id, labels: (labelIds || []).slice() }] }); return true; }
+  function setItemLabels(fullId, labelIds) { const id = itemIdOfSel(fullId); if (!id) return false; return withDropNotice(() => { commit({ t: "catAct", shops: [{ t: "shopLabels", itemId: id, labels: (labelIds || []).slice() }] }); return true; }); }
   // 新しいラベルを作って付ける（お店のラベル＝① の labels に足す＋この品に付ける。戻す1回でまとめて戻る）
   function addItemLabel(fullId, name) {
     const id = itemIdOfSel(fullId); if (!id) return null; const cat = curCat(); const it = cat.items[id];
@@ -2504,10 +2515,10 @@ const PG = (function () {
       const cats = Object.keys(cat.categories).filter((c) => cat.categories[c].menuId === menuId).sort((a, b) => (cat.categories[a].order || 0) - (cat.categories[b].order || 0));
       const categoryId = cats[0]; if (!categoryId) return false;
       const plcId = mintShopId("plc"); const order = orderAfter(cat, menuId, categoryId, null);
-      commit({ t: "catAct", shops: [{ t: "shopPlcAdd", placementId: plcId, itemId: id, menuId, categoryId, order }] }); return true;
+      return withDropNotice(() => { commit({ t: "catAct", shops: [{ t: "shopPlcAdd", placementId: plcId, itemId: id, menuId, categoryId, order }] }); return true; });
     }
     if (!myInMenu.length || inMenus.length <= 1) return false;   // 最後の1つは外せない
-    commit({ t: "catAct", shops: myInMenu.map((k) => ({ t: "shopDel", placementId: k, itemId: id, alsoItem: false })) }); return true;
+    return withDropNotice(() => { commit({ t: "catAct", shops: myInMenu.map((k) => ({ t: "shopDel", placementId: k, itemId: id, alsoItem: false })) }); return true; });   // J38 メニューから外して表の行が消えたら知らせる
   }
   // 品を選ぶ一覧（そのメニューの品を括りごと。今出ている品は選べない扱い、出ない品は理由つき）
   function outReason(item) { if (!item) return ""; if (item.status === "paused") return "一時休止中"; if (item.status && item.status !== "onSale") return "販売していません"; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) { const ms = item.season.months; return ms[0] + "〜" + ms[ms.length - 1] + "月だけ"; } return "今は並びに出ません"; }
@@ -3453,7 +3464,7 @@ const PG = (function () {
     setPage, currentPage, pages: () => PAGES.map((p) => ({ ...p })), pageOfSec,   // 試験台28：ページの移動
     secMapNow: () => clone(reduce(activeOps()).secMap),
     beginDrag, dragMove, endDrag, cancelDrag, isDragging: () => !!drag, selectOnly, toggleSel, selectMany, clearSel, selectSection, selectInDesignRect, smallHit,
-    startEdit, commitEdit, nudge, nudgeSelected, deleteSelected, copySelection, cutSelection, paste, duplicate,
+    startEdit, commitEdit, nudge, nudgeSelected, deleteSelected, delPart: (id) => withDropNotice(() => commit({ t: "del", id: canonId(id) })), copySelection, cutSelection, paste, duplicate,
     // 試験台26：① 連動の操作・値段の箱・品を選ぶ一覧・お品書きを見る（WIRING から使う）
     partInfo, effPricesOf, setPrices, tableAddRow, tableDuplicate, tableDelete,
     cardsAddExisting, cardsAddNew, cardsDuplicate, cardsDelete, itemPickerData, catalogView, curSpec, isRepeat, LIST_MODE,
