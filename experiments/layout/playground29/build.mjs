@@ -772,21 +772,22 @@ function beforeTs(){ if(PG.state.editing) PG.commitEdit(); }   // §3.4 カー�
 function partMode(){ return !!(PG.state.editing && PG.editingHasSelection()); }
 const sizeInp=tsEl("size");
 function curSizeShown(){ if(PG.state.editing){ const p=PG.editingPartSizePx(); if(p!=null) return p; } const ap=PG.api.textStyles(); const prim=PG.primaryTextSel(); const info=prim&&ap.find(x=>x.part===prim); return info?info.size:null; }
-function commitSizeInput(){ const raw=String(sizeInp.value).replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-0xFEE0)).trim();   // J34 全角数字→半角
-  const v=parseInt(raw,10);
-  if(isNaN(v)||String(v)!==raw||v<8||v>120){ const cur=curSizeShown(); if(cur!=null) sizeInp.value=String(cur); return; }   // P9/J34 数字でない・余計な字がある・範囲外（8〜120）は前の大きさに戻す
-  const px=v;
+function commitSizeInput(){ const rawOrig=String(sizeInp.value).trim();
+  const allHalf=/^[0-9]+$/.test(rawOrig), allFull=/^[０-９]+$/.test(rawOrig);
+  if(!allHalf&&!allFull){ const cur=curSizeShown(); if(cur!=null) sizeInp.value=String(cur); return; }   // P9/J34 数字でない・全角と半角の混在（２０24 等）は前の大きさに戻す
+  const v=parseInt(allFull?rawOrig.replace(/[０-９]/g,d=>String.fromCharCode(d.charCodeAt(0)-0xFEE0)):rawOrig,10);
+  if(isNaN(v)){ const cur=curSizeShown(); if(cur!=null) sizeInp.value=String(cur); return; }
+  const px=Math.max(8,Math.min(120,v));   // J13 範囲の外は端（8〜120）に丸める
   if(partMode()){ const box=PG.boxSizePx(PG.state.editing.id)||px; PG.applyPartStyle("scale", px/box); }
   else { beforeTs(); PG.textSetSize(px); } }
 sizeInp.addEventListener("keydown",(e)=>{ if(e.isComposing||e.keyCode===229)return;/*§23a X33*/ if(e.key==="Enter"){ e.preventDefault(); commitSizeInput(); sizeInp.blur(); } });
 sizeInp.addEventListener("blur",commitSizeInput);
 function partStep(dir){ const cur=PG.editingPartSizePx(); const box=PG.boxSizePx(PG.state.editing.id); let nx; if(dir>0) nx=PG.SIZE_LIST.find(v=>v>cur); else { const less=PG.SIZE_LIST.filter(v=>v<cur); nx=less.length?less[less.length-1]:null; } if(nx==null||nx===cur) return; PG.applyPartStyle("scale", nx/box); }
 ["grow","shrink","size-list"].forEach(nm=>{ tsEl(nm).onmousedown=(e)=>e.preventDefault(); });   // 編集中の選択を失わない
-// J9：書き換え中にカーソルだけ（選択なし）のときは、前に選んだ範囲に効かせない＝何もしない（P7 の「次に打つ文字に効く」は後段）。書き換え中でなければ選んだ部品の箱まるごとに効く
-tsEl("grow").onclick=()=>{ if(PG.state.editing){ if(partMode()) partStep(1); } else { PG.textStep(1); } };
-tsEl("shrink").onclick=()=>{ if(PG.state.editing){ if(partMode()) partStep(-1); } else { PG.textStep(-1); } };
+tsEl("grow").onclick=()=>{ if(partMode()) partStep(1); else { beforeTs(); PG.textStep(1); } };
+tsEl("shrink").onclick=()=>{ if(partMode()) partStep(-1); else { beforeTs(); PG.textStep(-1); } };
 tsEl("bold").onmousedown=(e)=>e.preventDefault();
-tsEl("bold").onclick=()=>{ if(PG.state.editing){ if(partMode()) PG.applyPartStyle("bold"); } else { PG.textToggleBold(); } };
+tsEl("bold").onclick=()=>{ if(partMode()) PG.applyPartStyle("bold"); else { beforeTs(); PG.textToggleBold(); } };
 function applySizeNum(px){ if(partMode()){ const box=PG.boxSizePx(PG.state.editing.id)||px; PG.applyPartStyle("scale", px/box); } else { beforeTs(); PG.textSetSize(px); } }
 tsEl("size-list").onclick=(e)=>{ e.stopPropagation(); const open=sizePop.classList.contains("on"); colorPop.classList.remove("on"); if(open){ sizePop.classList.remove("on"); return; }
   sizePop.innerHTML=""; for(const n of PG.SIZE_LIST){ const b=document.createElement("button"); b.textContent=String(n); b.setAttribute("data-ts-size",String(n)); b.onmousedown=(ev)=>ev.preventDefault(); b.onclick=(ev)=>{ ev.stopPropagation(); applySizeNum(n); sizePop.classList.remove("on"); }; sizePop.appendChild(b); }

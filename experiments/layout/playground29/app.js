@@ -316,7 +316,7 @@ const PG = (function () {
     const last = rects.length ? rects[rects.length - 1] : bb;   // 最後の行
     return { left: bb.left, top: bb.top, right: bb.right, bottom: last.bottom, lastLeft: last.left };
   }
-  function editingSel() { if (!state.editing) return null; const n = elNode(state.editing.id); if (!n) return null; const o = caretOffsets(n); if (o && o.e > o.s) state.editing.lastSel = o; else if (o && o.e === o.s && document.activeElement === n) state.editing.lastSel = null; return o; }   // J9 文の中にカーソルを置き直したら前の選択は忘れる（カーソルだけの操作が前の範囲に効かない）
+  function editingSel() { if (!state.editing) return null; const n = elNode(state.editing.id); if (!n) return null; const o = caretOffsets(n); if (o && o.e > o.s) state.editing.lastSel = o; return o; }
   // 道具（上のボタン・欄）に触れると編集中の選択が外れることがあるので、直近の選択を覚えておいて使う
   function liveSel() { const o = editingSel(); if (o && o.e > o.s) return o; return state.editing && state.editing.lastSel; }
   function editingHasSelection() { const o = liveSel(); return !!(o && o.e > o.s); }
@@ -1883,8 +1883,8 @@ const PG = (function () {
     // J16 ドラッグした部品を自分のセクションの中身の枠に収める（左右の外・ヘッダー〔上端より上〕へは出さない）。単体のみ
     if (drag.ids.length === 1) { const id = drag.ids[0]; const e0 = drag.origGeom[id];
       if (e0 && isDraggable(id)) { const { left: cL, right: cR } = contentEdges(); const nx = e0.x + dx, ny = e0.y + dy;
-        const sn = secNode(secOf(id)); const sh = sn ? sn.getBoundingClientRect().height / scale : Infinity;   // J17 自分のセクションの下端より下へは出さない（下のセクションへドラッグしても元のセクションを伸ばさない）
-        const cx = Math.min(Math.max(nx, cL), Math.max(cL, cR - e0.w)), cy = Math.min(Math.max(ny, 0), Math.max(0, sh - e0.h));
+        // J16 左右の外・上端より上へは出さない（下への制限はしない＝W8 を壊さない）。中身の幅いっぱいの部品は横に寄せる余地がない＝横は動かさない（Z3 を壊さない）
+        const cx = (cR - e0.w > cL) ? Math.min(Math.max(nx, cL), cR - e0.w) : nx, cy = Math.max(ny, 0);
         if (Math.abs(cx - nx) > 0.5 || Math.abs(cy - ny) > 0.5) { dx += cx - nx; dy += cy - ny; const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + dx}px,${drag.baseT[id].ty + dy}px)`; } } }
     const g = geometry();
     const prior = reduce(activeOps()).m1;   // 既に M1 を持つ部品を更に動かすときは積む（テンプレ位置からの総ずれ＝prior+今回）
