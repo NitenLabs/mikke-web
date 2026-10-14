@@ -123,7 +123,7 @@ body.pg-preview #sectionwrap [data-lk]{cursor:pointer}
 /* 記録 15.5：プレビュー（お客さんが見る形）・見るだけ（15.6）ではセクションの名前の札を出さない（編集の飾り） */
 body.pg-preview .seclabel,body.pg-viewing .seclabel{display:none}
 /* §22 §6 履歴の板（右・幅300）と、見るだけの帯 */
-#historyBar{position:sticky;top:0;z-index:31;display:none;background:#2a2a2a;color:#fff;padding:8px 12px;align-items:center;gap:10px;font:13px system-ui}
+#historyBar{position:sticky;top:0;z-index:41;display:none;background:#2a2a2a;color:#fff;padding:8px 12px;align-items:center;gap:10px;font:13px system-ui}
 #historyBar.on{display:flex}
 #historyBar .hb-title{font-weight:700}
 #historyBar .sp{flex:1}
@@ -598,6 +598,8 @@ document.addEventListener("compositionend",()=>{ if(PG.state.editing) PG.imeBoun
 document.getElementById("tUndo").onclick=()=>PG.undo();
 document.getElementById("tRedo").onclick=()=>PG.redo();
 document.getElementById("tResetPage").onclick=()=>PG.resetScope("page",null,["pc","sp"]);
+const DEV=/[?&]dev=1/.test(location.search||"");   // J21 制作用（試験ボタン）は ?dev=1 のときだけ出す＝店主の画面には出さない
+if(!DEV){ const _ts=document.getElementById("tStudio"); if(_ts) _ts.style.display="none"; const _st=document.getElementById("studio"); if(_st) _st.style.display="none"; }
 document.getElementById("tStudio").onclick=(e)=>{ document.getElementById("studio").classList.toggle("on"); e.target.classList.toggle("on"); refreshStudio(); };
 // §22 §3 公開・状態の文字・「公開しました」トースト（§4.1 の確認の箱は 22c。22b は publish({force:true}) 相当）
 let _lastPubEnabled=true, _pubToastT=null;
@@ -1781,7 +1783,7 @@ function buildPmore(){ pmore.innerHTML="";   // §2.3 一覧の中身（上か�
   pmore.appendChild(mk("PC の見え方を見る",()=>setPhoneDevice("pc")));
   const peek=document.createElement("button"); peek.textContent="元の配置を見る"; peek.setAttribute("data-pmore-peek","1"); peek.addEventListener("pointerdown",(e)=>{ e.preventDefault(); PG.peekOn(); }); const off=()=>{ if(PG.state.peek) PG.peekOff(); }; peek.addEventListener("pointerup",off); peek.addEventListener("pointerleave",off); peek.onclick=(e)=>e.stopPropagation(); pmore.appendChild(peek);
   pmore.appendChild(mk("このページを元に戻す",()=>PG.resetScope("page",null,["pc","sp"])));
-  pmore.appendChild(mk("制作用",()=>{ document.getElementById("studio").classList.toggle("on"); refreshStudio(); }));
+  if(DEV) pmore.appendChild(mk("制作用",()=>{ document.getElementById("studio").classList.toggle("on"); refreshStudio(); }));   // J21 ?dev=1 のときだけ
 }
 function phoneAddText(){ const sel=[...PG.state.selected].filter((id)=>PG.isDraggable(id)||PG.isText(id)); const anchor=sel.length?PG.canonId(sel[0]):"F_h0"; PG.addTextAt(anchor,24,"テキスト"); }
 
