@@ -2426,6 +2426,10 @@ const PG = (function () {
     const cat = curCat(); const plc = cat.placements[plcId]; const destCat = cat.categories[destCatId];
     if (!plc || !destCat) return false;
     const menuId = destCat.menuId;
+    // J39 別のメニューへ移すとき、その品がすでにそのメニューにあるなら二重になる＝移さずに知らせる（表からも消さない）
+    if (plc.menuId !== menuId && Object.keys(cat.placements).some((k) => k !== plcId && cat.placements[k].itemId === plc.itemId && cat.placements[k].menuId === menuId)) {
+      pgToastMsg("『" + ((cat.items[plc.itemId] || {}).name || "この品") + "』はすでに" + menuName(menuId) + "にあります", false); return false;
+    }
     const sibs = placementsInCat(cat, menuId, destCatId, plcId);
     let order;
     if (!beforePlcId || !sibs.includes(beforePlcId)) { order = sibs.length ? (cat.placements[sibs[sibs.length - 1]].order || 0) + 1 : 1; beforePlcId = null; }
