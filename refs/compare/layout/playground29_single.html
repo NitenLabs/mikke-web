@@ -5822,7 +5822,8 @@ function elFrom(t){ const n=t.closest?t.closest("[data-el]"):null; return n?n.ge
 const stage=document.getElementById("stage");
 stage.addEventListener("pointerdown",(e)=>{
   if(PG.previewMode()||PG.viewingVersion()) return;   // §22 §5 プレビュー／§6 見るだけは選択・移動しない（リンクは click で処理）
-  if(isPhone()){ if(e.pointerType==="touch") onPhoneDown(e); return; }   // §3 スマホは指だけ（タッチ後の互換マウスは無視して箱を消させない）
+  if(e.pointerType==="touch"){ onPhoneDown(e); return; }   // J30 指のときは幅によらずスマホの操作（なぞったらスクロール・選んでから動かす）
+  if(isPhone()) return;   // スマホ幅での互換マウス（タッチ後の合成イベント）は無視
   if(PG.state.editing && e.target.getAttribute && e.target.closest("[contenteditable]")) return; // 編集中の文字は素通し
   if(PG.state.editing) PG.commitEdit();
   // §4 大きさのつまみ（data-handle）をつかんだ＝大きさを変える
@@ -5849,7 +5850,8 @@ stage.addEventListener("pointerdown",(e)=>{
 },{passive:false});
 let pending=null;
 window.addEventListener("pointermove",(e)=>{
-  if(isPhone()){ if(e.pointerType==="touch" && tg) onPhoneMove(e); return; }   // §3 スマホは指だけ
+  if(e.pointerType==="touch"){ if(tg) onPhoneMove(e); return; }   // J30 指は幅によらずスマホの動き
+  if(isPhone()) return;
   // §2 Alt（Mac は Option）を押しながらは、そろえない
   if(PG.isResizing()){ e.preventDefault(); PG.resizeMove(e.clientX,e.clientY,e.altKey); return; }
   if(marquee){ const x=Math.min(marquee.x0,e.clientX),y=Math.min(marquee.y0,e.clientY),w=Math.abs(e.clientX-marquee.x0),h=Math.abs(e.clientY-marquee.y0); Object.assign(marquee.el.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"}); e.preventDefault(); return; }
@@ -5857,7 +5859,8 @@ window.addEventListener("pointermove",(e)=>{
   if(PG.isDragging()){ e.preventDefault(); PG.dragMove(e.clientX,e.clientY,e.altKey); }
 },{passive:false});
 window.addEventListener("pointerup",(e)=>{
-  if(isPhone()){ if(e.pointerType==="touch" && tg) onPhoneUp(e); return; }   // §3 スマホは指だけ
+  if(e.pointerType==="touch"){ if(tg) onPhoneUp(e); return; }   // J30 指は幅によらずスマホの動き
+  if(isPhone()) return;
   const wasPending=pending; pending=null;
   if(PG.isResizing()){ PG.endResize(); showFmenu(); return; }
   if(marquee){ const r=marquee.el.getBoundingClientRect(); marquee.el.remove(); marquee=null; const chosen=[];
