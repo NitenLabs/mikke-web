@@ -282,8 +282,8 @@ export function buildMenu(content, device, H, edits = {}) {
     const time = g.time ? T(`mt_${g.id}`, "kanmiTime", device, contW, thtml(H, `mt_${g.id}`), "margin-top:4px") : "";
     // §2.4 括りごとに .kcat で包む（空の括りも落とし先・右クリックの対象になる。data-cat/data-menu を持たせる）
     const cats = g.cats.map((cat) => {
-      const ch = T(`mc_${cat.id}`, "menuCat", device, nameW, thtml(H, `mc_${cat.id}`), "margin-top:40px");
       const rows = cat.rows.filter((r) => editMode || !r.hidden);   // 編集時は薄く出す／プレビュー・公開は詰める
+      const ch = (!editMode && rows.length === 0) ? "" : T(`mc_${cat.id}`, "menuCat", device, nameW, thtml(H, `mc_${cat.id}`), "margin-top:40px");   // J40 プレビュー・公開では品のない括りの見出しを出さない
       return `<div class="kcat" data-cat="${cat.id}" data-menu="${g.id}">${ch}${rows.map((r) => rowHtml(r, cat.id, g.id)).join("")}</div>`;
     }).join("");
     return `<div class="mgroup" style="margin-top:${gi === 0 ? 0 : 64}px">${head}${time}${cats}</div>`;   // 先頭の括りは本体上端から（stack の padTop のみ）

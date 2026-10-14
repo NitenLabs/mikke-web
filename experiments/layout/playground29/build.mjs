@@ -1075,7 +1075,7 @@ function showFmenu(){ fmenu._section=false; const sel=[...PG.state.selected]; if
   if(sel.length>1){ add("元の位置に戻す",()=>{ for(const id of sel) PG.resetScope("part",id,[PG.state.device]); }); add("消す",()=>PG.deleteSelected()); }
   else if(one&&PG.isRepeat(one)){ const info=PG.partInfo(one); const isRow=info&&info.kind==="table"; const bare1=PG.canonId(one).replace(/.*__/,""); const isPrice=/_price_/.test(bare1);
     const isMenuRow=(PG.currentPage&&PG.currentPage()==="pg_menu")&&!!PG.menuRowPlc(one);   // 試験台28：お品書き本体の行（① の載せ方そのもの）
-    if(isPrice&&!isMenuRow) add("値段を変える",()=>openPriceBox(one)); else add("書き換える",()=>PG.startEdit(one));
+    if(isPrice) add("値段を変える",()=>openPriceBox(one)); else add("書き換える",()=>PG.startEdit(one));   // J19 お品書き本体の値段も値段の箱で（①連動＝読み込み直しても残る）
     if(!isMenuRow){ add(isRow?"行を足す…":"品を足す…",()=>{ if(isRow) addRowFlow(one); else openItemPicker(one); }); add("複製",()=>PG.duplicate()); }
     add("削除",()=>PG.deleteSelected());
     add("",null,isMenuRow?"品を選ぶと上の並びに道具が出ます":(isRow?"1行の作りを変えると全部に効きます":"品は位置を動かせません")); }

@@ -2253,7 +2253,9 @@ const PG = (function () {
     const gHere = geometry();
     state.device = other; render(); const gOther = geometry(); state.device = here; render();
     const Rc = reduce(activeOps());
-    const parts = ids.filter(isDraggable).map((id) => ({ id, kind: kindOf(id), text: isText(id) ? rawText(id) : null, runs: Rc.runsMap[id] ? clone(Rc.runsMap[id]) : null, elink: Rc.linkMap[id] || null, asset: kindOf(id) === "photo" ? assetOfPart(id, Rc) : null, brightness: brightnessOf(id), x: gHere[id].x, y: gHere[id].y, w: gHere[id].w, h: gHere[id].h, wOther: gOther[id] ? gOther[id].w : gHere[id].w, hOther: gOther[id] ? gOther[id].h : gHere[id].h }));
+    // J15 品の並び・表の入れ物（I_cards/I_table）は①に紐づく表示＝素の部品としてコピーしない（空の箱ができる）。中の1件は上の card_/row_ の道で複製する
+    const copyable = ids.filter((id) => isDraggable(id) && !/^I_(cards|table)$/.test(bareOf(canonId(id))));
+    const parts = copyable.map((id) => ({ id, kind: kindOf(id), text: isText(id) ? rawText(id) : null, runs: Rc.runsMap[id] ? clone(Rc.runsMap[id]) : null, elink: Rc.linkMap[id] || null, asset: kindOf(id) === "photo" ? assetOfPart(id, Rc) : null, brightness: brightnessOf(id), x: gHere[id].x, y: gHere[id].y, w: gHere[id].w, h: gHere[id].h, wOther: gOther[id] ? gOther[id].w : gHere[id].w, hOther: gOther[id] ? gOther[id].h : gHere[id].h }));
     if (parts.length) state.clipboard = { kind: "parts", parts };
   }
   function cutSelection() { copySelection(); deleteSelected(); }
@@ -2300,8 +2302,9 @@ const PG = (function () {
     if (!kind) return null;
     const cid = cardIdOf(fullId);
     const pfx = (sec === "feature" || sec === "items") ? "" : sec + SEP;
-    const R = reduce(activeOps(), "pc"); const c = R.secContent[sec]; const arr = (c && (kind === "cards" ? c.cards : c.table)) || [];
-    const entry = arr.find((x) => x.id === cid) || null;
+    const R = reduce(activeOps(), "pc"); const c = R.secContent[sec]; let arr = (c && (kind === "cards" ? c.cards : c.table)) || [];
+    let entry = arr.find((x) => x.id === cid) || null;
+    if (!entry && c && c.groups) { for (const g of c.groups) { for (const ct of (g.cats || [])) { const e = (ct.rows || []).find((x) => x.id === cid); if (e) { entry = e; arr = ct.rows; break; } } if (entry) break; } }   // J19 お品書き本体の行（groups 構造）の価格も値段の箱で編集できるようにする
     return { sec, kind, cid, pfx, gid: pfx + (kind === "cards" ? "I_cards" : "I_table"), entry, arr, R };
   }
   // 値段の持ち主（載せ方の価格があれば載せ方、なければ品）
