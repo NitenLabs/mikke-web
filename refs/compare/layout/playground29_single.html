@@ -5350,11 +5350,15 @@ function syncPreviewUI(){ const on=PG.previewMode(); document.body.classList.tog
 window.addEventListener("keydown",(e)=>{ if(e.isComposing||e.keyCode===229)return;/*§23a X33*/ if(e.key==="Escape"&&PG.previewMode()){ e.preventDefault(); exitPreviewUI(); } },true);   // §5.4 Esc＝編集に戻る
 // §5.3 プレビュー中：リンクは本当に押せる（よそは新しいタブ）。部品は選ばない・動かさない（const stage はこの後で定義されるので直接取得）
 document.getElementById("stage").addEventListener("click",(e)=>{ if(!PG.previewMode()) return;
-  let href=null, external=false;
+  let lk=null;
   const lkEl=e.target.closest&&e.target.closest("[data-lk]");
-  if(lkEl){ try{ const lk=JSON.parse(lkEl.getAttribute("data-lk")); href=PG.api.resolveHref(lk); external=/^https?:/.test(href||""); }catch(_){} }
-  if(!href){ const el=e.target.closest&&e.target.closest("[data-el]"); if(el){ const info=PG.api.elementLink(el.getAttribute("data-el")); if(info&&info.link){ href=PG.api.resolveHref(info.link); external=/^https?:/.test(href||""); } } }
-  if(href){ e.preventDefault(); e.stopPropagation(); if(external) window.open(href,"_blank"); else location.href=href; }
+  if(lkEl){ try{ lk=JSON.parse(lkEl.getAttribute("data-lk")); }catch(_){} }
+  if(!lk){ const el=e.target.closest&&e.target.closest("[data-el]"); if(el){ const info=PG.api.elementLink(el.getAttribute("data-el")); if(info&&info.link) lk=info.link; } }
+  if(!lk) return;
+  e.preventDefault(); e.stopPropagation();
+  if(lk.kind==="page"){ PG.setPage(lk.page); window.scrollTo(0,0); return; }   // J53 プレビューのままサイトのページを移る（編集画面ごと消えない）
+  if(lk.kind==="anchor"){ const host=document.getElementById("host_"+lk.sec)||document.querySelector('[data-sec="'+lk.sec+'"]'); if(host) host.scrollIntoView({block:"start"}); return; }   // J54 そのセクションまでスクロール
+  const href=PG.api.resolveHref(lk); if(href){ if(/^https?:/.test(href)) window.open(href,"_blank"); else location.href=href; }   // tel/mail/地図/外部は本当に開く
 },true);
 // §22 §6 公開の履歴から前の版に戻す
 const historyBar=document.getElementById("historyBar");
@@ -5962,6 +5966,7 @@ window.__ui={ priceBox:(id)=>{ PG.selectOnly(id); openPriceBox(id); }, picker:(i
 stage.addEventListener("dblclick",(e)=>{ if(isPhone()||PG.previewMode()||PG.viewingVersion()) return; const id=elFrom(e.target); if(!id)return; const c=PG.canonId(id); const bare1=c.replace(/.*__/,""); if(/_price_/.test(bare1)){ PG.selectOnly(c); openPriceBox(c); } else if(PG.isText(c)){ if(PG.state.editing&&PG.state.editing.id===c) return; PG.startEdit(c); } else if(/^F_p|photo/.test(id)){ enterCrop(id); } });   // J3 既に同じ文字を書き換え中ならブラウザの語の選択に任せる（入り直して打鍵を捨てない）。§3 値段はダブルクリックで箱／写真はダブルクリックで見せる範囲
 // 右クリック＝浮遊メニュー（部品）／セクションの余白ならセクションのメニュー（§2.1）
 stage.addEventListener("contextmenu",(e)=>{
+  if(PG.previewMode()||PG.viewingVersion()){ e.preventDefault(); return; }   // J50/J51 プレビュー・見るだけでは右クリックメニューを出さない（部品も選ばない）
   if(isPhone()){ e.preventDefault(); return; }   // §3.2.5 スマホの長押しから来る contextmenu は出さない・右クリック扱いしない
   const id=elFrom(e.target);   // §23c X35：render で元のノードが外れうるので、終える前に部品 ID を取っておく
   if(PG.state.editing) PG.commitEdit();   // §23c X35：右クリックメニューは「文字を打つ以外でその部品を変える」操作＝先に書き換えをふつうに終える（書き換えの外をクリックと同じ）。入り直した書き換えでも同じ
@@ -6115,6 +6120,7 @@ window.addEventListener("pointerdown",(e)=>{ if(typePicker&&typePicker.classList
 // ---- キーボード ----
 window.addEventListener("keydown",(e)=>{
   if(e.isComposing||e.keyCode===229) return;   // §23a X33 日本語の変換中のキーはページで拾わない（preventDefault もしない）
+  if((PG.previewMode()||PG.viewingVersion())&&e.key!=="Escape"){ if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End","PageUp","PageDown"," "].includes(e.key)) e.preventDefault(); return; }   // J50/J52 プレビュー・見るだけでは部品の操作をしない（矢印でページが横にずれないよう既定も止める）
   const meta=e.metaKey||e.ctrlKey;
   if(PG.isDragging&&PG.isDragging()){ if(e.key==="Escape"){ e.preventDefault(); PG.cancelDrag(); } return; }   // J29 ドラッグ中の Esc で取り消す
   if(PG.isCropping()){ // 見せる範囲：Enter で決め、Esc で取り消す（ほかのキーは効かない）
