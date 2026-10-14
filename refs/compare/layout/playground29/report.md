@@ -1,8 +1,8 @@
 # 試験台29 報告（精査の問題を直す）
 
-- 最後のコミット：（末尾に push 後のハッシュ）
-- `run_audit.sh` 全体：**OK 51 / NG 6**（下の保留6件と一致）
-- §2.3 の増えた NG（baseline_28 比）：**0**（verify-claudeai 全スクリプトで新規 NG なし）
+- 最後のコミット：`6c763c7` の次（この報告のコミット。push 済み）
+- `run_audit.sh` 全体：**OK 51 / NG 6**。NG 6件＝保留6件（J9・J17・J31・J32・J44・J45）と完全一致（§3-1 を満たす）
+- §2.3 の増えた NG（baseline_28 比）：**0**。verify_playground は 16 NG（すべて baseline の D系・C3・C4＝E1 は 29 で解消して減った。新規 NG の ID なし）、ほか全スクリプト（photo/text/arrange29/publish25/touch24/save52/catalog28/align23/width）は NG 0（§3-2 を満たす）
 - かかった時間：2026-10-14 07:40 頃〜（この報告の作成時点まで）
 
 ## 範囲について（重要・正直な申告）
