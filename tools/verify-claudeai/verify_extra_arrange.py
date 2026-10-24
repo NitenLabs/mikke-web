@@ -58,7 +58,9 @@ async def main():
 
     # K0 Y14 の再現：区切り線の中心を品の並びの上端 −20 へ（見出しの組と品の並びの間＝並び替えの帯）
     for dev in ('pc','sp'):
-        pg=await fresh(dev=dev); g=await G(pg)
+        # P19 に合わせて手順を変えた（判定は同じ）：落とす所が窓の上の外にあり、線 A2（P19）からはドラッグで窓の端に来ると自動でスクロールするため、
+        # 止めている間にページが動いて落とす所がずれる。区切り線と品の並びが両方とも窓に入る高い窓（2400）で動かす
+        pg=await fresh(h=2400,dev=dev); g=await G(pg)
         await drag_cy(pg,'I_divider',g['I_cards']['y']-20,hold=True)
         dt=await pg.evaluate(f"{P}.dropTarget()"); line=await pg.evaluate("[...document.querySelectorAll('[data-drop-line]')].filter(e=>e.getBoundingClientRect().width>0).length")
         await pg.mouse.up(); await pg.wait_for_timeout(350); await pg.keyboard.up(await nosnap_key(pg))   # P16
@@ -271,7 +273,7 @@ async def main():
 
     # K18 X26・帯：品の並び・表（②の子）の縁の 12 の内側も「間」（並び替え）。深い所は重なる
     async def probe(dev,part,target,off):
-        pg=await fresh(dev=dev); g=await G(pg)
+        pg=await fresh(h=2400,dev=dev); g=await G(pg)   # P19 に合わせて手順を変えた（判定は同じ）：K0 と同じく、端の自動スクロールで落とす所がずれないよう高い窓で
         ty=(g[target]['y']+off) if off>=0 else (g[target]['y']+g[target]['h']+off)
         await drag_cy(pg,part,ty,hold=True); dt=await pg.evaluate(f"{P}.dropTarget()")
         await pg.mouse.up(); await pg.wait_for_timeout(300); await pg.keyboard.up(await nosnap_key(pg)); await pg.context.close(); return dt   # P16

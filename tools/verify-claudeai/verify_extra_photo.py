@@ -212,10 +212,13 @@ async def main():
     selp=await pg.evaluate("[...document.querySelectorAll('.mark-sel')].map(e=>e.getAttribute('data-el'))")
     x0,y0=rp['x']+40, rp['y']+rp['h']-30
     await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(x0,y0); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
-    for i in range(1,11): await pg.mouse.move(x0+4*i,y0)
+    # J16（E3 sp）に合わせて手順を変えた（判定は同じ）：線 A2 からはドラッグで部品をページの左右の中に収める。スマホの配置の写真は
+    # ページの端まで約 20px しかなく、右へ 40px は端で止まる。端に届かない 15px（画面）動かし、設計の px に直した量を同じく ±1px で確かめる
+    for i in range(1,11): await pg.mouse.move(x0+1.5*i,y0)
     await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     g1=(await pg.evaluate(f"{P}.geometry()"))['F_p1']; rp2=await bb(pg,'F_p1'); w=await pg.evaluate(f"{P}.warnings()")
-    rec('H1 押し下げられた写真を選んで動かす',selp==['F_p1'] and abs(g1['x']-g0['x']-40)<=1 and abs(rp2['y']-rp['y'])<=1 and not w['overlaps'],
+    want_dx=15*g0['w']/rp['w']
+    rec('H1 押し下げられた写真を選んで動かす',selp==['F_p1'] and abs(g1['x']-g0['x']-want_dx)<=1 and abs(rp2['y']-rp['y'])<=1 and not w['overlaps'],
         f"PC の付いていく先={anc[0]['anchor'] if anc else None} 選んだ={selp} dx={g1['x']-g0['x']:.1f} 画面 y {rp['y']:.0f}→{rp2['y']:.0f} overlaps={w['overlaps']}")
     await pg.screenshot(path='H1.png'); await pg.context.close()
 
