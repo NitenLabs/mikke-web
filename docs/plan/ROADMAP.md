@@ -16,17 +16,18 @@
 
 | 線 | 担当の範囲（ファイル） | 中身 |
 |---|---|---|
-| A1 文字 | `apps/editor/src/text*` | P2〜P11・P13・P14・P27、J4・J9・J10・J43・J56、文字まわりの F |
-| A2 選ぶ・動かす | `apps/editor/src/select*` `drag*` `resize*` | P1・P12・P15〜P20・P22〜P24、J12・J17 |
-| A3 部品・写真・セクション | `apps/editor/src/photo*` `section*` `clipboard*` | P21・P25・P26・P28・P29、写真・帯の F |
-| A4 品・お品書き・お店の情報 | `apps/editor/src/catalog*` `shopinfo*`、`packages/core/catalog*` | J41・J44・J45、品の F |
-| A5 知らせ・キーボード・画面 | `apps/editor/src/ui*` `toolbar*` `toast*` | F のうち知らせ・帯・キーボード・幅・重さ |
+| A1 文字 | `apps/editor/src/pg/text*` `apps/editor/src/ui/text*` | P2〜P11・P13・P14・P27、J4・J9・J10・J43・J56、文字まわりの F |
+| A2 選ぶ・動かす | `apps/editor/src/pg/select*` `pg/drag*` `pg/resize*` `ui/select*` | P1・P12・P15〜P20・P22〜P24、J12・J17 |
+| A3 部品・写真・セクション | `apps/editor/src/pg/photo*` `pg/section*` `pg/clipboard*` `ui/photo*` `ui/section*` `ui/touch-crop*` | P21・P25・P26・P28・P29、写真・帯の F |
+| A4 品・お品書き・お店の情報 | `apps/editor/src/pg/catalog*` `pg/shopinfo*` `ui/catalog*`、`packages/core/catalog*` | J41・J44・J45、品の F |
+| A5 知らせ・キーボード・画面 | `apps/editor/src/ui/toolbar*` `ui/toast*` `ui/ui-*` `ui/keyboard*` `ui/touch.ui.js` `ui/touch-bars*` | F のうち知らせ・帯・キーボード・幅・重さ |
 | B 本番の仕組み | `apps/api/` | ログイン・権限・下書き・版・写真・公開・配信・D1/R2 |
 | C 描画と公開ページ | `packages/core/render*` | 公開用 HTML、検索・共有の情報、出し入れ、相互リンク |
 
 - 線ごとに別の git の作業ツリー・ブランチ（`track/<線>`）で動く。**担当の範囲の外のファイルを直したくなったら、まとめ役に頼む**（ぶつからないように）
 - まとめ役（Claude.ai のこのセッション）が、線のブランチを main に入れる前に、全部の確認を走らせる。通ったものだけ入れる
 - 編集画面の線（A1〜A5）は、M1 の「部品のファイルに分ける」が済んでから始める
+- 上の表にない編集画面のファイル（`pg/` の ids・state・ops-*・render*・store-save・publish*・testapi*、`ui/` の publish*・boot、`editor.css`・`body.html`・`parts.mjs`・`build.mjs`・`src/lib/`）は共通＝まとめ役。地図は `apps/editor/README.md`
 
 ## 今の段
 STATUS.md を見る。
