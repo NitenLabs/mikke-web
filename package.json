@@ -11,7 +11,8 @@
     "test": "node --test tools/reflow.test.mjs tools/format.test.mjs tools/metacheck.test.mjs",
     "setup:browser": "npx playwright install chromium",
     "spec-check": "node tools/spec-check.mjs samples/ashiyado dist/ashiyado",
-    "metacheck": "node tools/metacheck.mjs"
+    "metacheck": "node tools/metacheck.mjs",
+    "build:editor": "node apps/editor/build.mjs"
   },
   "dependencies": {
     "ajv": "^8.20.0",
@@ -23,6 +24,7 @@
   "private": true,
   "type": "module",
   "devDependencies": {
+    "esbuild": "^0.25.10",
     "playwright": "^1.48.0"
   }
 }
