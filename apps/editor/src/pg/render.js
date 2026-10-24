@@ -18,7 +18,8 @@ function ensureHosts() {
       const lbl = document.createElement("div"); lbl.className = "seclabel"; lbl.textContent = secLabelText(inst);
       const host = document.createElement("div"); host.className = "host"; host.id = secHostId(inst);
       w.appendChild(lbl); w.appendChild(host); }
-    const ref = prev ? prev.nextElementSibling : wrap.firstElementChild;
+    let ref = prev ? prev.nextElementSibling : wrap.firstElementChild;
+    while (ref && ref !== w && !ref.classList.contains("sec-wrap")) ref = ref.nextElementSibling;   // F31 間の＋・仮の一番上は飛ばす（毎回すべてのセクションを入れ直さない）
     if (ref !== w) wrap.insertBefore(w, ref);
     prev = w; used.add(inst.id);
   }
@@ -42,6 +43,15 @@ function renderFixedSections() {
 }
 function elNode(id) { for (const inst of state.secList) { const h = document.getElementById(secHostId(inst)); const n = h && h.querySelector('[data-el="' + id + '"]'); if (n) return n; } return null; }
 
+// F31 改行の測り（DOM で1文字ずつ測る・重い）の結果を、セクションごとに入力（箱の中身・端末・読み込めた書体）で覚えておく
+const _hCache = new Map();
+function buildHCached(sec, boxes, meas) {
+  let fonts = ""; try { if (document.fonts) { let n = 0; document.fonts.forEach((f) => { if (f.status === "loaded") n++; }); fonts = document.fonts.status + n; } } catch (e) {}
+  const key = fonts + "|" + JSON.stringify(boxes);
+  const c = _hCache.get(sec); if (c && c.key === key) return c.H;
+  const H = TEXT.buildH(boxes, meas, SPEC); _hCache.set(sec, { key, H }); if (_hCache.size > 400) _hCache.clear();
+  return H;
+}
 // ---- 描画 ----
 function render() {
   curGuides = []; curGuidesSec = null;                 // §2 目安の線は離したら消す（再描画で必ずリセット）
@@ -50,6 +60,7 @@ function render() {
   state.secMap = R.secMap; state.secPageMap = R.secPageMap;   // 試験台28：ページごとの並び・セクション→ページ
   ensureHosts();                                        // §2 セクションの並びに合わせて host を用意
   const meas = document.getElementById("meas");
+  const tsSig = JSON.stringify(R.textStyles || {});   // F31 文字の見た目は描いた後に当てる（消すときは作り直しが要る）
   state.secList.forEach((inst, idx) => {
     const sec = inst.id;
     const anchor = (sec === "feature" || sec === "items");
@@ -69,7 +80,7 @@ function render() {
     for (const b of boxes) { const ts = R.textStyles[lk(tsKeyBox(b.key))]; if (!ts) continue; if (ts.size && (ts.size.pc != null || ts.size.sp != null)) b.sizePx = effSize(b.styleName, b.device, ts).size; if (ts.weight != null) b.weightOv = ts.weight; if (ts.font != null) b.fontOv = SPEC.FONT[ts.font] || ts.font; }   // §19 箱の書体で改行を測る
     // §13：文の一部の見た目（runs）を当てる（箱の key → 部品 ID で引く）
     for (const b of boxes) { const rs = R.runsMap[lk(partIdOfBox(b.key))]; if (rs) b.runs = rs; }
-    const H = TEXT.buildH(boxes, meas, SPEC);
+    const H = buildHCached(sec, boxes, meas);   // F31 改行の測りは、箱（文字・幅・見た目）が変わったセクションだけやり直す
     let edits;
     if (anchor) {   // anchor は従来どおり（素の ID・グローバルの手直しをそのまま渡す＝第1回までと1pxも変わらない）
       edits = { m1: R.m1, m2: R.m2, added: R.added.map((a) => ({ ...a, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined })), remove: R.remove, clear: R.clear, template: R.tpl, order: R.order, sizes: R.sizes };
@@ -91,7 +102,11 @@ function render() {
     edits.editMode = !(state.preview || state._pubGeo);   // 試験台28 §2.4：編集中だけ出ていない品を薄く出す（プレビュー/公開は詰める）
     const builder = { feature: M.buildFeature, items: M.buildItems, header: M.buildHeader, footer: M.buildFooter, menu: M.buildMenu, contact: M.buildContact, menuHdr: M.buildMenuHdr, contactHdr: M.buildContactHdr }[inst.type] || M.buildFeature;
     const out = builder(content, state.device, H, edits);
-    host.innerHTML = pfx ? prefixIds(out.bodyHtml, pfx) : out.bodyHtml;
+    const html = pfx ? prefixIds(out.bodyHtml, pfx) : out.bodyHtml;
+    // F31 中身が前と同じで、前の描き直しの後に誰も DOM を触っていなければ、作り直さない（変わったセクションだけ作り直す）
+    const sig = html + "\u0001" + tsSig + "\u0001" + idx;
+    if (!(host._rSig === sig && host._rSnap != null && host.innerHTML === host._rSnap)) host.innerHTML = html;
+    host._rSig = sig;
     // §20b §2.4 広げるのは右へ（左端は動かさない）＝中央そろえ(margin:auto)を左端固定に上書き
     if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tn = host.querySelector('#host_items [data-el="I_table"]') || host.querySelector('[data-el="I_table"]'); if (tn) { const dw = SPEC.DESIGN_W[state.device]; const recW = (R.sizes && R.sizes["I_table"] && R.sizes["I_table"].w != null) ? R.sizes["I_table"].w : 968; tn.style.marginLeft = ((dw - recW) / 2) + "px"; tn.style.marginRight = "0"; } }
     host._padBottom = out.padBottom;
@@ -114,6 +129,7 @@ function render() {
   decorate();
   renderFixedSections();   // §22 §7 仮の一番上・一番下（setFixedSections のときだけ）
   if (typeof onRender === "function") onRender();
+  for (const inst of state.secList) { const host = document.getElementById(secHostId(inst)); if (host) host._rSnap = host.innerHTML; }   // F31 描き直しの後の形を覚える（次に同じなら作り直さない）
 }
 
 // ---- 試験台28：ページを移る（ヘッダー・フッターのナビ） ----
@@ -173,19 +189,24 @@ function layoutScale() {
     scale = Math.max(0.82, Math.min(1.15, rawScale));
     overflowX = rawScale < 0.82;                     // 320 未満＝縮めきれない分は横に流す
   } else {
-    scale = Math.min(1, (stage.clientWidth - 4) / dw);
+    const cs = getComputedStyle(stage);   // F19 clientWidth は左右の余白（12px）を含む。余白とセクションの枠（1px×2）を引いて、窓から横にはみ出さない
+    scale = Math.min(1, (stage.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) - 2) / dw);
   }
   const pageW = dw * scale;
   const centered = phone && pageW <= stage.clientWidth + 0.5;   // 画面の方が広い＝中央に置き左右に同じ余白
   document.body.classList.toggle("pg-xscroll", overflowX);
+  const hs = [];   // F31 先に全部のセクションへ書き、まとめて測り、まとめて高さを書く（1つずつ測ると、セクションの数だけ配置の計算がやり直しになる）
   for (const inst of state.secList) {
     const host = document.getElementById(secHostId(inst)); if (!host) continue; const s = host.querySelector("#sec"); if (!s) continue;
     s.style.width = dw + "px";
     if (SCALE_MODE === "zoom") { s.style.transform = ""; s.style.transformOrigin = ""; s.style.zoom = scale; }   // §25 §2.3 B：CSS の zoom で縮める
     else { s.style.zoom = ""; s.style.transformOrigin = "top left"; s.style.transform = "scale(" + scale + ")"; }   // A：見た目だけ縮める
-    host.style.width = pageW + "px"; host.style.height = s.getBoundingClientRect().height + "px";
+    host.style.width = pageW + "px";
     host.style.margin = centered ? "0 auto" : "";
+    hs.push([host, s]);
   }
+  const hts = hs.map(([, s]) => s.getBoundingClientRect().height);
+  hs.forEach(([host], i) => { host.style.height = hts[i] + "px"; });
 }
 // §25 §2.1 画面を回した・窓の幅が変わったとき：倍率を決め直して描き直す。中身（innerHTML）は作り直さない＝
 //   書き換え中の文字・カーソル・選んでいる部品を保つ。データ（draft）も変わらない（位置・大きさは 390 の px のまま）。

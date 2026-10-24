@@ -360,3 +360,6 @@ button:active{transform:translateY(1px)}
 .pg-phone .sec-add-hit{display:block;touch-action:manipulation}
 /* ＋を出さないとき（PC の見え方／書き換え中／動かし・大きさ変え中） */
 .pg-phone.pg-hideadd .sec-add-zone{visibility:hidden;pointer-events:none}
+/* F40 指で触る端末（スマホの画面でないとき）：上の並び・帯のボタンは 44px の押せる大きさ（つまみは .hit-handle） */
+body.a5-touch #toolbar button,body.a5-touch #moreMenu button{min-height:44px;min-width:44px}
+body.a5-touch #photoChangeBtn{height:44px;border-radius:22px}

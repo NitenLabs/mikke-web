@@ -7,7 +7,11 @@ function closeAnyOpenUI(){ let closed=false;
   const pm=document.getElementById("pmore"); if(pm&&pm.classList.contains("on")){ pm.classList.remove("on"); closed=true; }
   if(document.getElementById("priceBox")){ closePriceBox(); closed=true; }
   if(document.getElementById("pickerBox")){ closePicker(); closed=true; }
+  if(historyOpen&&!PG.viewingVersion()){ closeHistory(); closed=true; }   // F28 履歴の板も Esc で閉じる
   return closed; }
+// F28 履歴の板は外のクリックで閉じる（版を見ている間は閉じない＝「この版を下書きにする」の帯を使う）
+document.addEventListener("pointerdown",(e)=>{ if(!historyOpen||PG.viewingVersion()) return; const t=e.target;
+  if(t.closest&&(t.closest("#historyPanel")||t.closest("#historyBar")||t.closest("#tHistory")||t.closest("#moreMenu"))) return; closeHistory(); },true);
 // スマホ：長押しの箱に「配置」→ 8つの一覧（箱を差し替える）
 function showAlignSheet(){ fmenu.innerHTML=""; const c=PG.canAlign();
   for(const it of ALIGN_ITEMS){ if(it.div) continue; const b=document.createElement("button"); b.textContent=it.n; const en=c.enabled&&(!it.need3||c.distribute); if(!en){ b.disabled=true; } else b.onclick=(ev)=>{ ev.stopPropagation(); PG.align(it.k); fmenu.classList.remove("on"); }; fmenu.appendChild(b); }
@@ -28,3 +32,10 @@ function showMenuSheet(id){ fmenu.innerHTML=""; const c=PG.itemCtx(id); if(!c){ 
   fmenu.classList.add("on"); positionFmenu(); }
 
 // ===== §19 リンクの札（ホバー）=====
+// F34 書き換え中・見せる範囲の中にナビを押したら、確定してから1回でページを移る
+//   （押した時に書き換え・見せる範囲を終える描き直しでナビが作り直され、click が届かないため、離した時に移る）
+let a5NavPending=null;
+window.addEventListener("pointerdown",(e)=>{ a5NavPending=null; const n=e.target&&e.target.closest&&e.target.closest("#sectionwrap .navitem[data-page]"); if(!n) return;
+  if(PG.state.editing||PG.isCropping()) a5NavPending=n.getAttribute("data-page"); },true);
+window.addEventListener("pointerup",()=>{ const pgid=a5NavPending; a5NavPending=null; if(!pgid) return;
+  setTimeout(()=>{ if(PG.isCropping()){ PG.cropCommit(); exitCropOverlay(); } if(PG.currentPage()!==pgid) PG.setPage(pgid); },0); },true);

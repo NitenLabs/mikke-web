@@ -69,7 +69,7 @@ const api = {
   draft: draftApi, shop: currentShop, roundTrip, recentColors: recentColorsApi, pushRecentColor,   // §24・試験台26 試験の窓口（① の下書き）
   // §24 試験から操作を直に流す窓口（いずれも既存の関数。編集の動きは変えない）
   selectOnly: (id) => selectOnly(canonId(id)), selectMany: (ids) => selectMany(ids), clearSel, selectSection,
-  nudge: (id, dx, dy) => nudge(id, dx, dy), nudgeSelected, deleteSelected, duplicate, commitEdit, canUndo: () => (!!state.restoreUndo || state.cursor > state.undoBase), canRedo: () => (!state.restoreUndo && state.cursor < state.ops.length),
+  nudge: (id, dx, dy) => nudge(id, dx, dy), nudgeSelected, deleteSelected, duplicate, commitEdit, canUndo: () => (!!state.restoreUndo || state.cursor > state.undoBase), canRedo: () => (restoreRedoValid() || (!state.restoreUndo && state.cursor < state.ops.length)),
   addTextAtPoint: (sec, cx, cy) => addTextAtPoint(sec, cx, cy), addPhotoAtPoint, setBrightness,
   sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionList: sectionListApi,
   setPage: (id) => setPage(id), currentPage: () => currentPage(), pages: () => PAGES.map((p) => ({ ...p })),   // 試験台28：ページの移動（Claude.ai の確認用）
@@ -133,7 +133,7 @@ return {
   imeBoundary,   // §23b 変換の境目（WIRING の document 監視から呼ぶ）
   viewVersion, exitView, restoreVersion, viewingVersion,   // §22 §6 履歴（WIRING から使う）
   draft: draftApi, roundTrip, recentColors: recentColorsApi, pushRecentColor,   // §24 試験の窓口・最近使った色（WIRING から使う）
-  canUndo: () => !!state.restoreUndo || state.cursor > state.undoBase, canRedo: () => !state.restoreUndo && state.cursor < state.ops.length,
+  canUndo: () => !!state.restoreUndo || state.cursor > state.undoBase, canRedo: () => restoreRedoValid() || (!state.restoreUndo && state.cursor < state.ops.length),
   canonId, isDraggable, isText, REPEAT, groupOf, secOf, elNode, getScale: () => scale, scaleMode: () => SCALE_MODE, isHeadingGroup, inputMode, relayout,
   sectionMove, sectionDelete, sectionAdd, sectionDuplicate, sectionCan,   // §2 セクションの操作
   setPage, currentPage, pages: () => PAGES.map((p) => ({ ...p })), pageOfSec,   // 試験台28：ページの移動
