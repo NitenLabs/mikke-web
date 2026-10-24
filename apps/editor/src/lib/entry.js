@@ -23,3 +23,5 @@ export * as CATALOG from "../../../../packages/core/catalog.js";
 export * as SHOPINFO from "../../../../packages/core/shopinfo.js";
 // 保存先（差し替え口。pg/store-save.js が saveStore として使う）
 export { saveStore } from "./store.js";
+// 公開の一式を作る（pg/publish-bundle.js が __MIKKE.PUBLISH として使う。線 C）
+export * as PUBLISH from "../../../../packages/core/publish/index.js";

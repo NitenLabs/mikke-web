@@ -120,6 +120,7 @@ const api = {
   hasPendingSave, flushPendingSave, setExternalConflictHandler,   // J25/J26/J28 保存待ち・閉じる直前の書き出し・別タブ衝突
   publishCheck, longTextLimits,   // §22 §4.2 公開前チェック・長い文の目安
   previewMode, publishedGeometry,   // §22 §5 プレビュー
+  buildPublishBundle,   // 線 C 公開の一式（pg/publish-bundle.js）
   viewVersion, exitView, restoreVersion, viewingVersion,   // §22 §6 履歴から前の版に戻す
 };
 return {
@@ -128,6 +129,7 @@ return {
   hasPendingSave, flushPendingSave, setExternalConflictHandler,   // J25/J26/J28 保存待ち・閉じる直前の書き出し・別タブ衝突（WIRING から使う）
   publishCheck, longTextLimits,   // §22 §4.2（WIRING の確認の箱から使う）
   enterPreview, exitPreview, previewMode, publishedGeometry,   // §22 §5 プレビュー（WIRING から使う）
+  buildPublishBundle,   // 線 C 公開の一式（pg/publish-bundle.js）
   imeBoundary,   // §23b 変換の境目（WIRING の document 監視から呼ぶ）
   viewVersion, exitView, restoreVersion, viewingVersion,   // §22 §6 履歴（WIRING から使う）
   draft: draftApi, roundTrip, recentColors: recentColorsApi, pushRecentColor,   // §24 試験の窓口・最近使った色（WIRING から使う）

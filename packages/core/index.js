@@ -8,6 +8,7 @@
 //   shopinfo.js        ① お店の情報の連絡先・場所（電話・住所・地図のリンク・アクセスとフッターの連動する文字）
 //   page-css.js        ページの土台の CSS・書体のリンク
 //   content/wa-01.json テンプレート wa-01 の見本の中身
+//   publish/           公開の一式（ページの HTML・CSS・sitemap.xml・robots.txt）を作る（線 C）
 export * as SPEC from "./spec.js";
 export * as RESOLVE from "./layout/resolve.js";
 export * as BANCHOR from "./layout/anchor.js";
@@ -16,3 +17,4 @@ export { TEXT } from "./text/textlayer.js";
 export { FONT_LINK, ROOTVARS, BASE_CSS } from "./page-css.js";
 export * as CATALOG from "./catalog.js";
 export * as SHOPINFO from "./shopinfo.js";
+export * as PUBLISH from "./publish/index.js";

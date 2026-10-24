@@ -37,6 +37,7 @@ export const PG_PARTS = [
   ["testapi-presets.js", "共通", "試験の再現（プリセット Q/R・runStep）"],
   ["select-align.js", "A2", "配置（揃え・整列）"],
   ["photo.js", "A3", "写真の描画・差し替え・見せる範囲（トリミング）・試験画像"],
+  ["publish-bundle.js", "C", "公開の一式（ページごと・PC とスマホの HTML・CSS・sitemap）を作る（中身は packages/core/publish）"],
   ["testapi.js", "共通", "入力の種類・試験の窓口（draft・roundTrip）・PG.api（window.__playground）"],
 ];
 export const UI_PARTS = [
