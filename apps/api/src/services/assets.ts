@@ -8,6 +8,9 @@ import { recordChanges, SYSTEM, type Actor } from "./changes";
 /** 受け付ける大きさ（C2：ブラウザで長い辺 2400px に縮めてから送る前提） */
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 export const MAX_LONG_SIDE = 2400;
+/** L10：お店ごとの写真の上限（合計の大きさ・枚数。ゴミ箱の中も数える） */
+export const MAX_SHOP_ASSET_BYTES = 1024 ** 3;
+export const MAX_SHOP_ASSETS = 2000;
 /** ゴミ箱に入れてから本当に消すまで（日） */
 export const TRASH_DAYS = 30;
 
@@ -49,7 +52,15 @@ export async function uploadAsset(env: Env, shopId: string, actor: Actor, declar
   if (info.mime !== mime) throw new ApiError(415, "type_mismatch", `中身は ${info.mime} ですが、${mime} として送られています`);
   if (Math.max(info.width, info.height) > MAX_LONG_SIDE)
     throw bad("too_many_pixels", `長い辺を ${MAX_LONG_SIDE}px 以下に縮めてから送ってください（今 ${info.width}×${info.height}）`);
-  if (info.hasExif) throw bad("exif_present", "位置情報などの撮影データ（EXIF）が残っています。消してから送ってください");
+  if (info.metadata.length)
+    throw bad("metadata_present", `位置情報が入りうる撮影データ（${info.metadata.join("・")}）が残っています。消してから送ってください`, { metadata: info.metadata });
+  if (info.trailing) throw bad("trailing_data", "画像の終わりの後ろに、ほかのデータが付いています");
+  // L10：お店ごとの量の上限（ゴミ箱の中も数える。本当に消えるまでは場所を使うので）
+  const used = await env.DB.prepare("SELECT COUNT(*) AS n, IFNULL(SUM(bytes), 0) AS total FROM assets WHERE shop_id = ? AND purged_at IS NULL")
+    .bind(shopId)
+    .first<{ n: number; total: number }>();
+  if ((used?.total ?? 0) + bytes.byteLength > MAX_SHOP_ASSET_BYTES || (used?.n ?? 0) >= MAX_SHOP_ASSETS)
+    throw new ApiError(413, "quota_exceeded", `このお店の写真の置き場がいっぱいです（${MAX_SHOP_ASSETS} 枚・合計 ${MAX_SHOP_ASSET_BYTES / 1024 ** 3}GB まで）。ゴミ箱を空にするか、制作側にご相談ください`);
 
   const id = newId("ast", 12);
   const key = `assets/${shopId}/${id}.${EXT[info.mime]}`;
@@ -63,7 +74,9 @@ export async function uploadAsset(env: Env, shopId: string, actor: Actor, declar
     // 店主が自分で上げた写真は「自分で撮った」とする（規約で確かめてもらう）。制作側は未確認から始める
     rights: actor.kind === "owner" ? { basis: "ownWork", confirmedAt: at, confirmedBy: "owner" } : { basis: "unknown" },
   };
-  if (originalName) meta.originalName = originalName.slice(0, 200);
+  // 名前は記録に使うだけ。制御文字・道の区切りを取り、200 文字まで
+  const name = originalName?.replace(/[\u0000-\u001f\u007f/\\]/g, "").trim().slice(0, 200);
+  if (name) meta.originalName = name;
   await env.BUCKET.put(key, bytes, { httpMetadata: { contentType: info.mime } });
   await env.DB.prepare(
     "INSERT INTO assets (id, shop_id, r2_key, mime, bytes, width, height, sha256, meta, uploaded_at, uploaded_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
@@ -127,21 +140,31 @@ export async function assetReferences(env: Env, shopId: string, id: string): Pro
  * ゴミ箱に入れて 30 日たった写真を本当に消す。ただし何かが指している間は消さない（C4）。
  * 行は残して purged_at を付ける（ID を使い回さない）
  */
-export async function purgeTrash(env: Env, now = new Date()): Promise<{ purged: string[]; kept: { id: string; refs: string[] }[] }> {
+export async function purgeTrash(
+  env: Env,
+  now = new Date(),
+): Promise<{ purged: string[]; kept: { id: string; refs: string[] }[]; failed: { id: string; error: string }[] }> {
   const limit = new Date(now.getTime() - TRASH_DAYS * 24 * 3600 * 1000).toISOString();
   const res = await env.DB.prepare("SELECT * FROM assets WHERE trashed_at IS NOT NULL AND trashed_at <= ? AND purged_at IS NULL").bind(limit).all<AssetRow>();
   const purged: string[] = [];
   const kept: { id: string; refs: string[] }[] = [];
+  const failed: { id: string; error: string }[] = [];
+  // 1 件ずつ。どれかで失敗しても（下書きが読めないなど）、その写真は消さずに残し、ほかは続ける（M1）
   for (const row of res.results) {
-    const refs = await assetReferences(env, row.shop_id, row.id);
-    if (refs.length) {
-      kept.push({ id: row.id, refs });
-      continue;
+    try {
+      const refs = await assetReferences(env, row.shop_id, row.id);
+      if (refs.length) {
+        kept.push({ id: row.id, refs });
+        continue;
+      }
+      await env.BUCKET.delete(row.r2_key);
+      await env.DB.prepare("UPDATE assets SET purged_at = ? WHERE id = ?").bind(nowIso(), row.id).run();
+      await recordChanges(env, row.shop_id, SYSTEM, [{ layer: "assets", action: "purge", path: `/assets/${row.id}` }]);
+      purged.push(row.id);
+    } catch (e) {
+      console.error(`[purge] ${row.shop_id}/${row.id}`, e);
+      failed.push({ id: row.id, error: String(e).slice(0, 200) });
     }
-    await env.BUCKET.delete(row.r2_key);
-    await env.DB.prepare("UPDATE assets SET purged_at = ? WHERE id = ?").bind(nowIso(), row.id).run();
-    await recordChanges(env, row.shop_id, SYSTEM, [{ layer: "assets", action: "purge", path: `/assets/${row.id}` }]);
-    purged.push(row.id);
   }
-  return { purged, kept };
+  return { purged, kept, failed };
 }

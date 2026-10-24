@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import type { AppEnv } from "../env";
 import { ApiError, bad, isPlainObject, notFound, readJson } from "../lib/http";
-import { actorOf } from "../services/changes";
+import { actorOf, actorView } from "../services/changes";
 import { getVersion, listVersions, MAX_PUBLISH_BYTES, parsePublishInput, publish, replaceDrafts } from "../services/publish";
 import { publicUrl } from "./shops";
 
@@ -22,13 +22,13 @@ const num = (s: string) => {
 };
 
 /** D4：履歴（新しい方から 30） */
-publishing.get("/:shopId/versions", async (c) => c.json({ versions: await listVersions(c.env, c.req.param("shopId")) }));
+publishing.get("/:shopId/versions", async (c) => c.json({ versions: await listVersions(c.env, c.req.param("shopId"), c.get("user")) }));
 
 /** D4：履歴の版を見る（①②③ の中身） */
 publishing.get("/:shopId/versions/:n", async (c) => {
   const v = await getVersion(c.env, c.req.param("shopId"), num(c.req.param("n")));
   if (!v) throw notFound("版が見つかりません");
-  return c.json({ number: v.number, scope: v.scope, publishedAt: v.publishedAt, publishedBy: v.publishedBy, pages: v.pages, shop: v.shop, site: v.site });
+  return c.json({ number: v.number, scope: v.scope, publishedAt: v.publishedAt, publishedBy: actorView(c.get("user"), v.publishedBy), pages: v.pages, shop: v.shop, site: v.site });
 });
 
 /** D4：「この版を下書きにする」。②③ はまるごと、① は includeShop のときだけ。公開中の版は変わらない */
@@ -51,7 +51,7 @@ publishing.get("/:shopId/backups", async (c) => {
   const res = await c.env.DB.prepare("SELECT id, reason, created_at, created_by FROM draft_backups WHERE shop_id = ? ORDER BY created_at DESC, rowid DESC")
     .bind(c.req.param("shopId"))
     .all<any>();
-  return c.json({ backups: res.results.map((r) => ({ id: r.id, reason: r.reason, createdAt: r.created_at, createdBy: r.created_by })) });
+  return c.json({ backups: res.results.map((r) => ({ id: r.id, reason: r.reason, createdAt: r.created_at, ...(c.get("user").role === "producer" ? { createdBy: r.created_by } : {}) })) });
 });
 
 const backupRow = async (c: any) => {

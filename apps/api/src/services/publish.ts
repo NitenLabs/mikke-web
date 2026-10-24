@@ -1,15 +1,18 @@
-import type { Env } from "../env";
+import type { Env, User } from "../env";
 import { ApiError, bad, isPlainObject, nowIso } from "../lib/http";
 import { canonJSON, collectAssetIds, collectAssetIdsInText } from "../lib/json";
 import { visibleItemIds } from "../lib/visibility";
 import { newId } from "../lib/crypto";
-import { recordChanges, type Actor } from "./changes";
+import { checkHtml, checkXml } from "../lib/htmlcheck";
+import { actorView, recordChanges, type Actor } from "./changes";
 import { getDraft, saveDraft, type DraftRow } from "./drafts";
 
 /** 公開した版の履歴は新しい方から 30、戻す前の下書きは 10（DATA_SPEC 6章） */
 export const MAX_VERSIONS = 30;
 export const MAX_BACKUPS = 10;
 
+/** L10：同じお店の公開の間（秒） */
+export const MIN_PUBLISH_INTERVAL_SEC = 60;
 export const MAX_PAGES = 50;
 export const MAX_PAGE_BYTES = 2 * 1024 * 1024;
 export const MAX_CSS_BYTES = 1024 * 1024;
@@ -97,9 +100,12 @@ export function parsePublishInput(body: unknown): PublishInput {
     if (!PAGE_PATH_RE.test(p)) throw bad("invalid_publish", `ページの道の形が正しくありません：${p}（例 "/"・"/menu"）`);
     if (typeof html !== "string" || !html.length) throw bad("invalid_publish", `ページ ${p} の HTML がありません`);
     if (byteLen(html) > MAX_PAGE_BYTES) throw new ApiError(413, "too_large", `ページ ${p} が大きすぎます`);
+    const problems = checkHtml(html);
+    if (problems.length)
+      throw bad("unsafe_html", `ページ ${p} に、公開ページでは動かせないスクリプトがあります（スクリプトは /_mikke/ の決まったファイルだけ）`, { page: p, problems });
     pages[p] = html;
   }
-  if (!("/" in pages)) throw bad("invalid_publish", 'トップページ（"/"）がありません');
+  if (!Object.hasOwn(pages, "/")) throw bad("invalid_publish", 'トップページ（"/"）がありません');
   let css: string | undefined;
   if (body.css !== undefined) {
     if (typeof body.css !== "string") throw bad("invalid_publish", "css は文字列");
@@ -111,8 +117,12 @@ export function parsePublishInput(body: unknown): PublishInput {
     if (!isPlainObject(body.files)) throw bad("invalid_publish", "files は {名前: 中身}");
     files = {};
     for (const [name, v] of Object.entries(body.files)) {
-      if (!(name in EXTRA_FILES)) throw bad("invalid_publish", `置けないファイルです：${name}（${Object.keys(EXTRA_FILES).join("・")} だけ）`);
+      if (!Object.hasOwn(EXTRA_FILES, name)) throw bad("invalid_publish", `置けないファイルです：${name}（${Object.keys(EXTRA_FILES).join("・")} だけ）`);
       if (typeof v !== "string" || byteLen(v) > MAX_PAGE_BYTES) throw bad("invalid_publish", `${name} の中身が正しくありません`);
+      if (name.endsWith(".xml")) {
+        const problems = checkXml(v);
+        if (problems.length) throw bad("unsafe_html", `${name} に、スクリプトになりうるものがあります`, { page: name, problems });
+      }
       files[name] = v;
     }
   }
@@ -169,8 +179,19 @@ export async function publish(env: Env, shopId: string, actor: Actor, input: Pub
   if (input.css) collectAssetIdsInText(input.css, assetIds);
   await assertOwnAssets(env, shopId, assetIds);
 
-  const seq = await env.DB.prepare("UPDATE shops SET version_seq = version_seq + 1 WHERE id = ? RETURNING version_seq").bind(shopId).first<{ version_seq: number }>();
-  const n = seq!.version_seq;
+  // L10：公開は 1 分に 1 回まで。番号を取るのと 1 文で決める（同時に来ても片方だけ）
+  const nowMs = now.getTime();
+  const seq = await env.DB.prepare(
+    "UPDATE shops SET version_seq = version_seq + 1, last_publish_at = ? WHERE id = ? AND (last_publish_at IS NULL OR last_publish_at <= ?) RETURNING version_seq",
+  )
+    .bind(nowMs, shopId, nowMs - MIN_PUBLISH_INTERVAL_SEC * 1000)
+    .first<{ version_seq: number }>();
+  if (!seq) {
+    const last = await env.DB.prepare("SELECT last_publish_at FROM shops WHERE id = ?").bind(shopId).first<{ last_publish_at: number }>();
+    const wait = Math.max(1, Math.ceil(((last?.last_publish_at ?? nowMs) + MIN_PUBLISH_INTERVAL_SEC * 1000 - nowMs) / 1000));
+    throw new ApiError(429, "too_soon", `公開は 1 分に 1 回までです（あと ${wait} 秒）`, { retryAfter: wait }, { "Retry-After": String(wait) });
+  }
+  const n = seq.version_seq;
 
   // 先に R2 に置く（途中で失敗しても、公開中の版は前のまま）
   const htmlMeta = { httpMetadata: { contentType: "text/html; charset=utf-8" } };
@@ -237,7 +258,7 @@ export async function deletePrefix(env: Env, prefix: string): Promise<void> {
   } while (cursor);
 }
 
-export async function listVersions(env: Env, shopId: string) {
+export async function listVersions(env: Env, shopId: string, viewer: User) {
   const s = await env.DB.prepare("SELECT published_version FROM shops WHERE id = ?").bind(shopId).first<{ published_version: number | null }>();
   const res = await env.DB.prepare(
     `SELECT v.number, v.scope, v.pages, v.published_at, v.published_by, v.published_by_kind, u.name, u.email
@@ -250,7 +271,7 @@ export async function listVersions(env: Env, shopId: string) {
     scope: r.scope,
     pages: JSON.parse(r.pages),
     publishedAt: r.published_at,
-    publishedBy: { id: r.published_by, kind: r.published_by_kind, name: r.name ?? null, email: r.email ?? null },
+    publishedBy: actorView(viewer, { id: r.published_by, kind: r.published_by_kind, name: r.name, email: r.email }),
     isPublished: r.number === s?.published_version,
   }));
 }

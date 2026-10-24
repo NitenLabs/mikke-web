@@ -75,3 +75,14 @@ export function draftChangeRows(kind: "shop" | "site", before: unknown, after: u
   }
   return rows;
 }
+
+/**
+ * L7：誰がしたかの見せ方。制作側にはそのまま、店主には名前だけ（制作側の人は「制作側」、仕組みは「仕組み」）。
+ * 店主に制作側の人のメールアドレスや ID は見せない
+ */
+export function actorView(viewer: User, a: { id: string | null; kind: string; name?: string | null; email?: string | null }) {
+  if (viewer.role === "producer") return { id: a.id, kind: a.kind, name: a.name ?? null, email: a.email ?? null };
+  if (a.kind === "producer") return { kind: a.kind, name: "制作側" };
+  if (a.kind === "system") return { kind: a.kind, name: "仕組み" };
+  return { kind: a.kind, name: a.name ?? null, self: a.id === viewer.id };
+}

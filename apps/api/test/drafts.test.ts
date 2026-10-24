@@ -120,7 +120,9 @@ describe("変更の記録（いつ・誰が・どの層・前→後）", () => {
     expect(content).toHaveLength(1);
     expect(content[0]).toMatchObject({ layer: "site", action: "edit", before: '"〇"', after: '"一二三"' });
     expect(content[0].firstAt <= content[0].at).toBe(true);
-    expect(content[0].actor).toMatchObject({ kind: "owner", email: owner.email });
+    // L7：店主に返す記録には、メールアドレスを入れない（自分の分は self）
+    expect(content[0].actor).toMatchObject({ kind: "owner", self: true });
+    expect(content[0].actor.email).toBeUndefined();
     expect(ch.changes.some((c: any) => c.layer === "theme" && c.path.startsWith("/theme"))).toBe(true);
   });
 

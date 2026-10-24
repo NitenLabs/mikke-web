@@ -39,7 +39,7 @@ describe("C2 写真を上げる（種類・大きさ・位置情報をサーバ�
     const { owner, shop } = await world();
     const r = await upload(owner.cookie, shop.id, fakeJpeg(100, 100, { exif: true }));
     expect(r.status).toBe(400);
-    expect(((await r.json()) as any).error).toBe("exif_present");
+    expect(((await r.json()) as any).error).toBe("metadata_present");
     expect((await upload(owner.cookie, shop.id, fakeWebp(100, 100, { exif: true }), "image/webp")).status).toBe(400);
   });
 
@@ -70,7 +70,7 @@ describe("C2 写真を上げる（種類・大きさ・位置情報をサーバ�
   });
 
   it("C2-7 読み取り：中身の先頭から種類と大きさを読む", () => {
-    expect(sniffImage(fakeJpeg(640, 480))).toMatchObject({ mime: "image/jpeg", width: 640, height: 480, hasExif: false });
+    expect(sniffImage(fakeJpeg(640, 480))).toMatchObject({ mime: "image/jpeg", width: 640, height: 480, metadata: [], trailing: false });
     expect(sniffImage(fakePng(1, 2))).toMatchObject({ mime: "image/png", width: 1, height: 2 });
     expect(sniffImage(fakeWebp(3, 4))).toMatchObject({ mime: "image/webp", width: 3, height: 4 });
     expect(sniffImage(new Uint8Array([1, 2, 3]))).toBeNull();

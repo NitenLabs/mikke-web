@@ -35,16 +35,16 @@ export function initialShopDraft(shopId: string, name: string): unknown {
 export function validateDraft(kind: DraftKind, shopId: string, data: unknown): void {
   if (!isPlainObject(data)) throw bad("invalid_draft", "下書きは JSON の入れ物（{...}）にしてください");
   if (kind === "shop") {
-    if ("shopId" in data && data.shopId !== shopId) throw bad("invalid_draft", "shopId がこのお店と違います");
-    if ("schemaVersion" in data && typeof data.schemaVersion !== "number") throw bad("invalid_draft", "schemaVersion は数字にしてください");
+    if (Object.hasOwn(data, "shopId") && data.shopId !== shopId) throw bad("invalid_draft", "shopId がこのお店と違います");
+    if (Object.hasOwn(data, "schemaVersion") && typeof data.schemaVersion !== "number") throw bad("invalid_draft", "schemaVersion は数字にしてください");
     return;
   }
   for (const k of Object.keys(data)) if (k !== "draft" && k !== "theme") throw bad("invalid_draft", `サイトの下書きに知らない項目があります：${k}（draft と theme だけ）`);
   const d = data.draft;
   if (!isPlainObject(d)) throw bad("invalid_draft", "draft（DATA_SPEC 4.9 の下書き）がありません");
   if (!isPlainObject(d.template) || typeof d.template.name !== "string") throw bad("invalid_draft", "draft.template.name がありません");
-  if (!("sections" in d) || (typeof d.sections !== "object" || d.sections === null)) throw bad("invalid_draft", "draft.sections がありません");
-  if ("theme" in data && !isPlainObject(data.theme)) throw bad("invalid_draft", "theme は JSON の入れ物にしてください");
+  if (!Object.hasOwn(d, "sections") || (typeof d.sections !== "object" || d.sections === null)) throw bad("invalid_draft", "draft.sections がありません");
+  if (Object.hasOwn(data, "theme") && !isPlainObject(data.theme)) throw bad("invalid_draft", "theme は JSON の入れ物にしてください");
 }
 
 export async function getDraft(env: Env, shopId: string, kind: DraftKind): Promise<DraftRow | null> {

@@ -29,7 +29,7 @@ export const corsForApp: MiddlewareHandler<AppEnv> = async (c, next) => {
   const origin = c.req.header("origin");
   const ok = !!origin && allowedOrigins(c.env).includes(origin);
   if (c.req.method === "OPTIONS") {
-    if (!ok) return c.body(null, 403);
+    if (!ok) return c.body(null, 403, { Vary: "Origin" });
     return c.body(null, 204, {
       "Access-Control-Allow-Origin": origin!,
       "Access-Control-Allow-Credentials": "true",
@@ -39,11 +39,15 @@ export const corsForApp: MiddlewareHandler<AppEnv> = async (c, next) => {
       Vary: "Origin",
     });
   }
-  await next();
-  if (ok) {
-    c.res.headers.set("Access-Control-Allow-Origin", origin!);
-    c.res.headers.set("Access-Control-Allow-Credentials", "true");
-    c.res.headers.set("Access-Control-Expose-Headers", "ETag, Retry-After");
-    c.res.headers.append("Vary", "Origin");
+  try {
+    await next();
+  } finally {
+    // L11：答えが Origin で変わるので、いつも Vary: Origin（途中の覚えておく仕組みが取り違えないように）
+    if (!/\bOrigin\b/i.test(c.res.headers.get("Vary") ?? "")) c.res.headers.append("Vary", "Origin");
+    if (ok) {
+      c.res.headers.set("Access-Control-Allow-Origin", origin!);
+      c.res.headers.set("Access-Control-Allow-Credentials", "true");
+      c.res.headers.set("Access-Control-Expose-Headers", "ETag, Retry-After");
+    }
   }
 };

@@ -1,6 +1,6 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { call, fakeJpeg, getDraft, newShop, publishAll, putDraft, siteData, upload, world } from "./helpers";
+import { allowPublish, call, fakeJpeg, getDraft, newShop, publishAll, putDraft, siteData, upload, world } from "./helpers";
 
 const site = (slug: string, path: string, o: { headers?: Record<string, string>; method?: string } = {}) =>
   call(o.method ?? "GET", path, { host: `${slug}.mikke.test`, headers: o.headers });
@@ -72,6 +72,7 @@ describe("D1 公開（下書きの写しを版に、HTML・CSS を R2 に）", (
     await putDraft(owner.cookie, shop.id, "site", 1, siteData({ content: { x: "まだ出さない" } }));
     const s = await getDraft(owner.cookie, shop.id, "shop");
     await putDraft(owner.cookie, shop.id, "shop", s.version, { ...s.data, basic: { name: "新しい名前" } });
+    await allowPublish(shop.id);
     const r = await call("POST", `/api/shops/${shop.id}/publish`, { cookie: owner.cookie, json: { scope: "shop", shopDraftVersion: 2, pages: { "/": "<html>shop</html>" } } });
     expect(r.status).toBe(200);
     const v = (await (await call("GET", `/api/shops/${shop.id}/versions/2`, { cookie: owner.cookie })).json()) as any;

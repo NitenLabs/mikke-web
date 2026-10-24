@@ -46,10 +46,10 @@ describe("D6 毎日 0 時の描き直し（今は「要るお店の一覧」ま�
     const oct = visibleItemIds(catalogShop(shop.id), new Date("2026-10-24T03:00:00Z"));
     await env.DB.prepare("UPDATE shops SET rendered_visibility = ? WHERE id = ?").bind(JSON.stringify(oct), shop.id).run();
     const same = await runDaily(env, new Date("2026-10-25T15:00:00Z"));
-    expect(same.rerender.shops.find((s) => s.shopId === shop.id)).toBeUndefined();
+    expect((same.rerender as any).shops.find((s: any) => s.shopId === shop.id)).toBeUndefined();
     const nov = await runDaily(env, new Date("2026-11-01T15:00:00Z"));
-    expect(nov.rerender.date).toBe("2026-11-02");
-    expect(nov.rerender.shops.find((s) => s.shopId === shop.id)).toMatchObject({ slug: shop.slug, added: ["itm_limited"], removed: [] });
+    expect((nov.rerender as any).date).toBe("2026-11-02");
+    expect((nov.rerender as any).shops.find((s: any) => s.shopId === shop.id)).toMatchObject({ slug: shop.slug, added: ["itm_limited"], removed: [] });
   });
 
   it("D6-3 Cron の入口（scheduled）が走る。制作側は同じ一覧を API で見られる", async () => {

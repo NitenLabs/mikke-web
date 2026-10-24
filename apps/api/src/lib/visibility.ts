@@ -20,7 +20,7 @@ export function visibleItemIds(shop: unknown, now: Date): string[] {
   const placed = new Set<string>();
   for (const p of Object.values(asObj(catalog.placements))) {
     const po = asObj(p);
-    if (typeof po.itemId === "string" && typeof po.menuId === "string" && po.menuId in menus) placed.add(po.itemId);
+    if (typeof po.itemId === "string" && typeof po.menuId === "string" && Object.hasOwn(menus, po.menuId)) placed.add(po.itemId);
   }
   const out: string[] = [];
   for (const [id, raw] of Object.entries(items)) {

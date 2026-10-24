@@ -1,3 +1,21 @@
+/** 受け付ける JSON の入れ子の深さの上限（M1：深すぎる JSON で、比べる・拾う処理が止まらないように） */
+export const MAX_JSON_DEPTH = 64;
+
+/** 入れ子の深さ（配列・入れ物の段数）。再帰を使わずに数える */
+export function jsonDepth(x: unknown): number {
+  let max = 0;
+  const stack: [unknown, number][] = [[x, 0]];
+  while (stack.length) {
+    const [v, d] = stack.pop()!;
+    if (v === null || typeof v !== "object") continue;
+    const nd = d + 1;
+    if (nd > max) max = nd;
+    if (max > MAX_JSON_DEPTH) return max;
+    for (const c of Array.isArray(v) ? v : Object.values(v)) if (c !== null && typeof c === "object") stack.push([c, nd]);
+  }
+  return max;
+}
+
 /** 鍵を並べた JSON。「直してから元どおり」なら同じ文字列になる（DATA_SPEC 6章 状態の文字） */
 export function canonJSON(x: unknown): string {
   const norm = (v: unknown): unknown => {
