@@ -2,7 +2,7 @@
 // 線：共通｜PG の中（pg/ のファイルは1つのスコープを分け合う。並びは src/parts.mjs）
 // ===================== §24（試験台24）保存（IndexedDB・自動保存）：今の形（4.9＋_pg）を保存する =====================
 // 鍵は draft（今の形）／versions（版ごとに今の形）／assets（写真 ID→データ・5.2）／settings（編集の設定・最近使った色）。
-// 保存先は lib/store.js の saveStore（今は LocalStore＝IndexedDB「mikke-playground30」）。ここは name・open・get・put だけを使う。
+// 保存先は lib/store.js の saveStore（今は LocalStore＝IndexedDB「mikke-editor」）。ここは name・open・get・put だけを使う。
 const TEMPLATE_ASSETS = (typeof PHOTOS_JSON !== "undefined") ? PHOTOS_JSON : {};
 let _db = null, _saveTimer = null, _saveStatus = "saved", _lastSavedAt = null, _simErr = false, _verSeq = 1;
 // J25 別タブの保存を知る（localStorage の版番号＋storage イベント）。J28 閉じる直前の保存待ちの見張り。

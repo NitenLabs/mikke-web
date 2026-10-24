@@ -25,7 +25,7 @@
 | `build.mjs` | 1つの HTML にまとめる（esbuild・pg/ui をつなぐ・見本の中身と ① お店の情報・写真の焼き込み・Google Fonts のリンク・試験の画像の写し） |
 | `src/parts.mjs` | pg/・ui/ のファイルの並びと担当の線 |
 | `src/lib/entry.js` | ES モジュールの側の入口（packages/core を試験台30 と同じ形の SPEC・RESOLVE・BANCHOR・C3・TEXT・CATALOG にして渡す） |
-| `src/lib/store.js` | **保存先の差し替え口**。`LocalStore`（IndexedDB `mikke-playground30`）。M3 で `ApiStore` を足して `saveStore` を選び分ける |
+| `src/lib/store.js` | **保存先の差し替え口**。`LocalStore`（IndexedDB `mikke-editor`）。M3 で `ApiStore` を足して `saveStore` を選び分ける |
 | `src/editor.css` | 編集画面の CSS（試験台30 の UI_CSS） |
 | `src/body.html` | 編集画面の HTML（道具の並び・帯・箱。試験台30 の UI_BODY） |
 | `testimg/` | 試験の画像（試験台30 の testimg の写し。dist/editor_testimg に写す） |
@@ -135,4 +135,4 @@ python3 tools/verify-audit/verify_audit_text.py $PWD/apps/editor/dist/editor_sin
 ```
 - 結果は `apps/editor/dist/editor/verify-audit/`・`verify-linux/` に出る。
 - 重い確かめは同時に2本走らせない（IndexedDB と CPU の取り合いで判定が揺れる）。
-- IndexedDB の名前は `mikke-playground30` のまま（確認スクリプトがこの名前で中を見る）。`<title>` も試験台30 と同じ。
+- IndexedDB の名前は `mikke-editor`。確認スクリプト（verify_extra_save・catalog・align）は DB の名前を `'mikke-' + ファイル名から _single.html を除いたもの` で決めて中を見る・消すので、ファイル名 `editor_single.html` に合わせた（試験台30 が `mikke-playground30` だったのも同じ決まり。`mikke-playground30` のままだと verify_extra_save の S6・S7 が前の項目の下書きを消せずに NG になる）。`<title>` は試験台30 と同じ。
