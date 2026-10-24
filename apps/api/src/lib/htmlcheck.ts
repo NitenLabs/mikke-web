@@ -10,7 +10,7 @@
  * - srcdoc 属性、<meta http-equiv="refresh">
  */
 export interface HtmlProblem {
-  kind: "inline_script" | "script_src" | "event_handler" | "script_url" | "srcdoc" | "meta_refresh";
+  kind: "inline_script" | "script_src" | "event_handler" | "script_url" | "srcdoc" | "meta_refresh" | "malformed";
   detail: string;
 }
 
@@ -97,8 +97,13 @@ function readTag(html: string, start: number): Tag | null {
   return { name, attrs, end: n, closing };
 }
 
+/** 1 つのタグとして読む長さの上限（これより長いタグは、壊れた HTML として断る） */
+const MAX_TAG_CHARS = 64 * 1024;
+/** 読む手間の上限（HTML の長さの何倍まで読むか）。わざと重くした HTML で止まらないように */
+const WORK_FACTOR = 40;
+
 /**
- * 読み方：「<」＋英字のところは、どこにあってもタグとして読む（コメント・style・title の中も）。
+ * 読み方：「<」＋英字のところは、どこにあってもタグとして読む（コメント・style・title・属性の値の中も）。
  * ブラウザの読み方とずれて（SVG の中の style など）すり抜けられないよう、わざと厳しく読む。
  * 編集画面が描く HTML は、コメントや style の中にタグの形の文字を持たない前提
  */
@@ -106,6 +111,7 @@ export function checkHtml(html: string): HtmlProblem[] {
   const out: HtmlProblem[] = [];
   const n = html.length;
   let i = 0;
+  let work = 0;
   while (i < n && out.length < 20) {
     const lt = html.indexOf("<", i);
     if (lt < 0) break;
@@ -114,7 +120,13 @@ export function checkHtml(html: string): HtmlProblem[] {
       i = lt + 1;
       continue;
     }
-    i = tag.end;
+    work += tag.end - lt;
+    if (tag.end - lt > MAX_TAG_CHARS || work > WORK_FACTOR * n + 100_000) {
+      out.push({ kind: "malformed", detail: "閉じていないタグか、長すぎるタグがあります" });
+      break;
+    }
+    // タグの終わりまで飛ばさず、次の「<」から読み直す（引用符の中に隠したタグも読む）
+    i = lt + 1;
     if (tag.closing) continue;
     const local = tag.name.includes(":") ? tag.name.slice(tag.name.lastIndexOf(":") + 1) : tag.name;
     const attr = (k: string) => tag.attrs.find(([a]) => a === k)?.[1] ?? null;
@@ -126,8 +138,8 @@ export function checkHtml(html: string): HtmlProblem[] {
     }
     if (local === "meta" && (attr("http-equiv") ?? "").toLowerCase().trim() === "refresh") out.push({ kind: "meta_refresh", detail: "<meta http-equiv=refresh>" });
     if (local === "script") {
-      const close = /<\/(?:[a-z0-9_-]+:)?script[\s>/]/i.exec(html.slice(i));
-      const body = close ? html.slice(i, i + close.index) : html.slice(i);
+      const close = /<\/(?:[a-z0-9_-]+:)?script[\s>/]/i.exec(html.slice(tag.end));
+      const body = close ? html.slice(tag.end, tag.end + close.index) : html.slice(tag.end);
       const type = (attr("type") ?? "").toLowerCase().trim();
       const src = attr("src");
       if (src !== null) {
