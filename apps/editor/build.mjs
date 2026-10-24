@@ -27,6 +27,7 @@ async function bundleLib() {
   const r = await esbuild.build({
     entryPoints: [path.join(SRC, "lib/entry.js")], bundle: true, write: false, format: "iife", globalName: "__MIKKE",
     platform: "browser", target: "es2022", charset: "utf8", legalComments: "none", logLevel: "silent",
+    define: { __MIKKE_API__: JSON.stringify(process.env.MIKKE_API || "") },   // M3：保存先を API にする組み立て（apps/editor/README.md「API につなぐ」）
   });
   return r.outputFiles[0].text;
 }

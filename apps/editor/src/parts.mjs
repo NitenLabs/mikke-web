@@ -37,6 +37,7 @@ export const PG_PARTS = [
   ["testapi-presets.js", "共通", "試験の再現（プリセット Q/R・runStep）"],
   ["select-align.js", "A2", "配置（揃え・整列）"],
   ["photo.js", "A3", "写真の描画・差し替え・見せる範囲（トリミング）・試験画像"],
+  ["m3-api.js", "M3", "API につなぐ：写真を上げたら ④ の ID に付け替える・公開（POST /publish）・版から戻す（保存先が ApiStore のときだけ）"],
   ["publish-bundle.js", "C", "公開の一式（ページごと・PC とスマホの HTML・CSS・sitemap）を作る（中身は packages/core/publish）"],
   ["testapi.js", "共通", "入力の種類・試験の窓口（draft・roundTrip）・PG.api（window.__playground）"],
 ];
@@ -65,5 +66,6 @@ export const UI_PARTS = [
   ["touch.ui.js", "A5", "指の操作（タップ・長押し・ドラッグ・自動スクロール）"],
   ["touch-bars.ui.js", "A5", "スマホの帯・文字の帯・その他・重ねる物の位置合わせ"],
   ["touch-crop.ui.js", "A3", "指での見せる範囲の操作"],
+  ["m3-api.ui.js", "M3", "API につないだときの公開の流れ（公開しています…・公開しました＋公開ページのアドレス）"],
   ["boot.ui.js", "共通", "起動（スマホの判定・PG.boot）"],
 ];

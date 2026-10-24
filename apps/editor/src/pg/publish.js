@@ -39,6 +39,7 @@ function restoreVersion(id) {
   state.viewing = null; state.viewBackup = null;
   state.base = v.draft || null; state.shopBase = v.shop || null; state.ops = []; state.cursor = 0; state.undoBase = 0; const sq = seqOf(v.draft); state.secSeq = sq.sec; state.addSeq = sq.add; recomputeShopSeq(state.shopBase || SHOP_JSON);
   state.selected = new Set(); state.selectedSection = null; state.editing = null;
+  m3OnRestore(v);   // M3 API のときはサーバーの戻す道も通す（pg/m3-api.js）
   render(); scheduleSave();
 }
 
