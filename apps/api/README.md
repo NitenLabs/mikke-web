@@ -20,7 +20,7 @@ npm run dev                      # http://localhost:8787
 - `npm run seed` は、マイグレーションを当て、`samples/ashiyado` の ①（shop.json）・③（theme.json）・④（assets.json と media/ の写真 12 枚）から、お店 `shp_ashiyado`（スラッグ `ashiyado`）・制作側・店主・下書き・写真を local の D1・R2 に入れる。②の下書きは wa-01 の「何もしていない」形（`{template, sections}`）。`samples/` は読むだけ
 - ログイン：`POST /api/auth/request` を送ると、**wrangler dev の画面に `[mail] to=… code=123456 link=…` が出る**（今のメールは「ログに出す」だけ）
 - 公開ページ：公開したあと `http://ashiyado.localhost:8787/`（Chrome・Firefox は `*.localhost` を手元に向ける。curl なら `-H "Host: ashiyado.localhost"`）
-- 毎日 0 時の仕事を手で走らせる：`npx wrangler dev --test-scheduled` で動かし、`curl -X POST localhost:8787/cdn-cgi/handler/scheduled`
+- 毎日 0 時の仕事を手で走らせる：`npx wrangler dev --test-scheduled` で動かし、`curl -X POST localhost:8787/cdn-cgi/handler/scheduled`（バックアップが local の R2 の `backups/<日付>.json.gz` にできる）
 
 curl で一通り：
 
@@ -37,7 +37,7 @@ curl -H 'Host: ashiyado.localhost' localhost:8787/
 ## 試験
 
 ```sh
-npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。10 ファイル 124 件
+npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。11 ファイル 128 件
 npm run typecheck   # tsc
 ```
 
@@ -53,6 +53,7 @@ npm run typecheck   # tsc
 | `test/assets.test.ts` | C2 写真の検査（M5）、C4 ゴミ箱、写真の量の上限（L10） |
 | `test/variants.test.ts` | C3 写真の大きさ違い（受け取り・検査・配信・前の写真・量・掃除） |
 | `test/cron.test.ts` | D6 毎日の描き直しの入口、1 軒の失敗で止まらない（M1）、期限切れの片づけ（L4） |
+| `test/backup.test.ts` | B6 毎日のバックアップ（置き場所・中身・戻すと同じ・30 日・失敗してもほかは続く） |
 | `test/config.test.ts` | 危ない設定では動かない（L5・L6） |
 | `test/seed.test.ts` | 芦屋堂の種まき |
 
@@ -200,6 +201,24 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 
 `wrangler.toml` の `[env.staging]` にひな形を書いてある。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
 
+### 毎日のバックアップと戻し方（B6）
+
+毎日 0 時（日本時間）の Cron で、D1 の全部の表（`d1_migrations` と内部の表は除く）を JSON にして gzip で R2 の **`backups/<日本時間の日付>.json.gz`** に置く。中身は `{format:"mikke-d1-backup", version:1, date, createdAt, migrations:[…], tables:{表: {columns, pk, rowidAlias, rows:[[rowid, 列…], …]}}}`。**30 日より古いものは消す**（今日の分を置けてから。名前が `backups/<日付>.json.gz` の形のものだけ）。写真・公開ページ（R2 の `assets/`・`sites/`）は入れない（R2 にそのまま残っている）。
+
+戻すとき（例：2026-10-25 の 0 時の状態に戻す）：
+
+1. 戻す先の D1 に、バックアップと同じマイグレーションまで当ててあることを確かめる（`npx wrangler d1 migrations list <DB> --remote --env production`。バックアップの `migrations` と、スクリプトが最初に出す「マイグレーション：… まで」）
+2. 中身を見る（まだ戻さない）：
+   ```sh
+   cd apps/api
+   node scripts/restore-backup.mjs --env production --remote --db mikke-production --bucket mikke-media-production --date 2026-10-25
+   ```
+   表ごとの行の数と、作った SQL（`.wrangler/restore/<日付>.sql`）が出る。local なら `--env`・`--remote`・`--db`・`--bucket` なしで `--date` だけ。手元のファイルなら `--file <…json.gz>`
+3. 戻す：同じものに `--apply` を付ける。バックアップにある表の中身は全部消して入れ直す（rowid も同じに戻る）
+4. 確かめる：編集画面で開き、下書き・公開中の版が戻っていること。セッションもその時刻に戻るので、ログインし直しが要ることがある
+
+気をつけること：戻すと、その時刻より後に上げた写真の行はなくなる（R2 のファイルは残るが使われない）。その日の 0 時より後にゴミ箱の掃除で消えた写真は、行は戻るがファイルはない。D1 の 1 文は 100KB までなので、長い値は空で入れてから 16,000 文字ずつ足す SQL にしてある（`scripts/backup-lib.mjs`）。本番では、これに加えて D1 の Time Travel（その時刻の状態に戻せる）も使える。
+
 ### 起動したときの設定の確かめ（`src/services/config.ts`）
 
 その isolate の最初の要求（と毎日の Cron）で確かめ、問題があれば**どの要求にも 500** で答える（ログに理由）。止まる条件：公開のドメインとアプリのドメインが同じ親ドメイン（local の `localhost` どうしは除く）／本番で `APP_ORIGINS` が https でない／本番で `MAILER=log`／まだない `MAILER`／`AUTH_SECRET` が 32 文字未満。
@@ -251,6 +270,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | 29 | `MAILER=memory` は試験用。本番の設定の確かめでは止めない（`log` だけ止める） | 試験は本番と同じ `COOKIE_SECURE=true` で走らせたいため。本番で `memory` にしないこと |
 | 30 | 公開ページの写真の大きさ違い（C3）は、編集画面がブラウザで作って写真と一緒に送る（`multipart/form-data`）。幅は 640・1280・2400 のうち W より小さいもの＋W、形式は JPEG（必須）と WebP（全部かなし）。それぞれ M5 の検査と、名前・幅・高さ・そろい方を見て、1 つでも通らなければ何も置かない。台帳（④）には持たず、表 `asset_variants` と R2 の `assets/<お店>/<ID>/<幅>.<形式>` に置く。置いたら変えない（前の写真に足すのも 1 回だけ）ので `immutable`。ゴミ箱の掃除で写真と一緒に消す。#16 は今のまま（元の写真はまだ持たない） | Workers では画像を縮められず、有料の Images は使わない。DATA_SPEC 5.2「表示用の縮小版は台帳に持たない」 |
 | 31 | `/media/<ID>/<幅>.<形式>` で、頼まれた形式がなければ同じ幅の JPEG、大きさ違いがなければ元の 1 枚を返す（このときだけ 1 日で覚え直す） | HTML を写真によらず同じ形（srcset）で書ける。前の写真も切れない |
+| 32 | 毎日のバックアップ（B6）は、自分で D1 の全部の表を JSON にして R2 の `backups/<日本時間の日付>.json.gz` に置き、30 日分を残す。毎日の仕事のいちばん先に走らせる（その日の掃除の前の状態を残す）。戻すのは `scripts/restore-backup.mjs`（見るだけが既定、`--apply` で戻す）。rowid も戻し、長い値は 16,000 文字ずつに分けた SQL にする | D1 の Time Travel だけだとアカウントの外に持ち出せず、中身を見て確かめられない。戻す手順を local の試験で確かめられる。D1 の 1 文は 100KB まで |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと
@@ -261,7 +281,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 - `/_mikke/site.js` の中身（テンプレートの担当が決める。今は空）
 - 元の写真の保存（5.2 v4）。大きさ違いは 2400px の写真から作る（C3 は済）
 - 毎日の描き直しそのもの（D6・M4）。今は一覧を返してログに出すまで
-- 毎日のバックアップ（B6）。D1 の Time Travel（30 日）を使う前提で、手順は本番のアカウントができてから
+- B6 の「人が 1 回戻してみる」は、本番のアカウントができてから（試しの環境で、上の手順どおりに）。バックアップは 1 回で全部をメモリに読むので、お店が増えて大きくなったら（数十 MB を超えたら）表ごとに分けるか R2 の分割アップロードにする
 - 独自ドメイン（v1 は制作側が手で設定）
 - 変更の記録の古いものの片づけ（今は消さない）
 - staging・production の `wrangler.toml` の値（アカウント待ち）
