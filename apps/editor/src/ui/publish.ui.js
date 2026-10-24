@@ -3,7 +3,8 @@
 // §22 §3 公開・状態の文字・「公開しました」トースト（§4.1 の確認の箱は 22c。22b は publish({force:true}) 相当）
 let _lastPubEnabled=true, _pubToastT=null;
 function updateSaveUI(){ const st=PG.saveState(); const el=document.getElementById("saveStatus"); const pub=document.getElementById("tPublish"); if(!el||!pub) return;
-  el.textContent=st.label; el.classList.toggle("warn", st.status==="error" || st.conflict || st.label==="まだ公開していない変更があります");
+  const shortErr=st.status==="error"&&!st.conflict;   // F36 失敗の文は短く（詳しくはマウスを乗せて）＝上の並びを押し出さない
+  el.textContent=shortErr?"保存できませんでした":st.label; el.title=shortErr?st.label+"（つながったら、もう一度保存します）":""; el.classList.toggle("warn", st.status==="error" || st.conflict || st.label==="まだ公開していない変更があります");
   if(st.status==="saved"&&!st.conflict) _lastPubEnabled = !st.publishedEqual;   // §3.2 公開中と同じ→押せない／それ以外→押せる。保存中・失敗は前の状態のまま
   pub.disabled = !_lastPubEnabled;
   updateMoreStatus(); }
