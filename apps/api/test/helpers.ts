@@ -43,6 +43,8 @@ export async function createUser(role: "owner" | "producer", email = `${uniq(rol
 /** メールのコードでログインして、Cookie の「名前=値」を返す */
 export async function login(email: string): Promise<string> {
   const before = memoryOutbox.length;
+  // 同じ人の 2 台目の端末を作るため、前の申し込みを 1 時間前にずらす（続けて頼むと 429 になるので）
+  await env.DB.prepare("UPDATE login_requests SET created_at = created_at - 3600000 WHERE email = ?").bind(email).run();
   const r = await call("POST", "/api/auth/request", { json: { email } });
   if (r.status !== 200) throw new Error(`request ${r.status} ${await r.text()}`);
   const mail = memoryOutbox.slice(before).find((m) => m.to === email);
