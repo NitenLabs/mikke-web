@@ -7,6 +7,8 @@ function decorate() {
   // 足した部品：置いた端末だけ手動印
   for (const a of R.adds) if (!R.remove.includes(a.id)) { const moved = R.m2[a.id] || R.m1[a.id]; if (a.placedDevice === state.device || moved) manual.add(a.id); }
   document.querySelectorAll(".mark-manual,.mark-warn,.mark-sel,.mark-anchor,.anchor-line,.anchor-label,.sel-pad,.rz-handle,.snap-guide").forEach((n) => { if (n.classList.contains("anchor-line") || n.classList.contains("anchor-label") || n.classList.contains("sel-pad") || n.classList.contains("rz-handle") || n.classList.contains("snap-guide")) n.remove(); else n.classList.remove("mark-manual", "mark-warn", "mark-sel", "mark-anchor"); });
+  document.querySelectorAll(".sec-wrap.sec-selected").forEach((n) => n.classList.remove("sec-selected"));   // P25 セクションを選んだ印（線 A3）
+  if (state.selectedSection && !state.preview && !state.viewing) { const w = document.querySelector('.sec-wrap[data-sec="' + state.selectedSection + '"]'); if (w) w.classList.add("sec-selected"); }
   if (state.preview || state.viewing) return;   // §22 §5 プレビュー中／§6 見るだけは編集の飾り（選んだ枠・つまみ・手動印）を出さない
   for (const id of manual) { const n = elNode(id); if (n) n.classList.add("mark-manual"); }
   // §2：赤い枠（.mark-warn）は出さない

@@ -180,6 +180,17 @@ button:active{transform:translateY(1px)}
 #fmenu .zsub{display:none;position:absolute;left:0;top:100%;margin-top:4px;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;flex-direction:column;gap:2px;min-width:150px;z-index:63;white-space:nowrap}
 #fmenu .zrow:hover .zsub,#fmenu .zrow.open .zsub{display:flex}
 .pg-phone #fmenu .zsub button{min-width:44px;min-height:44px}
+/* P25 セクションを選んだ印（枠） */
+.sec-wrap.sec-selected{outline:2px solid #1a73e8;outline-offset:-1px}
+/* P26 PC の右クリック＝縦の一覧（PowerPoint と同じ）。押せないものは灰色。前面・背面の ▸ は右へ出す */
+#fmenu.pcmenu{flex-direction:column;align-items:stretch;gap:0;min-width:180px;padding:4px 0}
+#fmenu.pcmenu button{text-align:left;white-space:nowrap;border:0;background:none;border-radius:0;padding:5px 14px;font-size:13px;cursor:pointer;color:#222}
+#fmenu.pcmenu button:hover:not(:disabled){background:#e8f0fe}
+#fmenu.pcmenu button:disabled{color:#999;opacity:.55;cursor:default}
+#fmenu.pcmenu .fdiv{width:auto;height:1px;align-self:stretch;margin:4px 0}
+#fmenu.pcmenu .zrow{display:flex;flex-direction:column}
+#fmenu.pcmenu .zsub{left:100%;top:-4px;margin:0 0 0 2px}
+#fmenu.pcmenu .note{align-self:stretch;padding:4px 14px;white-space:nowrap}
 /* §2 セクションを足す「＋」。境目の帯にマウスを乗せると出る。 */
 .sec-add-zone{position:relative;height:14px;margin:0;display:flex;align-items:center;justify-content:center}
 .sec-add-btn{opacity:0;transition:opacity .08s;width:26px;height:22px;line-height:1;padding:0;border:1px solid #06c;border-radius:50%;background:#fff;color:#06c;font-size:16px;cursor:pointer;z-index:20}

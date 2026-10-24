@@ -107,3 +107,22 @@ function positionTypePicker(){ if(!typePicker||!typePicker._anchor) return; cons
 window.addEventListener("pointerdown",(e)=>{ if(typePicker&&typePicker.classList.contains("on")&&!typePicker.contains(e.target)&&!(e.target.classList&&e.target.classList.contains("sec-add-btn"))) typePicker.classList.remove("on"); },true);
 
 // ---- キーボード ----
+
+// ---- F22・P25（線 A3）セクションの操作（複製・上へ・下へ・削除）：短い知らせと「戻す」。複製・移動の後はそのセクションが見える所へ ----
+function a3_secLabel(sec){ const l=PG.friendlySec?PG.friendlySec(sec):""; return (l&&l!=="セクション")?("「"+l+"」のセクション"):"セクション"; }
+function a3_scrollSecIntoView(sec){ const h=document.getElementById("host_"+sec); if(!h) return; const tb=document.getElementById("toolbar"); const top=tb?tb.getBoundingClientRect().bottom:0;
+  const r=h.getBoundingClientRect(); const seen=Math.max(0,Math.min(r.bottom,innerHeight)-Math.max(r.top,top));
+  if(seen>=Math.min(200,r.height)) return;
+  window.scrollBy(0, r.top-top-16); }
+function a3_secOp(kind,sec){
+  const before=PG.api.sectionList().map((s)=>s.id); const label=a3_secLabel(sec);
+  const t0=document.getElementById("pgToast"); const was=t0&&t0.classList.contains("on")?t0.textContent:null; const n0=PG.state.cursor;
+  if(kind==="up") PG.sectionMove(sec,-1); else if(kind==="down") PG.sectionMove(sec,1); else if(kind==="dup") PG.sectionDuplicate(sec); else if(kind==="del") PG.sectionDelete(sec);
+  if(PG.state.cursor===n0) return;   // 何も変わらなかった
+  const after=PG.api.sectionList().map((s)=>s.id);
+  const t1=document.getElementById("pgToast"); const told=t1&&t1.classList.contains("on")&&t1.textContent!==was;   // J22 品が消えた知らせが出たならそれを残す
+  const msg=kind==="dup"?label+"を複製しました":kind==="del"?label+"を消しました":label+"を"+(kind==="up"?"上":"下")+"へ動かしました";
+  if(!told&&typeof pgToast==="function") pgToast(msg,true);
+  if(kind==="dup"){ const ns=after.find((s)=>!before.includes(s)); if(ns){ PG.selectSection(ns); requestAnimationFrame(()=>a3_scrollSecIntoView(ns)); a3_scrollSecIntoView(ns); } }
+  else if(kind!=="del"){ PG.selectSection(sec); a3_scrollSecIntoView(sec); }
+}
