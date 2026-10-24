@@ -301,24 +301,7 @@ export async function replaceDrafts(
   const differs =
     !pub || canonJSON(shopD?.data) !== canonJSON(pub.shop) || canonJSON(siteD?.data) !== canonJSON(pub.site);
   let backupId: string | null = null;
-  if (differs && (shopD || siteD)) {
-    backupId = newId("bak", 12);
-    const ids = collectAssetIds(shopD?.data);
-    collectAssetIds(siteD?.data, ids);
-    await env.DB.batch([
-      env.DB.prepare("INSERT INTO draft_backups (id, shop_id, shop_body, site_body, reason, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(
-        backupId,
-        shopId,
-        JSON.stringify(shopD?.data ?? null),
-        JSON.stringify(siteD?.data ?? null),
-        reason,
-        nowIso(),
-        actor.id,
-      ),
-      ...[...ids].map((a) => env.DB.prepare("INSERT INTO backup_assets (backup_id, asset_id) VALUES (?, ?)").bind(backupId, a)),
-    ]);
-    await pruneBackups(env, shopId);
-  }
+  if (differs && (shopD || siteD)) backupId = (await insertBackup(env, shopId, actor, { shop: shopD?.data, site: siteD?.data }, reason)).id;
   const out: Record<string, { version: number; updatedAt: string }> = {};
   for (const k of ["shop", "site"] as const) {
     if (next[k] === undefined) continue;
@@ -328,6 +311,34 @@ export async function replaceDrafts(
     await recordChanges(env, shopId, actor, [{ layer: k, action: reason, path: "/", before: `版 ${cur[k]?.version ?? 0}`, after: `版 ${saved.version}` }]);
   }
   return { backupId, drafts: out };
+}
+
+/** 「戻す前の下書き」を 1 つ残す（10 まで）。replaceDrafts と、編集画面がぶつかったときに選ばなかった方を残す道（POST /backups）から */
+export async function insertBackup(
+  env: Env,
+  shopId: string,
+  actor: Actor,
+  body: { shop?: unknown; site?: unknown },
+  reason: string,
+): Promise<{ id: string; createdAt: string }> {
+  const id = newId("bak", 12);
+  const createdAt = nowIso();
+  const ids = collectAssetIds(body.shop);
+  collectAssetIds(body.site, ids);
+  await env.DB.batch([
+    env.DB.prepare("INSERT INTO draft_backups (id, shop_id, shop_body, site_body, reason, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?, ?)").bind(
+      id,
+      shopId,
+      JSON.stringify(body.shop ?? null),
+      JSON.stringify(body.site ?? null),
+      reason,
+      createdAt,
+      actor.id,
+    ),
+    ...[...ids].map((a) => env.DB.prepare("INSERT INTO backup_assets (backup_id, asset_id) VALUES (?, ?)").bind(id, a)),
+  ]);
+  await pruneBackups(env, shopId);
+  return { id, createdAt };
 }
 
 export async function pruneBackups(env: Env, shopId: string): Promise<void> {

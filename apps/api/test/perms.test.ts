@@ -91,6 +91,7 @@ describe("B2 権限（見直しで足した道）", () => {
     const tries: [string, string, unknown?][] = [
       ["GET", `/api/shops/${other.id}/versions/1`],
       ["POST", `/api/shops/${other.id}/versions/1/restore`, { siteDraftVersion: 3 }],
+      ["POST", `/api/shops/${other.id}/backups`, { site: siteData() }],
       ["GET", `/api/shops/${other.id}/backups/${bak}`],
       ["POST", `/api/shops/${other.id}/backups/${bak}/restore`, { siteDraftVersion: 3, shopDraftVersion: 1 }],
       ["GET", `/api/shops/${other.id}/assets/${a.id}`],

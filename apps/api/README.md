@@ -87,6 +87,7 @@ npm run typecheck   # tsc
 | `GET /api/shops/:shopId/versions/:n` | 版の中身 `{number, scope, …, shop, site}` | 店 |
 | `POST /api/shops/:shopId/versions/:n/restore` `{siteDraftVersion, includeShop?, shopDraftVersion?}` | 「この版を下書きにする」。②③ はまるごと、① は `includeShop` のときだけ。公開中の版は変わらない。答え `{restoredFrom, backupId, drafts:{site:{version}, shop?:{version}}}`。版が古いと 409 | 店 |
 | `GET /api/shops/:shopId/backups` | 戻す前の下書き（新しい方から 10） | 店 |
+| `POST /api/shops/:shopId/backups` `{site?, shop?}` | 戻す前の下書きを 1 つ残す（編集画面が、ほかの端末とぶつかったときに選ばなかった方を残す。理由は `keep-conflict`）。中身は下書きと同じ形で確かめる。下書きは変えない。答え 201 `{id, createdAt}` | 店 |
 | `GET /api/shops/:shopId/backups/:id` | その中身 `{shop, site}` | 店 |
 | `POST /api/shops/:shopId/backups/:id/restore` `{siteDraftVersion, shopDraftVersion}` | 戻す前の下書きを下書きに戻す（①②③） | 店 |
 | `POST /api/shops/:shopId/assets` | 写真を上げる。本文は写真そのもの、`Content-Type: image/jpeg\|png\|webp`、名前は `X-File-Name`（URL エンコード）。**大きさ違いも一緒に送るときは `multipart/form-data`**（下の「写真の大きさ違い」）。答え 201 で ④ の 1 件 `{id, kind, file:{key,mime,width,height,bytes,exifStripped}, uploadedAt, uploadedBy, origin, rights}`（大きさ違いは ④ に入れない） | 店 |
