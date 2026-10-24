@@ -5,6 +5,7 @@
 //   layout/c3-edit.js  ページの組み立て（特集・品・ヘッダー・フッター・お品書き・アクセス）と付いていく先（C3）
 //   text/textlayer.js  改行の層（ブラウザで DOM を測る。TEXT）
 //   catalog.js         ① お店の情報から品の並び・表・お品書きを作る・値段の文字・① の op の畳み方
+//   shopinfo.js        ① お店の情報の連絡先・場所（電話・住所・地図のリンク・アクセスとフッターの連動する文字）
 //   page-css.js        ページの土台の CSS・書体のリンク
 //   content/wa-01.json テンプレート wa-01 の見本の中身
 export * as SPEC from "./spec.js";
@@ -14,3 +15,4 @@ export * as C3 from "./layout/c3-edit.js";
 export { TEXT } from "./text/textlayer.js";
 export { FONT_LINK, ROOTVARS, BASE_CSS } from "./page-css.js";
 export * as CATALOG from "./catalog.js";
+export * as SHOPINFO from "./shopinfo.js";

@@ -116,6 +116,7 @@ function publishCheck() {
     for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: `${DL}：${M.friendly(o.id)}がはみ出しています` });
   }
   state.device = curDev; render();
+  for (const it of shopInfoChecks()) items.push(it);   // F24 お店の情報（①）の電話・住所が空・電話でない値（pg/shopinfo-pages.js）
   return items;
 }
 function setDevice(d) { if (state.editing) commitEdit(); state.device = d; render(); }

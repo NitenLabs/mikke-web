@@ -36,7 +36,7 @@
 | `src/pg/ids.js` | 47 | 共通 | 部品 ID の名前空間（素の ID・インスタンス）・見出しの組・動かせる部品・セクションの割り当て |
 | `src/pg/text-style.js` | 81 | A1 | 文字の見た目（大きさ・太さ・色・書体）と「元に戻す」の入口 |
 | `src/pg/catalog-cols.js` | 30 | A4 | 品の並びの列・幅、左右の入れ替え |
-| `src/pg/shopinfo-pages.js` | 38 | A4 | お店の情報（STORE）・ページの定義・セクションの名前 |
+| `src/pg/shopinfo-pages.js` | 75 | A4 | お店の情報（STORE＝今の ① から読む）・連動する文字（アクセス・フッター）・公開前の確認・ページの定義・セクションの名前 |
 | `src/pg/text-link.js` | 76 | A1 | リンク（行き先・名前・自動リンクの見分け・部品のリンク） |
 | `src/pg/text-runs.js` | 167 | A1 | 文の一部の見た目（runs）・カーソル位置・書き換え中の範囲の操作と貼り付け |
 | `src/pg/catalog-derive.js` | 26 | A4 | ① お店の情報から品の並び・表・お品書きを作る（中身は packages/core/catalog.js） |
@@ -103,6 +103,7 @@
 | `layout/c3-edit.js` | ページの組み立て（特集・品・ヘッダー・フッター・お品書き・アクセス）と付いていく先（元 model/c3-edit/model.mjs） |
 | `text/textlayer.js` | 改行の層（DOM で測る。ブラウザだけ。元 model/playground/textlayer.js。budoux は npm から） |
 | `catalog.js` | ① から品の並び・表・お品書きを作る・値段の文字・① の op の畳み方（元 app.js の PG の中） |
+| `shopinfo.js` | ① お店の情報の連絡先・場所（電話・住所・地図のリンク、アクセス・フッターの連動する文字、公開前の確認） |
 | `page-css.js` | ページの土台の CSS・Google Fonts のリンク（元 build.mjs） |
 | `content/wa-01.json` | テンプレート wa-01 の見本の中身（元 model/playground/_content.json） |
 | `test/core.test.mjs` | Node で読めること・① からの組み立て（`npm run test:core`） |

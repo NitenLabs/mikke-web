@@ -133,7 +133,8 @@
     },
     "email": "info@example.com",
     "sns": {
-      "instagram": "ashiyado_sample"
+      "instagram": "ashiyado_sample",
+      "line": "https://lin.ee/ashiyado-sample"
     }
   },
   "reservation": {

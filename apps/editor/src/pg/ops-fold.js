@@ -33,7 +33,7 @@ function foldToDraft(baseOverride, opsOverride) {
       putText(pfx + "I_kanmi", slice.kanmiLabel, tmpl.kanmiLabel);   // §X37
       putText(pfx + "I_time", slice.kanmiTime, tmpl.kanmiTime);      // §X37
     } else if (inst.type === "header") { putText(pfx + "logo", slice.logo, tmpl.logo); }
-    else if (inst.type === "footer") { putText(pfx + "fname", slice.name, tmpl.name); putText(pfx + "faddr", slice.addr, tmpl.addr); putText(pfx + "fcopy", slice.copy, tmpl.copy); }
+    else if (inst.type === "footer") { putText(pfx + "fname", slice.name, tmpl.name); putText(pfx + "faddr", slice.addr, shopLinkedTmpl(inst, "faddr", R.effShop)); putText(pfx + "fcopy", slice.copy, tmpl.copy); }
     else if (inst.type === "menuHdr") { putText(pfx + "men", slice.en, tmpl.en); putText(pfx + "mtitle", slice.title, tmpl.title); }
     else if (inst.type === "contactHdr") { putText(pfx + "cen", slice.en, tmpl.en); putText(pfx + "ctitle", slice.title, tmpl.title); }
     // 試験台28 §2.4：MENU 本体は ① 連動（品の名前・説明・価格、括りの見出し、メニューの見出し）＝下書き content には書かない（① の下書き=shop に入る）。
@@ -41,7 +41,7 @@ function foldToDraft(baseOverride, opsOverride) {
       putText(pfx + "clead", slice.lead, tmpl.lead);
       slice.rows.forEach((r, i) => { const tr = (tmpl.rows || [])[i];
         putText(pfx + "cl_" + r.id, r.label, tr ? tr.label : undefined);
-        putText(pfx + "ci_" + r.id, r.value, tr ? tr.value : undefined);
+        const lt = shopLinkedTmpl(inst, "ci_" + r.id, R.effShop); putText(pfx + "ci_" + r.id, r.value, lt !== undefined ? lt : (tr ? tr.value : undefined));   // J44・J45 ① と連動する行は ① の値と比べる
       });
     }
   }
