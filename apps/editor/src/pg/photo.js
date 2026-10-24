@@ -14,7 +14,7 @@ function paintPhotos() {
   const device = state.device; const R = reduce(activeOps(), device, state.peek);
   for (const el of document.querySelectorAll('#stage [data-kind="photo"]')) {
     if (el.classList.contains("empty")) continue;
-    const part = el.getAttribute("data-el"); const asset = (el.textContent || "").trim() || assetOfPart(part, R);
+    const part = el.getAttribute("data-el"); const asset = (el.textContent || "").trim() || el._pAsset || assetOfPart(part, R); el._pAsset = asset;   // F31 作り直さなかった枠は、前に描いた素材のまま
     if (!asset) continue;
     const url = assetUrl(asset); ensureNat(asset);
     if (url) { el.style.backgroundImage = "url(" + url + ")"; el.textContent = ""; }
