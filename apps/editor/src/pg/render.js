@@ -173,7 +173,8 @@ function layoutScale() {
     scale = Math.max(0.82, Math.min(1.15, rawScale));
     overflowX = rawScale < 0.82;                     // 320 未満＝縮めきれない分は横に流す
   } else {
-    scale = Math.min(1, (stage.clientWidth - 4) / dw);
+    const cs = getComputedStyle(stage);   // F19 clientWidth は左右の余白（12px）を含む。余白とセクションの枠（1px×2）を引いて、窓から横にはみ出さない
+    scale = Math.min(1, (stage.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) - 2) / dw);
   }
   const pageW = dw * scale;
   const centered = phone && pageW <= stage.clientWidth + 0.5;   // 画面の方が広い＝中央に置き左右に同じ余白
