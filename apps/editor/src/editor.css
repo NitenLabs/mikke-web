@@ -212,7 +212,7 @@ button:active{transform:translateY(1px)}
 #cropwrap .ch{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;background:#fff;border:1.5px solid #06c;border-radius:50%;pointer-events:auto;z-index:2}
 /* N3 拡大の横棒（いつも画面の中・言葉なし・両端に −／＋ の印だけ） */
 #cropzoom{position:fixed;z-index:75;display:none;align-items:center;gap:6px;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px 8px}
-#cropzoom .zm,#cropzoom .zp{font:13px system-ui;color:#555;width:12px;text-align:center}
+#cropzoom .zm,#cropzoom .zp{font:15px system-ui;color:#333;min-width:24px;height:24px;padding:0;text-align:center;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer}
 #cropzoom input[type=range]{width:140px}
 /* §12 文字の見た目の道具（文字の部品を選んでいる間だけ出る・PowerPoint のリボン） */
 #tstools{display:none;align-items:center;gap:4px}

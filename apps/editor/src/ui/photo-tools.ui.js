@@ -28,12 +28,14 @@ const cropwrap=document.getElementById("cropwrap");
 // N3 拡大の横棒（いつも画面の中・言葉なし・両端に −／＋ の印）。見せる範囲の間だけ出す。枠の真ん中を中心に拡大。
 let zoomBar=null;
 function ensureZoomBar(){ if(zoomBar)return zoomBar; const w=document.createElement("div"); w.id="cropzoom";
-  w.innerHTML='<span class="zm">−</span><input type="range" data-crop-zoom min="1" max="4" step="0.01" value="1"><span class="zp">＋</span>';
+  w.innerHTML='<button type="button" class="zm" data-crop-step="-1" title="小さく" aria-label="小さく">−</button><input type="range" data-crop-zoom min="1" max="4" step="0.01" value="1"><button type="button" class="zp" data-crop-step="1" title="大きく" aria-label="大きく">＋</button>';
   document.body.appendChild(w); const inp=w.querySelector("[data-crop-zoom]");
+  // F12 「−」「＋」を押すと1段ずつ小さく・大きく（効かない印にしない）
+  for(const b of w.querySelectorAll("[data-crop-step]")){ b.addEventListener("pointerdown",(e)=>e.preventDefault()); b.onclick=(e)=>{ e.stopPropagation(); const st=PG.cropState(); if(!st) return; PG.cropZoomTo(st.view.zoom+0.2*parseFloat(b.getAttribute("data-crop-step"))); }; }
   inp.addEventListener("input",()=>{ PG._barActive=true; PG.cropZoomTo(parseFloat(inp.value)); });
   inp.addEventListener("pointerdown",()=>{ PG._barActive=true; }); window.addEventListener("pointerup",()=>{ PG._barActive=false; });
   zoomBar=w; return w; }
-function enterCrop(id){ if(PG.isCropping())return; if(PG.state.editing)PG.commitEdit(); fmenu.classList.remove("on"); if(!PG.beginCrop(id)) return; ensureZoomBar(); drawCropOverlay(); }
+function enterCrop(id){ if(PG.isCropping())return; if(PG.state.editing)PG.commitEdit(); fmenu.classList.remove("on"); if(!PG.beginCrop(id)) return; ensureZoomBar()._place=null; drawCropOverlay(); }
 window.onCrop=function(){ drawCropOverlay(); };   // app.js がドラッグ中に呼ぶ
 function drawCropOverlay(){
   const st=PG.cropState(); if(!st||!st.display){ cropwrap.style.display="none"; cropwrap.innerHTML=""; return; }
@@ -54,11 +56,22 @@ function drawCropOverlay(){
   // N3 横棒：いつも画面の中に。枠の下（入らなければ上）に置き、左右も画面内に収める。ドラッグ中は値を書き換えない
   if(zoomBar){ zoomBar.style.display="flex"; const bw=zoomBar.offsetWidth||200, bh=zoomBar.offsetHeight||28;
     let left=Math.min(Math.max(8,r.left),window.innerWidth-bw-8);
-    let top=r.top+r.height+8; if(top+bh>window.innerHeight-8) top=Math.max(8,r.top-bh-8);
+    // F41 置き場所は見せる範囲に入ったときに1回決める：枠の下 → 枠の中の下端 → 枠の上 のうち、ほかの部品の文字に重ならない所
+    if(zoomBar._for!==st.id||zoomBar._place==null){ zoomBar._for=st.id; zoomBar._place=a3_pickZoomPlace(st.id,r,left,bw,bh); }
+    let top=a3_zoomTop(zoomBar._place,r,bh); if(top+bh>window.innerHeight-8) top=Math.max(8,r.top-bh-8);
     zoomBar.style.left=left+"px"; zoomBar.style.top=top+"px";
     const inp=zoomBar.querySelector("[data-crop-zoom]"); if(inp && !PG._barActive) inp.value=String(st.view.zoom); }
 }
-function exitCropOverlay(){ cropwrap.style.display="none"; cropwrap.innerHTML=""; if(zoomBar) zoomBar.style.display="none"; }
+// F12 ページをスクロールしても重ね描きを写真に付けたままにする（PC）
+window.addEventListener("scroll",()=>{ if(!isPhone()&&PG.isCropping()) drawCropOverlay(); },{passive:true});
+function exitCropOverlay(){ cropwrap.style.display="none"; cropwrap.innerHTML=""; if(zoomBar){ zoomBar.style.display="none"; zoomBar._place=null; } }
+function a3_zoomTop(place,r,bh){ return place==="inside"?(r.bottom-bh-8):place==="above"?(r.top-bh-8):(r.bottom+8); }
+function a3_pickZoomPlace(id,r,left,bw,bh){
+  const rects=[]; for(const e of document.querySelectorAll("#sectionwrap [data-el]")){ if(e.getAttribute("data-el")===id||e.querySelector("[data-el]")) continue;
+    const w=document.createTreeWalker(e,NodeFilter.SHOW_TEXT); let t; while((t=w.nextNode())){ if(!t.nodeValue.trim()) continue; const rg=document.createRange(); rg.selectNodeContents(t); for(const q of rg.getClientRects()) if(q.width>0&&q.height>0) rects.push(q); } }
+  const hit=(top)=>rects.some((q)=>q.left<left+bw&&q.right>left&&q.top<top+bh&&q.bottom>top);
+  for(const pl of ["below","inside","above"]){ if(pl==="inside"&&r.height<bh+24) continue; const top=a3_zoomTop(pl,r,bh); if(top<8||top+bh>innerHeight-8) continue; if(!hit(top)) return pl; }
+  return "below"; }
 // つまみ＝拡大縮小／それ以外のドラッグ＝見せる位置
 cropwrap.addEventListener("pointerdown",(e)=>{ if(!PG.isCropping())return; if(e.pointerType==="touch")return;   // §5（試験台16）スマホの指は touch ハンドラで処理（1本指=動かす・2本指=拡大）
   e.preventDefault(); e.stopPropagation();
