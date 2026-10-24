@@ -1,0 +1,2 @@
+# cp .dev.vars.example .dev.vars（.dev.vars は git に入れない）
+AUTH_SECRET = "local-dev-secret-change-me-0123456789abcdef"

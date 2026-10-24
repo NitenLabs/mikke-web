@@ -1,0 +1,40 @@
+# 芦屋みっけ Web制作：API と公開ページの配信（1つの Worker）
+# 一番上の設定は local（wrangler dev）用。本番・試しは下の [env.*] を埋める（README「本番に出すとき」）。
+name = "mikke-api"
+main = "src/index.ts"
+compatibility_date = "2026-08-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+# 公開ページのドメイン。<お店のスラッグ>.<PUBLIC_DOMAIN> でお店を引く
+PUBLIC_DOMAIN = "localhost"
+# 編集画面のオリジン（CSRF の確かめ・CORS・ログインのリンクの行き先）。カンマ区切りで複数可。先頭がリンクの行き先
+APP_ORIGINS = "http://localhost:8787"
+# メールの送り先：log（ログに出すだけ）／memory（試験用）／resend（後で）
+MAILER = "log"
+# local の http でも Cookie が付くように。本番は "true"
+COOKIE_SECURE = "false"
+# AUTH_SECRET は .dev.vars（local）か `wrangler secret put AUTH_SECRET`（本番）で渡す
+
+[[d1_databases]]
+binding = "DB"
+database_name = "mikke"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "mikke-media"
+
+# 毎日 0 時（日本時間）＝ UTC 15:00
+[triggers]
+crons = ["0 15 * * *"]
+
+# ---- 本番・試し（Cloudflare のアカウントができたら埋める）----
+# [env.staging]
+# name = "mikke-api-staging"
+# routes = [{ pattern = "*.staging.<ドメイン>/*", zone_name = "<ドメイン>" }, { pattern = "app.staging.<アプリのドメイン>/*", zone_name = "<アプリのドメイン>" }]
+# vars = { PUBLIC_DOMAIN = "staging.<ドメイン>", APP_ORIGINS = "https://app.staging.<アプリのドメイン>", MAILER = "resend", COOKIE_SECURE = "true" }
+# d1_databases = [{ binding = "DB", database_name = "mikke-staging", database_id = "<作ったときの ID>", migrations_dir = "migrations" }]
+# r2_buckets = [{ binding = "BUCKET", bucket_name = "mikke-media-staging" }]
+# triggers = { crons = ["0 15 * * *"] }
