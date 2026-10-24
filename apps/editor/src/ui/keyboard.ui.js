@@ -29,6 +29,9 @@ window.addEventListener("keydown",(e)=>{
     if(["ArrowUp","ArrowDown","Home","End","PageUp","PageDown"].includes(e.key)) e.preventDefault();
     if(e.key!=="Escape") return;
   }
+  // P4 文字の箱を選んだだけ（書き換えていない）で文字を打つ＝書き換えに入り、打った文字で置き換える。Enter・F2＝書き換えに入り、全部を選ぶ
+  if(!meta&&!e.altKey&&PG.state.selected.size===1){ const one=[...PG.state.selected][0];
+    if(a2ClickEditable(one)){ if(e.key==="Enter"||e.key==="F2"){ e.preventDefault(); PG.startEdit(one,true); return; } if(e.key.length===1){ PG.startEdit(one,true); return; } } }
   // §27 Esc：書き換え・見せる範囲でなく、メニュー・箱が開いていなければ選択を外す。開いていれば閉じるだけ（選択は残す）
   if(e.key==="Escape"){
     if(e.defaultPrevented) return;   // すでに箱/メニューを閉じた（capture の Esc ＝公開・プレビュー・履歴・書体・列・明るさ）
@@ -36,6 +39,8 @@ window.addEventListener("keydown",(e)=>{
     if(PG.state.selected.size||PG.state.selectedSection){ e.preventDefault(); PG.clearSel(); }
     return;
   }
+  if(meta&&e.key.toLowerCase()==="a"&&!e.shiftKey&&!e.altKey){ e.preventDefault(); const L=a2PageParts(); PG.selectMany(L); if(L.length&&typeof showFmenu==="function") showFmenu(); return; }   // P17 書き換えていないときの Cmd+A＝今のページの部品を全部選ぶ
+  if(e.key==="Tab"&&!meta&&!e.altKey&&(PG.state.selected.size||PG.state.selectedSection)){ e.preventDefault(); a2TabSelect(e.shiftKey); return; }   // P18 部品を選んでいるときの Tab／Shift+Tab＝次・前の部品（何も選んでいなければ上の並びへ＝ふつうの Tab）
   if(meta&&e.key.toLowerCase()==="z"){ e.preventDefault(); e.shiftKey?PG.redo():PG.undo(); return; }
   if(meta&&e.key.toLowerCase()==="y"){ e.preventDefault(); PG.redo(); return; }
   if(meta&&e.key.toLowerCase()==="c"){ e.preventDefault(); PG.copySelection(); return; }
@@ -48,7 +53,7 @@ window.addEventListener("keydown",(e)=>{
 });
 // 貼り付け：書き換え中はプレーン文字（§7.2）。書き換え中でなく写真を1つ選んでいて画像なら差し替える（§1.1・§7.7）
 window.addEventListener("paste",(e)=>{ const cd=e.clipboardData||window.clipboardData; if(!cd)return; const t=cd.getData&&cd.getData("text/plain"); window.__lastPlain=t;
-  if(PG.state.editing){ e.preventDefault(); if(!PG.editingPasteRich(t)&&!PG.editingPasteLink(t)) document.execCommand("inserttext",false,t); return; }   // §5 中のコピーは見た目つき／§2.5-2.6 URL・メール／よそからは文字だけ
+  if(PG.state.editing){ e.preventDefault(); if(!t) return; /* 文字の無い貼り付け（画像だけ）は書き換え中の選んだ文字を消さない（P3 でダブルクリックが語を選ぶようになったため） */ if(!PG.editingPasteRich(t)&&!PG.editingPasteLink(t)) document.execCommand("inserttext",false,t); return; }   // §5 中のコピーは見た目つき／§2.5-2.6 URL・メール／よそからは文字だけ
   const file=[...(cd.files||[])].find(f=>f.type.startsWith("image/")) || (()=>{ for(const it of (cd.items||[])){ if(it.kind==="file"){ const f=it.getAsFile&&it.getAsFile(); if(f&&f.type.startsWith("image/")) return f; } } return null; })();
   if(!file) return;   // 画像がなければ、今の貼り付け（部品・文字＝Cmd+V の keydown）に任せる
   const sel=[...PG.state.selected]; const one=sel.length===1?sel[0]:null; const n=one&&PG.elNode(one); const isPhoto=!!(n&&n.getAttribute("data-kind")==="photo");

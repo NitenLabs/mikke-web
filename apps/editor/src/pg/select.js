@@ -17,6 +17,8 @@ function decorate() {
   const g = geometry();
   for (const id of state.selected) { const e = g[id]; if (!e) continue; const padX = e.w < 16 ? 8 : 0, padY = e.h < 16 ? 8 : 0; if (!padX && !padY) continue; const s = secNode(secOf(id)); if (!s) continue; const pad = document.createElement("div"); pad.className = "sel-pad"; pad.style.cssText = `position:absolute;left:${e.x - padX}px;top:${e.y - padY}px;width:${e.w + 2 * padX}px;height:${e.h + 2 * padY}px;outline:2px solid #06c;pointer-events:none;z-index:5`; s.appendChild(pad); }
   // §4：大きさのつまみ（1つだけ選ばれていて、大きさを変えられる部品のとき）。data-handle に向きを持つ。
+  // P20 複数を選んだら、まとめた枠の4つの角につまみ（同じセクションの写真・文字だけのとき）
+  if (state.selected.size > 1 && !state.editing) { const m = a2MultiParts(); const s = m && secNode(m.sec); if (s) { const hsz = +(HSZ / scale).toFixed(3); for (const dir of ["nw", "ne", "sw", "se"]) { const p = handlePoint(dir, m.U); const h = document.createElement("div"); h.className = "rz-handle"; h.setAttribute("data-handle", dir); h.setAttribute("data-handle-for", "@multi"); h.style.cssText = `position:absolute;left:${p.x}px;top:${p.y}px;width:${hsz}px;height:${hsz}px;margin-left:${-hsz / 2}px;margin-top:${-hsz / 2}px;background:#fff;border:1.5px solid #06c;z-index:8;touch-action:none;cursor:${cursorFor(dir)}`; s.appendChild(h); } } }
   if (state.selected.size === 1 && !state.editing) { const id = [...state.selected][0]; const hs = handlesFor(id); const e = g[id]; if (hs.length && e) { const s = secNode(secOf(id)); const hsz = +(HSZ / scale).toFixed(3); if (s) for (const dir of hs) { const p = handlePoint(dir, e); const h = document.createElement("div"); h.className = "rz-handle"; h.setAttribute("data-handle", dir); h.setAttribute("data-handle-for", id); h.style.cssText = `position:absolute;left:${p.x}px;top:${p.y}px;width:${hsz}px;height:${hsz}px;margin-left:${-hsz / 2}px;margin-top:${-hsz / 2}px;background:#fff;border:1.5px solid #06c;z-index:8;touch-action:none;cursor:${cursorFor(dir)}`; s.appendChild(h); } } }
 }
 // §4：どのつまみを出すか・位置・形
@@ -60,3 +62,12 @@ function selectMany(ids) { state.selectedSection = null; state.selected = new Se
 function clearSel() { state.selected = new Set(); state.selectedSection = null; refreshSel(); }
 function selectSection(sec) { state.selectedSection = sec; state.selected = new Set(); refreshSel(); }
 
+
+// P22 戻す・やり直すの後、その操作の部品を選んだ状態にする（PowerPoint と同じ）。ページに見えない（消えた）部品は選ばない。
+function a2SelectAfterHistory(op) {
+  if (!op) return;
+  const ids = op.ids ? op.ids : op.items ? op.items.map((it) => it.id) : op.id ? [op.id] : op.keys ? op.keys.map((k) => partIdOfBox(k)) : [];
+  if (!ids.length || op.t === "section" || op.sec) return;
+  const live = [...new Set(ids.map(canonId))].filter((id) => elNode(id)); if (!live.length) return;   // 消えた部品（足したのを戻した等）だけなら選択は変えない
+  state.selectedSection = null; state.selected = new Set(live); refreshSel();
+}

@@ -20,11 +20,12 @@ function undo() {
   if (state.editing) { reconcileEdit(); flushCheckpoint(); }   // §23b 末尾の打ち分を1区切りにしてから1つ戻す
   if (state.cursor <= state.undoBase) return;   // §23c X34：戻すものが無ければ何もしない（書き換えの状態もカーソルも触らない＝PowerPoint と同じ）。§22 §2.4 開き直した後の「戻す」も undoBase まで（undoBase に着いた後の Cmd+Z も何もしない）
   state.cursor--;
+  while (state.ops[state.cursor]._grp && state.cursor > state.undoBase && state.ops[state.cursor - 1]._grp === state.ops[state.cursor]._grp) state.cursor--;   // P16/J17 まとめた操作（_grp）は1回で戻す
   const op = state.ops[state.cursor];
   crossPageFor(op);   // 試験台28：別ページの手直しは、そのページに移って戻す
   render();
   if (op && op.t === "edit" && op._ses) reenterEditSession(op.id, diffIndex(op.runs ? runsPlain(op.runs) : (op.text || ""), rawText(op.id)));   // §23b 戻すと書き換えに入り直し、戻した所にカーソル
-  else if (state.editing) endEditSilently();
+  else { if (state.editing) endEditSilently(); a2SelectAfterHistory(op); }   // P22 戻した部品を選ぶ
   scheduleSave();
 }
 function redo() {
@@ -33,10 +34,11 @@ function redo() {
   if (state.cursor >= state.ops.length) return;
   const op = state.ops[state.cursor];
   state.cursor++;
+  while (op._grp && state.cursor < state.ops.length && state.ops[state.cursor]._grp === op._grp) state.cursor++;   // P16/J17 まとめた操作（_grp）は1回でやり直す
   crossPageFor(op);   // 試験台28：別ページの手直しのやり直しも、そのページに移る
   render();
   if (op && op.t === "edit" && op._ses) reenterEditSession(op.id, op.editCaret != null ? op.editCaret : rawText(op.id).length);   // §23b やり直しも細かく・入り直す
-  else if (state.editing) endEditSilently();
+  else { if (state.editing) endEditSilently(); a2SelectAfterHistory(op); }   // P22 やり直した部品を選ぶ
   scheduleSave();
 }
 function reset() { state.base = null; state.shopBase = null; state.shopSeq = 0; state.ops = []; state.cursor = 0; state.undoBase = 0; state.restoreUndo = null; state.secSeq = 0; state.addSeq = 0; state.page = "pg_home"; state.selected = new Set(); state.selectedSection = null; state.editing = null; state.secList = defaultSecList(); _versions = initialVersions(); _saveStatus = "saved"; _simErr = false; render(); }
