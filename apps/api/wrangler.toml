@@ -12,7 +12,7 @@ PUBLIC_DOMAIN = "localhost"
 PUBLIC_PORT = "8787"
 # 編集画面のオリジン（CSRF の確かめ・CORS・ログインのリンクの行き先）。カンマ区切りで複数可。先頭がリンクの行き先
 APP_ORIGINS = "http://localhost:8787"
-# メールの送り先：log（ログに出すだけ）／memory（試験用）／resend（後で）
+# メールの送り先：log（ログに出すだけ）／memory（試験用）／resend（本番。RESEND_API_KEY は秘密の値、MAIL_FROM は送り元）
 MAILER = "log"
 # local の http でも Cookie が付くように。本番は "true"
 COOKIE_SECURE = "false"
@@ -36,7 +36,7 @@ crons = ["0 15 * * *"]
 # [env.staging]
 # name = "mikke-api-staging"
 # routes = [{ pattern = "*.staging.<ドメイン>/*", zone_name = "<ドメイン>" }, { pattern = "app.staging.<アプリのドメイン>/*", zone_name = "<アプリのドメイン>" }]
-# vars = { PUBLIC_DOMAIN = "staging.<ドメイン>", APP_ORIGINS = "https://app.staging.<アプリのドメイン>", MAILER = "resend", COOKIE_SECURE = "true" }
+# vars = { PUBLIC_DOMAIN = "staging.<ドメイン>", APP_ORIGINS = "https://app.staging.<アプリのドメイン>", MAILER = "resend", MAIL_FROM = "芦屋みっけ <login@mail.<アプリのドメイン>>", COOKIE_SECURE = "true" }
 # d1_databases = [{ binding = "DB", database_name = "mikke-staging", database_id = "<作ったときの ID>", migrations_dir = "migrations" }]
 # r2_buckets = [{ binding = "BUCKET", bucket_name = "mikke-media-staging" }]
 # triggers = { crons = ["0 15 * * *"] }

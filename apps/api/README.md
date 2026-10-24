@@ -18,7 +18,7 @@ npm run dev                      # http://localhost:8787
 ```
 
 - `npm run seed` は、マイグレーションを当て、`samples/ashiyado` の ①（shop.json）・③（theme.json）・④（assets.json と media/ の写真 12 枚）から、お店 `shp_ashiyado`（スラッグ `ashiyado`）・制作側・店主・下書き・写真を local の D1・R2 に入れる。②の下書きは wa-01 の「何もしていない」形（`{template, sections}`）。`samples/` は読むだけ
-- ログイン：`POST /api/auth/request` を送ると、**wrangler dev の画面に `[mail] to=… code=123456 link=…` が出る**（今のメールは「ログに出す」だけ）
+- ログイン：`POST /api/auth/request` を送ると、**wrangler dev の画面に `[mail] to=… code=123456 link=…` が出る**（local の `MAILER = "log"`。本番は `resend`）
 - 公開ページ：公開したあと `http://ashiyado.localhost:8787/`（Chrome・Firefox は `*.localhost` を手元に向ける。curl なら `-H "Host: ashiyado.localhost"`）
 - 毎日 0 時の仕事を手で走らせる：`npx wrangler dev --test-scheduled` で動かし、`curl -X POST localhost:8787/cdn-cgi/handler/scheduled`（バックアップが local の R2 の `backups/<日付>.json.gz` にできる）
 
@@ -37,7 +37,7 @@ curl -H 'Host: ashiyado.localhost' localhost:8787/
 ## 試験
 
 ```sh
-npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。11 ファイル 128 件
+npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。12 ファイル 133 件
 npm run typecheck   # tsc
 ```
 
@@ -46,6 +46,7 @@ npm run typecheck   # tsc
 | ファイル | 項目 |
 |---|---|
 | `test/auth.test.ts` | B1 ログイン（M2・M3・L2・L3・L8・L9）・CSRF・CORS・Vary（L11） |
+| `test/mailer.test.ts` | B1 本物のメール（Resend に送る中身・文面・送れなかったとき・設定） |
 | `test/perms.test.ts` | B2 権限（店主に制作側のアドレスを見せない L7） |
 | `test/drafts.test.ts` | B3・B4 下書き、編集の設定、変更の記録 |
 | `test/publish.test.ts` | D1 公開、D3 配信、D4 履歴と戻す、CSP と HTML の検査（M4）、L1・M1・L10 |
@@ -196,7 +197,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | R2 | `mikke-media-staging`・`mikke-media-production` |
 | 公開のドメイン | 例 `mikke.site`。DNS に `*`（ワイルドカード、プロキシ有効）と Workers のルート `*.<ドメイン>/*`。**`*.staging.<ドメイン>` のような 2 段のワイルドカードは無料の証明書（Universal SSL）では足りない**（Advanced Certificate Manager が要る）。試しは別のドメインにするか、`<スラッグ>-staging.<ドメイン>` にするかを決める |
 | アプリのドメイン | 編集画面と API。**公開のドメインとは別の親ドメインが必須**（例 公開 `mikke.site`／アプリ `app.mikke-web.jp`）。同じ親ドメインだと、起動したときに設定の問題として止まる（L5。公開ページはお店ごとに中身を作れるので、アプリと同じサイトに置かない）。`https` も必須 |
-| Resend | API キー（`wrangler secret put RESEND_API_KEY`）、送り元のドメインの確認（SPF・DKIM の DNS）、送り元のアドレス（`MAIL_FROM`）。`MAILER = "resend"` の実装はまだ（下の「まだ」）。**本番（`COOKIE_SECURE = "true"`）で `MAILER = "log"` は起動したときに止まる**（L6） |
+| Resend | API キー（`wrangler secret put RESEND_API_KEY --env production`。権限は「Sending access」だけ・送り元のドメインに絞る）、送り元のドメインの確認（Resend の画面に出る SPF・DKIM の DNS を足す）、送り元のアドレス（`vars` の `MAIL_FROM`、例 `芦屋みっけ <login@mail.<アプリのドメイン>>`）、`MAILER = "resend"`。どちらかがなければ起動したときに止まる。**本番（`COOKIE_SECURE = "true"`）で `MAILER = "log"` も止まる**（L6） |
 | 秘密の値 | `wrangler secret put AUTH_SECRET`（`openssl rand -hex 32` など 32 文字以上） |
 
 `wrangler.toml` の `[env.staging]` にひな形を書いてある。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
@@ -219,9 +220,13 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 
 気をつけること：戻すと、その時刻より後に上げた写真の行はなくなる（R2 のファイルは残るが使われない）。その日の 0 時より後にゴミ箱の掃除で消えた写真は、行は戻るがファイルはない。D1 の 1 文は 100KB までなので、長い値は空で入れてから 16,000 文字ずつ足す SQL にしてある（`scripts/backup-lib.mjs`）。本番では、これに加えて D1 の Time Travel（その時刻の状態に戻せる）も使える。
 
+### ログインのメール（B1・`src/services/mailer.ts`）
+
+`MAILER = "resend"` で、Resend の API（`POST https://api.resend.com/emails`）に `{from: MAIL_FROM, to:[宛先], subject, text}` を送る（文だけ。HTML にしない）。件名は「芦屋みっけ ログインのコード」（コードは件名に入れない。通知・ロック画面に出るので）。本文はコード・リンク・15 分で切れること・心当たりが無ければ無視してよいこと。送れなかったとき：429・5xx・つながらないは同じ `Idempotency-Key` で 1 回だけやり直し、だめならログに `[mail] 送れませんでした`（コード・キーは出さない）。答えは送れても送れなくても同じ（#4d）。
+
 ### 起動したときの設定の確かめ（`src/services/config.ts`）
 
-その isolate の最初の要求（と毎日の Cron）で確かめ、問題があれば**どの要求にも 500** で答える（ログに理由）。止まる条件：公開のドメインとアプリのドメインが同じ親ドメイン（local の `localhost` どうしは除く）／本番で `APP_ORIGINS` が https でない／本番で `MAILER=log`／まだない `MAILER`／`AUTH_SECRET` が 32 文字未満。
+その isolate の最初の要求（と毎日の Cron）で確かめ、問題があれば**どの要求にも 500** で答える（ログに理由）。止まる条件：公開のドメインとアプリのドメインが同じ親ドメイン（local の `localhost` どうしは除く）／本番で `APP_ORIGINS` が https でない／本番で `MAILER=log`／まだない `MAILER`／`MAILER=resend` で `RESEND_API_KEY` か `MAIL_FROM` がない／`AUTH_SECRET` が 32 文字未満。
 
 ### 量の上限（L10）
 
@@ -271,11 +276,12 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | 30 | 公開ページの写真の大きさ違い（C3）は、編集画面がブラウザで作って写真と一緒に送る（`multipart/form-data`）。幅は 640・1280・2400 のうち W より小さいもの＋W、形式は JPEG（必須）と WebP（全部かなし）。それぞれ M5 の検査と、名前・幅・高さ・そろい方を見て、1 つでも通らなければ何も置かない。台帳（④）には持たず、表 `asset_variants` と R2 の `assets/<お店>/<ID>/<幅>.<形式>` に置く。置いたら変えない（前の写真に足すのも 1 回だけ）ので `immutable`。ゴミ箱の掃除で写真と一緒に消す。#16 は今のまま（元の写真はまだ持たない） | Workers では画像を縮められず、有料の Images は使わない。DATA_SPEC 5.2「表示用の縮小版は台帳に持たない」 |
 | 31 | `/media/<ID>/<幅>.<形式>` で、頼まれた形式がなければ同じ幅の JPEG、大きさ違いがなければ元の 1 枚を返す（このときだけ 1 日で覚え直す） | HTML を写真によらず同じ形（srcset）で書ける。前の写真も切れない |
 | 32 | 毎日のバックアップ（B6）は、自分で D1 の全部の表を JSON にして R2 の `backups/<日本時間の日付>.json.gz` に置き、30 日分を残す。毎日の仕事のいちばん先に走らせる（その日の掃除の前の状態を残す）。戻すのは `scripts/restore-backup.mjs`（見るだけが既定、`--apply` で戻す）。rowid も戻し、長い値は 16,000 文字ずつに分けた SQL にする | D1 の Time Travel だけだとアカウントの外に持ち出せず、中身を見て確かめられない。戻す手順を local の試験で確かめられる。D1 の 1 文は 100KB まで |
+| 33 | 本物のメールは Resend（fetch で API を直に叩く。ライブラリは入れない）。文だけ・件名にコードを入れない。429・5xx・つながらないは同じ Idempotency-Key で 1 回だけやり直す。`MAILER=resend` は `RESEND_API_KEY`・`MAIL_FROM` がなければ起動しない（L6 と同じ考え） | 依存を増やさない。通知に出る件名にコードを出さない。やり直しで 2 通届かない |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと
 
-- **Resend でのメール**（`MAILER = "resend"`）。今は `log`（wrangler dev の画面に出る）と `memory`（試験用）だけ。`resend` にすると、黙って送らずにはっきり失敗する
+- Resend で本当に届くか（迷惑メールに入らないか・Gmail・携帯のアドレス）は、アカウントとドメインができてから人が確かめる（試験は fetch を差し替えて、送る中身まで）
 - IP ごとの回数の制限（ログインの申し込み・確かめ）。本番では Cloudflare の Rate Limiting のルールで足す
 - 申し込みの回数の制限（同じアドレスで 1 時間に 5 回）は、ほかの人が先に使い切ると本人も 1 時間申し込めない（妨害の余地）。IP ごとの制限を足すときに見直す
 - `/_mikke/site.js` の中身（テンプレートの担当が決める。今は空）
