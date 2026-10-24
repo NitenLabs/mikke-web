@@ -87,6 +87,7 @@ body.pg-viewing #sectionwrap [data-el]{cursor:default}
 button{font:13px system-ui;padding:5px 9px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
 button.on{background:#333;color:#fff;border-color:#333}
 button:active{transform:translateY(1px)}
+#tUndo:disabled,#tRedo:disabled{color:#aaa;border-color:#ddd;cursor:default;transform:none}   /* P28 戻せないときは灰色 */
 #studio{display:none;background:#fafafa;border-bottom:1px solid #eee;padding:6px 8px;gap:8px;flex-wrap:wrap;align-items:flex-start}
 #studio.on{display:flex}
 #studio .box{background:#fff;border:1px solid #ddd;border-radius:6px;padding:6px 8px;max-width:340px}
