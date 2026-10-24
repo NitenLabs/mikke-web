@@ -156,6 +156,7 @@ function applyTextStyles(R) {
       if (ts.font != null) el.style.fontFamily = SPEC.FONT[ts.font] || ts.font;   // §19 箱まるごとの書体
     }
   }
+  a1KeepEmptyText();   // J10 空にした見出し・品名などは1行分の高さを残す（text-style.js）
 }
 
 function layoutScale() {

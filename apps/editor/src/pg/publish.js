@@ -111,6 +111,7 @@ function publishCheck() {
     // 写真のない枠（まだ写真が無い＝足したセクション等）。端末に依らないので1枠1回
     const phList = photosApi();
     for (const ph of phList) if (ph.missing && !emptySeen.has(ph.part)) { emptySeen.add(ph.part); items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `足した${emptyPhotoName(ph.part, phList)}がまだありません。公開すると、この枠は詰めて出しません` }); }
+    a1EmptyTextItems(dev, items, emptySeen);   // J56・J41 空の見出し・品名（text-style.js）
     // 仕組みの重なり・はみ出し（ふつうは空）
     for (const o of w.overlaps || []) items.push({ device: dev, kind: "system", parts: [canonId(o.a), canonId(o.b)], text: `${DL}：${M.friendly(o.a)}が、${M.friendly(o.b)}に重なっています` });
     for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: `${DL}：${M.friendly(o.id)}がはみ出しています` });

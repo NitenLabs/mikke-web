@@ -79,3 +79,27 @@ const FONTS = [{ key: "heading", label: "明朝", role: "見出しの書体" }, 
 const fontLabel = (k) => (FONTS.find((f) => f.key === k) || {}).label || k;
 function fontsApi() { return FONTS.map((f) => ({ ...f })); }
 
+
+// ---- J10・J56・J41 空にした文字の箱 ----
+// 見出し・本文・品名など、空では意味をなさない文字は、空にしても高さ 0 にせず1行分の高さを残す（選べる・書き直せる）。
+// 公開前の確認に「空の文字」として出す。説明・値段・時間など、もとから空でよい文字は対象にしない（高さ 0 のまま＝配置を変えない）。
+function a1MustHaveText(id) { const b = bareOf(id); return /^(F_h\d*|I_h|F_b\d+|logo|fname|mtitle|ctitle)$/.test(b) || /^(card_name_|row_name_|mg_|mc_|add_)/.test(b); }
+function a1KeepEmptyText() {
+  for (const inst of state.secList) {
+    const host = document.getElementById(secHostId(inst)); if (!host) continue;
+    for (const el of host.querySelectorAll('[data-kind="text"]')) {
+      const id = el.getAttribute("data-el"); if (!id || !a1MustHaveText(id)) continue;
+      if ((el.textContent || "").trim() === "") { el.style.minHeight = "1lh"; el.setAttribute("data-empty-text", "1"); }
+    }
+  }
+}
+// 公開前の確認：今のページの空の文字（端末に依らないので1つ1回）
+function a1EmptyTextItems(dev, items, seen) {
+  for (const el of document.querySelectorAll('#sectionwrap [data-kind="text"]')) {
+    const id = el.getAttribute("data-el"); if (!id || !a1MustHaveText(id)) continue;
+    if ((el.innerText || el.textContent || "").trim()) continue;
+    const r = el.getBoundingClientRect(); if (r.width === 0 && r.height === 0) continue;
+    if (seen.has("text:" + id)) continue; seen.add("text:" + id);
+    items.push({ device: dev, kind: "emptyText", parts: [id], text: `${/^(card|row)_name_/.test(bareOf(id)) ? "品の名前" : M.friendly(id)}が空です。文字を入れるか、いらなければ消してください` });
+  }
+}
