@@ -28,3 +28,17 @@ test("お品書き・品の並びを ① から作る", () => {
   assert.ok(Array.isArray(rows));
   for (const r of rows) assert.ok(r.id.startsWith("t_"));
 });
+
+test("お店の情報 ① の連絡先・場所（J44・J45・F24）", () => {
+  const S = core.SHOPINFO; const sh = JSON.parse(JSON.stringify(shop));
+  assert.equal(S.linkedText(sh, "addr"), "〒659-0000 兵庫県芦屋市大原町0-0");
+  assert.equal(S.linkedText(sh, "footAddr"), "兵庫県芦屋市大原町");
+  assert.equal(S.storeOf(sh).tel.digits, "0797000000");
+  S.applyContactText(sh, "tel", "078-111-2222"); assert.equal(S.storeOf(sh).tel.digits, "0781112222");
+  S.applyContactText(sh, "addr", "〒650-0001 兵庫県神戸市中央区加納町1-1");
+  assert.equal(sh.location.city, "神戸市中央区"); assert.equal(sh.location.geo, undefined);
+  assert.equal(S.linkedText(sh, "footAddr"), "兵庫県神戸市中央区加納町");
+  assert.ok(decodeURIComponent(S.mapHref(sh)).includes("加納町"));
+  assert.deepEqual(S.contactProblems(shop), []);
+  S.applyContactText(sh, "tel", "あとで"); assert.equal(S.contactProblems(sh)[0].key, "tel");
+});

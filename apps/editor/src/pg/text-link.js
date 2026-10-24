@@ -8,7 +8,7 @@ function resolveHref(lk) {
     case "mail": return "mailto:" + STORE.mail;
     case "instagram": return "https://www.instagram.com/" + STORE.instagram + "/";
     case "line": return STORE.line;
-    case "map": return "https://www.google.com/maps/search/?api=1&query=" + STORE.map.lat + "," + STORE.map.lng;
+    case "map": return storeMapHref();   // J45 ① の場所から（pg/shopinfo-pages.js）
     case "order": return STORE.order;
     case "page": { const p = PAGES.find((x) => x.id === lk.page); return p ? p.slug : "#"; }
     case "anchor": return "#" + (lk.sec || "");

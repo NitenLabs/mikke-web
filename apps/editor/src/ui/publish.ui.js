@@ -24,13 +24,13 @@ window.addEventListener("pagehide",_flushSaveNow);
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") _flushSaveNow(); });
 function closePublishBox(){ document.getElementById("publishBox").classList.remove("on"); }
 function scrollPartToCenter(part){ const n=PG.elNode(PG.canonId(part)); if(!n) return; n.scrollIntoView({block:"center"}); const r=n.getBoundingClientRect(); window.scrollBy(0,(r.top+r.height/2)-innerHeight/2); }   // §4.1.5 部品の真ん中が画面の真ん中
-function seeItem(it){ closePublishBox(); PG.setDevice(it.device); const dSP=document.getElementById("dSP"),dPC=document.getElementById("dPC"); if(it.device==="sp"){dSP.classList.add("on");dPC.classList.remove("on");}else{dPC.classList.add("on");dSP.classList.remove("on");} const part=it.parts[0]; PG.selectOnly(PG.canonId(part)); scrollPartToCenter(part); }
+function seeItem(it){ closePublishBox(); if(it.page&&PG.setPage) PG.setPage(it.page); PG.setDevice(it.device); const dSP=document.getElementById("dSP"),dPC=document.getElementById("dPC"); if(it.device==="sp"){dSP.classList.add("on");dPC.classList.remove("on");}else{dPC.classList.add("on");dSP.classList.remove("on");} const part=it.parts[0]; PG.selectOnly(PG.canonId(part)); scrollPartToCenter(part); }
 function showPublishBox(items){ const box=document.getElementById("publishBox"); box.innerHTML="";
   const inner=document.createElement("div"); inner.className="pbox-inner";
   const title=document.createElement("div"); title.className="pbox-title"; title.setAttribute("data-pbox-title",String(items.length)); title.textContent="公開する前に、見てほしい所が "+items.length+" つあります"; inner.appendChild(title);
-  const KIND={overlap:"重なっている所",long:"長い文",emptyPhoto:"写真のない枠",system:"仕組みの重なり・はみ出し"};
+  const KIND={overlap:"重なっている所",long:"長い文",emptyPhoto:"写真のない枠",system:"仕組みの重なり・はみ出し",shop:"お店の情報"};
   const list=document.createElement("div"); list.className="pbox-list";
-  for(const kind of ["overlap","long","emptyPhoto","system"]){ const grp=items.filter(i=>i.kind===kind); if(!grp.length) continue;
+  for(const kind of ["shop","overlap","long","emptyPhoto","system"]){ const grp=items.filter(i=>i.kind===kind); if(!grp.length) continue;
     const h=document.createElement("div"); h.className="pbox-kind"; h.textContent=KIND[kind]; list.appendChild(h);
     for(const it of grp){ const row=document.createElement("div"); row.className="pbox-row"; row.setAttribute("data-pbox-kind",kind); row.setAttribute("data-pbox-dev",it.device);
       const t=document.createElement("span"); t.className="pbox-rowtext"; t.textContent=it.text; row.appendChild(t);

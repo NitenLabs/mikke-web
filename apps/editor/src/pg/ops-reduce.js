@@ -236,6 +236,7 @@ function reduce(ops, device, peek) {
     else if ((m = bb.match(/^mc_(.+)$/))) { const ct = C.categories && C.categories[m[1]]; if (ct) ct.name = editMap[id]; }
     else if ((m = bb.match(/^mg_(.+)$/))) { const mn = C.menus && C.menus[m[1]]; if (mn) mn.name = editMap[id]; }
   }
+  shopTextToShop(effShop, editMap, allSecs, secContent);   // J44・J45 アクセスの電話・住所の書き換えを ① へ、アクセス・フッターの連動する文字を ① から（pg/shopinfo-pages.js）
   // 並びの設定を解決（この画面の変更 → 土台 → テンプレの既定）。items セクションごとに cards/table を作る
   const effSpec = (gid) => sourceSess[gid] || baseSource[gid] || templateSource(gid);
   const sourceResolved = {};

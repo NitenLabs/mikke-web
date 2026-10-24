@@ -25,8 +25,16 @@ function priceOf(shop, itemId, placementId) { const cat = (shop && shop.catalog)
 // 出ていない品（販売休止・時期外）は hidden（2a は描かない。2b で編集時だけ薄く出す）。名前・説明・価格は ① の品／載せ方から。
 const MENU_ORDER = ["mnu_tento", "mnu_kanmi"];
 function fmtServing(st) { if (!st || !st.periods || !st.periods.length) return ""; const f = (t) => { const a = String(t).split(":"); let h = +a[0]; let p = ""; if (h >= 24) { p = "翌"; h -= 24; } return p + h + ":" + a[1]; }; let s = st.periods.map((p) => f(p.start) + "〜" + f(p.end)).join("・"); const lo = st.periods.find((p) => p.lastOrder); if (lo) s += "（L.O. " + f(lo.lastOrder) + "）"; return "提供時間 " + s; }
-// 出ていない品の理由（編集時だけ薄く添える・§2.4）。販売休止＝「休んでいます」／時期外＝「◯〜◯月だけ出ます」。
-function hiddenReason(it) { if (it.status && it.status !== "onSale") return "休んでいます"; if (it.season && it.season.months && it.season.months.length) { const ms = [...it.season.months].sort((a, b) => a - b); return ms[0] + "〜" + ms[ms.length - 1] + "月だけ出ます"; } return ""; }
+// 出ていない品の理由（編集時だけ薄く添える・§2.4）。販売休止＝「休んでいます」／時期外＝「12〜2月だけ出ます」「3月・5月だけ出ます」。
+// F46 出す月の文字：続く月は「12〜2月」（年をまたいでもよい）、飛ぶ月は「3月・5月」、1つなら「11月」。12か月全部は「いつでも」
+function fmtMonths(months) {
+  const set = new Set((months || []).map(Number).filter((m) => m >= 1 && m <= 12)); if (!set.size) return ""; if (set.size === 12) return "いつでも";
+  let start = 1; while (!set.has(start) || set.has(start === 1 ? 12 : start - 1)) start = start % 12 + 1;   // 前の月が無い月から数える（年をまたぐ続きを1つにする）
+  const runs = []; let m = start, seen = 0;
+  while (seen < 12) { if (set.has(m)) { const a = m; let b = m; while (set.has(b % 12 + 1) && b % 12 + 1 !== a && seen < 12) { b = b % 12 + 1; seen++; } runs.push(a === b ? a + "月" : a + "〜" + b + "月"); m = b; } m = m % 12 + 1; seen++; }
+  return runs.join("・");
+}
+function hiddenReason(it) { if (it.status && it.status !== "onSale") return "休んでいます"; if (it.season && it.season.months && it.season.months.length) return fmtMonths(it.season.months) + "だけ出ます"; return ""; }
 function deriveMenuGroups(shop) {
   const cat = (shop && shop.catalog) || {}; const menus = cat.menus || {}, cats = cat.categories || {}, items = cat.items || {}, placements = cat.placements || {};
   return MENU_ORDER.filter((id) => menus[id]).map((menuId) => {
@@ -78,4 +86,4 @@ function applyShopOps(shop, ops) {
 }
 const isShopOp = (t) => t === "shopField" || t === "shopPrice" || t === "shopAdd" || t === "shopDel" || t === "shopLabels" || t === "shopReorder" || t === "shopCatAdd" || t === "shopCatDel" || t === "shopPlcAdd" || t === "shopLabelDef";
 
-export { CARD_ALIAS, TABLE_ALIAS, REV_CARD, REV_TABLE, cardPartId, tablePartId, itemOfCardPart, itemOfTablePart, fmtAmt, fmtPriceOpt, formatPrices, curMonth, isDisplayable, priceOf, MENU_ORDER, fmtServing, hiddenReason, deriveMenuGroups, deriveGroup, applyShopOps, isShopOp };
+export { CARD_ALIAS, TABLE_ALIAS, REV_CARD, REV_TABLE, cardPartId, tablePartId, itemOfCardPart, itemOfTablePart, fmtAmt, fmtPriceOpt, formatPrices, curMonth, isDisplayable, priceOf, MENU_ORDER, fmtServing, fmtMonths, hiddenReason, deriveMenuGroups, deriveGroup, applyShopOps, isShopOp };
