@@ -40,7 +40,13 @@ export function configProblems(env: Env): string[] {
     if (isLocal(host) && isLocal(pub)) continue;
     if (siteOf(host) === siteOf(pub)) out.push(`公開ページのドメイン（${pub}）とアプリのドメイン（${host}）は、別の親ドメインにしてください`);
   }
-  if (!["log", "memory"].includes(env.MAILER)) out.push(`MAILER=${env.MAILER} はまだ作っていません（log か memory）`);
+  if (!["log", "memory", "resend"].includes(env.MAILER)) out.push(`MAILER=${env.MAILER} はまだ作っていません（log・memory・resend）`);
+  if (env.MAILER === "resend") {
+    if (!env.RESEND_API_KEY) out.push("MAILER=resend には RESEND_API_KEY（`wrangler secret put RESEND_API_KEY`）が要ります");
+    // 「名前 <address@domain>」か「address@domain」
+    if (!env.MAIL_FROM || !/^(?:[^<>]*<[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+>|[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+)$/.test(env.MAIL_FROM.trim()))
+      out.push("MAILER=resend には MAIL_FROM（例 `芦屋みっけ <login@mail.example.jp>`。Resend で確かめたドメイン）が要ります");
+  }
   if (secure && env.MAILER === "log") out.push("本番（COOKIE_SECURE=true）で MAILER=log は使えません（ログインのコードがログに残るだけになる）");
   if (!env.AUTH_SECRET || env.AUTH_SECRET.length < 32) out.push("AUTH_SECRET（32 文字以上）が設定されていません");
   return out;

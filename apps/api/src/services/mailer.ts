@@ -7,7 +7,7 @@ export interface LoginMail {
   expiresMinutes: number;
 }
 
-/** メールの送り先の差し替え口。本物（Resend）は後で足す */
+/** メールの送り先の差し替え口（log・memory・resend） */
 export interface Mailer {
   sendLogin(mail: LoginMail): Promise<void>;
 }
@@ -27,14 +27,83 @@ export class MemoryMailer implements Mailer {
   }
 }
 
+/** ログインのメールの文面（日本語・短く）。件名にコードは入れない（スマホの通知・ロック画面に出るので） */
 export function loginMailText(m: LoginMail): { subject: string; text: string } {
   return {
-    subject: `芦屋みっけ ログインのコード ${m.code}`,
+    subject: "芦屋みっけ ログインのコード",
     text:
-      `ログインのコード：${m.code}\n\n` +
-      `または、次のリンクを開いてください（${m.expiresMinutes} 分のあいだ、1回だけ使えます）。\n${m.link}\n\n` +
-      `このメールに覚えがなければ、何もしないでください。`,
+      `芦屋みっけにログインするためのコードです。\n\n` +
+      `コード：${m.code}\n\n` +
+      `または、次のリンクを開くとログインできます。\n${m.link}\n\n` +
+      `コードとリンクは${m.expiresMinutes}分で切れます（1回だけ使えます）。\n` +
+      `心当たりが無ければ、このメールは無視してください。\n\n` +
+      `芦屋みっけ\n`,
   };
+}
+
+/** 送れなかった。message にコード・リンク・API キーは入れない */
+export class MailError extends Error {
+  constructor(
+    public status: number | null,
+    public retryable: boolean,
+    detail: string,
+  ) {
+    super(`メールを送れませんでした（${status ?? "つながらない"}）：${detail}`);
+  }
+}
+
+export const RESEND_URL = "https://api.resend.com/emails";
+
+/**
+ * 本物の送信：Resend（https://resend.com/docs/api-reference/emails/send-email）。
+ * 429・5xx・つながらないときは 1 回だけやり直す（同じ Idempotency-Key なので 2 通にはならない）。4xx はやり直さない。
+ */
+export class ResendMailer implements Mailer {
+  private fetch: typeof fetch;
+  constructor(private o: { apiKey: string; from: string; fetch?: typeof fetch; retryDelayMs?: number }) {
+    this.fetch = o.fetch ?? ((...a) => fetch(...a));
+  }
+
+  async sendLogin(m: LoginMail) {
+    const { subject, text } = loginMailText(m);
+    const init: RequestInit = {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this.o.apiKey}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": `mikke-login-${crypto.randomUUID()}`,
+      },
+      body: JSON.stringify({ from: this.o.from, to: [m.to], subject, text }),
+    };
+    let last: MailError | null = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      if (attempt) await new Promise((r) => setTimeout(r, this.o.retryDelayMs ?? 500));
+      let res: Response;
+      try {
+        res = await this.fetch(RESEND_URL, init);
+      } catch (e) {
+        last = new MailError(null, true, String(e).slice(0, 200));
+        continue;
+      }
+      if (res.ok) return;
+      const detail = await res
+        .text()
+        .then((t) => {
+          try {
+            const j = JSON.parse(t);
+            return String(j.message ?? j.name ?? t);
+          } catch {
+            return t;
+          }
+        })
+        .catch(() => "");
+      // 念のため、返ってきた文に宛先のコード・キーが混ざっていても出さない
+      const safe = detail.slice(0, 300).split(m.code).join("******").split(this.o.apiKey).join("***");
+      last = new MailError(res.status, res.status === 429 || res.status >= 500, safe);
+      if (!last.retryable) throw last;
+    }
+    throw last!;
+  }
 }
 
 let override: Mailer | null = null;
@@ -50,8 +119,11 @@ export function mailerFor(env: Env): Mailer {
       return new MemoryMailer();
     case "log":
       return new LogMailer();
+    case "resend":
+      if (!env.RESEND_API_KEY || !env.MAIL_FROM) throw new Error("MAILER=resend には RESEND_API_KEY と MAIL_FROM が要ります");
+      return new ResendMailer({ apiKey: env.RESEND_API_KEY, from: env.MAIL_FROM });
     default:
-      // resend などはまだない。黙って送らないのは困るので、はっきり失敗させる
-      throw new Error(`MAILER=${env.MAILER} はまだ作っていません（log か memory）`);
+      // 黙って送らないのは困るので、はっきり失敗させる
+      throw new Error(`MAILER=${env.MAILER} はまだ作っていません（log・memory・resend）`);
   }
 }

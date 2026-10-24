@@ -18,9 +18,9 @@ npm run dev                      # http://localhost:8787
 ```
 
 - `npm run seed` は、マイグレーションを当て、`samples/ashiyado` の ①（shop.json）・③（theme.json）・④（assets.json と media/ の写真 12 枚）から、お店 `shp_ashiyado`（スラッグ `ashiyado`）・制作側・店主・下書き・写真を local の D1・R2 に入れる。②の下書きは wa-01 の「何もしていない」形（`{template, sections}`）。`samples/` は読むだけ
-- ログイン：`POST /api/auth/request` を送ると、**wrangler dev の画面に `[mail] to=… code=123456 link=…` が出る**（今のメールは「ログに出す」だけ）
+- ログイン：`POST /api/auth/request` を送ると、**wrangler dev の画面に `[mail] to=… code=123456 link=…` が出る**（local の `MAILER = "log"`。本番は `resend`）
 - 公開ページ：公開したあと `http://ashiyado.localhost:8787/`（Chrome・Firefox は `*.localhost` を手元に向ける。curl なら `-H "Host: ashiyado.localhost"`）
-- 毎日 0 時の仕事を手で走らせる：`npx wrangler dev --test-scheduled` で動かし、`curl -X POST localhost:8787/cdn-cgi/handler/scheduled`
+- 毎日 0 時の仕事を手で走らせる：`npx wrangler dev --test-scheduled` で動かし、`curl -X POST localhost:8787/cdn-cgi/handler/scheduled`（バックアップが local の R2 の `backups/<日付>.json.gz` にできる）
 
 curl で一通り：
 
@@ -37,7 +37,7 @@ curl -H 'Host: ashiyado.localhost' localhost:8787/
 ## 試験
 
 ```sh
-npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。9 ファイル 114 件
+npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。13 ファイル 137 件
 npm run typecheck   # tsc
 ```
 
@@ -46,12 +46,16 @@ npm run typecheck   # tsc
 | ファイル | 項目 |
 |---|---|
 | `test/auth.test.ts` | B1 ログイン（M2・M3・L2・L3・L8・L9）・CSRF・CORS・Vary（L11） |
+| `test/mailer.test.ts` | B1 本物のメール（Resend に送る中身・文面・送れなかったとき・設定） |
+| `test/ratelimit.test.ts` | B1 ログインの手前の IP ごとの回数の制限（申し込み・確かめ・IPv6・binding がないとき） |
 | `test/perms.test.ts` | B2 権限（店主に制作側のアドレスを見せない L7） |
 | `test/drafts.test.ts` | B3・B4 下書き、編集の設定、変更の記録 |
 | `test/publish.test.ts` | D1 公開、D3 配信、D4 履歴と戻す、CSP と HTML の検査（M4）、L1・M1・L10 |
 | `test/htmlcheck.test.ts` | HTML の検査の細かいところ（M4） |
 | `test/assets.test.ts` | C2 写真の検査（M5）、C4 ゴミ箱、写真の量の上限（L10） |
+| `test/variants.test.ts` | C3 写真の大きさ違い（受け取り・検査・配信・前の写真・量・掃除） |
 | `test/cron.test.ts` | D6 毎日の描き直しの入口、1 軒の失敗で止まらない（M1）、期限切れの片づけ（L4） |
+| `test/backup.test.ts` | B6 毎日のバックアップ（置き場所・中身・戻すと同じ・30 日・失敗してもほかは続く） |
 | `test/config.test.ts` | 危ない設定では動かない（L5・L6） |
 | `test/seed.test.ts` | 芦屋堂の種まき |
 
@@ -64,7 +68,7 @@ npm run typecheck   # tsc
 | 道 | 中身 | 権限 |
 |---|---|---|
 | `GET /api/health` | 生きているか | — |
-| `POST /api/auth/request` `{email}` | 6 桁のコードとリンクをメールで送る（有効 15 分、1 回だけ）。**申し込んだブラウザの Cookie（`__Host-mikke_lgn`）を付ける**。登録のないアドレスでも同じ答え。同じアドレスは 60 秒あける・1 時間に 5 回まで（429・`Retry-After`）。答え `{ok, expiresInMinutes, retryAfter}` | — |
+| `POST /api/auth/request` `{email}` | 6 桁のコードとリンクをメールで送る（有効 15 分、1 回だけ）。**申し込んだブラウザの Cookie（`__Host-mikke_lgn`）を付ける**。登録のないアドレスでも同じ答え。同じアドレスは 60 秒あける・1 時間に 5 回まで（429・`Retry-After`）。本番では同じ IP から 1 分に 10 回まで（429 `too_many_ip`）。答え `{ok, expiresInMinutes, retryAfter}` | — |
 | `POST /api/auth/verify` `{email, code}` か `{token}` | コードかリンクの合言葉で入る。Cookie を付けて `{user}`。**コードは申し込んだブラウザ（`__Host-mikke_lgn` を持つ）でだけ使える**。1 つのコードで 5 回まで。アカウントごとに 24 時間で 20 回まちがえたら、コードでは 24 時間入れない（429 `locked`。リンクでは入れる）。リンクの合言葉はどの端末でも使える | — |
 | `POST /api/auth/logout` | このセッションを消す | — |
 | `POST /api/auth/logout-all` | このユーザーの全部の端末のセッションを消す。答え `{ok, sessions}` | ログイン |
@@ -83,10 +87,12 @@ npm run typecheck   # tsc
 | `GET /api/shops/:shopId/backups` | 戻す前の下書き（新しい方から 10） | 店 |
 | `GET /api/shops/:shopId/backups/:id` | その中身 `{shop, site}` | 店 |
 | `POST /api/shops/:shopId/backups/:id/restore` `{siteDraftVersion, shopDraftVersion}` | 戻す前の下書きを下書きに戻す（①②③） | 店 |
-| `POST /api/shops/:shopId/assets` | 写真を上げる。本文は写真そのもの、`Content-Type: image/jpeg\|png\|webp`、名前は `X-File-Name`（URL エンコード）。答え 201 で ④ の 1 件 `{id, kind, file:{key,mime,width,height,bytes,exifStripped}, uploadedAt, uploadedBy, origin, rights}` | 店 |
+| `POST /api/shops/:shopId/assets` | 写真を上げる。本文は写真そのもの、`Content-Type: image/jpeg\|png\|webp`、名前は `X-File-Name`（URL エンコード）。**大きさ違いも一緒に送るときは `multipart/form-data`**（下の「写真の大きさ違い」）。答え 201 で ④ の 1 件 `{id, kind, file:{key,mime,width,height,bytes,exifStripped}, uploadedAt, uploadedBy, origin, rights}`（大きさ違いは ④ に入れない） | 店 |
 | `GET /api/shops/:shopId/assets?trash=1` | ④ の一覧（`assets.json` と同じ `{schemaVersion, assets:{id: …}}`。`trash=1` でゴミ箱の中も） | 店 |
 | `GET /api/shops/:shopId/assets/:id` | 1 件 | 店 |
 | `GET /api/shops/:shopId/assets/:id/file` | 写真そのもの（編集画面用） | 店 |
+| `GET /api/shops/:shopId/assets/:id/variants` | 大きさ違いの一覧 `{id, widths:[640,1280,…], variants:[{width,height,format,mime,bytes,key}]}`（前に上げた写真は `variants: []`） | 店 |
+| `POST /api/shops/:shopId/assets/:id/variants` | 前に上げた 1 枚だけの写真に、大きさ違いを足す（`multipart/form-data`、`file` なしで大きさ違いだけ）。**1 回だけ**（もうあれば 409）。答え 201 で上と同じ形 | 店 |
 | `PATCH /api/shops/:shopId/assets/:id` `{alt?, slot?, kind?, rights?:{basis, note?}}` | 台帳を直す | 店 |
 | `DELETE /api/shops/:shopId/assets/:id` | ゴミ箱へ。答え `{trashedAt, purgeAfterDays:30, referencedBy:["version:3", "draft:site", …]}` | 店 |
 | `POST /api/shops/:shopId/assets/:id/restore` | ゴミ箱から戻す | 店 |
@@ -133,6 +139,7 @@ npm run typecheck   # tsc
 | `/`・`/menu`（`/menu/` も） | 公開中の版のページ。`Cache-Control: no-cache`＋`ETag`（公開したらすぐ変わる。304 も返す） |
 | `/style.css`・`/sitemap.xml`・`/robots.txt` | 公開のときに送ったもの |
 | `/media/ast_…` | 公開中の版が指している、このお店の写真だけ（ゴミ箱に入れていても、版が指していれば出す）。`immutable` |
+| `/media/ast_…/<幅>.webp`・`/media/ast_…/<幅>.jpg` | その写真の大きさ違い（C3。配ってよい写真の決まりは上と同じ）。幅は下の「写真の大きさ違い」の決まった幅だけ（ほかは 404）。WebP がない写真は同じ幅の JPEG を、大きさ違いのない前の写真は元の 1 枚を返す（このときだけ 1 日） |
 | `/_mikke/site.js` | 決まったスクリプト（お店によらず同じ） |
 | ほか | 404。お店の `/404` があればそれ、なければ決まった 404 ページ。まだ公開していないお店・知らないスラッグも 404 |
 
@@ -143,9 +150,36 @@ default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://
 img-src 'self' data:; frame-src https://www.google.com; base-uri 'none'; form-action 'self'; object-src 'none'; frame-ancestors 'none'
 ```
 
+### 写真の大きさ違い（C3）
+
+Workers の中では画像を縮められない（有料の Cloudflare Images は使わない）ので、**編集画面が写真を上げるときに、ブラウザで大きさ違いを作って一緒に送る**。
+
+- **幅**：640・1280・2400 のうち写真の幅 W より小さいもの＋W（W は 2400 以下）。例 W=2400 → 640・1280・2400／W=2000 → 640・1280・2000／W=1000 → 640・1000／W=500 → 500。高さは元の比のまま `round(H × 幅 / W)`（±1 まで許す）
+- **形式**：JPEG（`<幅>.jpg`）は全部の幅が要る。WebP（`<幅>.webp`）は全部の幅か、まったくなし（`canvas.toBlob(…, "image/webp")` が WebP を返さないブラウザでは送らない。`blob.type` を見て決める）
+- **送り方**：`POST /api/shops/:shopId/assets` に `multipart/form-data`。`file` が写真（今までの 2400px の 1 枚。JPEG・PNG・WebP）、ほかの部分の名前が `640.webp`・`640.jpg`・`1280.webp`… 名前は `X-File-Name` か `file` のファイル名
+  ```js
+  const fd = new FormData();
+  fd.append("file", blob2400, "店の外観.jpg");
+  for (const w of widths) { fd.append(`${w}.jpg`, jpg[w]); if (webp) fd.append(`${w}.webp`, webp[w]); }
+  await fetch(`/api/shops/${shopId}/assets`, { method: "POST", body: fd, credentials: "include" }); // Content-Type は付けない（ブラウザが boundary を付ける）
+  ```
+- **検査**：大きさ違いもそれぞれ写真と同じ検査（M5：種類・撮影データ・終わりの後ろのデータ）。加えて名前・幅・高さ・そろい方。どれか 1 つでも通らなければ、写真も含めて何も置かない（`{error, message, variant:"640.jpg"}`。主な種類 `invalid_variant`・`incomplete_variants`・`variant_size_mismatch`・`metadata_present`・`trailing_data`(400)、`type_mismatch`・`not_an_image`(415)）。1 枚 10MB、本文全体 48MB まで。大きさ違いも写真の量（L10）に数える
+- **公開用の HTML**：写真は `srcset` で大きさ違いを指す（幅の並びは ④ の `file.width` から上の決まりで作れるので、API に聞かなくてよい）。`<picture>` で WebP を先に、`<img>` に JPEG を。`width`・`height` は ④ の値（並びが崩れないように）、`sizes` は写真の枠の表示幅
+  ```html
+  <picture>
+    <source type="image/webp" sizes="(min-width: 768px) 50vw, 100vw"
+      srcset="/media/ast_frma/640.webp 640w, /media/ast_frma/1280.webp 1280w, /media/ast_frma/2400.webp 2400w">
+    <img src="/media/ast_frma/1280.jpg" sizes="(min-width: 768px) 50vw, 100vw"
+      srcset="/media/ast_frma/640.jpg 640w, /media/ast_frma/1280.jpg 1280w, /media/ast_frma/2400.jpg 2400w"
+      width="2400" height="1600" alt="店の外観" loading="lazy" decoding="async">
+  </picture>
+  ```
+  ファーストビューの写真は `loading="lazy"` を付けず `fetchpriority="high"`（D7）。CSS の背景の写真は `image-set()` か、いちばん合う幅 1 つ
+- **前に上げた 1 枚だけの写真**：`/media/<ID>` は今までどおり。大きさ違いの道で頼まれても元の 1 枚を返すので、HTML は写真によらず同じ形で書いてよい。あとから `POST …/assets/:id/variants` で足せる（1 回だけ）
+
 ### エラーの形
 
-`{error: "種類", message: "日本語の説明", …}`。主な種類：`unauthenticated`(401)・`forbidden`/`bad_origin`(403)・`not_found`(404)・`conflict`(409)・`precondition_required`(428)・`too_soon`/`too_many`/`locked`(429)・`too_large`/`quota_exceeded`(413)・`unsupported_media_type`/`not_an_image`/`type_mismatch`(415)・`too_deep`/`unsafe_html`/`metadata_present`/`trailing_data`/`invalid_*`(400)
+`{error: "種類", message: "日本語の説明", …}`。主な種類：`unauthenticated`(401)・`forbidden`/`bad_origin`(403)・`not_found`(404)・`conflict`(409)・`precondition_required`(428)・`too_soon`/`too_many`/`too_many_ip`/`locked`(429)・`too_large`/`quota_exceeded`(413)・`unsupported_media_type`/`not_an_image`/`type_mismatch`(415)・`too_deep`/`unsafe_html`/`metadata_present`/`trailing_data`/`invalid_*`(400)
 
 ### 編集画面からの呼び方（守ること）
 
@@ -164,23 +198,46 @@ img-src 'self' data:; frame-src https://www.google.com; base-uri 'none'; form-ac
 | R2 | `mikke-media-staging`・`mikke-media-production` |
 | 公開のドメイン | 例 `mikke.site`。DNS に `*`（ワイルドカード、プロキシ有効）と Workers のルート `*.<ドメイン>/*`。**`*.staging.<ドメイン>` のような 2 段のワイルドカードは無料の証明書（Universal SSL）では足りない**（Advanced Certificate Manager が要る）。試しは別のドメインにするか、`<スラッグ>-staging.<ドメイン>` にするかを決める |
 | アプリのドメイン | 編集画面と API。**公開のドメインとは別の親ドメインが必須**（例 公開 `mikke.site`／アプリ `app.mikke-web.jp`）。同じ親ドメインだと、起動したときに設定の問題として止まる（L5。公開ページはお店ごとに中身を作れるので、アプリと同じサイトに置かない）。`https` も必須 |
-| Resend | API キー（`wrangler secret put RESEND_API_KEY`）、送り元のドメインの確認（SPF・DKIM の DNS）、送り元のアドレス（`MAIL_FROM`）。`MAILER = "resend"` の実装はまだ（下の「まだ」）。**本番（`COOKIE_SECURE = "true"`）で `MAILER = "log"` は起動したときに止まる**（L6） |
+| Resend | API キー（`wrangler secret put RESEND_API_KEY --env production`。権限は「Sending access」だけ・送り元のドメインに絞る）、送り元のドメインの確認（Resend の画面に出る SPF・DKIM の DNS を足す）、送り元のアドレス（`vars` の `MAIL_FROM`、例 `芦屋みっけ <login@mail.<アプリのドメイン>>`）、`MAILER = "resend"`。どちらかがなければ起動したときに止まる。**本番（`COOKIE_SECURE = "true"`）で `MAILER = "log"` も止まる**（L6） |
 | 秘密の値 | `wrangler secret put AUTH_SECRET`（`openssl rand -hex 32` など 32 文字以上） |
+| IP ごとの回数の制限 | `wrangler.toml` の環境ごとに `[[env.<名前>.ratelimits]]`（`name = "LOGIN_IP_LIMITER"`・`namespace_id` は環境ごとに別の数字・`simple = { limit = 10, period = 60 }`。`period` は 10 か 60 だけ）。上の段からは引き継がれないので、環境ごとに必ず書く。数えるのは 1 つの Cloudflare の拠点の中で（拠点をまたいだ合計ではない）、おおよその数 |
 
 `wrangler.toml` の `[env.staging]` にひな形を書いてある。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
 
+### 毎日のバックアップと戻し方（B6）
+
+毎日 0 時（日本時間）の Cron で、D1 の全部の表（`d1_migrations` と内部の表は除く）を JSON にして gzip で R2 の **`backups/<日本時間の日付>.json.gz`** に置く。中身は `{format:"mikke-d1-backup", version:1, date, createdAt, migrations:[…], tables:{表: {columns, pk, rowidAlias, rows:[[rowid, 列…], …]}}}`。**30 日より古いものは消す**（今日の分を置けてから。名前が `backups/<日付>.json.gz` の形のものだけ）。写真・公開ページ（R2 の `assets/`・`sites/`）は入れない（R2 にそのまま残っている）。
+
+戻すとき（例：2026-10-25 の 0 時の状態に戻す）：
+
+1. 戻す先の D1 に、バックアップと同じマイグレーションまで当ててあることを確かめる（`npx wrangler d1 migrations list <DB> --remote --env production`。バックアップの `migrations` と、スクリプトが最初に出す「マイグレーション：… まで」）
+2. 中身を見る（まだ戻さない）：
+   ```sh
+   cd apps/api
+   node scripts/restore-backup.mjs --env production --remote --db mikke-production --bucket mikke-media-production --date 2026-10-25
+   ```
+   表ごとの行の数と、作った SQL（`.wrangler/restore/<日付>.sql`）が出る。local なら `--env`・`--remote`・`--db`・`--bucket` なしで `--date` だけ。手元のファイルなら `--file <…json.gz>`
+3. 戻す：同じものに `--apply` を付ける。バックアップにある表の中身は全部消して入れ直す（rowid も同じに戻る）
+4. 確かめる：編集画面で開き、下書き・公開中の版が戻っていること。セッションもその時刻に戻るので、ログインし直しが要ることがある
+
+気をつけること：戻すと、その時刻より後に上げた写真の行はなくなる（R2 のファイルは残るが使われない）。その日の 0 時より後にゴミ箱の掃除で消えた写真は、行は戻るがファイルはない。D1 の 1 文は 100KB までなので、長い値は空で入れてから 16,000 文字ずつ足す SQL にしてある（`scripts/backup-lib.mjs`）。本番では、これに加えて D1 の Time Travel（その時刻の状態に戻せる）も使える。
+
+### ログインのメール（B1・`src/services/mailer.ts`）
+
+`MAILER = "resend"` で、Resend の API（`POST https://api.resend.com/emails`）に `{from: MAIL_FROM, to:[宛先], subject, text}` を送る（文だけ。HTML にしない）。件名は「芦屋みっけ ログインのコード」（コードは件名に入れない。通知・ロック画面に出るので）。本文はコード・リンク・15 分で切れること・心当たりが無ければ無視してよいこと。送れなかったとき：429・5xx・つながらないは同じ `Idempotency-Key` で 1 回だけやり直し、だめならログに `[mail] 送れませんでした`（コード・キーは出さない）。答えは送れても送れなくても同じ（#4d）。
+
 ### 起動したときの設定の確かめ（`src/services/config.ts`）
 
-その isolate の最初の要求（と毎日の Cron）で確かめ、問題があれば**どの要求にも 500** で答える（ログに理由）。止まる条件：公開のドメインとアプリのドメインが同じ親ドメイン（local の `localhost` どうしは除く）／本番で `APP_ORIGINS` が https でない／本番で `MAILER=log`／まだない `MAILER`／`AUTH_SECRET` が 32 文字未満。
+その isolate の最初の要求（と毎日の Cron）で確かめ、問題があれば**どの要求にも 500** で答える（ログに理由）。止まる条件：公開のドメインとアプリのドメインが同じ親ドメイン（local の `localhost` どうしは除く）／本番で `APP_ORIGINS` が https でない／本番で `MAILER=log`／まだない `MAILER`／`MAILER=resend` で `RESEND_API_KEY` か `MAIL_FROM` がない／`AUTH_SECRET` が 32 文字未満。
 
 ### 量の上限（L10）
 
 | もの | 上限 |
 |---|---|
-| 写真 | お店ごとに合計 1GB・2,000 枚（ゴミ箱の中も数える）。1 枚 10MB・長い辺 2400px |
+| 写真 | お店ごとに合計 1GB・2,000 枚（ゴミ箱の中も数える。大きさ違いの分も合計に数える）。1 枚 10MB・長い辺 2400px。写真と大きさ違いをまとめて送る本文は 48MB |
 | 公開 | 同じお店で 1 分に 1 回。ページ 50 枚・1 枚 2MB・CSS 1MB・本文全体 24MB。版は 30 まで残す（1 軒で最大およそ 700MB） |
 | 下書き | ① と ②③ それぞれ 900KB、JSON の入れ子 64 段 |
-| ログイン | 同じアドレスで 60 秒に 1 回・1 時間に 5 回。1 つのコードで 5 回、アカウントごとに 1 日 20 回まちがえたら 24 時間コードは止める |
+| ログイン | 同じアドレスで 60 秒に 1 回・1 時間に 5 回。1 つのコードで 5 回、アカウントごとに 1 日 20 回まちがえたら 24 時間コードは止める。本番では加えて、同じ IP（IPv6 は /64）から申し込み・確かめそれぞれ 1 分に 10 回（429 `too_many_ip`） |
 | セッション | 使わない日が 30 日続いたら切れる。ログインしてから店主 90 日・制作側 14 日で必ず切れる |
 
 ## 決めたこと
@@ -218,17 +275,21 @@ img-src 'self' data:; frame-src https://www.google.com; base-uri 'none'; form-ac
 | 27 | API の答えにはいつも `Vary: Origin`（L11） | 途中の仕組みが、オリジンごとに違う答えを取り違えないように |
 | 28 | 期限の切れた申し込み（1 日後）・セッション・2 日より前の失敗の記録は、毎日の Cron で消す（L4） | 表が増え続けないように |
 | 29 | `MAILER=memory` は試験用。本番の設定の確かめでは止めない（`log` だけ止める） | 試験は本番と同じ `COOKIE_SECURE=true` で走らせたいため。本番で `memory` にしないこと |
+| 30 | 公開ページの写真の大きさ違い（C3）は、編集画面がブラウザで作って写真と一緒に送る（`multipart/form-data`）。幅は 640・1280・2400 のうち W より小さいもの＋W、形式は JPEG（必須）と WebP（全部かなし）。それぞれ M5 の検査と、名前・幅・高さ・そろい方を見て、1 つでも通らなければ何も置かない。台帳（④）には持たず、表 `asset_variants` と R2 の `assets/<お店>/<ID>/<幅>.<形式>` に置く。置いたら変えない（前の写真に足すのも 1 回だけ）ので `immutable`。ゴミ箱の掃除で写真と一緒に消す。#16 は今のまま（元の写真はまだ持たない） | Workers では画像を縮められず、有料の Images は使わない。DATA_SPEC 5.2「表示用の縮小版は台帳に持たない」 |
+| 31 | `/media/<ID>/<幅>.<形式>` で、頼まれた形式がなければ同じ幅の JPEG、大きさ違いがなければ元の 1 枚を返す（このときだけ 1 日で覚え直す） | HTML を写真によらず同じ形（srcset）で書ける。前の写真も切れない |
+| 32 | 毎日のバックアップ（B6）は、自分で D1 の全部の表を JSON にして R2 の `backups/<日本時間の日付>.json.gz` に置き、30 日分を残す。毎日の仕事のいちばん先に走らせる（その日の掃除の前の状態を残す）。戻すのは `scripts/restore-backup.mjs`（見るだけが既定、`--apply` で戻す）。rowid も戻し、長い値は 16,000 文字ずつに分けた SQL にする | D1 の Time Travel だけだとアカウントの外に持ち出せず、中身を見て確かめられない。戻す手順を local の試験で確かめられる。D1 の 1 文は 100KB まで |
+| 33 | 本物のメールは Resend（fetch で API を直に叩く。ライブラリは入れない）。文だけ・件名にコードを入れない。429・5xx・つながらないは同じ Idempotency-Key で 1 回だけやり直す。`MAILER=resend` は `RESEND_API_KEY`・`MAIL_FROM` がなければ起動しない（L6 と同じ考え） | 依存を増やさない。通知に出る件名にコードを出さない。やり直しで 2 通届かない |
+| 34 | ログインの申し込み・確かめの手前で、IP ごとの回数を Workers の Rate Limiting（`[[ratelimits]]` の binding `LOGIN_IP_LIMITER`）で数える。キーは `request:<IP>`・`verify:<IP>`、IPv6 は /64 にまとめる。binding がない（local・試験）・`CF-Connecting-IP` がない・数える仕組みが失敗したときは止めない。止めたときは D1 に何も書かず、メールも送らない | アドレスを変えながらの推し当て・申し込みのばらまきを 1 か所から絞る。数える仕組みの故障でログインが止まらないように（アドレスごとの制限は D1 で効いている） |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと
 
-- **Resend でのメール**（`MAILER = "resend"`）。今は `log`（wrangler dev の画面に出る）と `memory`（試験用）だけ。`resend` にすると、黙って送らずにはっきり失敗する
-- IP ごとの回数の制限（ログインの申し込み・確かめ）。本番では Cloudflare の Rate Limiting のルールで足す
-- 申し込みの回数の制限（同じアドレスで 1 時間に 5 回）は、ほかの人が先に使い切ると本人も 1 時間申し込めない（妨害の余地）。IP ごとの制限を足すときに見直す
+- Resend で本当に届くか（迷惑メールに入らないか・Gmail・携帯のアドレス）は、アカウントとドメインができてから人が確かめる（試験は fetch を差し替えて、送る中身まで）
+- 申し込みの回数の制限（同じアドレスで 1 時間に 5 回）は、ほかの人が先に使い切ると本人も 1 時間申し込めない（妨害の余地）。IP ごとの制限（#34）で 1 か所からの妨害は絞れたが、多くの IP からの妨害は残る。困ったら、アドレスごとの数を「ブラウザ（`__Host-mikke_lgn`）ごと」に分けるか、制作側が店主にリンクを出す道を足す
 - `/_mikke/site.js` の中身（テンプレートの担当が決める。今は空）
-- 公開ページの写真を画面の大きさに合わせて配る（C3）・元の写真の保存（5.2 v4）
+- 元の写真の保存（5.2 v4）。大きさ違いは 2400px の写真から作る（C3 は済）
 - 毎日の描き直しそのもの（D6・M4）。今は一覧を返してログに出すまで
-- 毎日のバックアップ（B6）。D1 の Time Travel（30 日）を使う前提で、手順は本番のアカウントができてから
+- B6 の「人が 1 回戻してみる」は、本番のアカウントができてから（試しの環境で、上の手順どおりに）。バックアップは 1 回で全部をメモリに読むので、お店が増えて大きくなったら（数十 MB を超えたら）表ごとに分けるか R2 の分割アップロードにする
 - 独自ドメイン（v1 は制作側が手で設定）
 - 変更の記録の古いものの片づけ（今は消さない）
 - staging・production の `wrangler.toml` の値（アカウント待ち）

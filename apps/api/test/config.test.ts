@@ -19,7 +19,7 @@ describe("L5・L6 危ない設定では動かない", () => {
 
   it("L6-1 本番（COOKIE_SECURE=true）で MAILER=log なら断る。まだない MAILER も断る", () => {
     expect(configProblems({ ...base, MAILER: "log" }).join()).toContain("MAILER=log");
-    expect(configProblems({ ...base, MAILER: "resend" }).join()).toContain("まだ作っていません");
+    expect(configProblems({ ...base, MAILER: "smtp" }).join()).toContain("まだ作っていません");
     expect(configProblems({ ...base, APP_ORIGINS: "http://app.mikke-web.jp" }).join()).toContain("https");
     expect(configProblems({ ...base, AUTH_SECRET: "short" }).join()).toContain("AUTH_SECRET");
   });

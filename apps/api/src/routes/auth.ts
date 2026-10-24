@@ -5,6 +5,7 @@ import { hmacHex, newId, randomCode, randomToken, sha256Hex, timingSafeEqual } f
 import { ApiError, bad, isPlainObject, readJson } from "../lib/http";
 import { mailerFor } from "../services/mailer";
 import { allowedOrigins } from "../services/csrf";
+import { limitByIp } from "../services/ratelimit";
 import { cookieSecure, createSession, destroySession, requireUser } from "../services/session";
 
 export const LOGIN_TTL_MIN = 15;
@@ -49,6 +50,7 @@ export const auth = new Hono<AppEnv>();
 
 /** B1：メールアドレス → 6 桁のコードとリンク */
 auth.post("/request", async (c) => {
+  await limitByIp(c, "request");
   const body = await readJson<{ email?: unknown }>(c, 4096);
   const email = normalizeEmail(isPlainObject(body) ? body.email : undefined);
   const now = Date.now();
@@ -117,6 +119,7 @@ auth.post("/request", async (c) => {
 
 /** B1：コード（email＋code。申し込んだブラウザでだけ）かリンクの合言葉（token）で入る。どちらも 1 回だけ */
 auth.post("/verify", async (c) => {
+  await limitByIp(c, "verify");
   const body = await readJson<Record<string, unknown>>(c, 4096);
   if (!isPlainObject(body)) throw INVALID();
   const now = Date.now();

@@ -10,6 +10,8 @@ export interface Env {
   AUTH_SECRET: string;
   RESEND_API_KEY?: string;
   MAIL_FROM?: string;
+  /** ログインの手前の IP ごとの回数の制限（Workers の Rate Limiting）。local・試験ではない */
+  LOGIN_IP_LIMITER?: RateLimit;
 }
 
 export type Role = "owner" | "producer";
