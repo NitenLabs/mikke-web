@@ -8,6 +8,8 @@ compatibility_flags = ["nodejs_compat"]
 [vars]
 # 公開ページのドメイン。<お店のスラッグ>.<PUBLIC_DOMAIN> でお店を引く
 PUBLIC_DOMAIN = "localhost"
+# local だけ：公開ページのアドレスの番号（http://ashiyado.localhost:8787/）
+PUBLIC_PORT = "8787"
 # 編集画面のオリジン（CSRF の確かめ・CORS・ログインのリンクの行き先）。カンマ区切りで複数可。先頭がリンクの行き先
 APP_ORIGINS = "http://localhost:8787"
 # メールの送り先：log（ログに出すだけ）／memory（試験用）／resend（後で）

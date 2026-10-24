@@ -5,6 +5,8 @@ export interface Env {
   APP_ORIGINS: string;
   MAILER: string;
   COOKIE_SECURE: string;
+  /** local だけ：公開ページのアドレスに付ける番号（8787） */
+  PUBLIC_PORT?: string;
   AUTH_SECRET: string;
   RESEND_API_KEY?: string;
   MAIL_FROM?: string;

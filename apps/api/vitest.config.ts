@@ -16,6 +16,7 @@ export default defineConfig(async () => {
             PUBLIC_DOMAIN: "mikke.test",
             APP_ORIGINS: "https://app.mikke-web.test",
             COOKIE_SECURE: "true",
+            PUBLIC_PORT: "",
           },
         },
       }),

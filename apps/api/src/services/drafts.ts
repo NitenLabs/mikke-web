@@ -10,8 +10,8 @@ export interface DraftRow {
   updatedBy: string | null;
 }
 
-/** 下書きの大きさの上限（JSON の文字数のバイト） */
-export const MAX_DRAFT_BYTES = 2 * 1024 * 1024;
+/** 下書きの大きさの上限（JSON のバイト数）。D1 の 1 行は 2MB までで、版の行は ① と ②③ の両方を持つので、それぞれ 900KB まで */
+export const MAX_DRAFT_BYTES = 900 * 1024;
 
 /** wa-01 の「何もしていない」下書き（DATA_SPEC 4.9：{template, sections} だけ） */
 export function initialSiteDraft(): { draft: unknown; theme?: unknown } {

@@ -23,7 +23,8 @@ shops.get("/:shopId", async (c) => {
 
 export function publicUrl(env: AppEnv["Bindings"], slug: string): string {
   const secure = env.COOKIE_SECURE !== "false";
-  return `${secure ? "https" : "http"}://${slug}.${env.PUBLIC_DOMAIN}/`;
+  const port = env.PUBLIC_PORT ? `:${env.PUBLIC_PORT}` : "";
+  return `${secure ? "https" : "http"}://${slug}.${env.PUBLIC_DOMAIN}${port}/`;
 }
 
 const kindOf = (k: string): DraftKind => {
