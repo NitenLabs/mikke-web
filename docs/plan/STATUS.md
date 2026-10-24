@@ -1,10 +1,15 @@
 # 今の状況
 
-最終更新：2026-10-25 01:20（Claude.ai）。**ユーザーの都合で一度止めた**
+最終更新：2026-10-25 09:00（Claude.ai）。**新しいチャットへ引き継ぐ**
+
+## 新しいチャットで最初にやること
+- このリポジトリはまだ GitHub に push されていない。中身は、ユーザーが添付する bundle（`mikke-web_all_2026-10-25.bundle`）の中にある。`git clone <bundle> mikke-web` のあと `git branch -a` で、main と track/* がそろっていることを確かめる
+- ユーザーは 10/25 朝に GitHub の連携をした。ただ、前のチャットでは add_repo がまだ「link your GitHub account」で失敗していた。新しいチャットで `add_repo NitenLabs/mikke-web access=push` を試す。通れば、main と track/tests を push する（ほかの track/* は main に入れ済みなので push しなくてよい）。だめなら、claude.ai/customize/connectors の GitHub と github.com/apps/claude の NitenLabs への入れ方を、ユーザーに確かめてもらう
+- GitHub が空なら最初の push。空でなければ `git fetch` して、食い違いを見てから決める
 
 ## 再開するときにやること（この順）
 1. GitHub の連携ができていれば、このリポジトリ（main と track/tests）を push する。CI が回る
-2. **線 tests（track/tests、5 コミット）を仕上げる**：PowerPoint にそろえて変わった確認の手順と期待を直したもの。止めたときは「今の main で verify-claudeai の残りを走らせて確かめている途中」だった。試験台28 で run_audit が OK 2 / NG 133 のまま、試験台29 で OK 47 / NG 88 のまま、を確かめてから main に入れる
+2. **線 tests（track/tests、7 コミット。HEAD `14fa052`。main `19fa480` は取り込み済み）を仕上げる**：止めたときは、確認の担当が P28 などの通しの確認を回している途中だった。直しの最後は P19・J16（verify_extra_arrange K0・K18、verify_extra_photo H1）。今の main で verify-claudeai を全部走らせ、確認スクリプトの直しが判定を甘くしていないか（DECISIONS #10・#14）を見る。そのあと、PowerPoint にそろえて変わった確認の手順と期待を直したもの。止めたときは「今の main で verify-claudeai の残りを走らせて確かめている途中」だった。試験台28 で run_audit が OK 2 / NG 133 のまま、試験台29 で OK 47 / NG 88 のまま、を確かめてから main に入れる
 3. 今の main に全部の確認（run_audit 8本・verify-claudeai）を通しで走らせ、`tools/verify-audit/expected_ng.txt`（ラチェット）を新しくする
 4. 4回目の精査（触り回す）
 5. 保留：J17（同じ ID のまま別のセクションへ移す＝データの形の変更）、J31・J32（スマホの見せる範囲）、P15・P19（線 tests で手順を直した後に確かめる）
