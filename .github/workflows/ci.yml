@@ -1,0 +1,83 @@
+name: ci
+
+# push と PR のたびに：単体試験 → 編集画面を組み立てる → 本物の操作の確認（8 area を同時に）→ ラチェット
+on:
+  push:
+    branches: [main, 'track/**']
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # 編集画面の組み立て先（M1 の分割が main に入ったら apps/editor/dist/editor_single.html に変える）
+  EDITOR_BUILD: experiments/layout/playground30/build.mjs
+  EDITOR_HTML: refs/compare/layout/playground30_single.html
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm test
+      - name: API の試験（apps/api があれば）
+        if: hashFiles('apps/api/package.json') != ''
+        working-directory: apps/api
+        run: |
+          npm ci
+          npm test
+
+  build-editor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: node "$EDITOR_BUILD"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: editor
+          path: |
+            ${{ env.EDITOR_HTML }}
+            refs/compare/layout/playground30_testimg/
+
+  audit:
+    needs: build-editor
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        area: [text, parts, page, ppt1, ppt2, misc1, misc2, misc3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: editor, path: refs/compare/layout }
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install playwright==1.56.0 pillow
+      - run: python -m playwright install --with-deps chromium
+      - name: 確認（${{ matrix.area }}）
+        run: |
+          mkdir -p logs
+          HTML="$GITHUB_WORKSPACE/$(echo $EDITOR_HTML | sed 's#^refs/compare/layout/##; s#^#refs/compare/layout/#')"
+          ( cd logs && AUDIT_JOBS=1 python "$GITHUB_WORKSPACE/tools/verify-audit/verify_audit_${{ matrix.area }}.py" "$HTML" > "${{ matrix.area }}.log" 2>&1 ) || true
+          grep -E '^(NG|合計)' logs/${{ matrix.area }}.log | head -60
+      - uses: actions/upload-artifact@v4
+        with: { name: 'audit-${{ matrix.area }}', path: 'logs/${{ matrix.area }}.log' }
+
+  ratchet:
+    needs: audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: 'audit-*', path: logs, merge-multiple: true }
+      - name: 今 NG でよい一覧と比べる（一覧の外の NG があれば失敗）
+        run: python3 tools/verify-audit/ratchet.py logs tools/verify-audit/expected_ng.txt
