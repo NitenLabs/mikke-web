@@ -64,7 +64,9 @@ function setPartLinkCommitted(part, s, e, link) {
 function elementLinkOf(id) { const c = canonId(id); const R = reduce(activeOps()); return R.linkMap[c] || DEFAULT_ELINK[c] || null; }
 function setElementLink(id, link) { commit({ t: "elink", id: canonId(id), link: link || null }); }
 function removeElementLink(id) { commit({ t: "elink", id: canonId(id), link: null }); }
-function canElementLink(id) { const c = canonId(id); return /^F_p\d$/.test(c) || /^addp_/.test(c) || c === "I_pillbg" || /^card_photo_/.test(c); }
+function canElementLink(id) { const c = canonId(id); return /^F_p\d$/.test(c) || /^addp_/.test(c) || c === "I_pillbg" || /^card_photo_/.test(c) || a1BoxLinkable(c); }
+// P14 文字の箱まるごとのリンク（写真と同じ。品・表の中の1件の文字は品の情報なので対象にしない）
+function a1BoxLinkable(c) { return isText(c) && !isRepeat(c); }
 // 入口：部品まるごとリンク（既定も含める）
 function elementLinkApi(id) { const lk = elementLinkOf(id); return lk ? { link: clone(lk), label: linkLabel(lk), href: resolveHref(lk), newTab: linkOpensNewTab(lk) } : null; }
 // 入口：文の一部のリンクの範囲＋つなぎ先（部品ごと）。部品まるごとのリンクも合わせて返す。
