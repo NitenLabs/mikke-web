@@ -60,3 +60,12 @@ function selectMany(ids) { state.selectedSection = null; state.selected = new Se
 function clearSel() { state.selected = new Set(); state.selectedSection = null; refreshSel(); }
 function selectSection(sec) { state.selectedSection = sec; state.selected = new Set(); refreshSel(); }
 
+
+// P22 戻す・やり直すの後、その操作の部品を選んだ状態にする（PowerPoint と同じ）。ページに見えない（消えた）部品は選ばない。
+function a2SelectAfterHistory(op) {
+  if (!op) return;
+  const ids = op.ids ? op.ids : op.items ? op.items.map((it) => it.id) : op.id ? [op.id] : op.keys ? op.keys.map((k) => partIdOfBox(k)) : [];
+  if (!ids.length || op.t === "section" || op.sec) return;
+  const live = [...new Set(ids.map(canonId))].filter((id) => elNode(id)); if (!live.length) return;   // 消えた部品（足したのを戻した等）だけなら選択は変えない
+  state.selectedSection = null; state.selected = new Set(live); refreshSel();
+}
