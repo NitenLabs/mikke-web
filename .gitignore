@@ -24,3 +24,5 @@ refs/compare/layout/playground*/validate_m20/
 refs/compare/layout/playground*/verify-linux/
 refs/compare/layout/playground*/verify-audit/
 refs/compare/layout/playground*/shop_after.json
+refs/compare/layout/editor/
+apps/editor/dist/

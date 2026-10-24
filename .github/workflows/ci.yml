@@ -12,9 +12,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  # 編集画面の組み立て先（M1 の分割が main に入ったら apps/editor/dist/editor_single.html に変える）
-  EDITOR_BUILD: experiments/layout/playground30/build.mjs
-  EDITOR_HTML: refs/compare/layout/playground30_single.html
+  EDITOR_HTML: apps/editor/dist/editor_single.html
 
 jobs:
   unit:
@@ -41,13 +39,12 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps chromium
-      - run: node "$EDITOR_BUILD"
+      - run: npm run build:editor
+      - run: npm run test:core
       - uses: actions/upload-artifact@v4
         with:
           name: editor
-          path: |
-            ${{ env.EDITOR_HTML }}
-            refs/compare/layout/playground30_testimg/
+          path: apps/editor/dist/
 
   audit:
     needs: build-editor
@@ -59,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
-        with: { name: editor, path: refs/compare/layout }
+        with: { name: editor, path: apps/editor/dist }
       - uses: actions/setup-python@v5
         with: { python-version: '3.12' }
       - run: pip install playwright==1.56.0 pillow
@@ -67,7 +64,7 @@ jobs:
       - name: 確認（${{ matrix.area }}）
         run: |
           mkdir -p logs
-          HTML="$GITHUB_WORKSPACE/$(echo $EDITOR_HTML | sed 's#^refs/compare/layout/##; s#^#refs/compare/layout/#')"
+          HTML="$GITHUB_WORKSPACE/$EDITOR_HTML"
           ( cd logs && AUDIT_JOBS=1 python "$GITHUB_WORKSPACE/tools/verify-audit/verify_audit_${{ matrix.area }}.py" "$HTML" > "${{ matrix.area }}.log" 2>&1 ) || true
           grep -E '^(NG|合計)' logs/${{ matrix.area }}.log | head -60
       - uses: actions/upload-artifact@v4
