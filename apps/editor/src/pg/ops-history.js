@@ -24,7 +24,9 @@ function crossPageFor(op) { const pg = opPage(op); const devOnly = op && (["move
 function crossToast(where, verb) { if (where && typeof window !== "undefined" && window.pgToast) window.pgToast(where + "の手直しを" + verb + "ました"); }
 function undo() {
   if (state.viewing) return;
-  if (state.restoreUndo) { const r = state.restoreUndo; state.restoreUndo = null; state.base = r.base; state.ops = r.ops; state.cursor = r.cursor; state.undoBase = r.undoBase; state.secSeq = r.secSeq; state.addSeq = r.addSeq; state.shopBase = r.shopBase; render(); scheduleSave(); return; }   // §22 §6.5「この版を下書きにする」は戻す1回で元の下書き（①・②）へ
+  if (state.restoreUndo) { const r = state.restoreUndo; state.restoreUndo = null;
+    const fwd = { base: state.base, shopBase: state.shopBase, ops: state.ops, cursor: state.cursor, undoBase: state.undoBase, secSeq: state.secSeq, addSeq: state.addSeq };   // F33 やり直すでもう一度「この版を下書きにする」
+    state.base = r.base; state.ops = r.ops; state.cursor = r.cursor; state.undoBase = r.undoBase; state.secSeq = r.secSeq; state.addSeq = r.addSeq; state.shopBase = r.shopBase; state.restoreRedo = { fwd, back: r, ops: state.ops, cursor: state.cursor }; render(); scheduleSave(); return; }   // §22 §6.5「この版を下書きにする」は戻す1回で元の下書き（①・②）へ
   if (state.editing) { reconcileEdit(); flushCheckpoint(); }   // §23b 末尾の打ち分を1区切りにしてから1つ戻す
   if (state.cursor <= state.undoBase) return;   // §23c X34：戻すものが無ければ何もしない（書き換えの状態もカーソルも触らない＝PowerPoint と同じ）。§22 §2.4 開き直した後の「戻す」も undoBase まで（undoBase に着いた後の Cmd+Z も何もしない）
   state.cursor--;
@@ -35,8 +37,14 @@ function undo() {
   else if (state.editing) endEditSilently();
   scheduleSave();
 }
+// F33 「この版を下書きにする」を戻した直後（その後に手直しが無い）なら、やり直すでもう一度下書きにする
+function restoreRedoValid() { const rr = state.restoreRedo; return !!rr && !state.restoreUndo && rr.ops === state.ops && rr.cursor === state.cursor; }
 function redo() {
   if (state.viewing || state.restoreUndo) return;
+  if (restoreRedoValid() && !state.editing) { const rr = state.restoreRedo, f = rr.fwd; state.restoreRedo = null; state.restoreUndo = rr.back;
+    state.base = f.base; state.shopBase = f.shopBase; state.ops = f.ops; state.cursor = f.cursor; state.undoBase = f.undoBase; state.secSeq = f.secSeq; state.addSeq = f.addSeq; recomputeShopSeq(state.shopBase || SHOP_JSON);
+    state.selected = new Set(); state.selectedSection = null; render(); scheduleSave(); return; }
+  state.restoreRedo = null;
   if (state.editing) { reconcileEdit(); flushCheckpoint(); }
   if (state.cursor >= state.ops.length) return;
   const op = state.ops[state.cursor];
