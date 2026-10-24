@@ -68,7 +68,9 @@ function exitHistoryView(){ if(PG.viewingVersion()) PG.exitView(); syncHistoryUI
 function syncHistoryUI(){
   const viewing=!!PG.viewingVersion();
   document.body.classList.toggle("pg-viewing",viewing);
-  if(historyOpen){ buildHistoryPanel(); historyPanel.classList.add("on"); } else historyPanel.classList.remove("on");
+  if(historyOpen){ buildHistoryPanel(); historyPanel.classList.add("on");
+    const tb=document.getElementById("toolbar"); const t=viewing||!tb?0:Math.max(0,Math.round(tb.getBoundingClientRect().bottom)); historyPanel.style.top=t+"px"; historyPanel.style.height="calc(100vh - "+t+"px)"; }   // F28 上の並び（プレビュー・公開）にかぶらない
+  else historyPanel.classList.remove("on");
   if(viewing){ buildHistoryBar(); historyBar.classList.add("on"); } else historyBar.classList.remove("on");
 }
 window.addEventListener("keydown",(e)=>{ if(e.isComposing||e.keyCode===229)return;/*§23a X33*/ if(e.key==="Escape"&&PG.viewingVersion()){ e.preventDefault(); exitHistoryView(); } },true);   // §6.2 Esc＝見るだけをやめる

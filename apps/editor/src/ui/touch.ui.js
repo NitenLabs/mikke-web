@@ -11,14 +11,23 @@ function partUnder(e){ let r=elFrom(e.target); if(!r){ const sh=PG.smallHit(e.cl
 // スクロール補正：ドラッグ中にページが動いた分を足して、部品を指に付いていかせる（§3.2.3）
 function dragClient(){ return { x:tg.cx, y:tg.cy + (window.scrollY - tg.scroll0) }; }
 
+// F43 (x,y) が、つまみの持ち主（forId）でないほかの部品の文字（字の並んでいる所）の上なら、その部品の ID
+function a5OtherTextPartAt(x,y,forId){ const fc=forId&&PG.canonId(forId);
+  for(const el of document.elementsFromPoint(x,y)){ if(el.closest&&el.closest("[data-handle]")) continue; const n=el.closest&&el.closest("#sectionwrap [data-el]"); if(!n) continue;
+    const raw=n.getAttribute("data-el"); if(!raw||PG.canonId(raw)===fc) return null;
+    const w=document.createTreeWalker(n,NodeFilter.SHOW_TEXT); let t; while((t=w.nextNode())){ if(!t.nodeValue.trim()) continue; const r=document.createRange(); r.selectNodeContents(t);
+      for(const q of r.getClientRects()) if(x>=q.left&&x<=q.right&&y>=q.top&&y<=q.bottom) return raw; }
+    return null; }
+  return null; }
 function onPhoneDown(e){
   if(tg){ end1stOp(); return; }   // §4.7（試験台16）2本目の指：1本目の操作を今の位置で終える。以降の2本指はブラウザのピンチに任せる
   if(PG.state.editing && e.target.closest && e.target.closest("[contenteditable]")) return;   // 書き換え中の文字はブラウザに任せる（§3.2.4/§3.2.5）
   if(phoneView()){ return; }   // §3.2.9 見るだけ（なぞればブラウザがスクロール）
   const hdir=e.target.getAttribute&&e.target.getAttribute("data-handle");
-  if(hdir){ const forId=e.target.getAttribute("data-handle-for"); if(PG.beginResize(forId,hdir,e.clientX,e.clientY)){ tg={kind:"resize",sx:e.clientX,sy:e.clientY,cx:e.clientX,cy:e.clientY,scroll0:window.scrollY,moved:false}; e.preventDefault(); startAuto(); } return; }
+  const a5Other=hdir?a5OtherTextPartAt(e.clientX,e.clientY,e.target.getAttribute("data-handle-for")):null;   // F43 つまみがほかの部品の文字にかぶる所は、その部品を選ぶ方を優先
+  if(hdir&&!a5Other){ const forId=e.target.getAttribute("data-handle-for"); if(PG.beginResize(forId,hdir,e.clientX,e.clientY)){ tg={kind:"resize",sx:e.clientX,sy:e.clientY,cx:e.clientX,cy:e.clientY,scroll0:window.scrollY,moved:false}; e.preventDefault(); startAuto(); } return; }
   if(PG.state.editing) PG.commitEdit();
-  const rawId=partUnder(e); const id=rawId?PG.canonId(rawId):null; const grp=rawId?PG.groupOf(rawId):null;
+  const rawId=a5Other||partUnder(e); const id=rawId?PG.canonId(rawId):null; const grp=rawId?PG.groupOf(rawId):null;
   const selKey=grp?grp:id; const selStart=!!(selKey&&PG.state.selected.has(selKey));
   tg={kind:"pending",sx:e.clientX,sy:e.clientY,cx:e.clientX,cy:e.clientY,scroll0:window.scrollY,rawId:rawId,id:id,grp:grp,moved:false,selStart:selStart,downEl:e.target};
   clearLP(); lpTimer=setTimeout(onLongPress,LP_MS);
@@ -84,21 +93,27 @@ function startAuto(){ if(autoRAF) return; autoLast=performance.now();
 }
 
 // §3.2.7 つまみの押せる範囲（44×44・data-hit）。見た目のつまみ（.rz-handle）に重ねる。内側に入るのは部品の幅・高さの1/4まで。
+// F40 指で触る端末（横向き・iPad の幅＝スマホの画面でないとき）も、つまみ・帯・上の並びのボタンを 44px の押せる大きさに
+function a5TouchPC(){ try{ const coarse=!!(window.matchMedia&&window.matchMedia("(pointer: coarse)").matches); return !isPhone()&&(coarse||(navigator.maxTouchPoints||0)>0); }catch(_){ return false; } }
 function addHandleHits(){
   document.querySelectorAll(".hit-handle").forEach((n)=>n.remove());
-  if(!phoneEdit()) return;
+  const tpc=a5TouchPC(); document.body.classList.toggle("a5-touch",tpc);
+  if(!phoneEdit()&&!tpc) return;
   const sel=[...PG.state.selected]; if(sel.length!==1) return; const id=sel[0]; const g=PG.api.geometry()[id]; if(!g) return;
   const sc=PG.getScale(); const HIT=44/sc;
   for(const h of document.querySelectorAll(".rz-handle")){
     const dir=h.getAttribute("data-handle"); if(h.getAttribute("data-handle-for")!==id) continue;
+    if(tpc&&!phoneEdit()&&(((dir==="e"||dir==="w")&&g.h*sc<88)||((dir==="n"||dir==="s")&&g.w*sc<88))){ h.style.display="none"; continue; }   // F40 小さい部品は辺の真ん中のつまみを出さない（角の 44px の範囲と重なるため。PowerPoint の指の操作と同じ）
     const cx=parseFloat(h.style.left), cy=parseFloat(h.style.top);
     const inX=Math.min(HIT/2,g.w/4), inY=Math.min(HIT/2,g.h/4);
     let left,top;
     if(/e/.test(dir)) left=cx-inX; else if(/w/.test(dir)) left=cx-(HIT-inX); else left=cx-HIT/2;
     if(/s/.test(dir)) top=cy-inY; else if(/n/.test(dir)) top=cy-(HIT-inY); else top=cy-HIT/2;
     const hit=document.createElement("div"); hit.className="hit-handle"; hit.setAttribute("data-hit","handle-"+dir); hit.setAttribute("data-handle",dir); hit.setAttribute("data-handle-for",id);
-    hit.style.left=left+"px"; hit.style.top=top+"px"; hit.style.width=HIT+"px"; hit.style.height=HIT+"px";
-    h.parentNode.appendChild(hit);
+    hit.style.width=HIT+"px"; hit.style.height=HIT+"px";
+    if(tpc&&!phoneEdit()){ const hs=h.offsetWidth||0, bw=parseFloat(getComputedStyle(h).borderLeftWidth)||0;   // F40 見た目のつまみの子にする＝つまみの真ん中を押しても 44px の範囲がつまみのもの
+      hit.style.left=(left-(cx-hs/2)-bw)+"px"; hit.style.top=(top-(cy-hs/2)-bw)+"px"; h.appendChild(hit); }
+    else { hit.style.left=left+"px"; hit.style.top=top+"px"; h.parentNode.appendChild(hit); }
   }
 }
 

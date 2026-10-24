@@ -62,3 +62,17 @@ window.addEventListener("paste",(e)=>{ const cd=e.clipboardData||window.clipboar
 });
 
 // ---- §1 写真の差し替え（選ぶ・落とす・貼り付ける）----
+// F38 見えない写真の入力欄（画面の外に置いた input type=file）は Tab の順から外す（押すのは「写真」などのボタンから）
+for(const inp of document.querySelectorAll('input[type="file"]')){ inp.tabIndex=-1; inp.setAttribute("aria-hidden","true"); }
+// F39 「＋」（セクションを足す）・「その他 ▾」をキーで開いたら、一覧の最初にフォーカスを入れ、↑↓で選び、Esc で閉じる（ページはスクロールしない）
+const A5_MENUS=["#sectypes","#moreMenu"];
+let a5MenuOpener=null;
+function a5OpenMenu(){ for(const s of A5_MENUS){ const m=document.querySelector(s); if(m&&m.classList.contains("on")&&m.getBoundingClientRect().width>0) return m; } return null; }
+function a5MenuItems(m){ return [...m.querySelectorAll("button,[role=menuitem],[role=option],a")].filter(b=>{ const r=b.getBoundingClientRect(); return r.width>0&&r.height>0&&!b.disabled; }); }
+window.addEventListener("click",(e)=>{ if(e.detail!==0) return; const b=e.target&&e.target.closest&&e.target.closest(".sec-add-btn,#tMore"); if(!b) return;   // detail=0 ＝キー（Enter・Space）で押した
+  setTimeout(()=>{ const m=a5OpenMenu(); if(!m) return; const it=a5MenuItems(m); if(!it.length) return; a5MenuOpener=b; it[0].focus({preventScroll:true}); },0); },true);
+window.addEventListener("keydown",(e)=>{ if(e.isComposing||e.keyCode===229) return; const m=a5OpenMenu(); if(!m||!m.contains(document.activeElement)) return;
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"||e.key==="Home"||e.key==="End"){ e.preventDefault(); e.stopPropagation(); const it=a5MenuItems(m); if(!it.length) return; const i=it.indexOf(document.activeElement);
+    const n=e.key==="Home"?0:e.key==="End"?it.length-1:e.key==="ArrowDown"?(i+1)%it.length:(i<=0?it.length-1:i-1); it[n].focus({preventScroll:true}); return; }
+  if(e.key==="Escape"){ e.preventDefault(); e.stopPropagation(); m.classList.remove("on"); const o=a5MenuOpener; a5MenuOpener=null; if(o&&document.contains(o)) o.focus({preventScroll:true}); return; }
+  if(e.key==="Tab"){ e.preventDefault(); m.classList.remove("on"); const o=a5MenuOpener; a5MenuOpener=null; if(o&&document.contains(o)) o.focus({preventScroll:true}); } },true);

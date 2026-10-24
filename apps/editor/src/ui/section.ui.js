@@ -71,7 +71,6 @@
 // ---- §2 セクションを足す「＋」。セクションの境目（と上端・下端）に出す。押すと型の一覧（特集／品）----
 function updateAddZones(){
   const wrap=document.getElementById("sectionwrap"); if(!wrap) return;
-  wrap.querySelectorAll(".sec-add-zone").forEach(n=>n.remove());
   const wraps=[...wrap.querySelectorAll(".sec-wrap")];
   const mk=(n)=>{ const z=document.createElement("div"); z.className="sec-add-zone"; z.setAttribute("data-sec-add",String(n));
     const b=document.createElement("button"); b.type="button"; b.className="sec-add-btn"; b.textContent="＋"; b.setAttribute("data-sec-add-btn",String(n));
@@ -87,9 +86,11 @@ function updateAddZones(){
   const page=PG.currentPage&&PG.currentPage();
   const secMap=PG.secMapNow?PG.secMapNow():null;
   const movable=(secMap&&page&&secMap[page])?secMap[page].map(s=>s.id):wraps.map(w=>w.getAttribute("data-sec"));
-  for(let i=0;i<movable.length;i++){ const w=wrap.querySelector('.sec-wrap[data-sec="'+movable[i]+'"]'); if(w) wrap.insertBefore(mk(i),w); }   // 各セクションの前（＝その位置に挿入）
   const lastId=movable[movable.length-1];
   const lastW=lastId?wrap.querySelector('.sec-wrap[data-sec="'+lastId+'"]'):null;
+  { const zs=[...wrap.querySelectorAll(".sec-add-zone")]; const ok=zs.length===movable.length+(lastW?1:0)&&movable.every((id,i)=>{ const w=wrap.querySelector('.sec-wrap[data-sec="'+id+'"]'); return w&&w.previousElementSibling===zs[i]&&zs[i].getAttribute("data-sec-add")===String(i); })&&(!lastW||lastW.nextElementSibling===zs[movable.length]);
+    if(ok) return; zs.forEach(n=>n.remove()); }   // F31 ＋の場所が前と同じなら作り直さない（作り直すとページ全体の配置の計算がやり直しになる）
+  for(let i=0;i<movable.length;i++){ const w=wrap.querySelector('.sec-wrap[data-sec="'+movable[i]+'"]'); if(w) wrap.insertBefore(mk(i),w); }   // 各セクションの前（＝その位置に挿入）
   if(lastW){ const after=lastW.nextElementSibling; if(after) wrap.insertBefore(mk(movable.length),after); else wrap.appendChild(mk(movable.length)); }   // 最後の動かせるセクションの下（フッター・仮の一番下の手前）
 }
 let typePicker=null;
