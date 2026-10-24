@@ -1,0 +1,45 @@
+{
+  "about": "DATA_SPEC 3.4 品を出す決まりの共通の試験の例。packages/core/test/visibility.test.mjs と apps/api/test/visibility.test.ts の両方がこれを読む（同じ決まりであることの確かめ）",
+  "shop": {
+    "schemaVersion": 1,
+    "shopId": "shp_vis",
+    "basic": { "name": "決まりの試し" },
+    "catalog": {
+      "menus": { "mnu_tento": { "name": "店頭", "order": 1 } },
+      "categories": {},
+      "labels": {},
+      "items": {
+        "itm_always": { "name": "いつも", "status": "onSale" },
+        "itm_sakura": { "name": "桜餅", "status": "onSale", "season": { "months": [3, 4] } },
+        "itm_winter": { "name": "冬", "status": "onSale", "season": { "months": [12, 1, 2] } },
+        "itm_paused": { "name": "お休み", "status": "paused" },
+        "itm_nostatus": { "name": "状態なし" },
+        "itm_unplaced": { "name": "載せていない", "status": "onSale" },
+        "itm_othermenu": { "name": "ないメニュー", "status": "onSale" },
+        "itm_limited": { "name": "その年だけ", "status": "onSale", "availableFrom": "2026-11-01", "availableUntil": "2026-11-30" },
+        "itm_sakura_limited": { "name": "桜の期間", "status": "onSale", "season": { "months": [4] }, "availableUntil": "2026-04-10" }
+      },
+      "placements": {
+        "p1": { "itemId": "itm_always", "menuId": "mnu_tento", "order": 1 },
+        "p2": { "itemId": "itm_sakura", "menuId": "mnu_tento", "order": 2 },
+        "p3": { "itemId": "itm_paused", "menuId": "mnu_tento", "order": 3 },
+        "p4": { "itemId": "itm_limited", "menuId": "mnu_tento", "order": 4 },
+        "p5": { "itemId": "itm_winter", "menuId": "mnu_tento", "order": 5 },
+        "p6": { "itemId": "itm_nostatus", "menuId": "mnu_tento", "order": 6 },
+        "p7": { "itemId": "itm_othermenu", "menuId": "mnu_gone", "order": 7 },
+        "p8": { "itemId": "itm_sakura_limited", "menuId": "mnu_tento", "order": 8 }
+      }
+    }
+  },
+  "cases": [
+    { "at": "2026-10-24T03:00:00Z", "jst": "2026-10-24", "visible": ["itm_always"] },
+    { "at": "2026-03-31T14:59:59Z", "jst": "2026-03-31", "visible": ["itm_always", "itm_sakura"] },
+    { "at": "2026-03-31T15:00:00Z", "jst": "2026-04-01", "visible": ["itm_always", "itm_sakura", "itm_sakura_limited"] },
+    { "at": "2026-04-10T14:59:00Z", "jst": "2026-04-10", "visible": ["itm_always", "itm_sakura", "itm_sakura_limited"] },
+    { "at": "2026-04-10T15:00:00Z", "jst": "2026-04-11", "visible": ["itm_always", "itm_sakura"] },
+    { "at": "2026-10-31T15:00:00Z", "jst": "2026-11-01", "visible": ["itm_always", "itm_limited"] },
+    { "at": "2026-11-30T14:59:00Z", "jst": "2026-11-30", "visible": ["itm_always", "itm_limited"] },
+    { "at": "2026-11-30T15:00:00Z", "jst": "2026-12-01", "visible": ["itm_always", "itm_winter"] },
+    { "at": "2027-01-15T00:00:00Z", "jst": "2027-01-15", "visible": ["itm_always", "itm_winter"] }
+  ]
+}
