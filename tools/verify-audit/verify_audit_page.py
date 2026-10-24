@@ -16,16 +16,38 @@
   confirm/alert の箱。上の並び（#toolbar）の中の文字（保存の状態など）は知らせに数えない。
   知らせは数秒で消えるので、ページに入れた見張り（80ms ごと）が出た文字を記録する。
 - 「公開の確認に出ない」系：publishCheck() の結果に、その部品についての項目が1つ以上あること。
-- Cmd は Control で送る（ページは Ctrl も Cmd と扱う）。
+- Cmd は MOD で送る（Mac は Meta、ほかは Control。Mac の Chrome では Ctrl+A などが別の意味になるため）。
 - 項目ごとに browser context を作り直す（IndexedDB が項目どうしで混ざらないように）。
 - 共通の部品（audit_common.py）は他の担当と同時に作られるため、このファイルは自分の中だけで完結させた。
 """
-import asyncio, json, os, sys, time, traceback, pathlib
+import re, asyncio, json, os, sys, time, traceback, pathlib
 from urllib.parse import unquote
 from playwright.async_api import async_playwright
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 P = 'window.__playground'
+
+# Cmd の操作は MOD で送る（Mac は Meta、ほかは Control）。Mac の Chrome では Ctrl+A は「行の頭へ」、Ctrl+I は効かないため、
+# Control で送ると Mac で操作が空振りし、事故が起きないまま合格になる（試験台29 の夜に起きた）。
+MOD = 'Meta' if sys.platform == 'darwin' else 'Control'
+
+# 書体を両方の OS で同じにする：Google Fonts を止め、代わりの書体で測る（閾値はこの条件で決めた）。
+# Mac では止めないと本物の書体が読まれて字の寸法が変わり、また display=block で最大3秒字が隠れて揺れる。
+FONT_RE = re.compile(r'https://fonts\.(googleapis|gstatic)\.com/')
+async def nofonts(ctx):
+    await ctx.route(FONT_RE, lambda route: route.abort())
+
+class PrepFail(Exception):
+    pass
+
+async def active_text(pg):
+    # 書き換え中の要素（contenteditable）または入力欄の今の文字
+    return await pg.evaluate("(()=>{const a=document.activeElement;if(!a)return null;if('value' in a&&a.tagName!=='BUTTON')return a.value;return a.isContentEditable?a.innerText:null})()")
+
+async def caret_end(pg):
+    # 書き換え中の要素の末尾にカーソル（Mac と Linux で End 系のキーの動きが違うので、選択の API で置く）
+    await pg.evaluate("(()=>{const a=document.activeElement;if(!a||!a.isContentEditable)return;const r=document.createRange();r.selectNodeContents(a);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);document.dispatchEvent(new Event('selectionchange'))})()")
+    await pg.wait_for_timeout(100)
 OUT = (1420, 990)   # 何もない所（右下の余白）
 
 # ---------------------------------------------------------------- 知らせの見張り（ページに入れる）
@@ -46,6 +68,7 @@ NOTICE_WATCH = r"""
 # ---------------------------------------------------------------- 共通の小道具
 async def fresh(br, url, w=1440, h=1000, **kw):
     ctx = await br.new_context(viewport={'width': w, 'height': h}, **kw)
+    await nofonts(ctx)
     await ctx.add_init_script(NOTICE_WATCH)
     pg = await ctx.new_page(); pg._e = []; pg._dlg = []
     pg.on('pageerror', lambda e: pg._e.append('PE ' + str(e)))
@@ -135,9 +158,12 @@ async def text_edit(pg, id, txt):
     await click(pg, id, n=2); await pg.wait_for_timeout(200)
     if await ev(pg, f"{P}.editingId()") is None:
         await click(pg, id, n=2, scroll=False)
-    await pg.keyboard.press('Control+a')
+    await pg.keyboard.press(f'{MOD}+a')
     if txt == '': await pg.keyboard.press('Delete')
     else: await pg.keyboard.insert_text(txt)
+    now = await active_text(pg)
+    if now is None or now.strip() != txt:
+        raise PrepFail(f'準備失敗：{id} を {txt!r} に書き換えられない（今 {now!r}）')
     await pg.keyboard.press('Escape'); await pg.wait_for_timeout(400)
 
 def has_any(lst): return bool([x for x in lst if x])
@@ -168,7 +194,7 @@ async def t_J15(new):
     await click(pg, 'card_name_c_jonama', scroll=False)
     sel = await ev(pg, f"{P}.selected()")
     before = set(await ev(pg, "[...document.querySelectorAll('[data-el]')].map(e=>e.dataset.el)"))
-    await pg.keyboard.press('Control+c'); await pg.keyboard.press('Control+v'); await pg.wait_for_timeout(900)
+    await pg.keyboard.press(f'{MOD}+c'); await pg.keyboard.press(f'{MOD}+v'); await pg.wait_for_timeout(900)
     info = await ev(pg, "(b)=>[...document.querySelectorAll('[data-el]')].filter(e=>!b.includes(e.dataset.el)).map(e=>{const r=e.getBoundingClientRect();return [e.dataset.el,Math.round(r.width),Math.round(r.height),e.dataset.kind||'',(e.innerText||'').trim().length]})", list(before))
     bad = [i for i in info if i[1] < 2 or i[2] < 2 or (i[3] == 'text' and i[4] == 0)]
     if bad: return False, f'選択 {sel} を貼ると見えない/空の部品: {bad[:4]}'
@@ -185,20 +211,20 @@ async def t_J19(new):
     await pg.mouse.click(x, y); await pg.wait_for_timeout(300); await pg.mouse.dblclick(x, y); await pg.wait_for_timeout(500)
     if await cssbb(pg, '#priceBox .pb-amt'):
         route = '値段の箱'
-        await clickcss(pg, '#priceBox .pb-amt', 200); await pg.keyboard.press('Control+a'); await pg.keyboard.type('500')
+        await clickcss(pg, '#priceBox .pb-amt', 200); await pg.keyboard.press(f'{MOD}+a'); await pg.keyboard.type('500')
         try: await clicktext(pg, '#priceBox', '決める', wait=500)
         except RuntimeError: await pg.keyboard.press('Enter'); await pg.wait_for_timeout(500)
     elif await ev(pg, f"{P}.editingId()") == pid:
         route = 'ダブルクリック'
-        await pg.keyboard.press('Control+a'); await pg.keyboard.type('500円'); await pg.keyboard.press('Escape'); await pg.wait_for_timeout(500)
+        await pg.keyboard.press(f'{MOD}+a'); await pg.keyboard.type('500円'); await pg.keyboard.press('Escape'); await pg.wait_for_timeout(500)
     else:
         await esc2(pg); await pg.mouse.click(x, y, button='right'); await pg.wait_for_timeout(400)
         await clicktext(pg, '#fmenu', '書き換える', exact=False, wait=500); route = '右クリック→書き換える'
         if await cssbb(pg, '#priceBox .pb-amt'):
-            await clickcss(pg, '#priceBox .pb-amt', 200); await pg.keyboard.press('Control+a'); await pg.keyboard.type('500')
+            await clickcss(pg, '#priceBox .pb-amt', 200); await pg.keyboard.press(f'{MOD}+a'); await pg.keyboard.type('500')
             await clicktext(pg, '#priceBox', '決める', wait=500)
         else:
-            await pg.keyboard.press('Control+a'); await pg.keyboard.type('500円'); await pg.keyboard.press('Escape'); await pg.wait_for_timeout(500)
+            await pg.keyboard.press(f'{MOD}+a'); await pg.keyboard.type('500円'); await pg.keyboard.press('Escape'); await pg.wait_for_timeout(500)
     await esc2(pg)
     shown = await ev(pg, "s=>{const e=document.querySelector('[data-el=\"'+s+'\"]');return e?e.innerText:null}", pid)
     await pg.wait_for_timeout(2500); await pg.reload(); await pg.wait_for_timeout(1800); await gopage(pg, 'pg_menu')
@@ -362,7 +388,11 @@ async def t_J41(new):
     await clicktext(pg, '#fmenu', '品を足す', exact=False, wait=500)
     await clicktext(pg, '#pickerBox', '新しい品', exact=False, wait=400)
     await clicktext(pg, '#pickerBox', '焼き菓子', exact=False, wait=700)
-    await pg.keyboard.press('Control+a'); await pg.keyboard.press('Backspace'); await esc2(pg); await pg.wait_for_timeout(400)
+    await pg.keyboard.press(f'{MOD}+a'); await pg.keyboard.press('Backspace')
+    left = await active_text(pg)
+    if left is None or left.strip():
+        raise PrepFail(f'準備失敗：新しい品の名前を空にできない（残り {left!r}）')
+    await esc2(pg); await pg.wait_for_timeout(400)
     newh = [x for x in await ev(pg, "[...document.querySelectorAll('[data-el]')].map(e=>e.dataset.el)") if x not in home0]
     await gopage(pg, 'pg_menu')
     newm = [x for x in await ev(pg, "[...document.querySelectorAll('[data-el]')].map(e=>e.dataset.el)") if x not in rows0]
@@ -383,12 +413,12 @@ async def t_J41(new):
 # 合格: 値段の箱の金額欄で Ctrl+A→Delete、Ctrl+A→Ctrl+X のどちらでも品（どら焼き）が並びに残る
 async def t_J42(new):
     res = []; ok = True
-    for key in ['Delete', 'Control+x']:
+    for key in ['Delete', f'{MOD}+x']:
         pg = await new()
         await selitem(pg, 'card_price_c_dora'); await click(pg, 'card_price_c_dora', n=2, scroll=False); await pg.wait_for_timeout(300)
         if not await cssbb(pg, '#priceBox .pb-amt'): res.append(f'{key}: 値段の箱が開かない'); ok = False; await pg.context.close(); continue
         await clickcss(pg, '#priceBox .pb-amt', 200)
-        await pg.keyboard.press('Control+a'); await pg.keyboard.press(key); await pg.wait_for_timeout(400)
+        await pg.keyboard.press(f'{MOD}+a'); await pg.keyboard.press(key); await pg.wait_for_timeout(400)
         c = await cards(pg); good = 'dora' in c; ok &= good
         res.append(f'{key}→並び {c}')
         await pg.context.close()
@@ -399,7 +429,7 @@ async def t_J42(new):
 async def t_J44(new):
     pg = await new(); await gopage(pg, 'pg_contact')
     await text_edit(pg, 'contact__ci_tel', '078-111-2222')
-    await click(pg, 'contact__ci_tel', n=2); await pg.keyboard.press('Control+a')
+    await click(pg, 'contact__ci_tel', n=2); await pg.keyboard.press(f'{MOD}+a')
     await clickcss(pg, '[data-text-tool="link"]', 400)
     panel = await ev(pg, "(()=>{const p=document.getElementById('linkPanel');return p?p.innerText.replace(/\\n/g,'|').slice(0,120):null})()")
     await clicktext(pg, '#linkPanel', '電話する', exact=False, wait=400)
@@ -420,7 +450,7 @@ async def t_J45(new):
     await text_edit(pg, 'contact__ci_addr', NEW)
     nt = await notices(pg)
     foot = await ev(pg, "(()=>{const e=document.querySelector('[data-el=\"footer__faddr\"]');return e?e.innerText:null})()")
-    await click(pg, 'contact__ci_addr', n=2); await pg.keyboard.press('Control+a')
+    await click(pg, 'contact__ci_addr', n=2); await pg.keyboard.press(f'{MOD}+a')
     await clickcss(pg, '[data-text-tool="link"]', 400)
     await clicktext(pg, '#linkPanel', '地図で見る', exact=False, wait=400)
     await pg.keyboard.press('Escape'); await pg.wait_for_timeout(400)
@@ -463,7 +493,7 @@ async def t_J52(new):
     await click(pg, 'F_b0'); await pg.keyboard.press('Shift+ArrowRight'); await pg.wait_for_timeout(300); await pg.keyboard.press('Escape')
     await preview_on(pg)
     r0 = await bb(pg, 'F_b0'); u0 = await ev(pg, f"{P}.canUndo()"); n0 = await ops_len(pg)
-    await pg.keyboard.press('Control+z'); await pg.wait_for_timeout(500)
+    await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(500)
     r1 = await bb(pg, 'F_b0'); u1 = await ev(pg, f"{P}.canUndo()"); n1 = await ops_len(pg)
     ok = abs(r1['x'] - r0['x']) < 0.5 and u1 == u0
     return ok, f"F_b0 x {r0['x']:.1f}→{r1['x']:.1f}、戻せる {u0}→{u1}、記録 {n0}→{n1}"

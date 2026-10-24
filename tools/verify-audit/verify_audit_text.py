@@ -9,22 +9,45 @@
 - 問題は本物のマウス・キーボード（日本語の変換は CDP の Input.imeSetComposition / insertText と
   keyCode 229 の keydown）で起こす。window.__playground は状態を読むのにだけ使う。
 - 期待は「事故が起きないこと」で書く。直し方が1つに決まらないものは、合格の道を複数受け付ける。
-- Cmd は Control で送る（ページは Ctrl も Cmd と扱う）。ただしブラウザ本来の貼り付け（J2）は
+- Cmd は MOD で送る（Mac は Meta、ほかは Control）。ただしブラウザ本来の貼り付け（J2）は
   Mac では Meta+V でしか起きないので、その確認だけは Mac なら Meta を使う。
 - 項目ごとに browser context を作り直す（IndexedDB・localStorage が項目どうしで混ざらないように）。
 - 共通の部品（audit_common.py）は他の担当と同時に作られるため、このファイルは自分の中だけで完結させた。
 """
-import asyncio, json, os, sys, time, traceback
+import re, asyncio, json, os, sys, time, traceback
 from playwright.async_api import async_playwright
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 P = 'window.__playground'
+
+# Cmd の操作は MOD で送る（Mac は Meta、ほかは Control）。Mac の Chrome では Ctrl+A は「行の頭へ」、Ctrl+I は効かないため、
+# Control で送ると Mac で操作が空振りし、事故が起きないまま合格になる（試験台29 の夜に起きた）。
+MOD = 'Meta' if sys.platform == 'darwin' else 'Control'
+
+# 書体を両方の OS で同じにする：Google Fonts を止め、代わりの書体で測る（閾値はこの条件で決めた）。
+# Mac では止めないと本物の書体が読まれて字の寸法が変わり、また display=block で最大3秒字が隠れて揺れる。
+FONT_RE = re.compile(r'https://fonts\.(googleapis|gstatic)\.com/')
+async def nofonts(ctx):
+    await ctx.route(FONT_RE, lambda route: route.abort())
+
+class PrepFail(Exception):
+    pass
+
+async def active_text(pg):
+    # 書き換え中の要素（contenteditable）または入力欄の今の文字
+    return await pg.evaluate("(()=>{const a=document.activeElement;if(!a)return null;if('value' in a&&a.tagName!=='BUTTON')return a.value;return a.isContentEditable?a.innerText:null})()")
+
+async def caret_end(pg):
+    # 書き換え中の要素の末尾にカーソル（Mac と Linux で End 系のキーの動きが違うので、選択の API で置く）
+    await pg.evaluate("(()=>{const a=document.activeElement;if(!a||!a.isContentEditable)return;const r=document.createRange();r.selectNodeContents(a);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);document.dispatchEvent(new Event('selectionchange'))})()")
+    await pg.wait_for_timeout(100)
 OUT = 1420, 990          # 何もない所（右下の余白）。ここをクリックすると書き換えが終わる
 IS_MAC = sys.platform == 'darwin'
 
 # ---------------------------------------------------------------- 共通の小道具
 async def fresh(br, url, w=1440, h=1000, perms=None):
     ctx = await br.new_context(viewport={'width': w, 'height': h}, permissions=perms or [])
+    await nofonts(ctx)
     pg = await ctx.new_page(); pg._e = []; pg._dlg = []
     pg.on('pageerror', lambda e: pg._e.append('PE ' + str(e)))
     pg.on('dialog', lambda d: (pg._dlg.append(d.type + ' ' + d.message), asyncio.ensure_future(d.dismiss())))
@@ -108,7 +131,7 @@ def item(id, desc):
 @item('J1', '書き換えを終えても改行・続く半角スペースが表示に残る')
 async def t_J1(br, url):
     pg = await fresh(br, url)
-    await dbl(pg, 'F_b0'); await pg.keyboard.press('Control+End')
+    await dbl(pg, 'F_b0'); await caret_end(pg)
     await pg.keyboard.press('Enter'); await pg.keyboard.type('  テスト'); await pg.keyboard.type('A  B')
     await pg.wait_for_timeout(200)
     during = (await text(pg, 'F_b0')).replace(' ', ' ')
@@ -129,7 +152,7 @@ async def t_J1(br, url):
 async def t_J2(br, url):
     perms = ['clipboard-read', 'clipboard-write']
     pg = await fresh(br, url, perms=perms)
-    key = 'Meta+v' if IS_MAC else 'Control+v'
+    key = 'Meta+v' if IS_MAC else f'{MOD}+v'
     # この環境で本物のキーが貼り付けになるか（ページのキー処理のない別ページで）
     os.makedirs(os.path.join(HERE, '_work'), exist_ok=True)
     blank = os.path.join(HERE, '_work', 'text_blank.html')
@@ -139,7 +162,7 @@ async def t_J2(br, url):
     native = (await sp.evaluate("t.value")) == 'SANITY'; await sp.close()
     await pg.bring_to_front()
     # 古い貼り付け：ページに ClipboardEvent('paste') を届ける（よそからの貼り付けの経路）
-    await dbl(pg, 'F_b0'); await pg.keyboard.press('Control+End')
+    await dbl(pg, 'F_b0'); await caret_end(pg)
     await pg.evaluate("t=>{const d=new DataTransfer();d.setData('text/plain',t);document.activeElement.dispatchEvent(new ClipboardEvent('paste',{clipboardData:d,bubbles:true,cancelable:true}))}", '古い貼付')
     await pg.wait_for_timeout(200)
     t0 = await text(pg, 'F_b0'); n_old0 = t0.count('古い貼付')
@@ -172,19 +195,20 @@ async def t_J3(br, url):
     return ok, f'2回目のダブルクリック後 contenteditable={ce} editing={ed} CD が入った={"CD" in t}（終えた後 {"CD" in t2}）'
 
 # J4 Cmd+I/U が（書き換え中だけ効いて）終えると消える
-# 合格: 「季節の」を選んで Cmd+I・Cmd+U → 書き換え中の見た目と、終えた後の見た目（＋読み込み直し後）が同じ。
-#       効く（斜体・下線が残る）でも、はじめから効かない（どちらの時も付かない）でもよい。
-@item('J4', 'Cmd+I/U の結果が書き換えを終えても変わらない（残る、またははじめから効かない）')
+# 合格（作業票29 §5.1：PowerPoint にそろえて斜体と下線を入れる）: 「季節の」を選んで Cmd+I・Cmd+U →
+#       書き換え中・終えた後・読み込み直し後のすべてで、その文字が斜体・下線になっている。
+#       （以前は「はじめから効かない」も合格にしていたが、Mac で Ctrl+I が空振りして合格になったので外した）
+@item('J4', 'Cmd+I/U で斜体・下線が付き、書き換えを終えても読み込み直しても残る')
 async def t_J4(br, url):
     res = []; okall = True
-    for k, css in (('Control+i', "getComputedStyle(x).fontStyle==='italic'"), ('Control+u', "getComputedStyle(x).textDecorationLine.includes('underline')")):
+    for k, css in ((f'{MOD}+i', "getComputedStyle(x).fontStyle==='italic'"), (f'{MOD}+u', "getComputedStyle(x).textDecorationLine.includes('underline')")):
         pg = await fresh(br, url)
         js = "(sel)=>{const e=document.querySelector('[data-el=F_b0]');return [...e.querySelectorAll('*')].some(x=>x.textContent.includes('季')&&(" + css + "))}"
         await dbl(pg, 'F_b0'); await selrange(pg, '季節の'); await pg.keyboard.press(k); await pg.wait_for_timeout(300)
         during = await pg.evaluate(js, None)
         await out(pg); after = await pg.evaluate(js, None)
         await pg.reload(); await pg.wait_for_timeout(1500); reload = await pg.evaluate(js, None)
-        ok = during == after == reload; okall &= ok
+        ok = bool(during and after and reload); okall &= ok
         res.append(f'{k}: 書き換え中={during} 終えた後={after} 読み込み直し={reload}')
         await pg.context.close()
     return okall, ' / '.join(res)
@@ -195,7 +219,7 @@ async def t_J4(br, url):
 @item('J5', '書き換え中の Tab でフォーカスが外へ逃げず、続けて打った文字が入る')
 async def t_J5(br, url):
     pg = await fresh(br, url)
-    await dbl(pg, 'F_b0'); await pg.keyboard.press('Control+End'); await pg.keyboard.press('Tab'); await pg.wait_for_timeout(200)
+    await dbl(pg, 'F_b0'); await caret_end(pg); await pg.keyboard.press('Tab'); await pg.wait_for_timeout(200)
     foc = await pg.evaluate("(()=>{const a=document.activeElement;return (a.dataset&&a.dataset.el)||(a.tagName+'.'+a.className+' '+(a.textContent||'').trim().slice(0,10))})()")
     await pg.keyboard.type('XY'); await pg.wait_for_timeout(250)
     t = await text(pg, 'F_b0')
@@ -239,7 +263,7 @@ async def t_J7(br, url):
 @item('J9', 'カーソルだけの B・Cmd+B・A+ が前に選んだ範囲に効かない')
 async def t_J9(br, url):
     res = []; okall = True
-    for tool in ('Control+b', 'B', 'A+'):
+    for tool in (f'{MOD}+b', 'B', 'A+'):
         pg = await fresh(br, url)
         r = await dbl(pg, 'F_b0', 100)
         await pg.mouse.move(r['x'] + 2, r['y'] + 12); await pg.mouse.down(); await pg.mouse.move(r['x'] + 60, r['y'] + 12, steps=6); await pg.mouse.up(); await pg.wait_for_timeout(200)
@@ -247,7 +271,7 @@ async def t_J9(br, url):
         await tbtn(pg, '太字')
         await pg.mouse.click(r['x'] + r['w'] - 30, r['y'] + r['h'] - 12); await pg.wait_for_timeout(250)
         before = [x for x in await runs(pg, 'F_b0') if picked and picked in x.get('text', '')]
-        if tool == 'Control+b': await pg.keyboard.press('Control+b')
+        if tool == f'{MOD}+b': await pg.keyboard.press(f'{MOD}+b')
         elif tool == 'B': await tbtn(pg, '太字')
         else: await tbtn(pg, '大きく')
         await pg.wait_for_timeout(200)
@@ -270,15 +294,19 @@ async def t_J9(br, url):
 async def t_J10(br, url):
     pg = await fresh(br, url)
     orig = await text(pg, 'F_h0')
-    await dbl(pg, 'F_h0', 60, 20); await pg.keyboard.press('Control+a'); await pg.keyboard.press('Delete'); await out(pg)
+    await dbl(pg, 'F_h0', 60, 20); await pg.keyboard.press(f'{MOD}+a'); await pg.keyboard.press('Delete')
+    left = await active_text(pg)
+    if left is None or left.strip():
+        raise PrepFail(f'準備失敗：全選択→Delete で見出しが空にならない（残り {left!r}）')
+    await out(pg)
     r = await vb(pg, 'F_h0'); t = await text(pg, 'F_h0'); nt = await notices(pg)
     if r is None:
-        await pg.keyboard.press('Escape'); await pg.keyboard.press('Control+z'); await pg.wait_for_timeout(400)
+        await pg.keyboard.press('Escape'); await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(400)
         back = await text(pg, 'F_h0')
         ok = bool(nt) and back == orig
         return ok, f'(c) 箱がない 知らせ={nt} 戻す1回で={back!r}'
     if t and t.strip():
-        return True, f'(b) 空にならない 文字={t!r}'
+        return True, f'(b) 空にした後、終えると文字が戻る 文字={t!r}'
     if r['h'] < 8:
         return False, f'空の箱の高さ {r["h"]:.1f}px（幅 {r["w"]:.0f}） 知らせ={nt}'
     await pg.mouse.dblclick(r['x'] + min(20, r['w'] / 2), r['y'] + r['h'] / 2); await pg.wait_for_timeout(400)
@@ -320,7 +348,7 @@ async def t_J34(br, url):
     async def sz(): return [s for s in await pg.evaluate(f"{P}.textStyles('F_h0')") if s['part'] == 'F_h0'][0]['size']
     await click(pg, 'F_h0', 30, 10); s0 = await sz()
     inp = pg.locator('[data-ts=size]:visible').first
-    await inp.click(); await pg.keyboard.press('Control+a')
+    await inp.click(); await pg.keyboard.press(f'{MOD}+a')
     await comp(pg, '２'); await comp(pg, '２０'); await commit(pg, '２０'); await pg.keyboard.press('Enter'); await pg.wait_for_timeout(400)
     s1 = await sz(); shown = await pg.evaluate("(document.querySelector('[data-ts=size]')||{}).value")
     ok = s1 == 20 or (s1 == s0 and str(shown).strip() == str(s0))
@@ -338,7 +366,9 @@ async def t_J43(br, url):
     if not await pg.evaluate("!!document.getElementById('priceBox')"):
         await dbl(pg, id, 20, 8)
     nm = pg.locator('#priceBox .pb-name').first
-    await nm.click(); await pg.keyboard.press('Control+a'); await pg.keyboard.press('Delete')
+    await nm.click(); await pg.keyboard.press(f'{MOD}+a'); await pg.keyboard.press('Delete')
+    if (await nm.input_value()) != '':
+        raise PrepFail(f'準備失敗：名前欄を空にできない（{await nm.input_value()!r}）')
     for reading, kanji in (('お', 'お'), ('ちゃ', '茶'), ('つき', '付き')):
         s = ''
         for ch in reading: s += ch; await comp(pg, s)
@@ -350,7 +380,7 @@ async def t_J43(br, url):
 # 書き換え→外→戻す の準備（J47・J48）
 async def pre_text_undo(pg):
     await dbl(pg, 'F_b0'); await pg.keyboard.press('End'); await pg.keyboard.type('X'); await out(pg)
-    await pg.keyboard.press('Control+z'); await pg.wait_for_timeout(600)
+    await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(600)
 
 # J47 書き換え→外→戻す の直後のダブルクリックで書き換えに見えるが打鍵が捨てられる
 # 合格: 上の準備の直後に F_b0 をダブルクリック → End → 「あY」と打つと、本文に「あY」が入る。

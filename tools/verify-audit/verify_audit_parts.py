@@ -11,19 +11,41 @@
 - 問題は本物のマウス・キーボード・指（CDP の Input.dispatchTouchEvent）で起こす。
   window.__playground は状態を読むのと準備（simulateSaveError）にだけ使う。
 - 期待は「事故が起きないこと」で書く。直し方が1つに決まらないものは合格の道を複数受け付ける。
-- Cmd は Control で送る（ページは Ctrl も Cmd と扱う）。
+- Cmd は MOD で送る（Mac は Meta、ほかは Control。Mac の Chrome では Ctrl+A などが別の意味になるため）。
 - 項目ごとに browser context を作り直す（IndexedDB が項目どうしで混ざらないように）。
   J25（2つのタブ）と J28（閉じて開き直す）は、1つの context の中で複数のページを使う。
 - 試験用の画像は Pillow で作り、このファイルの隣の _work/ に置く。
 - 共通の部品（audit_common.py）は他の担当と同時に作られるため、このファイルは自分の中だけで完結させた。
 """
-import asyncio, json, math, os, sys, time, traceback
+import re, asyncio, json, math, os, sys, time, traceback
 from pathlib import Path
 from playwright.async_api import async_playwright
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 WORK = os.path.join(HERE, '_work')
 P = 'window.__playground'
+
+# Cmd の操作は MOD で送る（Mac は Meta、ほかは Control）。Mac の Chrome では Ctrl+A は「行の頭へ」、Ctrl+I は効かないため、
+# Control で送ると Mac で操作が空振りし、事故が起きないまま合格になる（試験台29 の夜に起きた）。
+MOD = 'Meta' if sys.platform == 'darwin' else 'Control'
+
+# 書体を両方の OS で同じにする：Google Fonts を止め、代わりの書体で測る（閾値はこの条件で決めた）。
+# Mac では止めないと本物の書体が読まれて字の寸法が変わり、また display=block で最大3秒字が隠れて揺れる。
+FONT_RE = re.compile(r'https://fonts\.(googleapis|gstatic)\.com/')
+async def nofonts(ctx):
+    await ctx.route(FONT_RE, lambda route: route.abort())
+
+class PrepFail(Exception):
+    pass
+
+async def active_text(pg):
+    # 書き換え中の要素（contenteditable）または入力欄の今の文字
+    return await pg.evaluate("(()=>{const a=document.activeElement;if(!a)return null;if('value' in a&&a.tagName!=='BUTTON')return a.value;return a.isContentEditable?a.innerText:null})()")
+
+async def caret_end(pg):
+    # 書き換え中の要素の末尾にカーソル（Mac と Linux で End 系のキーの動きが違うので、選択の API で置く）
+    await pg.evaluate("(()=>{const a=document.activeElement;if(!a||!a.isContentEditable)return;const r=document.createRange();r.selectNodeContents(a);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);document.dispatchEvent(new Event('selectionchange'))})()")
+    await pg.wait_for_timeout(100)
 OUT = 1420, 990          # 何もない所（右下の余白）
 
 # ---------------------------------------------------------------- 共通の小道具
@@ -53,6 +75,7 @@ async def newpage(ctx, url):
 
 async def fresh(br, url, w=1440, h=1000):
     ctx = await br.new_context(viewport={'width': w, 'height': h})
+    await nofonts(ctx)
     return await newpage(ctx, url)
 
 async def scrollto(pg, id):
@@ -113,8 +136,10 @@ class Touch:
     async def open(self, br, url, w=390, h=844, mobile=True):
         if mobile:
             self.ctx = await br.new_context(viewport={'width': w, 'height': h}, device_scale_factor=3, is_mobile=True, has_touch=True)
+            await nofonts(self.ctx)
         else:
             self.ctx = await br.new_context(viewport={'width': w, 'height': h})
+            await nofonts(self.ctx)
         self.pg = await self.ctx.new_page(); hook(self.pg)
         self.cdp = await self.ctx.new_cdp_session(self.pg)
         await self.pg.goto(url); await self.pg.wait_for_timeout(1500); return self
@@ -219,7 +244,7 @@ async def t_J13(br, url, imgs):
         s = await sel(pg)
         await pg.keyboard.press('Delete'); await pg.wait_for_timeout(400)
         gone = (await vb(pg, 'F_p0') is None, await vb(pg, 'F_h1') is None)
-        await pg.keyboard.press('Control+z'); await pg.wait_for_timeout(500)
+        await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(500)
         back = (await vb(pg, 'F_p0') is not None, await vb(pg, 'F_h1') is not None)
         if not all(gone): return False, f'準備失敗：選択 {s} で Delete しても消えない {gone}'
         return all(back), f'選択 {s} Delete→戻す1回: F_p0 {"戻る" if back[0] else "なし"} / F_h1 {"戻る" if back[1] else "なし"}'
@@ -330,6 +355,7 @@ async def t_J24(br, url, imgs):
 #       または、B が古い中身であることを B の画面で知らせた（知らせの要素・確認の箱が出た）こと。
 async def t_J25(br, url, imgs):
     ctx = await br.new_context(viewport={'width': 1440, 'height': 1000})
+    await nofonts(ctx)
     try:
         a = await newpage(ctx, url); b = await newpage(ctx, url)
         await a.bring_to_front()
@@ -412,23 +438,26 @@ async def t_J27(br, url, imgs):
 # 合格: 閉じるときに警告（beforeunload の箱）が出る、または開き直した F_h0 が 10px 下がったままであること。
 async def t_J28(br, url, imgs):
     ctx = await br.new_context(viewport={'width': 1440, 'height': 1000})
+    await nofonts(ctx)
     try:
         pg = await newpage(ctx, url)
         g0 = await geom(pg, 'F_h0')
         await click(pg, 'F_h0', 60); await pg.keyboard.press('Shift+ArrowDown'); await pg.wait_for_timeout(100)
         g1 = await geom(pg, 'F_h0')
-        await pg.close(run_before_unload=True); await asyncio.sleep(1.0)
+        try: await asyncio.wait_for(pg.close(run_before_unload=True), 5)
+        except asyncio.TimeoutError: pass
+        await asyncio.sleep(1.0)
         warned = [d for d in pg._dlg if d.startswith('beforeunload')]
-        if not pg.is_closed():
-            # 警告が出て閉じるのを止めた（＝合格の道）。後片付けとして閉じる
-            try: await pg.close()
-            except Exception: pass
+        # 警告が出て閉じるのを止めた場合（＝合格の道）、ページは開いたまま残る。
+        # 残ったページは片付けずに置く（閉じ直すと beforeunload の箱がまた出て止まることがあるため。context ごと閉じる）
         pg2 = await newpage(ctx, url)
         g2 = await geom(pg2, 'F_h0')
         if abs(g1['y'] - g0['y']) < 5: return False, f'準備失敗：Shift+↓ で動かない'
         kept = abs(g2['y'] - g1['y']) <= 1
         return bool(warned) or kept, f'閉じる警告={warned[:1]} 開き直した F_h0 y {r1(g0["y"])}→{r1(g1["y"])}→{r1(g2["y"])}'
-    finally: await ctx.close()
+    finally:
+        try: await asyncio.wait_for(ctx.close(), 10)
+        except Exception: pass
 
 # ---- J29
 # KNOWN: ドラッグ中 Esc の後、離すと記録される
