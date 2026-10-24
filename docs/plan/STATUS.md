@@ -3,7 +3,7 @@
 最終更新：2026-10-25 09:00（Claude.ai）。**新しいチャットへ引き継ぐ**
 
 ## 新しいチャットで最初にやること
-- このリポジトリはまだ GitHub に push されていない。中身は、ユーザーが添付する bundle（`mikke-web_all_2026-10-25.bundle`）の中にある。`git clone <bundle> mikke-web` のあと `git branch -a` で、main と track/* がそろっていることを確かめる
+- GitHub（公開）の main は `d6fbfd8` で止まっている。そのあとの約 90 コミットは、ユーザーが添付する bundle（`mikke-web_since-d6fbfd8_v2.bundle`、main と track/tests）の中にある。`git clone https://github.com/NitenLabs/mikke-web.git` → `git fetch <bundle> main:main track/tests:track/tests`（main に居るときは `git pull <bundle> main`）。main の HEAD がこのコミット（「STATUS：新しいチャットへ引き継ぐ」）になっていることを確かめる
 - ユーザーは 10/25 朝に GitHub の連携をした。ただ、前のチャットでは add_repo がまだ「link your GitHub account」で失敗していた。新しいチャットで `add_repo NitenLabs/mikke-web access=push` を試す。通れば、main と track/tests を push する（ほかの track/* は main に入れ済みなので push しなくてよい）。だめなら、claude.ai/customize/connectors の GitHub と github.com/apps/claude の NitenLabs への入れ方を、ユーザーに確かめてもらう
 - GitHub が空なら最初の push。空でなければ `git fetch` して、食い違いを見てから決める
 
