@@ -2,7 +2,7 @@
 // 線：共通｜PG の中（pg/ のファイルは1つのスコープを分け合う。並びは src/parts.mjs）
 // ---- §24（試験台24）今の形を作る（fold）：PC・スマホの両方で畳み、1つの下書き（4.9＋_pg）にまとめる ----
 // 保存・版・「公開中と同じか」の比べ・draft()/roundTrip() で使う。state.base＋activeOps() から作る。
-function runStyledRuns(r) { return !!(r && (r.length > 1 || (r[0] && (r[0].bold || r[0].color != null || (r[0].scale && r[0].scale !== 1) || r[0].font || r[0].link)))); }
+function runStyledRuns(r) { return !!(r && (r.length > 1 || (r[0] && (r[0].bold || r[0].italic || r[0].underline || r[0].color != null || (r[0].scale && r[0].scale !== 1) || r[0].font || r[0].link)))); }
 // §24b 今の形を作る（fold）。文字・写真はテンプレの初めの中身と比べて「違うものだけ」content[] に（4.9「テンプレと同じ値は書かない」）。
 // 幾何は adjust[端末] に（4.9.1）。足した部品は added[]＋adjust に。品・表の行は _pg.rows に器ごと（4.11④が未決）。
 function foldToDraft(baseOverride, opsOverride) {
@@ -54,7 +54,10 @@ function foldToDraft(baseOverride, opsOverride) {
   // 3. 明るさ・外す・部品リンク（端末共通マップ）
   for (const id in R.brightMap) ensureObj(id).bright = R.brightMap[id];
   for (const id of R.clear) ensureObj(id).cleared = true;
-  for (const id in R.linkMap) if (!Array.isArray(content[id])) ensureObj(id).link = clone(R.linkMap[id]);
+  for (const id in R.linkMap) {
+    if (isText(id)) { const c = content[id]; content[id] = { ...(Array.isArray(c) ? { runs: c } : (typeof c === "string" ? { text: c } : {})), link: clone(R.linkMap[id]) }; continue; }   // P14 文字の箱まるごとのリンク：{text|runs, link}
+    if (!Array.isArray(content[id])) ensureObj(id).link = clone(R.linkMap[id]);
+  }
   // added[]（4.9.3）。size・style・section は求められないので足す（§2.3・報告）
   const added = R.adds.map((a) => {
     const placedOn = a.placedDevice || "pc", other = placedOn === "pc" ? "sp" : "pc";

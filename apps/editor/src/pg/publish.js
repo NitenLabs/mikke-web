@@ -114,6 +114,7 @@ function publishCheck() {
     for (const ph of phList) if (ph.missing && !emptySeen.has(ph.part)) { emptySeen.add(ph.part); items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `足した${emptyPhotoName(ph.part, phList)}がまだありません。公開すると、この枠は詰めて出しません` }); }
     // F64 元からある写真を外した枠も、公開すると詰めて出さないので知らせる
     for (const ph of phList) if (ph.cleared && !ph.missing && !emptySeen.has(ph.part)) { emptySeen.add(ph.part); items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `${emptyPhotoName(ph.part, phList)}を外しています。公開すると、この枠は詰めて出しません` }); }
+    a1EmptyTextItems(dev, items, emptySeen);   // J56・J41 空の見出し・品名（text-style.js）
     // 仕組みの重なり・はみ出し（ふつうは空）
     for (const o of w.overlaps || []) items.push({ device: dev, kind: "system", parts: [canonId(o.a), canonId(o.b)], text: `${DL}：${M.friendly(o.a)}が、${M.friendly(o.b)}に重なっています` });
     for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: o.dir ? `${DL}：${M.friendly(o.id)}が画面の${o.dir}へはみ出しています（${o.dir}の端が切れて見えます）` : `${DL}：${M.friendly(o.id)}がはみ出しています` });   // F68 どの部品が・どちらへ
