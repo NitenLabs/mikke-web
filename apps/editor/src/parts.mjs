@@ -1,0 +1,68 @@
+// 編集画面のファイルの並び（apps/editor/build.mjs がこの順でつなぐ）。
+// [ファイル, 担当の線（docs/plan/ROADMAP.md）, 中身]
+//
+// PG：src/pg/ のファイル。つないだものが「const PG = (function () { … })();」の中身になる＝1つのスコープを分け合う
+//     （どのファイルからも、ほかのファイルの関数・定数をそのまま呼べる）。中は宣言だけ（関数・定数・状態）で、
+//     読み込んだときに動く処理はない。定数の初期値が別のファイルの定数を使うときは、使われる側を前に置く。
+// UI：src/ui/ のファイル。PG の後に、上から順に1つのスクリプトとして走る（ボタンや窓に操作をつなぐ）。
+//     addEventListener の順番が動きに効くので、並びを入れ替えない。
+export const PG_PARTS = [
+  ["ids.js", "共通", "部品 ID の名前空間（素の ID・インスタンス）・見出しの組・動かせる部品・セクションの割り当て"],
+  ["text-style.js", "A1", "文字の見た目（大きさ・太さ・色・書体）と「元に戻す」の入口"],
+  ["catalog-cols.js", "A4", "品の並びの列・幅、左右の入れ替え"],
+  ["shopinfo-pages.js", "A4", "お店の情報（STORE）・ページの定義・セクションの名前"],
+  ["text-link.js", "A1", "リンク（行き先・名前・自動リンクの見分け・部品のリンク）"],
+  ["text-runs.js", "A1", "文の一部の見た目（runs）・カーソル位置・書き換え中の範囲の操作と貼り付け"],
+  ["catalog-derive.js", "A4", "① お店の情報から品の並び・表・お品書きを作る（中身は packages/core/catalog.js）"],
+  ["state.js", "共通", "編集の状態（state）・倍率"],
+  ["photo-assets.js", "A3", "写真の素材・大きさ・見せる範囲（view）"],
+  ["ops-reduce.js", "共通", "操作の記録 → content / edits（種まき・reduce）"],
+  ["ops-fold.js", "共通", "今の形を作る（fold・下書き 4.9）・鍵をそろえた JSON"],
+  ["render.js", "共通", "描画（セクションの入れ物・render・ページを移る・文字の見た目・倍率）"],
+  ["render-place.js", "共通", "絶対配置の当てはめ・geometry・小さい部品のつかみ・セクション一覧・重なりの知らせ・付いていく先"],
+  ["select.js", "A2", "選択の印・つまみ・選ぶ/外す"],
+  ["ops-history.js", "共通", "commit・戻す/やり直す・最初の形"],
+  ["store-save.js", "共通", "保存（自動保存・別タブ・版の一覧）。保存先は lib/store.js の saveStore"],
+  ["publish.js", "共通", "公開の履歴から戻す・公開前チェック・プレビュー・端末"],
+  ["section.js", "A3", "セクションの操作（上へ・下へ・複製・削除・足す）"],
+  ["drag.js", "A2", "ドラッグ（M1/M2・並び替えの帯・落とした先）"],
+  ["resize.js", "A2", "大きさを変える（つまみ）"],
+  ["drag-guides.js", "A2", "目安の線（スマートガイド・等間隔）・押し下げ・両端末の解決・範囲で選ぶ"],
+  ["select-nudge.js", "A2", "矢印キーで動かす・削除"],
+  ["text-edit.js", "A1", "その場書き換え（contenteditable・IME・細かい戻す）"],
+  ["clipboard.js", "A3", "コピー・切り取り・貼り付け・複製"],
+  ["catalog-ops.js", "A4", "① 連動の操作（値段・表・品の並び・お品書き・品の道具・お品書きを見る）"],
+  ["select-order.js", "A2", "元に戻す（範囲）・元の配置を見る・前面/背面"],
+  ["photo-add.js", "A3", "文字・写真を足す（置いた位置に）・写真の明るさ"],
+  ["testapi-presets.js", "共通", "試験の再現（プリセット Q/R・runStep）"],
+  ["select-align.js", "A2", "配置（揃え・整列）"],
+  ["photo.js", "A3", "写真の描画・差し替え・見せる範囲（トリミング）・試験画像"],
+  ["testapi.js", "共通", "入力の種類・試験の窓口（draft・roundTrip）・PG.api（window.__playground）"],
+];
+export const UI_PARTS = [
+  ["toolbar.ui.js", "A5", "描き直しの後・道具の並び（入りきらない分は「その他」）・端末・戻す・制作用"],
+  ["publish.ui.js", "共通", "保存の状態・公開の流れ・公開前の確認の箱"],
+  ["publish-preview.ui.js", "共通", "プレビューの帯・公開の履歴の帯"],
+  ["toolbar-add.ui.js", "A5", "その他の状態・元の配置を見る・プリセット・文字/写真を足すボタン"],
+  ["text-tools.ui.js", "A1", "文字の道具（大きさ・太字・色）"],
+  ["text-font.ui.js", "A1", "書体の選び箱"],
+  ["text-link.ui.js", "A1", "リンクの箱・部品のリンク"],
+  ["catalog-tools.ui.js", "A4", "列の選び箱・品の道具（販売・出す月・ラベル・メニュー）"],
+  ["select-align.ui.js", "A2", "配置（揃え・整列）のメニュー"],
+  ["ui-sheets.ui.js", "A5", "開いている箱を閉じる・スマホの下からの箱"],
+  ["text-link-chip.ui.js", "A1", "リンクの札（マウスを乗せると出る）"],
+  ["ui-fmenu.ui.js", "A5", "部品の浮かぶメニュー"],
+  ["select-pointer.ui.js", "A2", "ステージのポインター（選ぶ・ドラッグ・範囲選択）"],
+  ["toast.ui.js", "A5", "知らせ（pgToast）"],
+  ["catalog-boxes.ui.js", "A4", "値段の箱・品を選ぶ一覧・行を足す・つながりの知らせ"],
+  ["catalog-menu.ui.js", "A4", "お品書きを見る・window.__ui"],
+  ["ui-context.ui.js", "A5", "ダブルクリック・右クリック・セクション/括りのメニュー"],
+  ["section.ui.js", "A3", "セクションの並び替え（ドラッグ）・足す所・種類の選び箱"],
+  ["keyboard.ui.js", "A5", "キーボード・貼り付け"],
+  ["photo-input.ui.js", "A3", "写真を選ぶ・落とす・「写真を変える」ボタン"],
+  ["photo-tools.ui.js", "A3", "写真の道具（明るさ）・見せる範囲の操作"],
+  ["touch.ui.js", "A5", "指の操作（タップ・長押し・ドラッグ・自動スクロール）"],
+  ["touch-bars.ui.js", "A5", "スマホの帯・文字の帯・その他・重ねる物の位置合わせ"],
+  ["touch-crop.ui.js", "A3", "指での見せる範囲の操作"],
+  ["boot.ui.js", "共通", "起動（スマホの判定・PG.boot）"],
+];

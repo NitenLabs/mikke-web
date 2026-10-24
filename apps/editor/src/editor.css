@@ -1,0 +1,345 @@
+
+*{box-sizing:border-box}
+/* X12：描き直しでスクロール位置が勝手に飛ばないように（Chrome/Edge の scroll anchoring を切る） */
+html,body{overflow-anchor:none}
+#stage,#sectionwrap,.sec-wrap,.host,#sec,.stack{overflow-anchor:none}
+body{margin:0;font:14px/1.6 system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;color:#222;background:#f4f4f5}
+/* §19b（X20）上の道具は常に1段。入りきらないぶんは「その他 ▾」にしまう（窓の幅で機能を隠さない） */
+#toolbar{position:sticky;top:0;z-index:30;background:#fff;border-bottom:1px solid #ddd;padding:6px 8px;display:flex;gap:6px;align-items:center;flex-wrap:nowrap;overflow:hidden}
+/* 道具のかたまりは中で折り返さない・縮まない＝入りきらないと横にあふれる（それを layoutToolbar が「その他」へしまう） */
+#toolbar>button,#toolbar>span:not(.sp){flex:0 0 auto}
+#tstools,#photoTools,#elemTools{flex-wrap:nowrap;flex-shrink:0}
+#tMore{display:none}
+#moreMenu{position:fixed;z-index:62;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;display:none;flex-direction:column;gap:2px;align-items:stretch}
+#moreMenu.on{display:flex}
+#moreMenu>*{margin:0}
+#moreMenu .div{display:none!important}
+/* §20（X23.②）しまったボタンは名前つき・高さそろえ（30以上）。アイコンだけの物は字を隠して名前を出す（色は見本を名前の左に） */
+#moreMenu [data-more-name]{display:flex!important;align-items:center;gap:6px;justify-content:flex-start;min-height:30px;width:100%;padding:4px 10px;font-size:0;text-align:left}
+#moreMenu [data-more-name]::after{content:attr(data-more-name);font:13px system-ui;color:#333}
+#moreMenu [data-more-name].on::after{color:#fff}/* §20b X25：今の端末・選んでいる印の行は黒地（button.on）なので文字を白に＝上の並びと同じ見た目 */
+#moreMenu [data-more-name]>*{display:none}
+#moreMenu [data-more-name] .sw{display:inline-block;width:16px;height:16px;border:1px solid #bbb;border-radius:3px}
+#moreMenu #tstools,#moreMenu #photoTools,#moreMenu #elemTools{display:inline-flex!important}
+#toolbar .sp{flex:1}
+/* §22 §3 状態の文字・公開ボタン・「公開しました」トースト */
+#saveStatus{font:12px system-ui;color:#666;white-space:nowrap;padding:0 6px;flex:0 0 auto}
+#saveStatus.warn{color:#e08a00;font-weight:700}
+#tPublish{background:#06c;color:#fff;border-color:#06c}
+#tPublish:disabled{background:#eee;color:#aaa;border-color:#ddd;cursor:default}
+#publishToast{position:fixed;left:50%;bottom:44px;transform:translateX(-50%);z-index:90;background:#333;color:#fff;font:13px system-ui;padding:9px 18px;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.25);display:none}
+#publishToast.on{display:block}
+#moreMenu .morestat{font:12px system-ui;color:#666;padding:4px 10px;min-height:30px;display:flex;align-items:center;cursor:default}
+#moreMenu .morestat.warn{color:#e08a00;font-weight:700}
+#moreMenu .mo-extra{display:flex!important;align-items:center;justify-content:flex-start;min-height:30px;width:100%;padding:4px 10px;font:13px system-ui;color:#333;text-align:left;border:none;background:none;border-radius:6px;cursor:pointer}
+#moreMenu .mo-extra:hover{background:#f3f3f3}
+/* §22 §4.1 公開前の確認の箱 */
+#publishBox{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
+#publishBox.on{display:flex}
+#publishBox .pbox-inner{background:#fff;border-radius:12px;box-shadow:0 8px 40px rgba(0,0,0,.3);width:min(560px,92vw);max-height:84vh;display:flex;flex-direction:column;padding:20px 22px;font:14px system-ui}
+#publishBox .pbox-title{font-size:16px;font-weight:700;color:#222;margin-bottom:12px}
+#publishBox .pbox-list{overflow-y:auto;flex:1}
+#publishBox .pbox-kind{font-size:12px;color:#888;margin:12px 0 4px;font-weight:700}
+#publishBox .pbox-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-top:1px solid #eee}
+#publishBox .pbox-rowtext{flex:1;color:#333;line-height:1.5}
+#publishBox .pbox-see{flex:0 0 auto;font:13px system-ui;padding:4px 12px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
+#publishBox .pbox-btns{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+#publishBox .pbox-btns button{font:14px system-ui;padding:8px 16px;border-radius:8px;border:1px solid #bbb;background:#fff;cursor:pointer}
+#publishBox .pbox-btns button.pbox-go{background:#06c;color:#fff;border-color:#06c}
+/* §22 §5 プレビュー（お客さんが見る形）の短い帯＝3つだけ：文字・PC/スマホ・編集に戻る */
+#previewBar{position:sticky;top:0;z-index:31;display:none;background:#222;color:#fff;padding:8px 12px;align-items:center;gap:10px;font:13px system-ui}
+#previewBar.on{display:flex}
+#previewBar .pv-title{font-weight:700}
+#previewBar .sp{flex:1}
+#previewBar button{font:13px system-ui;padding:5px 10px;border:1px solid #666;border-radius:6px;background:#333;color:#fff;cursor:pointer}
+#previewBar button.on{background:#fff;color:#222;border-color:#fff}
+body.pg-preview #toolbar{display:none}
+body.pg-preview .sec-add-zone{display:none!important}
+body.pg-preview #photoChangeBtn,body.pg-preview #fmenu,body.pg-preview #pbar,body.pg-preview #pmore{display:none!important}
+body.pg-preview #sectionwrap [data-el]{cursor:default}
+body.pg-preview #sectionwrap [data-lk]{cursor:pointer}
+/* 記録 15.5：プレビュー（お客さんが見る形）・見るだけ（15.6）ではセクションの名前の札を出さない（編集の飾り） */
+body.pg-preview .seclabel,body.pg-viewing .seclabel{display:none}
+/* §22 §6 履歴の板（右・幅300）と、見るだけの帯 */
+#historyBar{position:sticky;top:0;z-index:41;display:none;background:#2a2a2a;color:#fff;padding:8px 12px;align-items:center;gap:10px;font:13px system-ui}
+#historyBar.on{display:flex}
+#historyBar .hb-title{font-weight:700}
+#historyBar .sp{flex:1}
+#historyBar button{font:13px system-ui;padding:5px 10px;border:1px solid #666;border-radius:6px;background:#333;color:#fff;cursor:pointer}
+#historyBar button.go{background:#06c;border-color:#06c}
+#historyPanel{position:fixed;top:0;right:0;width:300px;height:100vh;z-index:40;background:#fff;box-shadow:-2px 0 12px rgba(0,0,0,.18);display:none;flex-direction:column;font:13px system-ui}
+#historyPanel.on{display:flex}
+#historyPanel .hp-head{padding:12px 14px;font-weight:700;border-bottom:1px solid #eee;display:flex;align-items:center}
+#historyPanel .hp-head .sp{flex:1}
+#historyPanel .hp-head button{font:13px system-ui;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;padding:3px 8px}
+#historyPanel .hp-list{overflow-y:auto;flex:1}
+#historyPanel .hp-row{padding:10px 14px;border-bottom:1px solid #f0f0f0;cursor:pointer}
+#historyPanel .hp-row:hover{background:#f6f6f6}
+#historyPanel .hp-row.viewing{background:#eef5ff}
+#historyPanel .hp-main{color:#222}
+#historyPanel .hp-badge{display:inline-block;font-size:11px;color:#06c;border:1px solid #06c;border-radius:4px;padding:0 5px;margin-left:6px}
+#historyPanel .hp-sub{color:#999;font-size:11px;margin-top:2px}
+#historyPanel .hp-sub.warn{color:#e08a00}
+body.pg-viewing #toolbar{display:none}
+body.pg-viewing .sec-add-zone{display:none!important}
+body.pg-viewing #photoChangeBtn,body.pg-viewing #fmenu,body.pg-viewing #pbar,body.pg-viewing #pmore{display:none!important}
+body.pg-viewing #sectionwrap [data-el]{cursor:default}
+button{font:13px system-ui;padding:5px 9px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
+button.on{background:#333;color:#fff;border-color:#333}
+button:active{transform:translateY(1px)}
+#studio{display:none;background:#fafafa;border-bottom:1px solid #eee;padding:6px 8px;gap:8px;flex-wrap:wrap;align-items:flex-start}
+#studio.on{display:flex}
+#studio .box{background:#fff;border:1px solid #ddd;border-radius:6px;padding:6px 8px;max-width:340px}
+#oplog{margin:0;padding-left:18px;font:11px/1.4 monospace;max-height:120px;overflow:auto}
+#stage{padding:12px;min-height:60vh}
+.seclabel{font:12px monospace;color:#888;margin:6px 0 2px}
+.host{border:1px solid #ddd;background:#fff;overflow:visible;position:relative;touch-action:pan-y}
+.mark-manual{outline:2px dashed #e08a00 !important;outline-offset:-1px}
+.mark-warn{outline:2px solid #d00 !important;outline-offset:-1px}
+.mark-sel{outline:2px solid #06c !important;outline-offset:-1px}
+.mark-anchor{outline:2px solid #06c !important;outline-offset:1px;box-shadow:0 0 0 3px rgba(0,102,204,.15)}
+.marquee{position:fixed;border:1.5px solid #06c;background:rgba(0,102,204,.10);pointer-events:none;z-index:50}
+#elemTools{display:none;align-items:center;gap:4px}
+#cardsTools{display:none;align-items:center;gap:4px}
+#cardsTools .div{width:1px;height:20px;background:#ddd}
+/* 試験台28 §2.5 品を選んだときの道具（販売・出す月・ラベル・メニュー） */
+#itemTools{display:none;align-items:center;gap:4px}
+#itemTools .div{width:1px;height:20px;background:#ddd}
+.itempop{padding:8px;min-width:200px;font:13px system-ui}
+.itempop .ip-opt{display:flex;align-items:center;gap:8px;width:100%;min-height:30px;padding:5px 10px;border:none;background:none;border-radius:6px;cursor:pointer;font:13px system-ui;color:#333;text-align:left}
+.itempop .ip-opt:hover{background:#f3f3f3}
+.itempop .ip-opt[disabled]{opacity:.4;cursor:default;background:none}
+.itempop .ip-opt .ck{flex:0 0 16px;width:16px;height:16px;border:1.5px solid #999;border-radius:4px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:#06c;background:#fff}
+.itempop .ip-opt.on .ck{border-color:#06c;background:#eef4ff}
+.itempop .ip-opt.cur{color:#06c;font-weight:600}
+.itempop .ip-months{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:4px}
+.itempop .ip-m{min-height:30px;border:1.5px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font:13px system-ui;color:#333}
+.itempop .ip-m.on{border-color:#06c;background:#06c;color:#fff}
+.itempop .ip-any{margin:6px 4px 2px;width:calc(100% - 8px);min-height:30px;border:1.5px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;font:13px system-ui;color:#333}
+.itempop .ip-any.on{border-color:#06c;background:#eef4ff;color:#06c;font-weight:600}
+.itempop .ip-newlabel{display:flex;gap:6px;align-items:center;padding:6px 8px;border-top:1px solid #eee;margin-top:4px}
+.itempop .ip-newlabel input{flex:1;min-width:0;border:1px solid #ccc;border-radius:6px;padding:5px 8px;font:13px system-ui}
+.itempop .ip-addbtn{border:none;background:none;color:#06c;font:13px system-ui;cursor:pointer;padding:6px 10px;width:100%;text-align:left;border-radius:6px}
+.itempop .ip-addbtn:hover{background:#eef4ff}
+/* §27 配置（揃え・整列） */
+#alignTools{display:none;align-items:center;gap:4px}
+#alignTools .div{width:1px;height:20px;background:#ddd}
+#alignTools #tAlign[disabled]{opacity:.4;cursor:default}
+#alignMenu{min-width:180px}
+#alignMenu .ai{display:flex;align-items:center;gap:8px;width:100%;min-height:30px;padding:4px 10px;border:none;background:none;border-radius:6px;cursor:pointer;font:13px system-ui;color:#333;text-align:left}
+#alignMenu .ai:hover{background:#f3f3f3}
+#alignMenu .ai[disabled]{opacity:.4;cursor:default;background:none}
+#alignMenu .ai .aicon{flex:0 0 18px;width:18px;height:14px;position:relative;border:1px solid #bbb;border-radius:2px;background:#fff}
+#alignMenu .ai .aicon i{position:absolute;background:#06c}
+#alignMenu .adiv{height:1px;background:#eee;margin:4px 6px}
+/* §20b §3 列の見本（横並び・写真の「明るさ ▾」と同じ形：小さな絵＋名前、今の列に青枠、押せない列は灰色） */
+#colsPop{padding:8px}
+#colsPop .swrow{display:flex;gap:8px}
+#colsPop .sw{display:flex;flex-direction:column;align-items:center;gap:4px;border:2px solid transparent;border-radius:8px;padding:4px;background:none;cursor:pointer}
+#colsPop .sw.cur{border-color:#06c}
+#colsPop .sw[disabled]{opacity:.4;cursor:default}
+#colsPop .sw .thumb{width:60px;height:44px;border:1px solid #ccc;border-radius:4px;display:grid;gap:3px;padding:6px;box-sizing:border-box;background:#fff}
+#colsPop .sw .thumb i{background:#9bb;border-radius:1px;display:block}
+#colsPop .sw .cap{font:11px system-ui;color:#555}
+#elemTools .div{width:1px;height:20px;background:#ddd}
+/* §19 書体の一覧（.tspop を踏襲）・各行に見本＋名前 */
+#fontPop{padding:4px;min-width:200px}
+#fontPop .frow{display:block;width:100%;text-align:left;border:0;background:none;border-radius:6px;padding:6px 8px;cursor:pointer}
+#fontPop .frow:hover,#fontPop .frow.cur{background:#eef4ff}
+#fontPop .frow .sample{font-size:18px;color:#222;line-height:1.3}
+#fontPop .frow .nm{font:11px system-ui;color:#888;margin-top:2px}
+#fontPop .frow .ck{color:#06c;margin-right:4px}
+/* §19 リンクのつなぎ先の一覧 */
+#linkPanel{position:fixed;z-index:70;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.18);padding:8px;display:none;width:280px;max-height:80vh;overflow:auto;font:13px system-ui}
+#linkPanel.on{display:block}
+#linkPanel .seg{font:11px system-ui;color:#999;margin:8px 4px 4px}
+#linkPanel .seg:first-child{margin-top:2px}
+#linkPanel .opt{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;border:1px solid transparent;border-radius:7px;padding:7px 9px;background:none;cursor:pointer;text-align:left}
+#linkPanel .opt:hover{background:#f3f6ff}
+#linkPanel .opt.cur{border-color:#06c}
+#linkPanel .opt[disabled]{opacity:.4;cursor:default}
+#linkPanel .opt .v{font:11px Space Mono,monospace;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:110px}
+#linkPanel .ext{display:flex;gap:6px;margin:4px}
+#linkPanel .ext input{flex:1;border:1px solid #ccc;border-radius:6px;padding:6px 8px;font:12px system-ui}
+#linkPanel .ext button{border:1px solid #bbb;border-radius:6px;background:#fff;padding:0 10px;cursor:pointer}
+#linkPanel .err{color:#c03030;font:11px system-ui;margin:2px 4px}
+/* §19 リンクの札（ホバー） */
+#linkChip{position:fixed;z-index:72;background:#222;color:#fff;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.25);padding:6px 8px;display:none;font:12px system-ui;align-items:center;gap:8px;white-space:nowrap}
+#linkChip.on{display:flex}
+#linkChip .nm{max-width:220px;overflow:hidden;text-overflow:ellipsis}
+#linkChip button{border:0;background:#444;color:#fff;border-radius:5px;padding:3px 7px;cursor:pointer;font:12px system-ui}
+#linkChip button:hover{background:#06c}
+#fmenu{position:fixed;z-index:60;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;display:none;gap:4px}
+#fmenu.on{display:flex}
+#fmenu button{font-size:12px;padding:4px 8px}
+#fmenu button:disabled{opacity:.4;cursor:default}
+#fmenu .note{font-size:11px;color:#777;align-self:center;padding:0 4px}
+/* §22 §8 前面/背面の ▸ サブ箱・区切り（横並びの fmenu から下へ出す） */
+#fmenu .fdiv{width:1px;align-self:stretch;background:#ddd;margin:0 2px}
+#fmenu .zrow{position:relative}
+#fmenu .zsub{display:none;position:absolute;left:0;top:100%;margin-top:4px;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;flex-direction:column;gap:2px;min-width:150px;z-index:63;white-space:nowrap}
+#fmenu .zrow:hover .zsub,#fmenu .zrow.open .zsub{display:flex}
+.pg-phone #fmenu .zsub button{min-width:44px;min-height:44px}
+/* §2 セクションを足す「＋」。境目の帯にマウスを乗せると出る。 */
+.sec-add-zone{position:relative;height:14px;margin:0;display:flex;align-items:center;justify-content:center}
+.sec-add-btn{opacity:0;transition:opacity .08s;width:26px;height:22px;line-height:1;padding:0;border:1px solid #06c;border-radius:50%;background:#fff;color:#06c;font-size:16px;cursor:pointer;z-index:20}
+.sec-add-zone:hover .sec-add-btn,.sec-add-btn:focus{opacity:1}
+#sectypes{position:fixed;z-index:62;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px;display:none;gap:4px}
+#sectypes.on{display:flex}
+#sectypes button{font-size:12px;padding:4px 10px;border:1px solid #bbb;border-radius:6px;background:#fff;cursor:pointer}
+#ghost{position:absolute;inset:0;pointer-events:none;z-index:4}
+/* §1 読めないファイルの短い知らせ（数秒で消える。画面に出す言葉はこれだけ） */
+.photo-toast{position:fixed;z-index:80;background:#333;color:#fff;font:12px/1.4 system-ui;padding:6px 10px;border-radius:6px;box-shadow:0 2px 10px rgba(0,0,0,.25);pointer-events:none}
+/* §1 枠の上に落とせる間の縁取り */
+.drop-ok{outline:3px solid #06c !important;outline-offset:-2px}
+/* §2 見せる範囲（トリミング）：枠の外のはみ出しも薄く見せる・四隅のつまみ */
+#cropwrap{position:fixed;z-index:70;pointer-events:none}
+#cropwrap .dim{position:absolute;pointer-events:auto;cursor:move;background-repeat:no-repeat;opacity:.32}
+#cropwrap .clip{position:absolute;overflow:hidden;pointer-events:auto;cursor:move;outline:2px solid #06c}
+#cropwrap .clip .bright{position:absolute;background-repeat:no-repeat}
+#cropwrap .ch{position:absolute;width:16px;height:16px;margin:-8px 0 0 -8px;background:#fff;border:1.5px solid #06c;border-radius:50%;pointer-events:auto;z-index:2}
+/* N3 拡大の横棒（いつも画面の中・言葉なし・両端に −／＋ の印だけ） */
+#cropzoom{position:fixed;z-index:75;display:none;align-items:center;gap:6px;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px 8px}
+#cropzoom .zm,#cropzoom .zp{font:13px system-ui;color:#555;width:12px;text-align:center}
+#cropzoom input[type=range]{width:140px}
+/* §12 文字の見た目の道具（文字の部品を選んでいる間だけ出る・PowerPoint のリボン） */
+#tstools{display:none;align-items:center;gap:4px}
+#tstools .div{width:1px;height:20px;background:#ddd}
+#tstools [data-ts=size]{width:46px;text-align:center;font:13px system-ui;padding:4px;border:1px solid #bbb;border-radius:6px}
+#tstools .ab{font-family:'Zen Old Mincho',serif;line-height:1}
+#tstools [data-ts=grow] .ab{font-size:17px}
+#tstools [data-ts=shrink] .ab{font-size:11px}
+#tstools [data-ts=bold]{font-weight:700;min-width:30px}
+#tstools [data-ts=color] .sw{display:inline-block;width:16px;height:12px;border:1px solid #999;vertical-align:middle}
+.tspop{position:fixed;z-index:65;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:6px;display:none}
+.tspop.on{display:block}
+#sizePop{width:72px;max-height:240px;overflow:auto}
+#sizePop button{display:block;width:100%;text-align:center;border:none;background:none;padding:4px;border-radius:4px}
+#sizePop button:hover{background:#eef}
+#colorPop{width:168px}
+#colorPop .lab{font:11px system-ui;color:#888;margin:2px 2px 4px}
+#colorPop .sws{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#colorPop .cell{width:22px;height:22px;border:1px solid #bbb;border-radius:4px;cursor:pointer;padding:0}
+#colorPop .more{font:12px system-ui;border:1px solid #bbb;border-radius:6px;padding:4px 8px;background:#fff;cursor:pointer;width:100%}
+#colorPop input[type=color]{position:absolute;left:-9999px}
+/* §5（試験台17）明るさの道具（写真を1つ選んでいる間だけ） */
+#photoTools{display:none;align-items:center;gap:4px}
+#photoTools .div{width:1px;height:20px;background:#ddd}
+#tBright{font:13px system-ui}
+#brightPop{padding:8px}
+#brightPop .swrow{display:flex;gap:8px}
+#brightPop .sw{display:flex;flex-direction:column;align-items:center;gap:4px;border:2px solid transparent;border-radius:8px;padding:4px;background:none;cursor:pointer}
+#brightPop .sw.cur{border-color:#06c}
+#brightPop .sw .thumb{width:72px;height:46px;border:1px solid #ccc;border-radius:4px;background-size:cover;background-position:center}
+#brightPop .sw .cap{font:11px system-ui;color:#555}
+/* §2（試験台17）写真を変える（選んでいる写真の真ん中の浮遊ボタン・マウス操作のときだけ） */
+#photoChangeBtn{position:fixed;z-index:40;display:none;align-items:center;gap:6px;height:36px;padding:0 14px;background:#fff;border:1px solid #ccc;border-radius:18px;box-shadow:0 2px 8px rgba(0,0,0,.22);font:14px system-ui;color:#333;cursor:pointer;white-space:nowrap;transform:translate(-50%,-50%)}
+#photoChangeBtn.below{transform:translate(-50%,0)}
+#photoChangeBtn .cam{width:16px;height:16px;flex:0 0 auto}
+/* §2（試験台17）写真を選ぶ（空の枠・まだない写真の枠。マウス操作のときだけ） */
+.photo.empty.has-choose{flex-direction:column;border:1px dashed #bbb}
+.photo-choose{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 16px;background:#fff;border:1px solid #ccc;border-radius:18px;box-shadow:0 1px 4px rgba(0,0,0,.12);font:14px system-ui;color:#333;cursor:pointer}
+.photo-choose .cam{width:16px;height:16px;flex:0 0 auto}
+.photo-choose-hint{font:11px system-ui;color:#999;margin-top:8px}
+/* §3（試験台15）スマホでの編集：触れない部品は文字を選べない／長押しのメニューも出さない（iPhone 向けに callout も切る） */
+.pg-phone #sectionwrap [data-el]{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.pg-phone #sectionwrap [data-el][contenteditable="true"]{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+/* §4.2（試験台16）選んでいる部品：1本指は動かす・2本指のピンチはブラウザに任せる */
+.pg-phone .mark-sel{touch-action:pinch-zoom}
+/* §3.2.7 つまみの押せる範囲（44×44・透明の四角。見た目のつまみに重ねる） */
+.hit-handle{position:absolute;z-index:9;background:transparent}
+.pg-phone .hit-handle{touch-action:pinch-zoom}
+/* §3.2.6 操作ボタンの箱：スマホは押しやすい大きさ（縦横44以上・文字15px） */
+.pg-phone #fmenu button{min-width:44px;min-height:44px;font-size:15px}
+/* §1 X6/X7：箱は見えている範囲の中。入らなければ折り返す */
+.pg-phone #fmenu{flex-wrap:wrap}
+.pg-phone #sectypes button{min-height:44px;font-size:15px}
+/* 見せる範囲：指でなぞってもスクロールに取られない */
+.pg-phone #cropwrap .dim,.pg-phone #cropwrap .clip{touch-action:none}
+
+/* ===== §1-6（試験台16）スマホでの編集 第2回 ===== */
+/* §1 X4：ページの幅＝画面の幅。#stage の余白とセクションの外枠線を外す。横スクロールさせない */
+.pg-phone #stage{padding:0;touch-action:manipulation;padding-bottom:64px}
+.pg-phone .host{border:none;touch-action:manipulation}   /* §4.2 ページ・セクションは1本指スクロール＋ピンチ可／ダブルタップ拡大は止める */
+.pg-phone .seclabel{display:none}
+.pg-phone{overflow-x:hidden}
+/* §25 §2.1 320未満＝倍率 0.82 で縮めきれない分は、ページ全体を横に流す（layoutScale が pg-xscroll を付ける。横スクロールが出るのはこの場合だけ） */
+.pg-phone.pg-xscroll{overflow-x:auto}
+/* §2.1 上の道具の並びは出さない */
+.pg-phone #toolbar{display:none}
+/* §2 下の道具の並び（画面の下に固定・safe-area をあける） */
+#pbar{position:fixed;left:0;top:0;z-index:70;display:none;background:#fff;border-top:1px solid #ddd;padding:6px 8px;padding-bottom:calc(6px + env(safe-area-inset-bottom));gap:8px;align-items:center;justify-content:flex-start;transform-origin:top left;box-shadow:0 -2px 10px rgba(0,0,0,.06)}
+#pbar button{min-width:64px;min-height:44px;font-size:15px;flex:0 0 auto}
+#pbar .sp{flex:1 1 auto;min-width:0}
+/* §2.3 その他の一覧（並びのすぐ上に開く） */
+#pmore{position:fixed;left:0;top:0;z-index:72;display:none;flex-direction:column;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.18);padding:6px;gap:4px;transform-origin:top left;min-width:200px;max-height:40vh;overflow-y:auto}
+#pmore.on{display:flex}
+#pmore button{min-height:44px;font-size:15px;text-align:left;border:none;background:#fff;border-radius:6px;padding:8px 14px}
+#pmore button:active{background:#eef}
+#pmore .pmorestat{font:13px system-ui;color:#666;padding:8px 14px;min-height:44px;display:flex;align-items:center}
+#pmore .pmorestat.warn{color:#e08a00;font-weight:700}
+/* §3 キーボードのすぐ上の文字の道具 */
+#ptext{position:fixed;left:0;top:0;z-index:74;display:none;background:#fff;border-top:1px solid #ddd;box-shadow:0 -2px 10px rgba(0,0,0,.08);padding:6px 8px;gap:6px;align-items:center;transform-origin:top left}
+#ptext.on{display:flex}
+#ptext button{min-width:48px;min-height:44px;font-size:15px}
+#ptext .sp{flex:1}
+#ptext [data-pt-bold] b{font-weight:700}
+/* §4.3 道具の一覧（大きさ・色）。見えている範囲の中に開く */
+.pmenu{position:fixed;left:0;top:0;z-index:76;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.18);padding:6px;display:none;transform-origin:top left;max-height:260px;overflow:auto}
+.pmenu.on{display:block}
+/* 試験台26：知らせ・値段の箱・品を選ぶ一覧・連動の知らせ・お品書きの板 */
+.pg-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:95;background:#2a2a2a;color:#fff;font:13px/1.5 system-ui;padding:9px 16px;border-radius:8px;box-shadow:0 3px 14px rgba(0,0,0,.3);opacity:0;transition:opacity .15s;pointer-events:none;max-width:84vw;text-align:center;display:flex;align-items:center;gap:12px;justify-content:center}
+.pg-toast.on{opacity:1}
+.pg-toast.has-undo{pointer-events:auto}
+.pg-toast-undo{background:none;border:none;color:#7fb3ff;font:600 13px system-ui;cursor:pointer;padding:2px 4px;white-space:nowrap}
+.pg-toast-undo:hover{text-decoration:underline}
+.price-box{position:fixed;z-index:88;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 6px 22px rgba(0,0,0,.2);padding:10px;font:13px/1.5 system-ui;width:320px;max-width:92vw}
+.price-box .pb-head{font-weight:700;margin-bottom:8px}
+.price-box .pb-row{display:flex;gap:6px;margin-bottom:6px;align-items:center}
+.price-box .pb-name{flex:1 1 90px;min-width:0;padding:5px 6px;border:1px solid #ccc;border-radius:6px;font:13px system-ui}
+.price-box .pb-type{flex:0 0 84px;padding:5px 4px;border:1px solid #ccc;border-radius:6px;font:13px system-ui}
+.price-box .pb-amt{flex:0 0 76px;padding:5px 6px;border:1px solid #ccc;border-radius:6px;font:13px system-ui}
+.price-box .pb-del{flex:0 0 26px;border:1px solid #ccc;border-radius:6px;background:#fafafa;cursor:pointer}
+.price-box .pb-add{margin:2px 0 8px;border:none;background:none;color:#06c;cursor:pointer;font:13px system-ui;padding:2px}
+.price-box .pb-foot{display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #eee;padding-top:8px}
+.price-box .pb-foot button{font:13px system-ui;padding:6px 14px;border-radius:6px;cursor:pointer}
+.price-box .pb-ok{background:#06c;color:#fff;border:1px solid #06c}
+.price-box .pb-cancel{background:#fff;border:1px solid #ccc}
+.picker-box{position:fixed;z-index:88;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 6px 22px rgba(0,0,0,.2);padding:10px;font:13px/1.5 system-ui;width:300px;max-width:92vw;max-height:70vh;display:flex;flex-direction:column}
+.picker-box .pk-head{font-weight:700;margin-bottom:6px}
+.picker-box .pk-list{overflow:auto;flex:1}
+.picker-box .pk-cat{color:#999;font-size:11px;margin:8px 0 2px;letter-spacing:.04em}
+.picker-box .pk-item{display:block;width:100%;text-align:left;border:none;background:none;padding:6px 4px;border-radius:6px;cursor:pointer;font:13px system-ui;color:#222}
+.picker-box .pk-item:hover{background:#f3f3f3}
+.picker-box .pk-item.shown{color:#aaa;cursor:default}
+.picker-box .pk-item.out{color:#aaa;font-size:12px}
+.picker-box .pk-new{margin-top:8px;border-top:1px solid #eee;padding-top:8px;background:none;border-left:none;border-right:none;border-bottom:none;color:#06c;cursor:pointer;font:13px system-ui;text-align:left}
+.conn-notice{position:fixed;z-index:70;background:#2a4d7a;color:#fff;font:12px/1.4 system-ui;padding:4px 10px;border-radius:6px;box-shadow:0 2px 8px rgba(0,0,0,.2);pointer-events:none;white-space:nowrap}
+#menuPanel{position:fixed;top:0;right:0;width:360px;max-width:92vw;height:100vh;z-index:40;background:#fff;box-shadow:-2px 0 12px rgba(0,0,0,.18);display:none;flex-direction:column;font:13px system-ui}
+#menuPanel.on{display:flex}
+#menuPanel .mp-head{padding:12px 14px;font-weight:700;border-bottom:1px solid #eee;display:flex;align-items:center}
+#menuPanel .mp-head .sp{flex:1}
+#menuPanel .mp-head button{font:13px system-ui;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer;padding:3px 8px}
+#menuPanel .mp-body{overflow-y:auto;flex:1;padding:6px 0 30px}
+#menuPanel .mp-menu{font-weight:700;padding:10px 14px 2px;color:#333}
+#menuPanel .mp-cat{color:#999;font-size:11px;padding:8px 14px 2px;letter-spacing:.04em}
+#menuPanel .mp-item{padding:7px 14px 7px 18px;border-bottom:1px solid #f4f4f4;cursor:pointer;position:relative}
+#menuPanel .mp-item:hover{background:#f7f7f7}
+#menuPanel .mp-item.changed{border-left:4px solid #e08a00;padding-left:14px}
+#menuPanel .mp-item.deleted{color:#aaa;text-decoration:line-through}
+#menuPanel .mp-item.notdisp{color:#aaa}
+#menuPanel .mp-name .mp-new{display:inline-block;font-size:10px;color:#fff;background:#e08a00;border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:middle;text-decoration:none}
+#menuPanel .mp-sub{color:#999;font-size:11px;margin-top:2px}
+#menuPanel .mp-badge{display:inline-block;font-size:10px;color:#06c;border:1px solid #cfe0ff;border-radius:4px;padding:0 5px;margin-left:5px}
+#pSize{width:84px}
+#pSize button{display:block;width:100%;min-height:44px;font-size:15px;border:none;background:#fff;border-radius:6px;text-align:center}
+#pSize button:active{background:#eef}
+#pColor{width:auto}
+#pColor .cell{display:inline-block;width:44px;height:44px;border:1px solid #bbb;border-radius:8px;margin:3px;padding:0}
+/* §6 セクションを足す「＋」。スマホではいつも出す（PC はマウスを乗せたときだけ＝変えない） */
+.pg-phone .sec-add-zone{height:28px}
+.pg-phone .sec-add-btn{opacity:1;width:28px;height:28px;font-size:18px;touch-action:manipulation}
+.sec-add-hit{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:44px;height:44px;z-index:21;background:transparent;display:none}
+.pg-phone .sec-add-hit{display:block;touch-action:manipulation}
+/* ＋を出さないとき（PC の見え方／書き換え中／動かし・大きさ変え中） */
+.pg-phone.pg-hideadd .sec-add-zone{visibility:hidden;pointer-events:none}

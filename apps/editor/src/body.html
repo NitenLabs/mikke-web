@@ -1,0 +1,103 @@
+
+<div id="toolbar">
+  <button id="tText">テキスト</button>
+  <button id="tPhoto">写真</button>
+  <span class="div" style="width:1px;height:20px;background:#ddd"></span>
+  <button id="dPC" class="on">PC</button><button id="dSP">スマホ</button>
+  <span class="div" style="width:1px;height:20px;background:#ddd"></span>
+  <button id="tPeek">元の配置を見る</button>
+  <button id="tResetPage">このページを元に戻す</button>
+  <button id="tUndo">戻す</button><button id="tRedo">やり直す</button>
+  <span id="tstools">
+    <span class="div"></span>
+    <button data-ts="font" data-text-tool="font" title="書体">明朝 ▾</button>
+    <span class="div"></span>
+    <button data-ts="shrink" title="小さく"><span class="ab">A</span></button>
+    <input data-ts="size" type="text" inputmode="numeric" value="16">
+    <button data-ts="grow" title="大きく"><span class="ab">A</span></button>
+    <button data-ts="size-list" title="よく使う大きさ">▾</button>
+    <span class="div"></span>
+    <button data-ts="bold" title="太字">B</button>
+    <span class="div"></span>
+    <button data-ts="color" title="色"><span class="sw"></span></button>
+    <button data-ts="link" data-text-tool="link" title="リンク">リンク</button>
+  </span>
+  <span id="photoTools"><span class="div"></span><button id="tBright" data-photo-tool="brightness">明るさ ▾</button></span>
+  <span id="cardsTools"><span class="div"></span><button id="tCols" data-cards-tool="cols">列 ▾</button></span>
+  <span id="itemTools"><span class="div"></span><button id="tSell" data-item-tool="sell">販売 ▾</button><button id="tMonth" data-item-tool="month">出す月 ▾</button><button id="tLabels" data-item-tool="labels">ラベル ▾</button><button id="tMenus" data-item-tool="menus">メニュー ▾</button></span>
+  <span id="elemTools"><span class="div"></span><button id="tElemLink" data-elem-tool="link">リンク</button></span>
+  <span id="alignTools"><span class="div"></span><button id="tAlign" data-align-tool>配置 ▾</button></span>
+  <button id="tMore" data-more-btn>その他 ▾</button>
+  <span class="sp"></span>
+  <button id="tStudio">制作用</button>
+  <span id="saveStatus" class="savestat"></span>
+  <button id="tHistory">履歴</button>
+  <button id="tPreview">プレビュー</button>
+  <button id="tPublish">公開</button>
+</div>
+<div id="previewBar"></div>
+<div id="historyBar"></div>
+<div id="historyPanel"></div>
+<div id="menuPanel"></div>
+<div id="studio">
+  <div class="box"><b>試験を再現</b><br>
+    <button data-q="Q1">Q1</button><button data-q="Q2">Q2</button><button data-q="Q3">Q3</button><button data-q="Q4">Q4</button>
+    <button data-q="Q5">Q5</button><button data-q="Q6">Q6</button><button data-q="Q7">Q7</button><button data-q="Q8">Q8</button><br>
+    <button data-q="R1">R1</button><button data-q="R2">R2</button><button data-q="R3">R3</button><button data-q="R4">R4</button><button data-q="R5">R5</button>
+    <button data-q="R6">R6</button><button data-q="R7">R7</button><button data-q="R8">R8</button><button data-q="R9">R9</button><br>
+    <button data-q="T1">T1</button><button data-q="T2">T2</button><button data-q="T3">T3</button><button data-q="T4">T4</button><button data-q="T5">T5</button><button data-q="V1">V1</button><br>
+    <button data-q="W1">W1</button><button data-q="W2">W2</button><button data-q="W3">W3</button><button data-q="W4">W4</button><button data-q="W5">W5</button><button data-q="W6">W6</button>
+    <button data-q="W7">W7</button><button data-q="W8">W8</button><button data-q="W9">W9</button><button data-q="W10">W10</button><button data-q="W11">W11</button><br>
+    <button data-q="W12">W12</button><button data-q="W13">W13</button><button data-q="W14">W14</button><button data-q="W15">W15</button><button data-q="W16">W16</button><button data-q="W17">W17</button><button data-q="W18">W18</button><button data-q="W19">W19</button><button data-q="W20">W20</button><button data-q="W21">W21</button><button data-q="W22">W22</button><button data-q="W23">W23</button><button data-q="W24">W24</button><br>
+    <button data-q="Y1">Y1</button><button data-q="Y2">Y2</button><button data-q="Y3">Y3</button><button data-q="Y4">Y4</button><button data-q="Y5">Y5</button><button data-q="Y6">Y6</button><button data-q="Y7">Y7</button>
+    <button data-q="Y8">Y8</button><button data-q="Y9">Y9</button><button data-q="Y10">Y10</button><button data-q="Y11">Y11</button><button data-q="Y12">Y12</button><button data-q="Y13">Y13</button><button data-q="Y14">Y14</button><br>
+    <button data-q="Z1">Z1</button><button data-q="Z2">Z2</button><button data-q="Z3">Z3</button><button data-q="Z4">Z4</button><button data-q="Z5">Z5</button><button data-q="Z6">Z6</button><button data-q="Z7">Z7</button><br>
+    <button data-q="P1">P1</button><button data-q="P2">P2</button><button data-q="P3">P3</button><button data-q="P4">P4</button><button data-q="P5">P5</button><button data-q="P6">P6</button><button data-q="P7">P7</button><button data-q="P8">P8</button>
+    <button data-q="P9">P9</button><button data-q="P10">P10</button><button data-q="P11">P11</button><button data-q="P12">P12</button><button data-q="P13">P13</button><button data-q="P14">P14</button><button data-q="P15">P15</button><button data-q="P16">P16</button><br>
+    <button data-q="U1">U1</button><button data-q="U2">U2</button><button data-q="U3">U3</button><button data-q="U4">U4</button><button data-q="U5">U5</button><button data-q="U6">U6</button><br>
+    <button data-q="J1">J1</button><button data-q="J2">J2</button><button data-q="J3">J3</button><button data-q="J4">J4</button><button data-q="J5">J5</button><button data-q="J6">J6</button><button data-q="J7">J7</button>
+    <button data-q="J8">J8</button><button data-q="J9">J9</button><button data-q="J10">J10</button><button data-q="J11">J11</button><button data-q="J12">J12</button><button data-q="J13">J13</button><br>
+    <button data-q="D1">D1</button><button data-q="D2">D2</button><button data-q="D3">D3</button><button data-q="D4">D4</button><button data-q="D5">D5</button><button data-q="D6">D6</button>
+    <button data-q="D7">D7</button><button data-q="D8">D8</button><button data-q="D9">D9</button><button data-q="D10">D10</button><button data-q="D11">D11</button><button data-q="D12">D12</button><br>
+    <button data-q="S1">S1</button><button data-q="S2">S2</button><button data-q="S3">S3</button><button data-q="S4">S4</button><button data-q="S5">S5</button><button data-q="S6">S6</button><button data-q="S7">S7</button><button data-q="S8">S8</button>
+    <button data-q="S9">S9</button><button data-q="S10">S10</button><button data-q="S11">S11</button><button data-q="S12">S12</button><button data-q="S13">S13</button><button data-q="S14">S14</button><button data-q="S15">S15</button><button data-q="S16">S16</button><br>
+    <button data-q="S17">S17</button><button data-q="S18">S18</button><button data-q="S19">S19</button><button data-q="S20">S20</button><button data-q="S21">S21</button><button data-q="S22">S22</button><button data-q="S23">S23</button><button data-q="S24">S24</button>
+    <button data-q="S25">S25</button><button data-q="S26">S26</button><button data-q="S27">S27</button><button data-q="S28">S28</button><button data-q="S29">S29</button><button data-q="S30">S30</button><button data-q="S31">S31</button><button data-q="S32">S32</button>
+    <button data-q="S33">S33</button><button data-q="S34">S34</button><button data-q="S35">S35</button><button data-q="S36">S36</button><button data-q="S37">S37</button><button data-q="S38">S38</button><br>
+    <button data-q="K1">K1</button><button data-q="K2">K2</button><button data-q="K3">K3</button><button data-q="K4">K4</button><button data-q="K5">K5</button><button data-q="K6">K6</button><button data-q="K7">K7</button><button data-q="K8">K8</button><button data-q="K9">K9</button>
+    <button data-q="K10">K10</button><button data-q="K11">K11</button><button data-q="K12">K12</button><button data-q="K13">K13</button><button data-q="K14">K14</button><button data-q="K15">K15</button><button data-q="K16">K16</button><button data-q="K17">K17</button><button data-q="K18">K18</button><br>
+    <button data-q="K19">K19</button><button data-q="K20">K20</button><button data-q="K21">K21</button><button data-q="K22">K22</button><button data-q="K23">K23</button><button data-q="K24">K24</button><button data-q="K25">K25</button><button data-q="K26">K26</button><button data-q="K27">K27</button><br>
+    <button data-q="L1">L1</button><button data-q="L2">L2</button><button data-q="L3">L3</button><button data-q="L4">L4</button><button data-q="L5">L5</button><button data-q="L6">L6</button><button data-q="L7">L7</button><button data-q="L8">L8</button>
+    <button data-q="L9">L9</button><button data-q="L10">L10</button><button data-q="L11">L11</button><button data-q="L12">L12</button><button data-q="L13">L13</button><button data-q="L14">L14</button><button data-q="L15">L15</button>
+  </div>
+  <div class="box"><b>操作の記録</b><ol id="oplog"></ol></div>
+  <div class="box"><b>付いていく先</b><ul id="anchorlist" style="margin:0;padding-left:16px;font-size:12px;color:#06c"></ul></div>
+</div>
+<div id="stage">
+  <div id="sectionwrap"></div>
+  <div id="meas" style="position:fixed;left:-9999px;top:0"></div>
+</div>
+<input id="photoInput" type="file" accept="image/*" style="position:fixed;left:-9999px">
+<div id="cropwrap" style="display:none"></div>
+<div id="fmenu"></div>
+<div id="sizePop" class="tspop"></div>
+<div id="colorPop" class="tspop"></div>
+<div id="fontPop" class="tspop"></div>
+<div id="colsPop" class="tspop"></div>
+<div id="sellPop" class="tspop itempop"></div>
+<div id="monthPop" class="tspop itempop"></div>
+<div id="labelPop" class="tspop itempop"></div>
+<div id="menuPop" class="tspop itempop"></div>
+<div id="alignMenu" class="pmenu"></div>
+<div id="linkPanel" data-link-panel></div>
+<div id="linkChip" data-link-chip></div>
+<div id="moreMenu"></div>
+<div id="publishToast"></div>
+<div id="publishBox"></div>
+<button id="photoChangeBtn" type="button" data-photo-change></button>
+<div id="brightPop" class="tspop"></div>
+<div id="pbar"></div>
+<div id="pmore"></div>
+<div id="ptext"></div>
+<div id="pSize" class="pmenu"></div>
+<div id="pColor" class="pmenu"></div>

@@ -1,0 +1,11 @@
+{
+  "name": "@mikke/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "芦屋みっけ Web制作：データ・配置・描画（編集画面と公開で同じもの）",
+  "exports": {
+    ".": "./index.js",
+    "./*": "./*"
+  }
+}
