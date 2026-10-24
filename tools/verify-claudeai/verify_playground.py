@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 2026-10-24（Claude.ai）：上の並びの「戻す」「やり直す」を #tUndo・#tRedo で名指しにした。試験台29 で知らせの中にも「戻す」ボタンができ、名前で探すと2つに当たって止まったため（判定は変えていない）
 """
 芦屋みっけ wa-01 試験台（playgroundN_single.html）を、Claude.ai 側で別に確かめるスクリプト。
 作った人（Claude Code）とは別の手順で、本物のマウス・キーボード操作を使って確かめる。
@@ -755,9 +756,9 @@ async def main():
                 # Y11（Y4 → 戻す・やり直す・元の位置に戻す）
                 await fresh(pg, dev); G = await geo(pg); b0 = G['F_b0']
                 await handle_drag('F_b0', 'w', 100, 0)
-                await pg.get_by_role('button', name='戻す', exact=True).click(); await pg.wait_for_timeout(300)
+                await pg.locator('#tUndo').click(); await pg.wait_for_timeout(300)
                 Gu = await geo(pg)
-                await pg.get_by_role('button', name='やり直す', exact=True).click(); await pg.wait_for_timeout(300)
+                await pg.locator('#tRedo').click(); await pg.wait_for_timeout(300)
                 Gr = await geo(pg)
                 el = await pg.query_selector('[data-el="F_b0"]'); bb = await el.bounding_box()
                 await pg.mouse.click(bb['x'] + 10, bb['y'] + bb['height'] / 2, button='right'); await pg.wait_for_timeout(250)
@@ -1184,8 +1185,8 @@ async def main():
                 gap0 = G0['F_b0']['y'] - G0['F_h0']['y'] - G0['F_h0']['h']; gap1 = G1['F_b0']['y'] - G1['F_h0']['y'] - G1['F_h0']['h']
                 ok(f'J2 {dev} 大きさ36・高くなる・本文との間は同じ・重なりなし', c['size'] == 36 and t['size'] == 36 and t['sizeOwn'] and G1['F_h0']['h'] > G0['F_h0']['h'] + 1 and abs(gap1 - gap0) <= TOL and not Wn.get('overlaps'), f"{c['size']} {t} 間 {gap0:.1f}→{gap1:.1f}")
                 # J10（J2 の続き）
-                await pg.get_by_role('button', name='戻す', exact=True).click(); await pg.wait_for_timeout(300); u = (await css('F_h0'))['size']
-                await pg.get_by_role('button', name='やり直す', exact=True).click(); await pg.wait_for_timeout(300); r = (await css('F_h0'))['size']
+                await pg.locator('#tUndo').click(); await pg.wait_for_timeout(300); u = (await css('F_h0'))['size']
+                await pg.locator('#tRedo').click(); await pg.wait_for_timeout(300); r = (await css('F_h0'))['size']
                 ok(f'J10 {dev} 戻す・やり直す', u == tsp(await api(pg, f"{P}.textStyles()"), 'F_h0')['size'] or True and u != 36 and r == 36, f'戻す {u} やり直す {r}')
                 # J4
                 await fresh(pg, dev); await sel('F_h0'); s0 = (await css('F_h0'))['size']
@@ -1343,8 +1344,8 @@ async def main():
                 ok(f'D7 {dev} わらび餅の名前の2文字だけ赤・ほかの品は変わらない', Rw[0]['text'] == 'わら' and norm(Rw[0].get('color')) == '#c03030' and len(Rj) == 1 and len(Rd) == 1, f'{Rw} {Rj} {Rd}')
                 # D10・D11
                 await fresh(pg, dev); await d1()
-                await pg.get_by_role('button', name='戻す', exact=True).click(); await pg.wait_for_timeout(300); u = await runs('F_b0')
-                await pg.get_by_role('button', name='やり直す', exact=True).click(); await pg.wait_for_timeout(300); r = await runs('F_b0')
+                await pg.locator('#tUndo').click(); await pg.wait_for_timeout(300); u = await runs('F_b0')
+                await pg.locator('#tRedo').click(); await pg.wait_for_timeout(300); r = await runs('F_b0')
                 ok(f'D11 {dev} 戻す・やり直す', len(u) == 1 and len(r) == 2, f'{u} / {r}')
                 btn = await menu('F_b0', '文字の見た目を元に戻す'); has = await btn.count() > 0
                 if has: await btn.click(); await pg.wait_for_timeout(300)
@@ -1383,7 +1384,7 @@ async def main():
             await pg.get_by_role('button', name='このページを元に戻す').click(); await pg.wait_for_timeout(500)
             G2 = await geo(pg); t2 = tsp(await ts_all(), 'F_h0'); v2 = ph(await photos(), 'F_p0')['view']; r2 = await runs('F_b0')
             ok('D9 このページを元に戻す：位置・箱の見た目・見せる範囲は戻り、文の一部の赤は残る', moved(G0, G2, ['F_h0']) == [] and t2['size'] == ts0['size'] and t2['color'] == ts0['color'] and v2 == v0 and len(r2) == 2 and norm(r2[0].get('color')) == '#c03030', f'{t2} {v2} {r2[:1]}（押す前 {before[0]} {before[1]}）')
-            await pg.get_by_role('button', name='戻す', exact=True).click(); await pg.wait_for_timeout(400)
+            await pg.locator('#tUndo').click(); await pg.wait_for_timeout(400)
             G3 = await geo(pg); after = (tsp(await ts_all(), 'F_h0'), ph(await photos(), 'F_p0')['view'], await runs('F_b0'))
             ok('D9 「戻す」1回で押す前に全部戻る', moved(G1, G3, ['F_h0', 'F_b0']) == [] and after == before, f'{after[0]} {after[1]}')
 
@@ -1411,7 +1412,7 @@ async def main():
             async def retype(part, t):
                 bb = await bbox(part); await pg.mouse.dblclick(bb['x'] + bb['width'] / 2, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
                 await pg.keyboard.press('Control+a'); await pg.keyboard.insert_text(t); await pg.mouse.click(4, 400); await pg.wait_for_timeout(350)
-            async def undo(): await pg.get_by_role('button', name='戻す', exact=True).click(); await pg.wait_for_timeout(400)
+            async def undo(): await pg.locator('#tUndo').click(); await pg.wait_for_timeout(400)
             ALT = ['surface', 'background', 'surface', 'background']
             # C1・C2・C8
             await fresh(pg, 'pc'); L0 = await slist(); G0 = await geo(pg)
