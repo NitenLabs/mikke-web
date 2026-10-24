@@ -108,7 +108,7 @@ function a3_showPartMenuPC(sel,cx,cy){
     zsub("最背面へ移動",[["最背面へ移動",()=>PG.sendToBack()],["背面へ移動",()=>PG.sendBackward()]],!hasOv); }
   // その部品の操作
   div();
-  if(sel.length>1){ item("元の位置に戻す",()=>a5ResetParts(sel));   // F60 の知らせ（A5）を PC の一覧（P26）でも }
+  if(sel.length>1){ item("元の位置に戻す",()=>a5ResetParts(sel)); }
   else if(isRep){ const isPrice=/_price_/.test(bareOne);
     if(isPrice) item("値段を変える",()=>openPriceBox(one)); else if(PG.isText(one)) item("書き換える",()=>PG.startEdit(one));   // F9 品の写真には効かない「書き換える」を出さない
     if(!isMenuRow) item(isRow?"行を足す…":"品を足す…",()=>{ if(isRow) addRowFlow(one); else openItemPicker(one); });
