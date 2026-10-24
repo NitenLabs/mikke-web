@@ -2,7 +2,8 @@ import { Hono } from "hono";
 import type { AppEnv } from "../env";
 import { ApiError, bad, isPlainObject, notFound, readJson } from "../lib/http";
 import { actorOf, actorView } from "../services/changes";
-import { getVersion, listVersions, MAX_PUBLISH_BYTES, parsePublishInput, publish, replaceDrafts } from "../services/publish";
+import { insertBackup, getVersion, listVersions, MAX_PUBLISH_BYTES, parsePublishInput, publish, replaceDrafts } from "../services/publish";
+import { MAX_DRAFT_BYTES, validateDraft } from "../services/drafts";
 import { publicUrl } from "./shops";
 
 export const publishing = new Hono<AppEnv>();
@@ -52,6 +53,20 @@ publishing.get("/:shopId/backups", async (c) => {
     .bind(c.req.param("shopId"))
     .all<any>();
   return c.json({ backups: res.results.map((r) => ({ id: r.id, reason: r.reason, createdAt: r.created_at, ...(c.get("user").role === "producer" ? { createdBy: r.created_by } : {}) })) });
+});
+
+/** 戻す前の下書きを、編集画面から 1 つ残す（M3：ほかの端末とぶつかったとき、選ばなかった方を残す）。本文 {site?, shop?}（下書きと同じ形）。答え 201 {id, createdAt} */
+publishing.post("/:shopId/backups", async (c) => {
+  const shopId = c.req.param("shopId");
+  const body = await readJson<Record<string, unknown>>(c, MAX_DRAFT_BYTES * 2 + 1024);
+  if (!isPlainObject(body)) throw bad("invalid_backup", "本文は JSON の入れ物にしてください");
+  for (const k of Object.keys(body)) if (k !== "site" && k !== "shop") throw bad("invalid_backup", `知らない項目があります：${k}（site と shop だけ）`);
+  const site = body.site ?? undefined, shop = body.shop ?? undefined;
+  if (site === undefined && shop === undefined) throw new ApiError(400, "empty_backup", "中身のない写しです");
+  if (site !== undefined) validateDraft("site", shopId, site);
+  if (shop !== undefined) validateDraft("shop", shopId, shop);
+  const r = await insertBackup(c.env, shopId, actorOf(c.get("user")), { site, shop }, "keep-conflict");
+  return c.json(r, 201);
 });
 
 const backupRow = async (c: any) => {

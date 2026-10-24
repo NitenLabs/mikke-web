@@ -39,20 +39,26 @@ export async function verifyLinkToken(req) {
 }
 let linkError = "";
 
-/** ログインの箱を出し、入れたら解ける Promise */
-export function showLogin(req) {
+/**
+ * ログインの箱を出し、入れたら解ける Promise
+ * @param {object} [opts]  expired: ログインが切れたとき（M3b。言葉を変える）／check: 入れたかを確かめる関数（別のタブでメールのリンクから入ったら閉じる）
+ */
+export function showLogin(req, opts = {}) {
   return new Promise((resolve) => {
     if (!document.getElementById("mkLoginCss")) { const st = el("style", { id: "mkLoginCss" }); st.textContent = CSS; document.head.appendChild(st); }
     const root = el("div", { id: "mkLogin", role: "dialog", "aria-modal": "true", "aria-labelledby": "mkLoginTitle" });
     const card = el("div", { class: "lg-card" }); root.appendChild(card);
-    let email = "", resendAt = 0, timer = null;
+    let email = "", resendAt = 0, timer = null, poll = null;
+    if (opts.expired) root.setAttribute("data-login-expired", "1");
     const msg = el("p", { class: "lg-msg", "data-login-msg": "1", "aria-live": "polite" });
     const setMsg = (t, ok) => { msg.textContent = t || ""; msg.classList.toggle("ok", !!ok); };
 
     function stepEmail() {
       card.innerHTML = "";
-      card.appendChild(el("h1", { id: "mkLoginTitle" }, "芦屋みっけ ログイン"));
-      card.appendChild(el("p", { class: "lg-sub" }, "お店のサイトを直すには、登録したメールアドレスでログインします。パスワードは要りません。"));
+      card.appendChild(el("h1", { id: "mkLoginTitle" }, opts.expired ? "ログインが切れました" : "芦屋みっけ ログイン"));
+      card.appendChild(el("p", { class: "lg-sub" }, opts.expired
+        ? "しばらく使わなかったか、ほかの端末でログアウトしたためです。もう一度ログインしてください。直しかけの内容はこの端末に取ってあるので、ログインすると続きから保存します。"
+        : "お店のサイトを直すには、登録したメールアドレスでログインします。パスワードは要りません。"));
       const f = el("form", { novalidate: "" });
       f.appendChild(el("label", { for: "mkLoginEmail" }, "メールアドレス"));
       const inp = el("input", { id: "mkLoginEmail", type: "email", autocomplete: "email", inputmode: "email", "data-login-email": "1", placeholder: "例：shop@example.com" });
@@ -107,7 +113,8 @@ export function showLogin(req) {
       setTimeout(() => inp.focus(), 0);
     }
 
-    function done() { if (timer) clearInterval(timer); root.remove(); resolve(); }
+    function done() { if (timer) clearInterval(timer); if (poll) clearInterval(poll); root.remove(); resolve(); }
+    if (typeof opts.check === "function") { let busy = false; poll = setInterval(async () => { if (busy) return; busy = true; try { if (await opts.check()) done(); } finally { busy = false; } }, 3000); }
     document.body.appendChild(root);
     stepEmail();
   });

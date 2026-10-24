@@ -244,6 +244,33 @@ describe("D4 履歴と「この版を下書きにする」", () => {
     expect(list.backups).toHaveLength(10);
   }, 60_000);
 
+  it("D4-6 編集画面から戻す前の下書きを 1 つ残せる（ぶつかったときに選ばなかった方）。形が違えば 400。下書きは変わらない", async () => {
+    const { owner, shop } = await world();
+    const before = await getDraft(owner.cookie, shop.id, "site");
+    const mine = siteData({ content: { F_b0: "自分の直し" } });
+    const shopBody = { schemaVersion: 1, shopId: shop.id, basic: { name: "自分の店名" } };
+    const r = await call("POST", `/api/shops/${shop.id}/backups`, { cookie: owner.cookie, json: { site: mine, shop: shopBody } });
+    expect(r.status).toBe(201);
+    const { id } = (await r.json()) as any;
+    expect(id).toMatch(/^bak_/);
+    const list = (await (await call("GET", `/api/shops/${shop.id}/backups`, { cookie: owner.cookie })).json()) as any;
+    expect(list.backups[0]).toMatchObject({ id, reason: "keep-conflict" });
+    const bk = (await (await call("GET", `/api/shops/${shop.id}/backups/${id}`, { cookie: owner.cookie })).json()) as any;
+    expect(bk.site).toEqual(mine);
+    expect(bk.shop).toEqual(shopBody);
+    expect((await getDraft(owner.cookie, shop.id, "site")).version).toBe(before.version);
+    // そこから戻せる
+    const s = await getDraft(owner.cookie, shop.id, "shop");
+    const back = await call("POST", `/api/shops/${shop.id}/backups/${id}/restore`, { cookie: owner.cookie, json: { siteDraftVersion: before.version, shopDraftVersion: s.version } });
+    expect(back.status).toBe(200);
+    expect((await getDraft(owner.cookie, shop.id, "site")).data).toEqual(mine);
+    // 形の確かめ
+    expect((await call("POST", `/api/shops/${shop.id}/backups`, { cookie: owner.cookie, json: {} })).status).toBe(400);
+    expect((await call("POST", `/api/shops/${shop.id}/backups`, { cookie: owner.cookie, json: { site: { draft: {} } } })).status).toBe(400);
+    expect((await call("POST", `/api/shops/${shop.id}/backups`, { cookie: owner.cookie, json: { shop: { shopId: "shp_other" } } })).status).toBe(400);
+    expect((await call("POST", `/api/shops/${shop.id}/backups`, { cookie: owner.cookie, json: { site: mine, extra: 1 } })).status).toBe(400);
+  });
+
   it("D4-5 ① も戻すのは includeShop のときだけ。古い版番号なら 409", async () => {
     const { owner, shop } = await world();
     await publishAll(owner.cookie, shop.id);

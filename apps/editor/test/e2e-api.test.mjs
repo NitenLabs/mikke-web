@@ -8,7 +8,11 @@
 //   4 見出しを書き換える → 自動保存 → 読み込み直しても残る（サーバーの下書きにも入っている）
 //   5 写真を差し替える → ブラウザで縮めて大きさ違いと一緒に上げる → ④ の ID に付け替わる
 //   6 公開 → 「公開しました」と公開ページのアドレス → 公開ページ（ashiyado.localhost:<番号>）に新しい見出しと写真
-//   7 もう1つのブラウザ（別の context）で、メールのリンク（/login#t=…）で入って直す → 1つ目で直すと「ほかで変更されました」
+//   7 もう1つのブラウザ（別の context）で、メールのリンク（/login#t=…）で入って直す → 1つ目で直すと「ほかの端末で変更されました」の箱
+//     →「ほかの変更を読み込む」（自分の直しは戻す前の下書きに）／もう一度ぶつけて「自分の直しで上書きする」（ほかの変更は戻す前の下書きに）
+//   M3b ほかの端末からもログアウト → 1つ目で直すとログインが切れた（401）→ 手元に退避してログインの箱 → 入り直すと保存
+//       ログインが切れたまま読み込み直す → 入ると退避した下書きが出る → サーバーが先に進んでいれば箱 → 上書き
+//       写真を上げている途中に閉じようとすると警告 → 読み込み直すと上げ直す／ログアウト
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -25,6 +29,8 @@ const API_DIR = path.join(ROOT, "apps/api");
 const HTML = path.join(ROOT, "apps/editor/dist/editor_single.html");
 const WORK = path.join(ROOT, "apps/editor/dist/e2e-api");
 const OWNER = "owner@ashiyado.example", PRODUCER = "producer@example.com";
+// 同じアドレスのログインのメールは 60 秒あけないと送れないので、入り直す場面は別の人（制作側。どのお店も直せる）で入る
+const P2 = "producer2@example.com", P3 = "producer3@example.com";
 const SHOP = "shp_ashiyado";
 const HEAD = "見出しを API で書き換えた M3";
 
@@ -39,6 +45,10 @@ before(async () => {
   fs.rmSync(WORK, { recursive: true, force: true }); fs.mkdirSync(WORK, { recursive: true });
   const state = path.join(WORK, "state");
   execFileSync(process.execPath, [path.join(API_DIR, "scripts/seed.mjs"), "--producer", PRODUCER, "--owner", OWNER, "--persist-to", state], { cwd: API_DIR, stdio: ["ignore", "ignore", "inherit"] });
+  const now = new Date().toISOString();
+  execFileSync(path.join(API_DIR, "node_modules/.bin/wrangler"), ["d1", "execute", "mikke", "--local", "--persist-to", state, "--command",
+    [P2, P3].map((e, i) => `INSERT INTO users (id, email, name, role, created_at) VALUES ('usr_e2eprod${i + 2}', '${e}', '制作${i + 2}', 'producer', '${now}');`).join(" ")],
+  { cwd: API_DIR, stdio: ["ignore", "ignore", "inherit"] });
   const edPort = await freePort(); ED = `http://localhost:${edPort}`;
   // 編集画面を配る（/ と /login のどちらも同じページ。ログインのリンクは <APP_ORIGINS の先頭>/login#t=…）
   const html = fs.readFileSync(HTML);
@@ -82,6 +92,27 @@ async function waitSaved(page) {
 }
 const editorUrl = () => `${ED}/?api=${encodeURIComponent(API)}&shop=${SHOP}`;
 const apiGet = (page, p) => page.evaluate(async ([api, p]) => (await fetch(api + p, { credentials: "include" })).json(), [API, p]);
+
+// 出ているログインの箱で入る（メールアドレス → コード）
+async function loginInBox(page, email) {
+  await page.waitForSelector("[data-login-email]");
+  const n = mails(email).length;
+  await page.fill("[data-login-email]", email);
+  await page.click("[data-login-send]");
+  await page.waitForSelector("[data-login-code]");
+  const m = await until(() => mails(email)[n], 15000, "メールのコード");
+  await page.fill("[data-login-code]", m.code);
+  await page.click("[data-login-enter]");
+}
+// 「その他 ▾」を開く（起動の直後は並びの描き直しで閉じることがあるので、開いたのを確かめる）
+const openMore = (page) => until(async () => { if (!(await page.locator("#moreMenu.on").count())) await page.click("#tMore"); await sleep(200); return page.locator("#moreMenu.on #moLogout").isVisible(); }, 10000, "その他 ▾");
+const stashKeys = (page) => page.evaluate(() => new Promise((res) => {
+  const q = indexedDB.open("mikke-api-stash", 1);
+  q.onupgradeneeded = () => { q.result.createObjectStore("kv"); };
+  q.onsuccess = () => { const g = q.result.transaction("kv", "readonly").objectStore("kv").getAllKeys(); g.onsuccess = () => { res(g.result.map(String)); q.result.close(); }; };
+  q.onerror = () => res(null);
+}));
+const backups = async (page) => { const l = (await apiGet(page, `/api/shops/${SHOP}/backups`)).backups || []; return Promise.all(l.map((b) => apiGet(page, `/api/shops/${SHOP}/backups/${b.id}`))); };
 
 async function loginWithCode(page, email) {
   await page.goto(editorUrl());
@@ -172,9 +203,11 @@ test("M3-4 公開 → 「公開しました」と公開ページ → 公開ペ�
   assert.deepEqual(bad.filter((t) => !/Failed to load resource/.test(t)), []);
 });
 
-test("M3-2・B4 別のブラウザでリンクから入って直す → 1つ目で直すと「ほかで変更されました」", async () => {
-  const ctxB = await browser.newContext({ viewport: { width: 1440, height: 900 } });
-  const B = await ctxB.newPage();
+let ctxB, B;
+test("M3-2・B4・M3b-3 別のブラウザでリンクから入って直す → 1つ目で直すと「ほかの端末で変更されました」の箱 →「ほかの変更を読み込む」", async () => {
+  ctxB = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  B = await ctxB.newPage();
+  B.on("dialog", (d) => d.accept());
   await B.goto(editorUrl());
   await B.waitForSelector("[data-login-email]");
   const n = mails(PRODUCER).length;
@@ -189,20 +222,171 @@ test("M3-2・B4 別のブラウザでリンクから入って直す → 1つ目�
   assert.equal((await B.locator('#stage [data-el="F_h0"]').innerText()).trim(), HEAD, "別の端末でも同じ下書き");
   await B.evaluate(() => PG.api.edit("F_b0", "別のブラウザで書いた本文"));
   await waitSaved(B);
-  // 1つ目（古い版を持っている）で直す → 409 → 知らせ
+  // 1つ目（古い版を持っている）で直す → 409 → 選ぶ箱
   await A.evaluate(() => PG.api.edit("F_h0", "1つ目のブラウザでまた直す"));
   await A.waitForFunction(() => PG.saveState().conflict, null, { timeout: 20000 });
-  assert.equal(await A.evaluate(() => PG.saveState().label), "ほかで変更されました。読み込み直してください");
-  assert.match(await A.locator("#pgToast").innerText(), /ほかで変更されました。読み込み直してください/);
+  assert.equal(await A.evaluate(() => PG.saveState().label), "ほかの端末で変更されました。どちらを残すか選んでください");
+  await A.waitForSelector("#m3Conflict.on");
+  assert.equal(await A.locator("#m3Conflict h2").innerText(), "ほかの端末で変更されました");
+  assert.match(await A.locator("[data-m3-conflict-theirs]").innerText(), /ほかの変更を読み込む（自分の直しは消える）/);
+  assert.match(await A.locator("[data-m3-conflict-mine]").innerText(), /自分の直しで上書きする/);
   // サーバーの下書きは B のまま（知らせなしに上書きしない）
-  const site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
+  let site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
   assert.equal(site.data.draft.content.F_b0, "別のブラウザで書いた本文");
   assert.equal(site.data.draft.content.F_h0, HEAD);
-  // 公開も止まる
-  await A.click("#tPublish");
-  await until(() => A.evaluate(() => /ほかで変更されました/.test((document.getElementById("pgToast") || {}).innerText || "")), 10000, "公開の知らせ");
-  // 読み込み直すと B の直しが見える
+  // 公開も止まる（箱はそのまま）
+  await A.evaluate(() => document.getElementById("tPublish").click());
+  await until(() => A.evaluate(() => /ほかで変更されました|ほかの端末で変更されました/.test((document.getElementById("pgToast") || {}).innerText || "")), 10000, "公開の知らせ");
+  assert.equal(await A.locator("#m3Conflict.on").count(), 1);
+  const nb = (await backups(A)).length;
+  // 「ほかの変更を読み込む」→ B の直しが見える。自分の直しは戻す前の下書きに
+  await A.click("[data-m3-conflict-theirs]");
+  await until(() => A.evaluate(() => !document.querySelector("#m3Conflict.on") && !PG.saveState().conflict), 15000, "箱が閉じる");
+  assert.equal((await A.locator('#stage [data-el="F_b0"]').innerText()).trim(), "別のブラウザで書いた本文");
+  assert.equal((await A.locator('#stage [data-el="F_h0"]').innerText()).trim(), HEAD);
+  await waitSaved(A);
+  const bk = await backups(A);
+  assert.equal(bk.length, nb + 1, "戻す前の下書きが 1 つ増える");
+  assert.equal(bk[0].site.draft.content.F_h0, "1つ目のブラウザでまた直す", "選ばなかった自分の直し");
+  assert.equal(bk[0].reason, "keep-conflict");
+  assert.ok(await A.evaluate(() => PG.versions().some((v) => v.kind === "beforeRestore")), "履歴に戻す前の下書き");
+  // そのまま直せる（もうぶつからない）
+  await A.evaluate((t) => PG.api.edit("F_h0", t), HEAD);
+  await waitSaved(A);
+  site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
+  assert.equal(site.data.draft.content.F_b0, "別のブラウザで書いた本文");
+  // 読み込み直しても B の直し
   await A.reload(); await waitReady(A);
   assert.equal((await A.locator('#stage [data-el="F_b0"]').innerText()).trim(), "別のブラウザで書いた本文");
+});
+
+test("M3b-3 もう一度ぶつかる →「自分の直しで上書きする」→ 今のサーバーの版で送り直す。ほかの変更は戻す前の下書きに", async () => {
+  await B.reload(); await waitReady(B);
+  await B.evaluate(() => PG.api.edit("F_b0", "B の2回目の本文"));
+  await waitSaved(B);
+  await A.evaluate(() => PG.api.edit("F_h0", "A で上書きする見出し"));
+  await A.waitForSelector("#m3Conflict.on", { timeout: 20000 });
+  const nb = (await backups(A)).length;
+  await A.click("[data-m3-conflict-mine]");
+  await until(() => A.evaluate(() => !document.querySelector("#m3Conflict.on") && !PG.saveState().conflict), 15000, "箱が閉じる");
+  await waitSaved(A);
+  const site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
+  assert.equal(site.data.draft.content.F_h0, "A で上書きする見出し");
+  assert.equal(site.data.draft.content.F_b0, "別のブラウザで書いた本文", "A の画面の内容で置き換わる");
+  assert.ok(site.data.theme, "③ はそのまま");
+  const bk = await backups(A);
+  assert.equal(bk.length, nb + 1);
+  assert.equal(bk[0].site.draft.content.F_b0, "B の2回目の本文", "選ばなかったほかの変更");
+  // B は古い版を持っているので、B で直すと B に箱
+  await B.evaluate(() => PG.api.edit("F_b0", "B でまた"));
+  await B.waitForSelector("#m3Conflict.on", { timeout: 20000 });
+  await B.click("[data-m3-conflict-theirs]");
+  await until(() => B.evaluate(() => !document.querySelector("#m3Conflict.on")), 15000, "B の箱が閉じる");
+  assert.equal((await B.locator('#stage [data-el="F_h0"]').innerText()).trim(), "A で上書きする見出し");
+});
+
+test("M3b-1・M3b-2 ほかの端末からもログアウト → 直すとログインが切れた箱（下書きは手元に退避）→ 入り直すとそのまま保存", async () => {
+  // C：A と同じ人（店主）で入り、「その他 ▾」→「ほかの端末からもログアウト」
+  const ctxC = await browser.newContext({ viewport: { width: 1440, height: 900 } });
+  const C = await ctxC.newPage(); C.on("dialog", (d) => d.accept());
+  await C.goto(editorUrl());
+  for (let i = 0; ; i++) {   // A が入ってから 60 秒たっていなければ、待ってから送り直す
+    await C.waitForSelector("[data-login-email]");
+    const n = mails(OWNER).length;
+    await C.fill("[data-login-email]", OWNER); await C.click("[data-login-send]");
+    const ok = await until(async () => (await C.locator("[data-login-code]").count()) ? "code" : (/あと (\d+) 秒/.exec(await C.locator("[data-login-msg]").textContent() || "") || [])[1], 15000, "送れたか");
+    if (ok === "code") { const m = await until(() => mails(OWNER)[n], 15000, "C のコード"); await C.fill("[data-login-code]", m.code); await C.click("[data-login-enter]"); break; }
+    assert.ok(i < 2, "送れない"); await sleep((+ok + 1) * 1000);
+  }
+  await waitReady(C);
+  assert.equal(await C.locator("#moLogout").count(), 1, "ログアウトは API につないでいるときだけ");
+  await openMore(C); await C.click("#moLogoutAll");
+  await C.waitForSelector("[data-login-email]", { timeout: 20000 });   // 読み込み直してログインの箱
+  assert.equal(await C.locator("#mkLogin h1").textContent(), "芦屋みっけ ログイン");
+  await ctxC.close();
+  // A：直す → 401 → 手元に退避 → ログインが切れた箱
+  await A.evaluate(() => PG.api.edit("F_h0", "切れた後の直し"));
+  await A.waitForSelector("#mkLogin[data-login-expired]", { timeout: 20000 });
+  assert.equal(await A.locator("#mkLogin h1").textContent(), "ログインが切れました");
+  assert.match(await A.locator("#mkLogin .lg-sub").textContent(), /直しかけの内容はこの端末に取ってあります|この端末に取ってある/);
+  assert.ok((await stashKeys(A)).some((k) => k.startsWith("draft|")), "手元に退避");
+  let site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
+  assert.equal(site.error, "unauthenticated");
+  // 入り直す → ぶつからないのでそのまま保存。退避は消える
+  await loginInBox(A, P2);
+  await A.waitForSelector("#mkLogin", { state: "detached", timeout: 20000 });
+  await waitSaved(A);
+  site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
+  assert.equal(site.data.draft.content.F_h0, "切れた後の直し");
+  await until(async () => !(await stashKeys(A)).some((k) => k.startsWith("draft|")), 5000, "退避を消す");
+  assert.equal(await A.locator("#m3Conflict.on").count(), 0);
+});
+
+test("M3b-2 ログインが切れたまま読み込み直す → 入ると退避した下書き → サーバーが先に進んでいれば箱 →「自分の直しで上書きする」", async () => {
+  await ctxA.clearCookies();
+  await A.evaluate(() => PG.api.edit("F_b0", "退避した本文"));
+  await A.waitForSelector("#mkLogin[data-login-expired]", { timeout: 20000 });
+  // その間にほかの端末（B）が保存
+  await B.reload(); await waitReady(B);
+  await B.evaluate(() => PG.api.edit("F_h0", "B が先に保存した見出し"));
+  await waitSaved(B);
+  // A を読み込み直す（ふつうのログインの箱）→ 入る → 退避した下書きが出て、保存すると 409 → 箱
+  await A.goto(editorUrl());
+  await A.waitForSelector("[data-login-email]");
+  assert.equal(await A.locator("#mkLogin h1").textContent(), "芦屋みっけ ログイン");
+  await loginInBox(A, P3);
+  await waitReady(A);
+  assert.equal((await A.locator('#stage [data-el="F_b0"]').innerText()).trim(), "退避した本文");
+  await A.waitForSelector("#m3Conflict.on", { timeout: 20000 });
+  await A.click("[data-m3-conflict-mine]");
+  await until(() => A.evaluate(() => !document.querySelector("#m3Conflict.on") && !PG.saveState().conflict), 15000, "箱が閉じる");
+  await waitSaved(A);
+  const site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
+  assert.equal(site.data.draft.content.F_b0, "退避した本文");
+  const bk = await backups(A);
+  assert.equal(bk[0].site.draft.content.F_h0, "B が先に保存した見出し", "選ばなかった B の変更");
+  await until(async () => !(await stashKeys(A)).some((k) => k.startsWith("draft|")), 5000, "退避を消す");
+});
+
+test("M3b-4 写真を上げている途中に閉じようとすると警告 → 読み込み直すと手元の写真を上げ直す", async () => {
+  const held = [];
+  const holdAssets = (r) => { if (r.request().method() === "POST") held.push(r); else r.continue(); };
+  await A.route(/\/api\/shops\/[^/]+\/assets$/, holdAssets);
+  const before = await A.evaluate(() => PG.api.photos().find((x) => x.part === "F_p0").asset);
+  await A.evaluate(async () => { const f = await PG.quadFile("m3b.jpg", 1600, 1200, "image/jpeg"); const r = await PG.replacePhotoFile("F_p0", f); if (!r.ok) throw new Error("読めない"); });
+  const tmp = await until(() => A.evaluate(() => { const p = PG.api.photos().find((x) => x.part === "F_p0"); return p && /^img_/.test(p.asset) ? p.asset : null; }), 10000, "ブラウザの中の写真");
+  await until(() => held.length, 20000, "上げ始め");
+  await waitSaved(A);
+  assert.equal(await A.evaluate(() => saveStore.uploading()), 1);
+  assert.equal(await A.evaluate(() => { const e = new Event("beforeunload", { cancelable: true }); window.dispatchEvent(e); return e.defaultPrevented; }), true, "閉じる前の警告");
+  assert.ok((await stashKeys(A)).some((k) => k.startsWith("photo|") && k.endsWith("|" + tmp)), "手元に置く");
+  let site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
+  assert.ok(JSON.stringify(site.data.draft).includes(tmp), "下書きはまだブラウザの中の ID");
+  // 途中で閉じた（つながりが切れた）ことにして読み込み直す
+  for (const r of held) await r.abort().catch(() => {});
+  await A.unroute(/\/api\/shops\/[^/]+\/assets$/, holdAssets);
+  await A.reload(); await waitReady(A);
+  const now = await until(() => A.evaluate(() => { const p = PG.api.photos().find((x) => x.part === "F_p0"); return p && /^ast_/.test(p.asset) ? p.asset : null; }), 30000, "上げ直して付け替わる");
+  assert.notEqual(now, before);
+  await waitSaved(A);
+  site = await apiGet(A, `/api/shops/${SHOP}/drafts/site`);
+  const s = JSON.stringify(site.data.draft);
+  assert.ok(s.includes(now)); assert.ok(!s.includes(tmp), "ブラウザの中の ID は残らない");
+  const a = await apiGet(A, `/api/shops/${SHOP}/assets/${now}`);
+  assert.equal(a.file.width, 1600);
+  await until(async () => !(await stashKeys(A)).some((k) => k.startsWith("photo|")), 5000, "手元の写真を消す");
+  assert.equal(await A.evaluate(() => saveStore.uploading()), 0);
+  assert.equal(await A.evaluate(() => { const e = new Event("beforeunload", { cancelable: true }); window.dispatchEvent(e); return e.defaultPrevented; }), false);
+});
+
+test("M3b-1 ログアウト（「その他 ▾」）→ ログインの箱。サーバーのセッションも消える", async () => {
+  await openMore(A);
+  assert.equal(await A.locator("#moreMenu.on #moLogout").count(), 1);
+  assert.equal(await A.locator("#moreMenu.on #moLogoutAll").count(), 1);
+  await A.click("#moLogout");
+  await A.waitForSelector("[data-login-email]", { timeout: 20000 });
+  assert.equal(await A.locator("#mkLogin h1").textContent(), "芦屋みっけ ログイン");
+  const me = await A.evaluate(async (api) => (await fetch(api + "/api/me", { credentials: "include" })).status, API);
+  assert.equal(me, 401);
   await ctxB.close();
 });
