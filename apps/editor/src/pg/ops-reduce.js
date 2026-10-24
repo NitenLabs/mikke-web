@@ -184,12 +184,13 @@ function reduce(ops, device, peek) {
       for (const a of (op.added || [])) adds.push(clone(a));
       for (const rid of (op.removed || [])) removed.add(rid);   // J46 複製先でも消した部品は出さない
     }
-    else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; } }
+    else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; if (sizes[it.id] && sizes[it.id].dy != null) delete sizes[it.id].dy; } }   // P1 塊の外へ出したら流れの中の縦のずれは要らない
       for (const it of op.items) if (it.mode === "M2" && isAdded(it.id)) placedFollow[it.id] = { anchor: it.anchor, device: op.device }; }   // §X13 置いた端末での今の付いていく先
     else if (op.t === "reorder") { if (op.device === device) { order[op.key] = op.order.slice(); delete m1[op.id]; delete m2[op.id]; } }
     else if (op.t === "zorder") { if (op.device === device) { if (op.zs) Object.assign(zmap, op.zs); else zmap[op.id] = op.z; } }   // §4/§22 重なり順（単体 z か、cluster まとめの zs）
     // §4（大きさ）：部品→端末ごと。w/h/padB は絶対値（最後が勝つ）。dx は「左から変えた分」の位置ずれ＝m1 に足す（右端を動かさない）。
-    else if (op.t === "size") { if (op.device === device) { const s = sizes[op.id] || {}; if (op.w != null) s.w = op.w; if (op.h != null) s.h = op.h; if (op.padB != null) s.padB = op.padB; sizes[op.id] = s; if (op.dx) { const m = m1[op.id] || { dx: 0, dy: 0 }; m1[op.id] = { dx: (m.dx || 0) + op.dx, dy: m.dy || 0 }; } } }
+    else if (op.t === "size") { if (op.device === device) { const s = sizes[op.id] || {}; if (op.w != null) s.w = op.w; if (op.h != null) s.h = op.h; if (op.padB != null) s.padB = op.padB; sizes[op.id] = s; if (op.dx) { const m = m1[op.id] || { dx: 0, dy: 0 }; m1[op.id] = { dx: (m.dx || 0) + op.dx, dy: m.dy || 0 }; }
+      if (op.dy) { if (m2[op.id]) m2[op.id] = { ...m2[op.id], gapY: +((m2[op.id].gapY || 0) + op.dy).toFixed(2) }; else s.dy = +((s.dy || 0) + op.dy).toFixed(2); } } }   // P1/P12 動かさない辺のための縦のずれ：塊の外（M2）は付いていく間隔に、流れの中は sizes.dy に
     else if (op.t === "cols") { const m = colsMap[op.id] = colsMap[op.id] || {}; m[op.device] = op.n; }   // §20 列（端末ごと。両端末ぶんを溜める）
     else if (op.t === "swap") { const s = swapMap[op.sec] = swapMap[op.sec] || {}; const d = s[op.device] = s[op.device] || {}; d[op.block] = !d[op.block]; if (op.device === device) for (const pid of (op.clearM1 || [])) { delete m1[pid]; delete m2[pid]; } }   // §5 左右入替（トグル）＋ 2つの子の M1 を消す
     // §12 文字の見た目：weight/color は端末共通（device で絞らない）、size は op.device の枠へ（両端末ぶんを溜める）
@@ -275,6 +276,7 @@ function reduce(ops, device, peek) {
     }
     else if (device === a.placedDevice) place = { anchor: a.anchor, gap: a.gap, x: a.x };   // 貼り付け等（従来・置いた端末）
     else { place = { anchor: autoAnchor, gap: 16, x: "@left" }; isAuto = true; }              // 貼り付け等（もう一方の端末＝自動）
+    if (!m2[a.id] && !isAuto && sizes[a.id] && sizes[a.id].dy) place = { ...place, gap: +((place.gap || 0) + sizes[a.id].dy).toFixed(2) };   // P1 足した部品の上の角で縮めた分（付いていく間隔に足す）
     // 幅はその端末でのコピー元の幅。置いた左端から中身の右端に収まらないなら、そこまで縮める（写真は縦横比保持。§2.3）
     let w = device === a.placedDevice ? a.w : (a.wOther != null ? a.wOther : a.w);
     let h = a.kind === "photo" ? (device === a.placedDevice ? a.h : (a.hOther != null ? a.hOther : a.h)) : a.h;

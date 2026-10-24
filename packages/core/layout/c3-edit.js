@@ -78,6 +78,7 @@ export function buildFeature(content, device, H, edits = {}) {
   const pbOf = (id) => (sizes[id]?.padB ? `;padding-bottom:${px(sizes[id].padB)}` : ""); // 文字の下に足す空き
   const pwOf = (id) => sizes[id]?.w ?? c.pW;                          // 写真の幅
   const phOf = (id) => sizes[id]?.h ?? c.pH;                          // 写真の高さ
+  const dyOf = (id) => sizes[id]?.dy || 0;                            // P1/P12 大きさを変えても動かさない辺のための縦のずれ（写真＝上の空き、PC の文字＝文字の塊の位置）
 
   // 部品ごとの HTML（流れ用・絶対用の両方で使う）
   const hgInner = headingGroupInner("F", content.feature, device, c);
@@ -100,8 +101,10 @@ export function buildFeature(content, device, H, edits = {}) {
       const tgOrder = (order[`Ftg${i}`] || [`F_h${i}`, `F_b${i}`]).filter((id) => !isOut(id));
       let tgKids = ""; let prev = null;
       for (const cid of tgOrder) { const mt = prev === null ? "" : `margin-top:${px(headBody)}`; tgKids += childInner(i, cid, mt); prev = cid; }
-      const tg = tgKids ? `<div class="tg" style="position:relative;top:${px(c.centerOff)};width:${px(c.tW)};flex:none">${tgKids}</div>` : "";
-      const photo = isOut(`F_p${i}`) ? "" : `<div style="flex:none${off(`F_p${i}`)}">${photoInner(i)}</div>`;
+      const tgDy = tgOrder.reduce((a, cid) => a + dyOf(cid), 0);   // P12 手で幅を変えた文字は上の辺を動かさない＝塊の縦の真ん中そろえから外す
+      const tg = tgKids ? `<div class="tg" style="position:relative;top:${px(c.centerOff + tgDy)};width:${px(c.tW)};flex:none">${tgKids}</div>` : "";
+      const pdy = dyOf(`F_p${i}`);   // P1 上の角で縮めた写真は下の辺を動かさない＝上に空きを足す
+      const photo = isOut(`F_p${i}`) ? "" : `<div style="flex:none${off(`F_p${i}`)}${pdy ? `;margin-top:${px(pdy)}` : ""}">${photoInner(i)}</div>`;
       const padL = reversed ? c.b2PadL : c.b1PadL;
       const kids = reversed ? photo + tg : tg + photo;
       return `<div class="row" style="display:flex;align-items:center;padding-left:${px(padL)};gap:${px(c.b1Gap)};margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}">${kids}</div>`;
@@ -112,7 +115,7 @@ export function buildFeature(content, device, H, edits = {}) {
     const block = (i) => {
       const ord = (order[`Fblk${i}`] || [`F_p${i}`, `F_h${i}`, `F_b${i}`]).filter((id) => !isOut(id));
       let html = ""; let prev = null;
-      for (const cid of ord) { const mt = `margin-top:${px(prev === null ? (i === 0 ? c.hgToBlk : c.blkGap) : gapBetween(prev, cid))}`; html += childInner(i, cid, mt); prev = cid; }
+      for (const cid of ord) { const mt = `margin-top:${px((prev === null ? (i === 0 ? c.hgToBlk : c.blkGap) : gapBetween(prev, cid)) + (isPhotoId(cid) ? dyOf(cid) : 0))}`; html += childInner(i, cid, mt); prev = cid; }
       return html;
     };
     blocks = block(0) + block(1);
