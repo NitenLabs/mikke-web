@@ -13,7 +13,8 @@
     "spec-check": "node tools/spec-check.mjs samples/ashiyado dist/ashiyado",
     "metacheck": "node tools/metacheck.mjs",
     "build:editor": "node apps/editor/build.mjs",
-    "test:core": "node --test packages/core/test/core.test.mjs"
+    "test:core": "node --test packages/core/test/core.test.mjs",
+    "test:publish": "node --test packages/core/publish/test/publish.test.mjs"
   },
   "dependencies": {
     "ajv": "^8.20.0",

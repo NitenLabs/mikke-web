@@ -63,6 +63,7 @@
 | `src/pg/testapi-presets.js` | 510 | 共通 | 試験の再現（プリセット Q/R・runStep） |
 | `src/pg/select-align.js` | 56 | A2 | 配置（揃え・整列） |
 | `src/pg/photo.js` | 91 | A3 | 写真の描画・差し替え・見せる範囲（トリミング）・試験画像 |
+| `src/pg/publish-bundle.js` | 120 | C | 公開の一式（`PG.buildPublishBundle()`）：各ページ・PC とスマホをプレビューの描き方で写し取り、`packages/core/publish` で HTML・CSS・sitemap を作る |
 | `src/pg/testapi.js` | 166 | 共通 | 入力の種類・試験の窓口（draft・roundTrip）・PG.api（window.__playground） |
 
 ### src/ui/（画面のつなぎ）
@@ -105,6 +106,7 @@
 | `catalog.js` | ① から品の並び・表・お品書きを作る・値段の文字・① の op の畳み方（元 app.js の PG の中） |
 | `shopinfo.js` | ① お店の情報の連絡先・場所（電話・住所・地図のリンク、アクセス・フッターの連動する文字、公開前の確認） |
 | `page-css.js` | ページの土台の CSS・Google Fonts のリンク（元 build.mjs） |
+| `publish/` | 公開の一式（ページの HTML・CSS・sitemap.xml・robots.txt・`/_mikke/site.js` の中身）。`publish/README.md` |
 | `content/wa-01.json` | テンプレート wa-01 の見本の中身（元 model/playground/_content.json） |
 | `test/core.test.mjs` | Node で読めること・① からの組み立て（`npm run test:core`） |
 
