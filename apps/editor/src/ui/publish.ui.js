@@ -13,7 +13,7 @@ function afterPublish(){ updateSaveUI(); if(isPhone()) refreshPhoneUI(); }
 // §22 §4.1 公開を押したとき：PC/SP の確認（publishCheck）。何もなければすぐ公開しトースト、あれば確認の箱
 // J26 保存できていない（失敗中・別タブ衝突）ときは公開しない＝「公開しました」と言わず、知らせる
 function doPublishFlow(){ if(PG.state.editing) PG.commitEdit();   // J49 書き換え中なら先にふつうに終える（打った文字を公開に含める・捨てない）
-  const st=PG.saveState(); if(st.status==="error"||st.conflict){ PG.flushPendingSave&&PG.flushPendingSave(); window.pgToast(st.conflict?(saveStore.kind==="api"?"ほかで変更されました。読み込み直してから公開してください":"ほかのタブの変更が保存されています。読み込み直してから公開してください"):"保存できていないので公開できません。つながりを確かめてもう一度お試しください"); afterPublish(); return; }
+  const st=PG.saveState(); if(st.status==="error"||st.conflict){ PG.flushPendingSave&&PG.flushPendingSave(); window.pgToast(st.conflict?(saveStore.kind==="api"?"ほかの端末で変更されました。出てきた箱で、どちらの直しを使うか選んでから公開してください":"ほかのタブの変更が保存されています。読み込み直してから公開してください"):"保存できていないので公開できません。つながりを確かめてもう一度お試しください"); afterPublish(); return; }
   const items=PG.publishCheck(); if(!items.length){ m3RunPublish(); } else showPublishBox(items); }
 document.getElementById("tPublish").onclick=()=>{ if(document.getElementById("tPublish").disabled) return; doPublishFlow(); };
 // J25 別タブが先に保存したときの知らせ（保存の道からも storage イベントからも呼ばれる）
