@@ -97,6 +97,10 @@ button:active{transform:translateY(1px)}
 .mark-manual{outline:2px dashed #e08a00 !important;outline-offset:-1px}
 .mark-warn{outline:2px solid #d00 !important;outline-offset:-1px}
 .mark-sel{outline:2px solid #06c !important;outline-offset:-1px}
+/* F20 部品にマウスを乗せたら、動かせることが分かるカーソルと細い枠（選ぶ前の手がかり。線 A2） */
+#sectionwrap [data-el]{cursor:move}
+#sectionwrap [contenteditable]{cursor:text}
+.a2-hover{outline:1px solid rgba(0,102,204,.55);outline-offset:-1px}
 .mark-anchor{outline:2px solid #06c !important;outline-offset:1px;box-shadow:0 0 0 3px rgba(0,102,204,.15)}
 .marquee{position:fixed;border:1.5px solid #06c;background:rgba(0,102,204,.10);pointer-events:none;z-index:50}
 #elemTools{display:none;align-items:center;gap:4px}
@@ -125,7 +129,7 @@ button:active{transform:translateY(1px)}
 #alignTools{display:none;align-items:center;gap:4px}
 #alignTools .div{width:1px;height:20px;background:#ddd}
 #alignTools #tAlign[disabled]{opacity:.4;cursor:default}
-#alignMenu{min-width:180px}
+#alignMenu{min-width:180px;max-height:calc(100vh - 80px)}
 #alignMenu .ai{display:flex;align-items:center;gap:8px;width:100%;min-height:30px;padding:4px 10px;border:none;background:none;border-radius:6px;cursor:pointer;font:13px system-ui;color:#333;text-align:left}
 #alignMenu .ai:hover{background:#f3f3f3}
 #alignMenu .ai[disabled]{opacity:.4;cursor:default;background:none}

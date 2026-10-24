@@ -211,3 +211,20 @@ function a2AddCopy(p, id, sec, anchor, gap, x, grp) {
   if (p.runs) commit({ t: "edit", id, runs: clone(p.runs), _grp: grp });
   if (p.elink) commit({ t: "elink", id, link: clone(p.elink), _grp: grp });
 }
+
+// P19 ドラッグ・つまみで窓の上下の端（上は道具の並びの下）に近づいたら自動でスクロールし、部品（つまみ）を指の下に付いてこさせる
+let a2as = null;
+function a2AutoScroll(x, y, noSnap, shift) {
+  if (!drag && !rz) { a2StopAutoScroll(); return; }
+  const tb = document.getElementById("toolbar"); const top = tb ? Math.max(0, tb.getBoundingClientRect().bottom) : 0; const E = 28;
+  let v = 0; if (y >= innerHeight - E) v = Math.min(24, 4 + (y - (innerHeight - E)) * 0.6); else if (y <= top + E) v = -Math.min(24, 4 + (top + E - y) * 0.6);
+  a2as = a2as || {}; Object.assign(a2as, { x, y, noSnap, shift, v: Math.round(v) });
+  if (a2as.v && !a2as.raf) a2as.raf = requestAnimationFrame(a2AutoStep);
+}
+function a2AutoStep() {
+  if (!a2as) return; a2as.raf = 0; if (!a2as.v || (!drag && !rz)) return;
+  const y0 = scrollY; window.scrollBy(0, a2as.v); const d = scrollY - y0; if (!d) return;   // 端まで来た
+  if (drag) { drag.sy -= d; dragMove(a2as.x, a2as.y, a2as.noSnap, a2as.shift); } else if (rz) { rz.sy -= d; resizeMove(a2as.x, a2as.y, a2as.noSnap); }
+  a2as.raf = requestAnimationFrame(a2AutoStep);
+}
+function a2StopAutoScroll() { if (a2as && a2as.raf) cancelAnimationFrame(a2as.raf); a2as = null; }

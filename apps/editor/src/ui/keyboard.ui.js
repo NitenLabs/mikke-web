@@ -39,6 +39,8 @@ window.addEventListener("keydown",(e)=>{
     if(PG.state.selected.size||PG.state.selectedSection){ e.preventDefault(); PG.clearSel(); }
     return;
   }
+  if(meta&&e.key.toLowerCase()==="a"&&!e.shiftKey&&!e.altKey){ e.preventDefault(); const L=a2PageParts(); PG.selectMany(L); if(L.length&&typeof showFmenu==="function") showFmenu(); return; }   // P17 書き換えていないときの Cmd+A＝今のページの部品を全部選ぶ
+  if(e.key==="Tab"&&!meta&&!e.altKey&&(PG.state.selected.size||PG.state.selectedSection)){ e.preventDefault(); a2TabSelect(e.shiftKey); return; }   // P18 部品を選んでいるときの Tab／Shift+Tab＝次・前の部品（何も選んでいなければ上の並びへ＝ふつうの Tab）
   if(meta&&e.key.toLowerCase()==="z"){ e.preventDefault(); e.shiftKey?PG.redo():PG.undo(); return; }
   if(meta&&e.key.toLowerCase()==="y"){ e.preventDefault(); PG.redo(); return; }
   if(meta&&e.key.toLowerCase()==="c"){ e.preventDefault(); PG.copySelection(); return; }

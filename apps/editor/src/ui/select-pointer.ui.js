@@ -7,6 +7,16 @@ function a2ClickEditable(id){ return !!id && PG.isText(id) && !/_price_/.test(id
 function a2EditAt(id,cx,cy){ PG.startEdit(id); const ed=PG.state.editing; if(!ed||ed.id!==PG.canonId(id)) return; const n=PG.elNode(ed.id); if(!n) return;
   const r=document.caretRangeFromPoint?document.caretRangeFromPoint(cx,cy):null;
   if(r&&n.contains(r.startContainer)){ r.collapse(true); const s=getSelection(); s.removeAllRanges(); s.addRange(r); } }
+// P17/P18 今のページで選べる部品（動かせる部品と、1回で書き換えに入る文字。品の中の1件は並びごと）。ページの上から下・同じ高さは左から
+function a2PageParts(){ const out=[]; const seen=new Set();
+  for(const hs of document.querySelectorAll("#sectionwrap .host")) for(const el of hs.querySelectorAll("[data-el]")){ const raw=el.getAttribute("data-el"); if(PG.REPEAT.test(raw.replace(/.*__/,""))) continue; const c=PG.canonId(raw); if(seen.has(c)) continue;
+    if(!(PG.isDraggable(c)||a2ClickEditable(c))) continue; const n=PG.elNode(c)||el; const b=n.getBoundingClientRect(); if(b.width<=0&&b.height<=0) continue; seen.add(c); out.push({id:c,y:b.top+scrollY,x:b.left}); }
+  out.sort((a,b)=>Math.abs(a.y-b.y)>2?a.y-b.y:a.x-b.x); return out.map(o=>o.id); }
+// P18 Tab／Shift+Tab：次・前の部品を選ぶ（一周する）。見える所までスクロール
+function a2TabSelect(back){ const L=a2PageParts(); if(!L.length) return; const cur=[...PG.state.selected]; let i=cur.length?L.indexOf(PG.canonId(cur[cur.length-1])):-1;
+  i = i<0 ? (back?L.length-1:0) : (i+(back?-1:1)+L.length)%L.length; const id=L[i]; PG.selectOnly(id); const n=PG.elNode(id); if(n) n.scrollIntoView({block:"nearest"}); if(typeof showFmenu==="function") showFmenu(); }
+// P19 ドラッグの間はブラウザの文字の選択（とそれによる勝手なスクロール）をさせない
+function a2NoTextSel(off){ if(off){ if(document.body.style.userSelect==="none") document.body.style.userSelect=""; return; } try{ getSelection().removeAllRanges(); }catch(_){} document.body.style.userSelect="none"; }
 // P2 書き換え中の箱の枠：縁の外へ 6px（上下は内へ 2px も）の帯（中の文字の選択と分ける。左右の内は行の頭・終わりにカーソルを置けるよう帯にしない）。当たれば書き換え中の部品 ID
 function a2EditFrameId(cx,cy){ const ed=PG.state.editing; if(!ed) return null; const n=PG.elNode(ed.id); if(!n) return null; const r=n.getBoundingClientRect(); const O=6,I=2;
   if(cx<r.left-O||cx>r.right+O||cy<r.top-O||cy>r.bottom+O) return null;
@@ -36,6 +46,8 @@ stage.addEventListener("pointerdown",(e)=>{
   // §5 PowerPoint のグループ選択：表・品の並びの中は、1回目で全体、2回目（選択中）で中の1件
   const grp=PG.groupOf(rawId);
   // X1：1回目で全体を選ぶ。選択中にもう一度つかんだら、動かせば全体ドラッグ・動かさなければ中の1件（押した瞬間には選び方を変えない）
+  // P23 同じ並びの中の1件を選んでいるときは、別の1件も1回で選べる（全体に戻らない）
+  if(grp&&!PG.state.selected.has(grp)&&[...PG.state.selected].some(s=>PG.groupOf(s)===grp)){ pending={sx:e.clientX,sy:e.clientY,clickInner:rawId}; return; }
   if(grp){ if(!PG.state.selected.has(grp)){ PG.selectOnly(grp); if(e.pointerType!=="touch") pending={sx:e.clientX,sy:e.clientY}; return; } else { pending={sx:e.clientX,sy:e.clientY,clickInner:rawId}; return; } }
   // P2/P6 動かせない文字（ヘッダーのロゴ・フッター・お品書き・アクセス）も1回で選び、押して離せば書き換え
   if(!PG.isDraggable(id)){ if(a2ClickEditable(id)&&e.button===0&&!e.shiftKey){ PG.selectOnly(id); pending={sx:e.clientX,sy:e.clientY,textClick:id}; return; } PG.selectMany([]); return; }
@@ -48,27 +60,35 @@ stage.addEventListener("pointerdown",(e)=>{
   if(e.pointerType!=="touch"||wasSel){ const nn=PG.elNode(id); const isPh=!!(nn&&nn.getAttribute("data-kind")==="photo"&&!nn.classList.contains("empty")); pending={sx:e.clientX,sy:e.clientY,photoClick:(isPh&&e.button===0&&!e.ctrlKey)?id:null,textClick:(a2ClickEditable(id)&&e.button===0&&!e.ctrlKey)?id:null}; }
 },{passive:false});
 let pending=null;
+// F20 マウスを乗せた部品に細い枠（選んでいる・書き換え中・ドラッグ中は出さない）
+let a2HoverId=null;
+function a2SetHover(id){ if(id&&id===a2HoverId){ const n=PG.elNode(id); if(n) n.classList.add("a2-hover"); return; } const old=a2HoverId&&PG.elNode(a2HoverId); if(old) old.classList.remove("a2-hover"); a2HoverId=id; const n=id&&PG.elNode(id); if(n) n.classList.add("a2-hover"); }
+stage.addEventListener("pointermove",(e)=>{ if(e.pointerType==="touch"||isPhone()||PG.previewMode()||PG.viewingVersion()||PG.isDragging()||PG.isResizing()||marquee){ a2SetHover(null); return; }
+  const raw=elFrom(e.target); let id=raw?PG.canonId(raw):null; if(raw&&PG.groupOf(raw)&&!PG.state.selected.has(PG.groupOf(raw))&&![...PG.state.selected].some(s=>PG.groupOf(s)===PG.groupOf(raw))) id=PG.groupOf(raw);
+  if(id&&(PG.state.selected.has(id)||(PG.state.editing&&PG.state.editing.id===id)||!(PG.isDraggable(id)||a2ClickEditable(id)||PG.isRepeat(id)))) id=null;
+  a2SetHover(id); });
+stage.addEventListener("pointerleave",()=>a2SetHover(null));
 window.addEventListener("pointermove",(e)=>{
   if(e.pointerType==="touch"){ if(tg) onPhoneMove(e); return; }   // J30 指は幅によらずスマホの動き
   if(isPhone()) return;
   // §2 Alt（Mac は Option）を押しながらは、そろえない
-  if(PG.isResizing()){ e.preventDefault(); PG.resizeMove(e.clientX,e.clientY,e.metaKey||e.ctrlKey); return; }   // P16 吸い付かないのは Cmd（Option は複製に使う）
+  if(PG.isResizing()){ e.preventDefault(); PG.resizeMove(e.clientX,e.clientY,e.metaKey||e.ctrlKey); PG.a2AutoScroll(e.clientX,e.clientY,e.metaKey||e.ctrlKey,false); return; }   // P16 吸い付かないのは Cmd（Option は複製に使う）
   if(marquee){ const x=Math.min(marquee.x0,e.clientX),y=Math.min(marquee.y0,e.clientY),w=Math.abs(e.clientX-marquee.x0),h=Math.abs(e.clientY-marquee.y0); Object.assign(marquee.el.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"}); e.preventDefault(); return; }
-  if(pending && !PG.isDragging() && Math.hypot(e.clientX-pending.sx,e.clientY-pending.sy)>3){ PG.beginDrag(pending.sx,pending.sy); lastImgClick=null; const pcb=document.getElementById("photoChangeBtn"); if(pcb) pcb.style.display="none"; }   // §2 動かし始めたら写真を変えるボタンを隠す・X10 ドラッグはダブルに数えない
-  if(PG.isDragging()){ e.preventDefault(); PG.dragMove(e.clientX,e.clientY,e.metaKey||e.ctrlKey,e.shiftKey); }   // P16 Cmd＝吸い付かない・P15 Shift＝縦か横にまっすぐ
+  if(pending && !PG.isDragging() && Math.hypot(e.clientX-pending.sx,e.clientY-pending.sy)>3){ PG.beginDrag(pending.sx,pending.sy); a2NoTextSel(); lastImgClick=null; const pcb=document.getElementById("photoChangeBtn"); if(pcb) pcb.style.display="none"; }   // §2 動かし始めたら写真を変えるボタンを隠す・X10 ドラッグはダブルに数えない
+  if(PG.isDragging()){ e.preventDefault(); PG.dragMove(e.clientX,e.clientY,e.metaKey||e.ctrlKey,e.shiftKey); PG.a2AutoScroll(e.clientX,e.clientY,e.metaKey||e.ctrlKey,e.shiftKey); }   // P16 Cmd＝吸い付かない・P15 Shift＝縦か横にまっすぐ
 },{passive:false});
 window.addEventListener("pointerup",(e)=>{
   if(e.pointerType==="touch"){ if(tg) onPhoneUp(e); return; }   // J30 指は幅によらずスマホの動き
   if(isPhone()) return;
-  const wasPending=pending; pending=null;
-  if(PG.isResizing()){ PG.endResize(); showFmenu(); return; }
+  const wasPending=pending; pending=null; PG.a2StopAutoScroll(); a2NoTextSel(true);
+  if(PG.isResizing()){ PG.endResize(); return; }   // F63 大きさを変えた後も帯は出さない
   if(marquee){ const r=marquee.el.getBoundingClientRect(); marquee.el.remove(); marquee=null; const chosen=[];
     const hosts=[...document.querySelectorAll("#sectionwrap .host")];
     for(const hs of hosts){ if(!hs)continue; for(const el of hs.querySelectorAll("[data-el]")){ const rawId=el.getAttribute("data-el"); const c=PG.canonId(rawId); if(!PG.isDraggable(c)||PG.REPEAT.test(rawId))continue; const b=el.getBoundingClientRect(); if(b.left>=r.left-0.5&&b.top>=r.top-0.5&&b.right<=r.right+0.5&&b.bottom<=r.bottom+0.5) if(!chosen.includes(c)) chosen.push(c);} }
     if(!chosen.length && r.width<6 && r.height<6){ // 余白をクリック＝セクションを選ぶ（§4）
       for(const hs of hosts){ const b=hs.getBoundingClientRect(); if(e.clientX>=b.left&&e.clientX<=b.right&&e.clientY>=b.top&&e.clientY<=b.bottom){ PG.selectSection(hs.id.replace("host_","")); break; } } return; }
     PG.selectMany(chosen); if(chosen.length) showFmenu(); return; }
-  if(PG.isDragging()){ PG.endDrag({dup:e.altKey}); showFmenu(); return; }   // P16 Option を押したまま離した＝複製して動かす
+  if(PG.isDragging()){ PG.endDrag({dup:e.altKey}); return; }   // P16 Option を押したまま離した＝複製して動かす。F63 ドラッグの後に頼んでいない帯は出さない
   // §2（試験台17）写真を選ぶ：空の枠を動かさずに離したら写真を選ぶ画面を開く
   if(wasPending && wasPending.photoChoose && Math.hypot(e.clientX-wasPending.sx,e.clientY-wasPending.sy)<=4){ startReplace(wasPending.photoChoose); return; }
   // §2/X10 写真を変える：左クリックで離したら「写真を選ぶ（1回目）／見せる範囲（2回目）」。右・Ctrl・ドラッグは数えない
