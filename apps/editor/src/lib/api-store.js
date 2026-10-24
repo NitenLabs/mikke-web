@@ -11,8 +11,12 @@
 //                              （編集画面の img_…＝ブラウザの中のデータ）を上げ、上がったら hooks.swapAsset で ④ の ID に付け替える
 // 下書きの保存は If-Match に読んだ版番号。409 は err.conflict（store-save.js が「ほかで変更されました」を出す）。
 // 書き込みは1本ずつ（前の保存が終わってから次。同じ版番号で2つ送って自分どうしでぶつからないように）。
+// M3b：ログインが切れた（401）→ 今の下書きを手元（lib/api-stash.js）に退避 → ログインの箱 → 入り直したら同じ頼みを送り直す
+// （下書きは退避したときの版番号のまま送る＝サーバーが先に進んでいれば 409 → ぶつかったときの箱）。読み込み直したときに退避した
+// 下書きが残っていれば、それを出して保存し直す（同じく版番号で確かめる）。上げ終わっていない写真も手元に置き、読み込み直したら上げ直す。
 import { showLogin, verifyLinkToken } from "./login.js";
 import { buildUploadForm } from "./photo-upload.js";
+import { stashGet, stashPut, stashDel, stashList } from "./api-stash.js";
 
 const CONFIG_KEY = "mikke-api-config";
 
@@ -27,10 +31,17 @@ export function ApiStore(cfg) {
   const uploads = {};                                 // 編集画面の写真 ID → 上げている Promise（④ の ID）
   let hooks = {};
   let me = null, shopInfo = null, opened = null;
+  let reloginP = null;                                // ログインし直している間（同時に来た 401 は同じものを待つ）
+  let stash = null, stashLeft = null;                 // 手元に退避した下書きと、そのうちまだサーバーに保存できていない方 {site, shop}
+  const inflight = new Set();                         // 上げている途中の写真 ID
+  const pendingPhotos = {};                           // 読み込み直したときに手元に残っていた、上げ終わっていない写真 ID → データ
+  const stashKey = () => `draft|${api}|${shopId}`;
+  const photoPrefix = () => `photo|${api}|${shopId}|`;
 
   const serial = (fn) => { const p = queue.then(fn, fn); queue = p.catch(() => {}); return p; };
 
-  async function req(method, path, { json, body, headers = {}, ifMatch } = {}) {
+  async function req(method, path, opts = {}) {
+    const { json, headers = {}, ifMatch } = opts; let body = opts.body;
     const h = { ...headers };
     if (json !== undefined) { h["Content-Type"] = "application/json"; body = JSON.stringify(json); }
     if (ifMatch != null) h["If-Match"] = `"${ifMatch}"`;
@@ -40,6 +51,7 @@ export function ApiStore(cfg) {
     let data = null;
     if ((res.headers.get("content-type") || "").includes("json")) data = await res.json().catch(() => null);
     if (!res.ok) {
+      if (res.status === 401 && me && !opts.noRelogin && !/^\/api\/(auth\/|me$)/.test(path)) { await relogin(); return req(method, path, { ...opts, noRelogin: true }); }
       const er = new Error((data && data.message) || ("HTTP " + res.status));
       er.status = res.status; er.code = data && data.error; er.data = data;
       if (res.status === 409 && er.code === "conflict") er.conflict = true;
@@ -47,16 +59,59 @@ export function ApiStore(cfg) {
     }
     return data;
   }
+  // ログインが切れた：今の下書きを手元に退避してからログインの箱。入れたら解ける
+  function relogin() {
+    if (!reloginP) reloginP = (async () => {
+      await stashNow();
+      if (typeof hooks.onRelogin === "function") hooks.onRelogin(true);
+      const check = async () => { try { await req("GET", "/api/me", { noRelogin: true }); return true; } catch (e) { return false; } };
+      await showLogin(req, { expired: true, check });
+      me = await req("GET", "/api/me", { noRelogin: true });
+      if (typeof hooks.onRelogin === "function") hooks.onRelogin(false);
+    })().finally(() => { reloginP = null; });
+    return reloginP;
+  }
+  async function stashNow() {
+    const snap = typeof hooks.snapshot === "function" ? hooks.snapshot() : null;
+    if (!snap) return;
+    stash = { at: Date.now(), user: me && me.user ? me.user.id : null, site: { draft: snap.draft, base: ver.site }, shop: { data: snap.shop, base: ver.shop } };
+    stashLeft = { site: true, shop: true };
+    await stashPut(stashKey(), stash);
+  }
+  function clearStash() { stash = null; stashLeft = null; return stashDel(stashKey()); }
+  function stashSaved(kind) { if (!stashLeft) return; stashLeft[kind] = false; if (!stashLeft.site && !stashLeft.shop) clearStash(); }
+  // 読み込み直したとき（get の shop・draft）：退避した下書きがサーバーと違えば、それを出す。版番号は退避したときのまま（保存で確かめる）
+  function fromStash(kind, serverJson) {
+    const it = stash && (kind === "site" ? stash.site : stash.shop);
+    const val = it && (kind === "site" ? it.draft : it.data);
+    if (val === undefined || val === null || it.base == null) return undefined;
+    if (JSON.stringify(val) === serverJson) return undefined;
+    ver[kind] = it.base; stashLeft = stashLeft || { site: false, shop: false }; stashLeft[kind] = true;
+    return val;
+  }
+  // 起動の終わり（get("draft") の後。編集画面が下書きを当て終わってから）：退避した下書きを保存し直す・上げ終わっていない写真を上げ直す
+  function afterBoot() {
+    setTimeout(() => {
+      if (stash && !(stashLeft && (stashLeft.site || stashLeft.shop))) clearStash();
+      else if (stash && typeof hooks.scheduleSave === "function") hooks.scheduleSave();
+      const snap = typeof hooks.snapshot === "function" ? hooks.snapshot() : null;
+      const used = snap ? JSON.stringify(snap) : "";
+      for (const id in pendingPhotos) {
+        const u = pendingPhotos[id]; delete pendingPhotos[id];
+        if (used.includes('"' + id + '"')) startUpload(id, u).catch(() => {}); else stashDel(photoPrefix() + id);
+      }
+    }, 0);
+  }
   const sp = (p) => `/api/shops/${encodeURIComponent(shopId)}${p}`;
   const fileUrl = (id) => api + sp(`/assets/${encodeURIComponent(id)}/file`);
 
   async function putDraft(kind, data) {
     const s = JSON.stringify(data);
-    if (s === last[kind]) return;
+    if (s === last[kind]) { stashSaved(kind); return; }
     if (ver[kind] == null) throw new Error("下書きをまだ読めていません");
     const body = kind === "site" ? (theme !== undefined ? { draft: data, theme } : { draft: data }) : data;
     const r = await req("PUT", sp(`/drafts/${kind}`), { json: body, ifMatch: ver[kind] });
-    ver[kind] = r.version; last[kind] = s;
+    ver[kind] = r.version; last[kind] = s; stashSaved(kind);
   }
   // 「この版を下書きにする」：置き換える前の下書きを先に保存し（サーバーが「戻す前の下書き」に正しく写せるように）、
   // サーバーの戻す道を呼ぶ。そのあと store-save.js の保存が、戻した中身を同じに書く（同じなら送らない）
@@ -93,22 +148,25 @@ export function ApiStore(cfg) {
 
   function startUpload(id, dataUrl) {
     if (uploads[id]) return uploads[id];
+    inflight.add(id);
     const p = (async () => {
+      await stashPut(photoPrefix() + id, { dataUrl, at: Date.now() });   // 上げ終わるまで手元にも置く（途中で閉じても、読み込み直したら上げ直す）
       const form = await buildUploadForm(dataUrl, id);
       const r = await req("POST", sp("/assets"), { body: form });
       store.assets[r.id] = r;
       if (typeof hooks.swapAsset === "function") hooks.swapAsset(id, r.id, r);
+      await stashDel(photoPrefix() + id);
       return r.id;
     })();
     uploads[id] = p;
-    p.catch(() => { if (uploads[id] === p) delete uploads[id]; });   // 失敗したら次の保存でまた上げる
+    p.then(() => inflight.delete(id), () => { inflight.delete(id); if (uploads[id] === p) delete uploads[id]; });   // 失敗したら次の保存でまた上げる
     return p;
   }
 
   const store = {
     kind: "api", api,
     name: "mikke-api:" + api + ":" + (shopId || ""),
-    conflictLabel: "ほかで変更されました。読み込み直してください",
+    conflictLabel: "ほかの端末で変更されました。どちらを残すか選んでください",
     assets: {},                     // ④（GET /assets の assets と、上げたもの）
     get shopId() { return shopId; },
     get user() { return me && me.user; },
@@ -125,19 +183,21 @@ export function ApiStore(cfg) {
         if (!shopId) shopId = me.shops && me.shops[0] ? me.shops[0].id : null;
         if (!shopId) throw new Error("このアカウントで直せるお店がありません");
         shopInfo = await req("GET", sp(""));
+        stash = (await stashGet(stashKey())) || null;                  // 前にログインが切れたときに退避した下書き
         try { localStorage.setItem(CONFIG_KEY, JSON.stringify({ api, shop: shopId })); } catch (e) {}
         return { api, shopId };
       })();
       return opened;
     },
     async get(_h, key) {
-      if (key === "draft") { const r = await req("GET", sp("/drafts/site")); ver.site = r.version; theme = r.data ? r.data.theme : undefined; const d = r.data ? r.data.draft : undefined; last.site = d !== undefined ? JSON.stringify(d) : undefined; return d; }
-      if (key === "shop") { const r = await req("GET", sp("/drafts/shop")); ver.shop = r.version; const d = r.data == null ? undefined : r.data; last.shop = d !== undefined ? JSON.stringify(d) : undefined; return d; }
+      if (key === "draft") { const r = await req("GET", sp("/drafts/site")); ver.site = r.version; theme = r.data ? r.data.theme : undefined; const d = r.data ? r.data.draft : undefined; last.site = d !== undefined ? JSON.stringify(d) : undefined; const st = fromStash("site", last.site); afterBoot(); return st !== undefined ? st : d; }
+      if (key === "shop") { const r = await req("GET", sp("/drafts/shop")); ver.shop = r.version; const d = r.data == null ? undefined : r.data; last.shop = d !== undefined ? JSON.stringify(d) : undefined; const st = fromStash("shop", last.shop); return st !== undefined ? st : d; }
       if (key === "settings") { const r = await req("GET", sp("/settings")); last.settings = JSON.stringify(r || {}); return r; }
       if (key === "versions") return loadVersions();
       if (key === "assets") {
         const r = await req("GET", sp("/assets")); const all = (r && r.assets) || {}; const out = {};
         for (const id in all) { store.assets[id] = all[id]; if (typeof hooks.isTemplateAsset === "function" && hooks.isTemplateAsset(id)) continue; out[id] = fileUrl(id); }
+        for (const { key: k, val: v } of await stashList(photoPrefix())) { const id = k.slice(photoPrefix().length); if (v && typeof v.dataUrl === "string" && !uploads[id]) { out[id] = v.dataUrl; pendingPhotos[id] = v.dataUrl; } }   // 上げ終わっていない写真（手元のデータで見せ、起動の後で上げ直す）
         return out;
       }
       return undefined;
@@ -167,7 +227,23 @@ export function ApiStore(cfg) {
     publish(bundle) {
       return serial(() => req("POST", sp("/publish"), { json: { scope: "all", shopDraftVersion: ver.shop, siteDraftVersion: ver.site, pages: bundle.pages, css: bundle.css, files: bundle.files } }));
     },
-    async logout() { try { await req("POST", "/api/auth/logout", { json: {} }); } catch (e) {} },
+    async logout() { try { await req("POST", "/api/auth/logout", { json: {}, noRelogin: true }); } catch (e) {} },
+    // ---- M3b ----
+    /** ほかの端末からもログアウト（このユーザーの全部のセッション。この端末も） */
+    logoutAll() { return req("POST", "/api/auth/logout-all", { json: {}, noRelogin: true }); },
+    /** 上げている途中の写真の数（閉じる前の警告） */
+    uploading() { return inflight.size; },
+    /** ぶつかったとき：今のサーバーの下書き {site:{version, data}, shop:{version, data}} */
+    async fetchDrafts() { const [site, shop] = await Promise.all([req("GET", sp("/drafts/site")), req("GET", sp("/drafts/shop"))]); return { site, shop }; },
+    /** 戻す前の下書きとして残す（{site:{draft, theme}, shop}）。答え {id} */
+    keepBackup(body) { return serial(() => req("POST", sp("/backups"), { json: body })); },
+    get theme() { return theme; },
+    /** 「ほかの変更を読み込む」：読んだ中身をサーバーと同じとして持つ */
+    adoptServer(cur) { ver.site = cur.site.version; ver.shop = cur.shop.version; theme = cur.site.data ? cur.site.data.theme : undefined; last.site = cur.site.data && cur.site.data.draft !== undefined ? JSON.stringify(cur.site.data.draft) : undefined; last.shop = cur.shop.data != null ? JSON.stringify(cur.shop.data) : undefined; },
+    /** 「自分の直しで上書きする」：今のサーバーの版番号で送り直す（中身は必ず送る） */
+    adoptVersions(cur) { ver.site = cur.site.version; ver.shop = cur.shop.version; if (cur.site.data && cur.site.data.theme !== undefined) theme = cur.site.data.theme; last.site = undefined; last.shop = undefined; },
+    clearStash,
+    get hasStash() { return !!stash; },
   };
   return store;
 }
