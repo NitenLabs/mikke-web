@@ -71,6 +71,10 @@ anchor_log = []   # R3 用：すべての試験の後の付いていく先
 
 # §24b 環境変数で働く2つ。無ければ今までと同じ動き。
 #   ONLY=C6,C7,...  … presets（R プリセット）を、この名前だけに絞って流す（Claude.ai が区画ごとに走らせるのと同じ）。Q・R・T・V 等の直書き試験は区画を絞っても走る（その結果も見たいので出力は絞らない）。
+#                    区画は前の区画で作った小道具を使うので、絞るときは前提の区画の名前も入れる（入れないと NameError で落ちる）：
+#                    P は Y（handle_drag）、U は P・Y（bbox・choose・photos・colors・handle_drag）、J は P（bbox・menu）、
+#                    D は P・J（bbox・menu・photos・css・sel・ts_all・tsp・set_size）、C は P・Y・J（bbox・send_file・handle_drag・css・sel・set_size）。
+#                    例：J だけ見たいときは ONLY=Y1,P1,J1（各区画の頭の名前＝Y1・P1・J1・D1・C1 などを入れる）
 #   ROUNDTRIP=1     … 各区画の切れ目で roundTrip() を呼び、PC/スマホのずれを出す（試験台24b の seed/fold 突合）。
 ONLY = set(x.strip() for x in os.environ.get('ONLY', '').split(',') if x.strip())
 ROUNDTRIP = os.environ.get('ROUNDTRIP', '') not in ('', '0', 'false', 'False')
@@ -148,9 +152,9 @@ MOD = 'Meta' if sys.platform == 'darwin' else 'Control'
 
 async def nosnap_key(pg):
     # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製して動かす、吸い付かない＝Cmd（MOD）。
-    # 版の見分け：試験用 API に a2AutoScroll（線 A2 の P19 で足した関数）があれば P16 の入った版＝MOD、無ければ（試験台28・29 以前）Alt
+    # 版の見分け：a2AutoScroll（線 A2 の P19 で足した関数。試験用 API か、ページの PG にある）があれば P16 の入った版＝MOD、無ければ（試験台28・29 以前）Alt
     if not hasattr(pg, '_nosnap'):
-        pg._nosnap = MOD if await pg.evaluate("typeof window.__playground.a2AutoScroll==='function'") else 'Alt'
+        pg._nosnap = MOD if await pg.evaluate("typeof (window.__playground.a2AutoScroll||(typeof PG!=='undefined'&&PG.a2AutoScroll))==='function'") else 'Alt'
     return pg._nosnap
 
 async def esc_if_editing(pg):
@@ -1285,8 +1289,20 @@ async def main():
                 await pg.mouse.dblclick(bb['x'] + bb['width'] / 2, bb['y'] + 8); await pg.wait_for_timeout(250)
                 await pg.keyboard.press('Control+End'); await pg.keyboard.press('End'); await pg.keyboard.insert_text('あ'); await pg.wait_for_timeout(150)
                 await pg.locator('[data-ts="bold"]').first.click(); await pg.wait_for_timeout(350)
-                c = await css('F_b0')
-                ok(f'J12 {dev} 書き換えの途中で太字：打った文字は残る', c['text'].rstrip().endswith('あ') and c['weight'] == 700, f"…{c['text'][-8:]} {c['weight']}")
+                # P7 に合わせて期待を変えた（まとめ役の指示）：書き換え中にカーソルだけで B を押すと、箱まるごとではなく次に打つ文字に効く（PowerPoint と同じ）。
+                # 前は「打った文字は残る・箱が太字（weight 700）」。今は「打った文字（あ）は残り太字にならない・B の後に打った文字（い）が太字・箱まるごとは太字にならない」
+                await pg.keyboard.type('い'); await pg.wait_for_timeout(150)
+                await pg.mouse.click(4, 400); await pg.wait_for_timeout(350)
+                c = await css('F_b0'); R12 = await api(pg, f"{P}.textRuns('F_b0')")
+                def _run_at(R, k):
+                    n = 0
+                    for x in R:
+                        n += len(x.get('text', ''))
+                        if k < n: return x
+                    return {}
+                _t = ''.join(x.get('text', '') for x in R12).rstrip('\n')
+                r_a = _run_at(R12, len(_t) - 2); r_i = _run_at(R12, len(_t) - 1)
+                ok(f'J12 {dev} 書き換えの途中でカーソルだけで太字：打った文字は残る・その後に打った文字が太字（P7）', _t.endswith('あい') and bool(r_i.get('bold')) and not r_a.get('bold') and c['weight'] != 700, f"…{_t[-8:]} 箱 {c['weight']} あ={r_a} い={r_i}")
                 # J13
                 await fresh(pg, dev); await sel('F_h0'); await set_size(200); a = (await css('F_h0'))['size']
                 await sel('F_h0'); await set_size(3); b_ = (await css('F_h0'))['size']
@@ -1354,9 +1370,11 @@ async def main():
                 Rb = await runs('F_b0')
                 ok(f'D2 {dev} 選んだ4文字だけ太字、Ctrl+B で外れる', Ra[0]['text'] == t0[:4] and Ra[0].get('bold') and not any(x.get('bold') for x in Rb), f'{Ra[:2]} → {Rb[:2]}')
                 # D6
-                await fresh(pg, dev); await edit_start('F_b0')
+                # P7・P27 に合わせて手順を変えた（まとめ役の指示）：書き換え中にカーソルだけの B は次に打つ文字に効く（P7）ので、
+                # 「箱まるごと」は箱を選んで（書き換えずに）B を押す（P27）で確かめる。期待（箱まるごと太字・runs は1つ）は同じ
+                await fresh(pg, dev); bb = await bbox('F_b0'); await click_sel(pg, bb['x'] + 8, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
                 await pg.locator('[data-ts="bold"]').first.click(); await pg.wait_for_timeout(300); await edit_end()
-                ok(f'D6 {dev} 選ばずに太字なら箱まるごと', (await css('F_b0'))['weight'] == 700 and len(await runs('F_b0')) == 1, f"{(await css('F_b0'))['weight']} {await runs('F_b0')}")
+                ok(f'D6 {dev} 箱を選んで（書き換えずに）太字なら箱まるごと', (await css('F_b0'))['weight'] == 700 and len(await runs('F_b0')) == 1, f"{(await css('F_b0'))['weight']} {await runs('F_b0')}")
                 # D7
                 await fresh(pg, dev)
                 bb = await bbox('card_name_c_warabi')
@@ -1509,7 +1527,9 @@ async def main():
             # C11
             await fresh(pg, 'pc'); await sec_rmenu('items', '削除')
             m = await sec_rmenu('feature', None)
-            ok('C11 セクションが1つだけなら、上へ・下へ・削除が出ない', not any(x in m for x in ['上へ', '下へ', '削除']), f'{m}')
+            # P26・F22 に合わせて手順を変えた（判定は同じ）：線 A3 からは出せない操作を灰色（disabled）で出す。「出ない、または disabled」＝押せるものに無い
+            m_on = await pg.evaluate("(()=>{const m=document.getElementById('fmenu');return m&&m.classList.contains('on')?[...m.querySelectorAll('button')].filter(b=>!b.disabled&&b.getAttribute('aria-disabled')!=='true').map(b=>b.textContent):[]})()")
+            ok('C11 セクションが1つだけなら、上へ・下へ・削除が出ない（出ても押せない）', not any(x in m_on for x in ['上へ', '下へ', '削除']), f'{m} 押せる {m_on}')
             # E1（試験の外・26b 更新）品のセクションを複製し、複製側の品の名前の色と文字を変える。
             # 色は ② のデザイン＝複製側だけ変わる。文字は ① お品書きの事実＝元の方も同じに変わる（記録 11.5・12.5）
             await fresh(pg, 'pc'); await sec_rmenu('items', '複製')

@@ -10,8 +10,8 @@ R=[]
 MOD='Meta' if sys.platform=='darwin' else 'Control'
 async def nosnap_key(pg):
     # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
-    # 版の見分け：試験用 API に a2AutoScroll（線 A2 で足した関数）があれば MOD、無ければ（試験台28・29 以前）Alt
-    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof window.__playground.a2AutoScroll==='function'") else 'Alt'
+    # 版の見分け：a2AutoScroll（線 A2 で足した関数。試験用 API か、ページの PG にある）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof (window.__playground.a2AutoScroll||(typeof PG!=='undefined'&&PG.a2AutoScroll))==='function'") else 'Alt'
     return pg._nosnap
 async def esc_if_editing(pg):
     # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）

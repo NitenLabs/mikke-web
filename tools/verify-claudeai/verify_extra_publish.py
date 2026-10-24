@@ -11,8 +11,8 @@ R=[]
 MOD='Meta' if sys.platform=='darwin' else 'Control'
 async def nosnap_key(pg):
     # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
-    # 版の見分け：試験用 API に a2AutoScroll（線 A2 で足した関数）があれば MOD、無ければ（試験台28・29 以前）Alt
-    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof window.__playground.a2AutoScroll==='function'") else 'Alt'
+    # 版の見分け：a2AutoScroll（線 A2 で足した関数。試験用 API か、ページの PG にある）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof (window.__playground.a2AutoScroll||(typeof PG!=='undefined'&&PG.a2AutoScroll))==='function'") else 'Alt'
     return pg._nosnap
 async def esc_if_editing(pg):
     # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
@@ -51,7 +51,8 @@ async def main():
         await pg.evaluate(f"{sel}.scrollIntoView({{block:'start'}})"); await pg.wait_for_timeout(200)
         r=await pg.evaluate(f"{sel}.getBoundingClientRect().toJSON()")
         await pg.mouse.click(r['x']+40,r['y']+60,button='right'); await pg.wait_for_timeout(400)
-        return await pg.evaluate("[...document.querySelectorAll('#fmenu [data-sec-menu]')].filter(b=>b.offsetParent).map(b=>b.textContent.trim())")
+        # P26・F22 に合わせて手順を変えた（判定は同じ）：線 A3 からは出せない操作も消さずに灰色（disabled）で出す。押せるものだけを数える＝「出ない、または disabled」
+        return await pg.evaluate("[...document.querySelectorAll('#fmenu [data-sec-menu]')].filter(b=>b.offsetParent&&!b.disabled&&b.getAttribute('aria-disabled')!=='true').map(b=>b.textContent.trim())")
     async def close_menu(pg):
         await pg.keyboard.press('Escape'); await pg.evaluate("document.getElementById('fmenu').classList.remove('on')"); await pg.wait_for_timeout(150)
 
@@ -73,7 +74,7 @@ async def main():
     await pg.evaluate("document.getElementById('fixedTop').scrollIntoView({block:'start'})"); await pg.wait_for_timeout(200)
     tb=await pg.evaluate("document.getElementById('fixedTop').getBoundingClientRect().toJSON()")
     await pg.mouse.click(tb['x']+40,tb['y']+40,button='right'); await pg.wait_for_timeout(400)
-    mt=await pg.evaluate("document.getElementById('fmenu').classList.contains('on')?[...document.querySelectorAll('#fmenu button')].filter(b=>b.offsetParent).map(b=>b.textContent.trim()):[]"); await close_menu(pg)
+    mt=await pg.evaluate("document.getElementById('fmenu').classList.contains('on')?[...document.querySelectorAll('#fmenu button')].filter(b=>b.offsetParent&&!b.disabled&&b.getAttribute('aria-disabled')!=='true').map(b=>b.textContent.trim()):[]"); await close_menu(pg)   # P26・F22：押せるものだけ（灰色の出せない操作は数えない）
     await sec_menu(pg,'items'); await pg.locator('#fmenu [data-sec-menu="上へ"]').click(); await pg.wait_for_timeout(500)
     mi=await sec_menu(pg,'items'); await close_menu(pg); mf=await sec_menu(pg,'feature'); await close_menu(pg)
     first=await pg.evaluate("document.querySelector('#sectionwrap').firstElementChild.id"); last=await pg.evaluate("document.querySelector('#sectionwrap').lastElementChild.id")
@@ -185,7 +186,10 @@ async def main():
     d1=await pg.evaluate(f"({P}.draft?JSON.stringify({P}.draft()):null)")
     await pg.reload(); await pg.wait_for_timeout(2000); g2=await G(pg); o2=await pg.evaluate(f"{P}.ops()")
     d2=await pg.evaluate(f"({P}.draft?JSON.stringify({P}.draft()):null)")
-    await pg.click('#tUndo'); await pg.wait_for_timeout(400); g3=await G(pg); und=(await maxdiff(g2,g3))[0]<=0.5   # 開き直した直後の「戻す」は何も戻さない
+    # P28 に合わせて手順を変えた（判定は同じ）：線 A3 からは戻せないとき #tUndo が disabled。disabled なら押せない＝何も戻らない、押せるなら押して何も戻らないこと
+    if await pg.evaluate("document.getElementById('tUndo').disabled"): g3=await G(pg)
+    else: await pg.click('#tUndo'); await pg.wait_for_timeout(400); g3=await G(pg)
+    und=(await maxdiff(g2,g3))[0]<=0.5   # 開き直した直後の「戻す」は何も戻さない
     d,miss=await maxdiff(g1,g2)
     draft_same=(d1 is not None and d1==d2)
     rec('V8 直して開き直す',d<=0.5 and not miss and len(o2)==0 and draft_same and und,f"保存の状態 {s1} 最大のずれ {d:.2f} 欠け {miss[:4]} 開き直し後 ops {len(o2)}（空=0）draft 一致={draft_same} 戻すで何も戻らない={und}")

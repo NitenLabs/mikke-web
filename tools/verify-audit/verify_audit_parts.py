@@ -273,7 +273,7 @@ async def t_J16(br, url, imgs):
             # P2 に合わせて準備の確かめを足した（判定は同じ）：線 A2 で、書き換え中の箱の中のドラッグは文字の選択になり箱が動かない。
             # その空振りで「収まっている」と合格しないよう、ドラッグの途中で部品のドラッグになっている（isDragging）か、離した後に動いたことを確かめる
             await pg.mouse.move(*a); await pg.mouse.down(); await pg.mouse.move(*target(a), steps=20)
-            dragging = await pg.evaluate(f"!!({P}.isDragging&&{P}.isDragging())")
+            dragging = await pg.evaluate("(()=>{const f=window.__playground.isDragging||(typeof PG!=='undefined'&&PG.isDragging);return !!(f&&f())})()")   # isDragging は試験用 API に無い版もあるので、ページの PG も見る
             await pg.mouse.up(); await pg.wait_for_timeout(500)
             e = await vb(pg, 'F_h0')
             if not dragging and e and abs(e['x'] - r['x']) < 1 and abs(e['y'] - r['y']) < 1:

@@ -1,7 +1,7 @@
 # verify_extra_photo.py v1.1（Claude.ai・2026-10-05。v1.1＝2026-10-07：確認用の写真を、走らせた場所に書き出すようにした）
 # 試験台17〜19b の「作業票の試験の外」の確認：写真を変える・足す・明るさ・もう一方の端末での位置・押し下げ・ページが飛ばないか
 # 使い方：python3 verify_extra_photo.py /path/to/playgroundNN_single.html
-# F1 の横の期待はページの中身の真ん中（12+720*0.9972）。F13・F16 は幅 1024 の確認
+# F1 の横の期待はページの中身の真ん中（ページの左端＋720×その時の倍率。前は 12+720*0.9972 の決め打ち）。F13・F16 は幅 1024 の確認
 # 試験台17：作業票の試験の外の確認（F1〜）
 import asyncio, json, os, sys, base64
 from playwright.async_api import async_playwright
@@ -10,8 +10,8 @@ R=[]
 MOD='Meta' if sys.platform=='darwin' else 'Control'
 async def nosnap_key(pg):
     # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
-    # 版の見分け：試験用 API に a2AutoScroll（線 A2 で足した関数）があれば MOD、無ければ（試験台28・29 以前）Alt
-    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof window.__playground.a2AutoScroll==='function'") else 'Alt'
+    # 版の見分け：a2AutoScroll（線 A2 で足した関数。試験用 API か、ページの PG にある）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof (window.__playground.a2AutoScroll||(typeof PG!=='undefined'&&PG.a2AutoScroll))==='function'") else 'Alt'
     return pg._nosnap
 async def esc_if_editing(pg):
     # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
@@ -56,7 +56,11 @@ async def main():
         await insert(pg); a=await added(pg)
         if not a: rec(f'F1 scroll{sc}',False,'足されない'); continue
         r=await bb(pg,a[0]['part']); t=await tbh(pg)
-        cx,cy=r['x']+r['w']/2, r['y']+r['h']/2; ex,ey=12+720*0.9972,(t+1100)/2
+        cx,cy=r['x']+r['w']/2, r['y']+r['h']/2
+        # F19 に合わせて期待の出し方を変えた（判定は同じ）：前は倍率 0.9972（ページが横に 9px はみ出していた頃）を決め打ちして 12+720*0.9972。
+        # そのときのページの左端（.host）と倍率（getScale）から、ページの中身の真ん中（設計の 720）を画面の座標にする
+        hl=await pg.evaluate("document.querySelector('#sectionwrap .host').getBoundingClientRect().left"); sc_=await pg.evaluate(f"{P}.getScale()")
+        ex,ey=hl+720*sc_,(t+1100)/2
         sel=await pg.evaluate("[...document.querySelectorAll('.sel,[data-selected]')].length")
         w=await pg.evaluate(f"{P}.warnings()")
         rec(f'F1 scroll{sc}',abs(cx-ex)<=3 and abs(cy-ey)<=3,f'真ん中 ({cx:.0f},{cy:.0f}) 期待 ({ex:.0f},{ey:.0f})  ownerOverlaps={len(w["ownerOverlaps"])} overlaps={len(w["overlaps"])} errs={pg._errs[:1]}')

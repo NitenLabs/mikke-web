@@ -817,7 +817,7 @@ FOCUS_IN = """ks=>{const a=document.activeElement;for(const k of ks){const p=doc
 #       28 では一覧は出るがフォーカスはボタンのまま、↓↑ でページがスクロールし、「＋」の一覧は Esc でも閉じない。
 #       一覧の中へは Tab を何回も押すしかなく、そのとき画面が一番下へ飛ぶ。
 # 合格: 「＋」「その他 ▾」のそれぞれで、(1) Enter の後、フォーカスが開いた一覧の最初の項目にある、(2) ↓ で一覧の中の
-#       次の項目へ、↑ で前の項目へフォーカスが動く、(3) Esc で一覧が閉じる、(4) Enter から Esc までの間、ページの
+#       次の項目へ、↑ で前の項目へフォーカスが動く（項目が1つの一覧では ↓↑ でフォーカスが一覧の中に留まる）、(3) Esc で一覧が閉じる、(4) Enter から Esc までの間、ページの
 #       スクロール（scrollY）が 30px より動かない。
 # 準備の確かめ: Tab で本当にそのボタンにフォーカスが入ったこと（40 回までに）、Enter で一覧が本当に開いたこと
 #       （Enter の前に無かった一覧の要素が見えるようになる）。
@@ -843,6 +843,10 @@ async def t_F39(new):
         dmax = max(abs(s - sy0) for s in sys_)
         first_ok = f0['inside'] and f0.get('idx') == 0
         arrows_ok = f1['inside'] and f2['inside'] and f1.get('idx') == 1 and f2.get('idx') == 0
+        # F39 の手順の直し（まとめ役の指示・判定は甘くしない）：幅 1440 の「その他 ▾」は項目が1つ（お品書きを見る）しかなく、
+        # 「↓ で2番目へ」がそもそもできない。項目が1つのときは「↓・↑ を押してもフォーカスが一覧の中（その1つ）に留まる」を上下キーの条件にする
+        if f0.get('inside') and f0.get('n') == 1:
+            arrows_ok = f1['inside'] and f2['inside'] and f1.get('idx') == 0 and f2.get('idx') == 0
         msg.append(f'{target}: 開いた後のフォーカス {f0}・↓ {f1.get("idx", f1["t"])}・↑ {f2.get("idx", f2["t"])}・Esc 後 {"開いたまま" if still else "閉じた"}・スクロールの動き最大 {r1(dmax)}px')
         if not first_ok: bad.append(f'{target}: 一覧の最初にフォーカスが入らない')
         if not arrows_ok: bad.append(f'{target}: 上下キーで選べない')
