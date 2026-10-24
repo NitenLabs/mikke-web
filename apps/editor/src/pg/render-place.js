@@ -141,7 +141,7 @@ function warnings() {
   }
   // はみ出しは横だけ見る（§1.1：下方向はセクションが伸びるので警告しない）
   const overflows = [];
-  for (const [id, e] of items) if (e.x < -1 || e.x + e.w > SPEC.DESIGN_W[state.device] + 1) overflows.push({ id, edge: "横" });
+  for (const [id, e] of items) if (e.x < -1 || e.x + e.w > SPEC.DESIGN_W[state.device] + 1) overflows.push({ id, edge: "横", dir: e.x < -1 ? "左" : "右" });   // F68 どちらへはみ出したか
   return { overlaps, overflows, ownerOverlaps };
 }
 

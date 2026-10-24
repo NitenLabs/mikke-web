@@ -272,6 +272,7 @@ button:active{transform:translateY(1px)}
 /* ===== §1-6（試験台16）スマホでの編集 第2回 ===== */
 /* §1 X4：ページの幅＝画面の幅。#stage の余白とセクションの外枠線を外す。横スクロールさせない */
 .pg-phone #stage{padding:0;touch-action:manipulation;padding-bottom:64px}
+.pg-phone #sectionwrap{overflow-x:clip}   /* F68 はみ出した部品で編集の画面が横にスクロールしない（どちらへはみ出したかは公開前の確認で知らせる） */
 .pg-phone .host{border:none;touch-action:manipulation}   /* §4.2 ページ・セクションは1本指スクロール＋ピンチ可／ダブルタップ拡大は止める */
 .pg-phone .seclabel{display:none}
 .pg-phone{overflow-x:hidden}

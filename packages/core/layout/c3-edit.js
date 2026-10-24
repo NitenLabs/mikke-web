@@ -101,7 +101,9 @@ export function buildFeature(content, device, H, edits = {}) {
       let tgKids = ""; let prev = null;
       for (const cid of tgOrder) { const mt = prev === null ? "" : `margin-top:${px(headBody)}`; tgKids += childInner(i, cid, mt); prev = cid; }
       const tg = tgKids ? `<div class="tg" style="position:relative;top:${px(c.centerOff)};width:${px(c.tW)};flex:none">${tgKids}</div>` : "";
-      const photo = isOut(`F_p${i}`) ? "" : `<div style="flex:none${off(`F_p${i}`)}">${photoInner(i)}</div>`;
+      // F65 写真のない枠を詰めるとき（keepX）は、高さだけ詰めて横の場所は残す＝文の左右がずれない
+      const keepX = (edits.keepX || []).includes(`F_p${i}`) && m2[`F_p${i}`] == null;
+      const photo = isOut(`F_p${i}`) ? (keepX ? `<div style="flex:none;width:${px(pwOf(`F_p${i}`))}"></div>` : "") : `<div style="flex:none${off(`F_p${i}`)}">${photoInner(i)}</div>`;
       const padL = reversed ? c.b2PadL : c.b1PadL;
       const kids = reversed ? photo + tg : tg + photo;
       return `<div class="row" style="display:flex;align-items:center;padding-left:${px(padL)};gap:${px(c.b1Gap)};margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}">${kids}</div>`;
