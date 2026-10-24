@@ -26,8 +26,8 @@ curl で一通り：
 
 ```sh
 O='Origin: http://localhost:8787'; J='Content-Type: application/json'
-curl -X POST localhost:8787/api/auth/request -H "$O" -H "$J" -d '{"email":"owner@ashiyado.example"}'
-curl -c cj -X POST localhost:8787/api/auth/verify -H "$O" -H "$J" -d '{"email":"owner@ashiyado.example","code":"<ログのコード>"}'
+curl -c cj -X POST localhost:8787/api/auth/request -H "$O" -H "$J" -d '{"email":"owner@ashiyado.example"}'   # 申し込んだブラウザの Cookie を cj に
+curl -b cj -c cj -X POST localhost:8787/api/auth/verify -H "$O" -H "$J" -d '{"email":"owner@ashiyado.example","code":"<ログのコード>"}'
 curl -b cj localhost:8787/api/shops/shp_ashiyado/drafts/site
 curl -b cj -X POST localhost:8787/api/shops/shp_ashiyado/publish -H "$O" -H "$J" \
   -d '{"scope":"all","shopDraftVersion":1,"siteDraftVersion":1,"pages":{"/":"<h1>芦屋堂</h1><img src=\"/media/ast_frma\">"}}'
@@ -37,20 +37,22 @@ curl -H 'Host: ashiyado.localhost' localhost:8787/
 ## 試験
 
 ```sh
-npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。7 ファイル 75 件
+npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。9 ファイル 114 件
 npm run typecheck   # tsc
 ```
 
-試験の名前の頭に RELEASE.md の項目の番号（`B1-3`・`D4-1` など）。DATA_SPEC 6章の変更の記録は `6章-*`、種まきは `seed-*`。
+試験の名前の頭に RELEASE.md の項目の番号（`B1-3`・`D4-1` など）。DATA_SPEC 6章の変更の記録は `6章-*`、種まきは `seed-*`、セキュリティの見直しの項目は `M1`〜`M5`・`L1`〜`L11`。
 
 | ファイル | 項目 |
 |---|---|
-| `test/auth.test.ts` | B1 ログイン・CSRF・CORS |
-| `test/perms.test.ts` | B2 権限 |
+| `test/auth.test.ts` | B1 ログイン（M2・M3・L2・L3・L8・L9）・CSRF・CORS・Vary（L11） |
+| `test/perms.test.ts` | B2 権限（店主に制作側のアドレスを見せない L7） |
 | `test/drafts.test.ts` | B3・B4 下書き、編集の設定、変更の記録 |
-| `test/publish.test.ts` | D1 公開、D3 配信、D4 履歴と戻す |
-| `test/assets.test.ts` | C2 写真の検査、C4 ゴミ箱 |
-| `test/cron.test.ts` | D6 毎日の描き直しの入口 |
+| `test/publish.test.ts` | D1 公開、D3 配信、D4 履歴と戻す、CSP と HTML の検査（M4）、L1・M1・L10 |
+| `test/htmlcheck.test.ts` | HTML の検査の細かいところ（M4） |
+| `test/assets.test.ts` | C2 写真の検査（M5）、C4 ゴミ箱、写真の量の上限（L10） |
+| `test/cron.test.ts` | D6 毎日の描き直しの入口、1 軒の失敗で止まらない（M1）、期限切れの片づけ（L4） |
+| `test/config.test.ts` | 危ない設定では動かない（L5・L6） |
 | `test/seed.test.ts` | 芦屋堂の種まき |
 
 ## API の一覧
@@ -62,9 +64,10 @@ npm run typecheck   # tsc
 | 道 | 中身 | 権限 |
 |---|---|---|
 | `GET /api/health` | 生きているか | — |
-| `POST /api/auth/request` `{email}` | 6 桁のコードとリンクをメールで送る（有効 15 分、1 回だけ）。登録のないアドレスでも同じ答え。同じアドレスは 60 秒あける・1 時間に 5 回まで（429・`Retry-After`）。答え `{ok, expiresInMinutes, retryAfter}` | — |
-| `POST /api/auth/verify` `{email, code}` か `{token}` | コードかリンクの合言葉で入る。Cookie を付けて `{user}`。コードは 5 回まちがえると使えない | — |
-| `POST /api/auth/logout` | セッションを消す | — |
+| `POST /api/auth/request` `{email}` | 6 桁のコードとリンクをメールで送る（有効 15 分、1 回だけ）。**申し込んだブラウザの Cookie（`__Host-mikke_lgn`）を付ける**。登録のないアドレスでも同じ答え。同じアドレスは 60 秒あける・1 時間に 5 回まで（429・`Retry-After`）。答え `{ok, expiresInMinutes, retryAfter}` | — |
+| `POST /api/auth/verify` `{email, code}` か `{token}` | コードかリンクの合言葉で入る。Cookie を付けて `{user}`。**コードは申し込んだブラウザ（`__Host-mikke_lgn` を持つ）でだけ使える**。1 つのコードで 5 回まで。アカウントごとに 24 時間で 20 回まちがえたら、コードでは 24 時間入れない（429 `locked`。リンクでは入れる）。リンクの合言葉はどの端末でも使える | — |
+| `POST /api/auth/logout` | このセッションを消す | — |
+| `POST /api/auth/logout-all` | このユーザーの全部の端末のセッションを消す。答え `{ok, sessions}` | ログイン |
 | `GET /api/me` | `{user:{id,email,name,role}, shops:[{id,slug,name,publishedVersion}]}` | ログイン |
 | `GET /api/shops/:shopId` | お店 `{id,slug,name,template,publishedVersion,publicUrl}` | 店 |
 | `GET /api/shops/:shopId/drafts/:kind` | 下書き（`kind` は `shop`＝① ／ `site`＝②③）。`{kind, version, data, updatedAt, updatedBy}`、`ETag: "版"` | 店 |
@@ -72,7 +75,7 @@ npm run typecheck   # tsc
 | `GET /api/shops/:shopId/settings` | 編集の設定 `{recentColors:[#rrggbb…]}` | 店 |
 | `PUT /api/shops/:shopId/settings` | 同じ形で保存（5 つまで・版なし・後勝ち） | 店 |
 | `GET /api/shops/:shopId/status` | 状態の文字 `{state:"unpublished"\|"same"\|"changed", label, shopSame, siteSame, drafts:{shop:{version}, site:{version}}, published}` | 店 |
-| `GET /api/shops/:shopId/changes?limit=&before=` | 変更の記録（新しい方から） | 店 |
+| `GET /api/shops/:shopId/changes?limit=&before=` | 変更の記録（新しい方から）。`actor` は、制作側には `{id, kind, name, email}`、店主には `{kind, name}`（制作側の人は名前が「制作側」、自分の分は `self: true`。メールアドレス・ID は見せない） | 店 |
 | `POST /api/shops/:shopId/publish` | 公開（下の「公開の本文」） | 店 |
 | `GET /api/shops/:shopId/versions` | 履歴（新しい方から 30）`[{number, scope, pages, publishedAt, publishedBy, isPublished}]` | 店 |
 | `GET /api/shops/:shopId/versions/:n` | 版の中身 `{number, scope, …, shop, site}` | 店 |
@@ -119,6 +122,8 @@ npm run typecheck   # tsc
 - `pages`：道（`/`・`/menu`・`/a/b`。英小文字・数字・ハイフン）→ HTML。`/` は必須、50 枚・1 枚 2MB まで。`/404` は見つからないページとして出す
 - `css`：あれば `/style.css` で出す。`files`：`sitemap.xml`・`robots.txt` だけ
 - 写真は HTML の中で **`/media/<④の ID>`**（例 `<img src="/media/ast_frma">`）。①②③ と HTML・CSS の中の `ast_…` はすべてこのお店の写真でなければ 400（`{error:"unknown_assets", assets:[…]}`）
+- **スクリプト**：HTML の中に、インラインの `<script>`（`type="application/ld+json"` の構造化データだけは通す）・`/_mikke/` 以外の `<script src>`・`on〜` の属性・`javascript:` などの URL・`srcdoc`・`<meta http-equiv="refresh">` があれば 400（`{error:"unsafe_html", page, problems:[{kind, detail}]}`）。コメント・style・属性の値の中の「タグの形の文字」も読むので、そこにも書かない。テンプレートに要るスクリプトは、**サーバーが配る決まったファイル `/_mikke/site.js`**（`src/site-assets.ts`。店主は変えられない）を `<script src="/_mikke/site.js" defer></script>` で読む
+- 同じお店の公開は **1 分に 1 回まで**（429・`Retry-After`）
 - 答え `{number, scope, publishedAt, pages, assets, url}`
 
 ### 公開ページ（`<スラッグ>.<PUBLIC_DOMAIN>`）
@@ -128,17 +133,27 @@ npm run typecheck   # tsc
 | `/`・`/menu`（`/menu/` も） | 公開中の版のページ。`Cache-Control: no-cache`＋`ETag`（公開したらすぐ変わる。304 も返す） |
 | `/style.css`・`/sitemap.xml`・`/robots.txt` | 公開のときに送ったもの |
 | `/media/ast_…` | 公開中の版が指している、このお店の写真だけ（ゴミ箱に入れていても、版が指していれば出す）。`immutable` |
+| `/_mikke/site.js` | 決まったスクリプト（お店によらず同じ） |
 | ほか | 404。お店の `/404` があればそれ、なければ決まった 404 ページ。まだ公開していないお店・知らないスラッグも 404 |
+
+公開ページの答えには、いつも次の CSP が付く（M4）。Google Fonts・Google マップの埋め込み以外の外のものは読めない。
+
+```
+default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;
+img-src 'self' data:; frame-src https://www.google.com; base-uri 'none'; form-action 'self'; object-src 'none'; frame-ancestors 'none'
+```
 
 ### エラーの形
 
-`{error: "種類", message: "日本語の説明", …}`。主な種類：`unauthenticated`(401)・`forbidden`/`bad_origin`(403)・`not_found`(404)・`conflict`(409)・`precondition_required`(428)・`too_soon`/`too_many`(429)・`too_large`(413)・`unsupported_media_type`/`not_an_image`/`type_mismatch`(415)・`invalid_*`(400)
+`{error: "種類", message: "日本語の説明", …}`。主な種類：`unauthenticated`(401)・`forbidden`/`bad_origin`(403)・`not_found`(404)・`conflict`(409)・`precondition_required`(428)・`too_soon`/`too_many`/`locked`(429)・`too_large`/`quota_exceeded`(413)・`unsupported_media_type`/`not_an_image`/`type_mismatch`(415)・`too_deep`/`unsafe_html`/`metadata_present`/`trailing_data`/`invalid_*`(400)
 
 ### 編集画面からの呼び方（守ること）
 
 - `fetch(…, {credentials: "include"})`。書き込みは `Content-Type: application/json`（写真は写真の種類）
 - 下書きの保存は、読んだ `version` を `If-Match: "<version>"` に付ける。409 なら `current` を見せて選んでもらう（知らせなしに上書きしない）
-- ログインのリンクは `<APP_ORIGINS の先頭>/login?t=<合言葉>`。編集画面のその道で `POST /api/auth/verify {token}` を呼ぶ（メールのリンクを開いただけでは入らない。メールの中身を先読みする仕組みにリンクを使われないため）
+- ログインのリンクは `<APP_ORIGINS の先頭>/login#t=<合言葉>`（`#` の後ろなので、サーバーの記録や Referer に残らない）。編集画面のその道で `location.hash` から取り、`POST /api/auth/verify {token}` を呼ぶ。読んだら `history.replaceState` で `#t=` を消す（メールのリンクを開いただけでは入らない。メールの中身を先読みする仕組みにリンクを使われないため）
+- コードで入るときは、`request` と `verify` を**同じブラウザ**から `credentials: "include"` で呼ぶ（申し込みの Cookie で突き合わせる）
+- JSON は入れ子 64 段まで（超えると 400 `too_deep`）
 
 ## 本番に出すとき（ユーザーが用意するもの）
 
@@ -148,22 +163,39 @@ npm run typecheck   # tsc
 | D1 | `mikke-staging`・`mikke-production`（`wrangler d1 create` で作り、出た ID を `wrangler.toml` の `[env.*]` に） |
 | R2 | `mikke-media-staging`・`mikke-media-production` |
 | 公開のドメイン | 例 `mikke.site`。DNS に `*`（ワイルドカード、プロキシ有効）と Workers のルート `*.<ドメイン>/*`。**`*.staging.<ドメイン>` のような 2 段のワイルドカードは無料の証明書（Universal SSL）では足りない**（Advanced Certificate Manager が要る）。試しは別のドメインにするか、`<スラッグ>-staging.<ドメイン>` にするかを決める |
-| アプリのドメイン | 編集画面と API。**公開のドメインとは別のドメインにするのがおすすめ**（例 `app.mikke-web.jp`）。同じドメインのサブドメイン（`app.<公開のドメイン>`）でも動く（`app` は予約語でお店に使わせない） |
-| Resend | API キー（`wrangler secret put RESEND_API_KEY`）、送り元のドメインの確認（SPF・DKIM の DNS）、送り元のアドレス（`MAIL_FROM`）。`MAILER = "resend"` の実装はまだ（下の「まだ」） |
+| アプリのドメイン | 編集画面と API。**公開のドメインとは別の親ドメインが必須**（例 公開 `mikke.site`／アプリ `app.mikke-web.jp`）。同じ親ドメインだと、起動したときに設定の問題として止まる（L5。公開ページはお店ごとに中身を作れるので、アプリと同じサイトに置かない）。`https` も必須 |
+| Resend | API キー（`wrangler secret put RESEND_API_KEY`）、送り元のドメインの確認（SPF・DKIM の DNS）、送り元のアドレス（`MAIL_FROM`）。`MAILER = "resend"` の実装はまだ（下の「まだ」）。**本番（`COOKIE_SECURE = "true"`）で `MAILER = "log"` は起動したときに止まる**（L6） |
 | 秘密の値 | `wrangler secret put AUTH_SECRET`（`openssl rand -hex 32` など 32 文字以上） |
 
 `wrangler.toml` の `[env.staging]` にひな形を書いてある。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
+
+### 起動したときの設定の確かめ（`src/services/config.ts`）
+
+その isolate の最初の要求（と毎日の Cron）で確かめ、問題があれば**どの要求にも 500** で答える（ログに理由）。止まる条件：公開のドメインとアプリのドメインが同じ親ドメイン（local の `localhost` どうしは除く）／本番で `APP_ORIGINS` が https でない／本番で `MAILER=log`／まだない `MAILER`／`AUTH_SECRET` が 32 文字未満。
+
+### 量の上限（L10）
+
+| もの | 上限 |
+|---|---|
+| 写真 | お店ごとに合計 1GB・2,000 枚（ゴミ箱の中も数える）。1 枚 10MB・長い辺 2400px |
+| 公開 | 同じお店で 1 分に 1 回。ページ 50 枚・1 枚 2MB・CSS 1MB・本文全体 24MB。版は 30 まで残す（1 軒で最大およそ 700MB） |
+| 下書き | ① と ②③ それぞれ 900KB、JSON の入れ子 64 段 |
+| ログイン | 同じアドレスで 60 秒に 1 回・1 時間に 5 回。1 つのコードで 5 回、アカウントごとに 1 日 20 回まちがえたら 24 時間コードは止める |
+| セッション | 使わない日が 30 日続いたら切れる。ログインしてから店主 90 日・制作側 14 日で必ず切れる |
 
 ## 決めたこと
 
 | # | 決めたこと | 理由 |
 |---|---|---|
-| 1 | API と公開ページを 1 つの Worker にし、ホスト名で振り分ける。`<スラッグ>.<PUBLIC_DOMAIN>` は公開ページ、それ以外は API。予約語（`app`・`api`・`www` など）のサブドメインは API 側 | 1 つで済む。編集画面を `app.<ドメイン>` に置ける |
-| 2 | セッションは Cookie `__Host-mikke_sid`（HttpOnly・Secure・SameSite=Lax・Path=/・Domain なし）、30 日、使っている間は延ばす。サーバーは値のハッシュだけを持つ | `__Host-` で、お店のサブドメインのページから Cookie を書き換えられない（Cookie の押し付けを防ぐ） |
+| 1 | API と公開ページを 1 つの Worker にし、ホスト名で振り分ける。`<スラッグ>.<PUBLIC_DOMAIN>` は公開ページ、それ以外は API。予約語（`app`・`api`・`www` など）のサブドメインは API 側。アプリ（編集画面と API）は公開のドメインと別の親ドメインに置く（L5） | 1 つで済む |
+| 2 | セッションは Cookie `__Host-mikke_sid`（HttpOnly・Secure・SameSite=Lax・Path=/・Domain なし）、30 日、使っている間は延ばす。ただしログインしてから店主 90 日・制作側 14 日が上限（L9）。サーバーは値のハッシュだけを持つ。同じブラウザでログインし直したら前のセッションは消し、ほかの端末のセッションは残す（B3：別の端末で開ける）。全部消す道は `logout-all` | `__Host-` で、お店のサブドメインのページから Cookie を書き換えられない（Cookie の押し付けを防ぐ） |
 | 3 | CSRF：書き込みは Origin が `APP_ORIGINS` のどれかのときだけ（ないものも断る）。JSON の道は `Content-Type: application/json` だけ受ける。CORS も同じオリジンだけ（Cookie つき） | 公開ページは同じサイトでもオリジンが違うので、お店のページに書いたスクリプトからは API を叩けない |
-| 4 | ログイン：6 桁のコードとリンクを 1 通で。15 分・1 回だけ（片方を使えばもう片方も使えない）。新しく頼むと前のものは使えない。コードは HMAC（AUTH_SECRET）、リンクの合言葉は SHA-256 で持つ。コードは 5 回まちがえたら使えない。同じアドレスは 60 秒あける・1 時間に 5 回まで | 推し当てを 1 時間に 25 回までに抑える |
+| 4 | ログイン：6 桁のコードとリンクを 1 通で。15 分・1 回だけ（片方を使えばもう片方も使えない）。コードは HMAC（AUTH_SECRET）、リンクの合言葉は SHA-256 で持つ。同じアドレスは 60 秒あける・1 時間に 5 回まで。**回数の制限と書き込みは `INSERT … SELECT … WHERE` の 1 文**（M2：同時に来ても 1 本だけ）。1 つのコードで試せるのは 5 回で、**`UPDATE … WHERE attempts < 5 RETURNING` で先に枠を取る**（L2：同時に来ても超えない） | 推し当てを抑える |
+| 4b | **コードは申し込んだブラウザに結びつける**（M3）。申し込むと `__Host-mikke_lgn`（32 バイトの乱数、15 分）を付け、ハッシュを申し込みに持つ。確かめるときに突き合わせ、持っていないブラウザのコードは試すことすらできない（失敗にも数えない）。同じブラウザで頼み直すと、そのブラウザの前の申し込みだけを無効にする（ほかのブラウザの申し込みは残す）。**リンクは結びつけない**（256 ビットで推し当てられない。PC で申し込んでスマホでメールを開いても入れるように） | 推し当てる人は自分で申し込むしかなく、申し込みの回数で絞られる。本人の申し込みは、ほかのブラウザの申し込み・失敗で使えなくならない |
+| 4c | アカウントごとに 24 時間で 20 回まちがえたら、コードでのログインを止める（429 `locked`）。止めている間もリンクでは入れる（M3） | 1 日の推し当てを 20 回に抑える。止められても本人はリンクで入れる（妨害を和らげる） |
+| 4d | メールを送るのは答えを返した後（`waitUntil`）。送れなくても答えは同じ（L3） | 登録のあるなしで答えの時間が変わらないように |
 | 5 | 登録のないアドレスでも「送りました」と同じ答え（メールは送らない）。店主は自分で登録せず、制作側が作る | アドレスがあるかを外から調べられないように。v1 は制作側がお店を作る |
-| 6 | リンクは編集画面の `/login?t=…` に向け、編集画面が POST で入る（GET で入らない） | メールの安全確認の仕組みがリンクを先に開いても、使われてしまわないように |
+| 6 | リンクは編集画面の `/login#t=…` に向け（L8）、編集画面が POST で入る（GET で入らない） | メールの安全確認の仕組みがリンクを先に開いても、使われてしまわないように |
 | 7 | 店主がほかのお店を触ろうとしたら 403 ではなく 404 | ほかのお店があるかどうかも見せない |
 | 8 | 下書きの保存は `If-Match` 必須（ないと 428）。版が違えば 409 で今の版と中身を返す。書き込みは `UPDATE … WHERE version = ?` 1 回で決める | B4。同時に来ても片方だけ通る |
 | 9 | サイトの下書きは `{draft, theme}`（②と③を 1 つの版番号で） | DATA_SPEC 5.1「③は②と同じ下書きに入る」 |
@@ -171,7 +203,7 @@ npm run typecheck   # tsc
 | 11 | 公開は、編集画面が「描いたときの下書きの版」を送り、今の版と違えば 409 | 古い HTML と新しい下書きが混ざった版を作らない |
 | 12 | 公開ページの HTML は `no-cache`＋ETag、写真は `immutable`（ID ごとに中身が変わらない） | D1「数秒のうちに新しくなる」。写真は ID を使い回さない（2.2）ので長く覚えてよい |
 | 13 | 公開ページで配る写真は「公開中の版が指している、そのお店の写真」だけ。版が指す写真は、HTML・CSS の中の `ast_…` と ①②③ の中の ID を全部拾って決める | 5.2「公開されるまでは外から見えない」。ほかのお店の写真を混ぜられない |
-| 14 | 写真：JPEG・PNG・WebP だけ、10MB まで、長い辺 2400px まで。中身の先頭で種類と縦横を読み、名乗った種類と違えば断る。EXIF（JPEG の APP1 Exif・PNG の eXIf・WebP の EXIF）が残っていれば断る。SVG・GIF・HEIC は受けない | C2。位置情報が残った写真を置き場に入れない。SVG はスクリプトを持てる |
+| 14 | 写真：JPEG・PNG・WebP だけ、10MB まで、長い辺 2400px まで。中身の先頭で種類と縦横を読み、名乗った種類と違えば断る。撮影データが残っていれば断る（M5：JPEG の APP1 すべて（Exif・XMP ほか）と APP13（IPTC）、PNG の eXIf と名前に exif・xmp・iptc を含む tEXt・zTXt・iTXt、WebP の EXIF・XMP の塊と印。ICC は通す）。画像の終わり（JPEG の EOI・PNG の IEND・WebP の RIFF の大きさ）の後ろにデータがあれば断る。SVG・GIF・HEIC は受けない | C2。位置情報が残った写真を置き場に入れない。ほかのファイルを写真に隠させない。SVG はスクリプトを持てる |
 | 15 | 店主が上げた写真は `origin: ownerUpload`・`rights: ownWork`（店主が確かめた）、制作側が上げた写真は `origin: producer`・`rights: unknown` から始める | 店主の写真は規約で「自分で撮った」を確かめてもらう前提。制作側は旧サイトの写真などがあるので未確認から |
 | 16 | 元の写真（縮める前）はまだ持たない。上げるのは編集画面が 2400px に縮めたものだけ | 5.2 v4 の「元の写真も残す」は、表示用を公開時に作る（C3）ときに一緒に入れる |
 | 17 | ゴミ箱の掃除は毎日の Cron で。30 日たち、公開した版・戻す前の下書き・今の下書きのどれも指していない写真だけ消す。行は残して `purged_at` を付ける | C4。ID を使い回さない（2.2） |
@@ -180,12 +212,20 @@ npm run typecheck   # tsc
 | 20 | 変更の記録は、下書きの前→後を深さ 3 までの「場所」ごとに比べて残す（値は 300 文字まで）。同じ人・同じ場所の続けての直し（10 分以内、公開などを挟まない）は 1 行にまとめ、最初の「前」と最後の「後」にする。1 回の保存で 20 か所を超えたら「ほか N か所」 | 自動保存は 500ms ごとなので、まとめないと行が増えすぎる |
 | 21 | 毎日の描き直しの入口は、Cron `0 15 * * *`（UTC＝日本時間 0 時）。公開中の版の ① から今日「出る品」（3.4）を数え、公開した日（＝描いた日）の「出る品」と違うお店を挙げる | D6。描き直しそのもの（Browser Rendering）は M4 |
 | 22 | 時刻は UTC の ISO（`…Z`）で持つ。日付の判断（3.4・Cron）だけ日本時間 | 並べやすい。DATA_SPEC の dateTime の形にも合う |
+| 24 | 公開ページには CSP（`script-src 'self'` ほか）を付け、公開の入口でも HTML を検査してスクリプトを断る（M4）。検査は「<」＋英字をどこでもタグとして読む厳しい読み方（ブラウザとの読み方のずれですり抜けられないよう）。読む手間には上限があり、閉じていない・長すぎるタグ（64KB 超）は断る | 公開ページで店主（や乗っ取った人）がスクリプトを動かせないように。二重の守り |
+| 25 | 入れ子の深い JSON は入口（`readJson`）で 64 段までに。記録の要約は保存の前に作る。毎日の仕事は 1 件・1 軒ずつ try/catch し、失敗したものは `failed` に挙げてほかを続ける（失敗した写真は消さない）（M1） | 1 軒のおかしなデータで、ほかのお店の仕事が止まらないように |
+| 26 | 名前で引く所は `Object.hasOwn`（L1） | `constructor` などの名前で、入れ物の元の性質を引かないように |
+| 27 | API の答えにはいつも `Vary: Origin`（L11） | 途中の仕組みが、オリジンごとに違う答えを取り違えないように |
+| 28 | 期限の切れた申し込み（1 日後）・セッション・2 日より前の失敗の記録は、毎日の Cron で消す（L4） | 表が増え続けないように |
+| 29 | `MAILER=memory` は試験用。本番の設定の確かめでは止めない（`log` だけ止める） | 試験は本番と同じ `COOKIE_SECURE=true` で走らせたいため。本番で `memory` にしないこと |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと
 
 - **Resend でのメール**（`MAILER = "resend"`）。今は `log`（wrangler dev の画面に出る）と `memory`（試験用）だけ。`resend` にすると、黙って送らずにはっきり失敗する
 - IP ごとの回数の制限（ログインの申し込み・確かめ）。本番では Cloudflare の Rate Limiting のルールで足す
+- 申し込みの回数の制限（同じアドレスで 1 時間に 5 回）は、ほかの人が先に使い切ると本人も 1 時間申し込めない（妨害の余地）。IP ごとの制限を足すときに見直す
+- `/_mikke/site.js` の中身（テンプレートの担当が決める。今は空）
 - 公開ページの写真を画面の大きさに合わせて配る（C3）・元の写真の保存（5.2 v4）
 - 毎日の描き直しそのもの（D6・M4）。今は一覧を返してログに出すまで
 - 毎日のバックアップ（B6）。D1 の Time Travel（30 日）を使う前提で、手順は本番のアカウントができてから

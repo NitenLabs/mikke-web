@@ -4,25 +4,34 @@ import type { AppEnv, Env, User } from "../env";
 import { randomToken, sha256Hex } from "../lib/crypto";
 import { ApiError } from "../lib/http";
 
+/** 使っていない日が続いたら切れる日数（使っている間は延ばす） */
 export const SESSION_DAYS = 30;
+/** L9：ログインしてからの寿命の上限（延ばしてもこれを超えない）。制作側は全部のお店を触れるので短く */
+export const SESSION_MAX_DAYS = { owner: 90, producer: 14 } as const;
 const DAY = 24 * 3600 * 1000;
+const expiryOf = (role: "owner" | "producer", createdAt: number, now: number) =>
+  Math.min(now + SESSION_DAYS * DAY, createdAt + SESSION_MAX_DAYS[role] * DAY);
 
 export const cookieSecure = (env: Env) => env.COOKIE_SECURE !== "false";
 /** 本番は __Host- を付ける（Secure・Path=/・Domain なしを強制。サブドメインの公開ページには届かない） */
 export const cookieName = (env: Env) => (cookieSecure(env) ? "__Host-mikke_sid" : "mikke_sid");
 
-export async function createSession(c: Context<AppEnv>, userId: string): Promise<void> {
+export async function createSession(c: Context<AppEnv>, userId: string, role: "owner" | "producer"): Promise<void> {
   const token = randomToken();
   const now = Date.now();
+  const expires = expiryOf(role, now, now);
+  // 前のセッションを持ったまま来たら、それは消す（同じブラウザで入り直したとき）。ほかの端末のセッションは残す（B3：別の端末で開ける）
+  const old = getCookie(c, cookieName(c.env));
+  if (old && old.length <= 128) await c.env.DB.prepare("DELETE FROM sessions WHERE id_hash = ?").bind(await sha256Hex(old)).run();
   await c.env.DB.prepare("INSERT INTO sessions (id_hash, user_id, created_at, expires_at, last_seen_at) VALUES (?, ?, ?, ?, ?)")
-    .bind(await sha256Hex(token), userId, now, now + SESSION_DAYS * DAY, now)
+    .bind(await sha256Hex(token), userId, now, expires, now)
     .run();
   setCookie(c, cookieName(c.env), token, {
     httpOnly: true,
     secure: cookieSecure(c.env),
     sameSite: "Lax",
     path: "/",
-    maxAge: SESSION_DAYS * 24 * 3600,
+    maxAge: Math.floor((expires - now) / 1000),
   });
 }
 
@@ -38,11 +47,11 @@ export async function loadUser(c: Context<AppEnv>): Promise<{ user: User; hash: 
   const hash = await sha256Hex(token);
   const now = Date.now();
   const row = await c.env.DB.prepare(
-    `SELECT s.expires_at, s.last_seen_at, u.id, u.email, u.name, u.role FROM sessions s JOIN users u ON u.id = s.user_id
+    `SELECT s.created_at, s.expires_at, s.last_seen_at, u.id, u.email, u.name, u.role FROM sessions s JOIN users u ON u.id = s.user_id
      WHERE s.id_hash = ? AND u.disabled_at IS NULL`,
   )
     .bind(hash)
-    .first<{ expires_at: number; last_seen_at: number; id: string; email: string; name: string | null; role: "owner" | "producer" }>();
+    .first<{ created_at: number; expires_at: number; last_seen_at: number; id: string; email: string; name: string | null; role: "owner" | "producer" }>();
   if (!row) return null;
   if (row.expires_at <= now) {
     await c.env.DB.prepare("DELETE FROM sessions WHERE id_hash = ?").bind(hash).run();
@@ -50,7 +59,12 @@ export async function loadUser(c: Context<AppEnv>): Promise<{ user: User; hash: 
   }
   // 使っている間は延ばす（1日に1回だけ書く）
   if (now - row.last_seen_at > DAY) {
-    await c.env.DB.prepare("UPDATE sessions SET last_seen_at = ?, expires_at = ? WHERE id_hash = ?").bind(now, now + SESSION_DAYS * DAY, hash).run();
+    await c.env.DB.prepare("UPDATE sessions SET last_seen_at = ?, expires_at = ? WHERE id_hash = ?").bind(now, expiryOf(row.role, row.created_at, now), hash).run();
+  }
+  // 役割が変わったときなどにも、寿命の上限を超えさせない
+  if (row.created_at + SESSION_MAX_DAYS[row.role] * DAY <= now) {
+    await c.env.DB.prepare("DELETE FROM sessions WHERE id_hash = ?").bind(hash).run();
+    return null;
   }
   return { user: { id: row.id, email: row.email, name: row.name, role: row.role }, hash };
 }

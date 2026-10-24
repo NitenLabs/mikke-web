@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { AppEnv, Env } from "../env";
 import { RESERVED_SLUGS, SLUG_RE } from "../lib/slug";
+import { SITE_SCRIPTS, SITE_SCRIPTS_VERSION } from "../site-assets";
 import { cssKey, EXTRA_FILES, fileKey, pageKey } from "../services/publish";
 
 /** ホスト名 → お店のスラッグ（<slug>.<PUBLIC_DOMAIN> のときだけ）。それ以外は null */
@@ -13,9 +14,24 @@ export function shopSlugFromHost(env: Env, host: string | null | undefined): str
   return SLUG_RE.test(slug) && !RESERVED_SLUGS.has(slug) ? slug : null;
 }
 
+/** M4：公開ページの CSP。スクリプトは同じオリジンの決まったファイル（/_mikke/）だけ */
+export const PUBLIC_CSP = [
+  "default-src 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+  "font-src https://fonts.gstatic.com",
+  "img-src 'self' data:",
+  "frame-src https://www.google.com",
+  "base-uri 'none'",
+  "form-action 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+].join("; ");
+
 const SECURITY_HEADERS: Record<string, string> = {
   "X-Content-Type-Options": "nosniff",
   "Referrer-Policy": "strict-origin-when-cross-origin",
+  "Content-Security-Policy": PUBLIC_CSP,
 };
 
 const DEFAULT_404 = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>ページが見つかりません</title>
@@ -62,6 +78,13 @@ async function notFoundPage(c: any, ctx: Ctx | null): Promise<Response> {
 }
 
 publicSite.get("*", async (c) => {
+  // 決まったスクリプト（店主は変えられない。お店によらず同じ）
+  const fixed = /^\/_mikke\/([a-z0-9._-]+\.js)$/.exec(new URL(c.req.url).pathname);
+  if (fixed && Object.hasOwn(SITE_SCRIPTS, fixed[1])) {
+    return new Response(c.req.method === "HEAD" ? null : SITE_SCRIPTS[fixed[1]], {
+      headers: { ...SECURITY_HEADERS, "Content-Type": "text/javascript; charset=utf-8", "Cache-Control": "public, max-age=300", ETag: `"mikke-${SITE_SCRIPTS_VERSION}"` },
+    });
+  }
   const slug = shopSlugFromHost(c.env, c.req.header("host"))!;
   const ctx = await lookup(c.env, slug);
   if (!ctx) return notFoundPage(c, null);
@@ -85,7 +108,7 @@ publicSite.get("*", async (c) => {
     return (await serveObject(c, cssKey(ctx.shopId, ctx.n), "text/css; charset=utf-8", "no-cache")) || notFoundPage(c, ctx);
   }
   const fname = path.slice(1);
-  if (fname in EXTRA_FILES && ctx.files.has(fname)) {
+  if (Object.hasOwn(EXTRA_FILES, fname) && ctx.files.has(fname)) {
     return (await serveObject(c, fileKey(ctx.shopId, ctx.n, fname), EXTRA_FILES[fname], "no-cache")) || notFoundPage(c, ctx);
   }
   // ページ："/menu" と "/menu/" を同じに。"/404" は見つからないページとしてだけ出す

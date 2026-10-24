@@ -39,7 +39,7 @@ describe("C2 写真を上げる（種類・大きさ・位置情報をサーバ�
     const { owner, shop } = await world();
     const r = await upload(owner.cookie, shop.id, fakeJpeg(100, 100, { exif: true }));
     expect(r.status).toBe(400);
-    expect(((await r.json()) as any).error).toBe("exif_present");
+    expect(((await r.json()) as any).error).toBe("metadata_present");
     expect((await upload(owner.cookie, shop.id, fakeWebp(100, 100, { exif: true }), "image/webp")).status).toBe(400);
   });
 
@@ -70,7 +70,7 @@ describe("C2 写真を上げる（種類・大きさ・位置情報をサーバ�
   });
 
   it("C2-7 読み取り：中身の先頭から種類と大きさを読む", () => {
-    expect(sniffImage(fakeJpeg(640, 480))).toMatchObject({ mime: "image/jpeg", width: 640, height: 480, hasExif: false });
+    expect(sniffImage(fakeJpeg(640, 480))).toMatchObject({ mime: "image/jpeg", width: 640, height: 480, metadata: [], trailing: false });
     expect(sniffImage(fakePng(1, 2))).toMatchObject({ mime: "image/png", width: 1, height: 2 });
     expect(sniffImage(fakeWebp(3, 4))).toMatchObject({ mime: "image/webp", width: 3, height: 4 });
     expect(sniffImage(new Uint8Array([1, 2, 3]))).toBeNull();
@@ -142,5 +142,99 @@ describe("C4 ゴミ箱（30 日）。版が指している写真は消さない"
     const ch = (await (await call("GET", `/api/shops/${shop.id}/changes`, { cookie: owner.cookie })).json()) as any;
     expect(ch.changes.map((c: any) => c.action)).toEqual(["trash", "upload"]);
     expect(ch.changes[0]).toMatchObject({ layer: "assets", path: `/assets/${a.id}` });
+  });
+});
+
+// ---- M5 用の、撮影データやおまけを付けた写真 ----
+const str = (s: string) => [...s].map((c) => c.charCodeAt(0));
+const be16 = (v: number) => [(v >> 8) & 0xff, v & 0xff];
+const be32 = (v: number) => [(v >>> 24) & 0xff, (v >> 16) & 0xff, (v >> 8) & 0xff, v & 0xff];
+const le32 = (v: number) => [v & 0xff, (v >> 8) & 0xff, (v >> 16) & 0xff, (v >>> 24) & 0xff];
+function withSegment(jpeg: Uint8Array, marker: number, payload: number[]): Uint8Array {
+  const seg = [0xff, marker, ...be16(payload.length + 2), ...payload];
+  return new Uint8Array([...jpeg.slice(0, 2), ...seg, ...jpeg.slice(2)]);
+}
+function pngWithChunk(type: string, data: number[]): Uint8Array {
+  const p = fakePng(10, 10);
+  const iendAt = p.length - 12;
+  const chunk = [...be32(data.length), ...str(type), ...data, 0, 0, 0, 0];
+  return new Uint8Array([...p.slice(0, iendAt), ...chunk, ...p.slice(iendAt)]);
+}
+function webpWithChunk(type: string, data: number[], xmpFlag = false): Uint8Array {
+  const w = fakeWebp(10, 10);
+  const body = [...w.slice(8)];
+  if (xmpFlag) body[4 + 8] |= 0x04; // VP8X の印
+  body.push(...str(type), ...le32(data.length), ...data, ...(data.length % 2 ? [0] : []));
+  return new Uint8Array([...str("RIFF"), ...le32(body.length), ...body]);
+}
+
+describe("M5 写真の撮影データ（XMP・IPTC）と、終わりの後ろのデータ", () => {
+  it("M5-1 JPEG：XMP（APP1 の adobe xap）・ほかの APP1・IPTC（APP13）が残っていたら 400", async () => {
+    const { owner, shop } = await world();
+    for (const [name, img] of [
+      ["XMP", withSegment(fakeJpeg(10, 10), 0xe1, [...str("http://ns.adobe.com/xap/1.0/"), 0, ...str("<x:xmpmeta/>")])],
+      ["XMP ext", withSegment(fakeJpeg(10, 10), 0xe1, [...str("http://ns.adobe.com/xmp/extension/"), 0, 1, 2])],
+      ["APP1", withSegment(fakeJpeg(10, 10), 0xe1, str("other"))],
+      ["IPTC", withSegment(fakeJpeg(10, 10), 0xed, [...str("Photoshop 3.0"), 0, ...str("8BIM")])],
+    ] as const) {
+      const r = await upload(owner.cookie, shop.id, img);
+      expect(r.status, name).toBe(400);
+      expect(((await r.json()) as any).error).toBe("metadata_present");
+    }
+    // ICC（APP2）は位置情報を持たないので通る
+    expect((await upload(owner.cookie, shop.id, withSegment(fakeJpeg(10, 10), 0xe2, [...str("ICC_PROFILE"), 0, 1, 1]))).status).toBe(201);
+  });
+
+  it("M5-2 JPEG：画像の終わり（EOI）の後ろにデータがあれば 400。終わりのない JPEG は 415", async () => {
+    const { owner, shop } = await world();
+    const zip = new Uint8Array([...fakeJpeg(10, 10), ...str("PK\u0003\u0004 hidden zip")]);
+    const r = await upload(owner.cookie, shop.id, zip);
+    expect(r.status).toBe(400);
+    expect(((await r.json()) as any).error).toBe("trailing_data");
+    const cut = fakeJpeg(10, 10).slice(0, -2);
+    expect((await upload(owner.cookie, shop.id, cut)).status).toBe(415);
+  });
+
+  it("M5-3 PNG：eXIf・tEXt/zTXt/iTXt の exif・xmp・iptc は 400、ふつうの文字（Software）は通る。IEND の後ろは 400", async () => {
+    const { owner, shop } = await world();
+    for (const [type, kw] of [["eXIf", ""], ["tEXt", "Raw profile type exif"], ["zTXt", "Raw profile type iptc"], ["iTXt", "XML:com.adobe.xmp"], ["tEXt", "xmp"]] as const) {
+      const img = pngWithChunk(type, [...str(kw), 0, ...str("data")]);
+      const r = await upload(owner.cookie, shop.id, img, "image/png");
+      expect(r.status, `${type} ${kw}`).toBe(400);
+    }
+    expect((await upload(owner.cookie, shop.id, pngWithChunk("tEXt", [...str("Software"), 0, ...str("canvas")]), "image/png")).status).toBe(201);
+    const tail = new Uint8Array([...fakePng(10, 10), 1, 2, 3]);
+    const r = await upload(owner.cookie, shop.id, tail, "image/png");
+    expect(r.status).toBe(400);
+    expect(((await r.json()) as any).error).toBe("trailing_data");
+  });
+
+  it("M5-4 WebP：XMP の塊・XMP の印は 400。RIFF の大きさの後ろのデータは 400", async () => {
+    const { owner, shop } = await world();
+    expect((await upload(owner.cookie, shop.id, webpWithChunk("XMP ", str("<x:xmpmeta/>")), "image/webp")).status).toBe(400);
+    expect((await upload(owner.cookie, shop.id, webpWithChunk("ICCP", [1, 2], true), "image/webp")).status).toBe(400);
+    expect((await upload(owner.cookie, shop.id, webpWithChunk("ICCP", [1, 2]), "image/webp")).status).toBe(201);
+    const tail = new Uint8Array([...fakeWebp(10, 10), 9, 9, 9, 9]);
+    expect((await upload(owner.cookie, shop.id, tail, "image/webp")).status).toBe(400);
+  });
+
+  it("M5-5 X-File-Name：URL エンコードを戻して記録する。制御文字・道の区切りは取り、200 文字まで。壊れた値は無視", async () => {
+    const { owner, shop } = await world();
+    const up = (name: string) => call("POST", `/api/shops/${shop.id}/assets`, { cookie: owner.cookie, body: fakeJpeg(10, 10), headers: { "content-type": "image/jpeg", "x-file-name": name } });
+    expect(((await (await up(encodeURIComponent("店の外観.jpg"))).json()) as any).originalName).toBe("店の外観.jpg");
+    expect(((await (await up(encodeURIComponent("../../a\u0000b\nc.jpg"))).json()) as any).originalName).toBe("....abc.jpg");
+    expect(((await (await up(encodeURIComponent("あ".repeat(300)))).json()) as any).originalName).toHaveLength(200);
+    const bad = await up("%E0%A4%A");
+    expect(bad.status).toBe(201);
+    expect(((await bad.json()) as any).originalName).toBeUndefined();
+  });
+
+  it("L10 お店ごとの写真の上限（合計 1GB）を超えるなら 413", async () => {
+    const { owner, shop } = await world();
+    const a = (await (await upload(owner.cookie, shop.id, fakeJpeg(10, 10))).json()) as any;
+    await env.DB.prepare("UPDATE assets SET bytes = ? WHERE id = ?").bind(1024 ** 3 - 10, a.id).run();
+    const r = await upload(owner.cookie, shop.id, fakeJpeg(10, 10));
+    expect(r.status).toBe(413);
+    expect(((await r.json()) as any).error).toBe("quota_exceeded");
   });
 });

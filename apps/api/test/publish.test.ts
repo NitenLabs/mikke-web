@@ -1,6 +1,6 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { call, fakeJpeg, getDraft, newShop, publishAll, putDraft, siteData, upload, world } from "./helpers";
+import { allowPublish, call, fakeJpeg, getDraft, newShop, publishAll, putDraft, siteData, upload, world } from "./helpers";
 
 const site = (slug: string, path: string, o: { headers?: Record<string, string>; method?: string } = {}) =>
   call(o.method ?? "GET", path, { host: `${slug}.mikke.test`, headers: o.headers });
@@ -72,6 +72,7 @@ describe("D1 公開（下書きの写しを版に、HTML・CSS を R2 に）", (
     await putDraft(owner.cookie, shop.id, "site", 1, siteData({ content: { x: "まだ出さない" } }));
     const s = await getDraft(owner.cookie, shop.id, "shop");
     await putDraft(owner.cookie, shop.id, "shop", s.version, { ...s.data, basic: { name: "新しい名前" } });
+    await allowPublish(shop.id);
     const r = await call("POST", `/api/shops/${shop.id}/publish`, { cookie: owner.cookie, json: { scope: "shop", shopDraftVersion: 2, pages: { "/": "<html>shop</html>" } } });
     expect(r.status).toBe(200);
     const v = (await (await call("GET", `/api/shops/${shop.id}/versions/2`, { cookie: owner.cookie })).json()) as any;
@@ -254,5 +255,140 @@ describe("D4 履歴と「この版を下書きにする」", () => {
     const r = await call("POST", `/api/shops/${shop.id}/versions/1/restore`, { cookie: owner.cookie, json: { siteDraftVersion: 2, includeShop: true, shopDraftVersion: 2 } });
     expect(r.status).toBe(200);
     expect((await getDraft(owner.cookie, shop.id, "shop")).data.basic.name).toBe("試しの店");
+  });
+});
+
+describe("M4 公開ページのスクリプトの守り（CSP と HTML の検査）", () => {
+  it("M4-1 公開ページの答えには CSP が付く（ページ・404・CSS・写真）", async () => {
+    const { owner, shop } = await world();
+    const a = (await (await upload(owner.cookie, shop.id, fakeJpeg(10, 10))).json()) as any;
+    await publishAll(owner.cookie, shop.id, { "/": `<img src="/media/${a.id}">` }, { css: "a{}" });
+    for (const p of ["/", "/nothing", "/style.css", `/media/${a.id}`, "/_mikke/site.js"]) {
+      const csp = (await site(shop.slug, p)).headers.get("content-security-policy") ?? "";
+      expect(csp, p).toContain("script-src 'self'");
+      expect(csp).toContain("default-src 'self'");
+      expect(csp).toContain("style-src 'self' 'unsafe-inline' https://fonts.googleapis.com");
+      expect(csp).toContain("font-src https://fonts.gstatic.com");
+      expect(csp).toContain("img-src 'self' data:");
+      expect(csp).toContain("frame-src https://www.google.com");
+      expect(csp).toContain("base-uri 'none'");
+      expect(csp).toContain("form-action 'self'");
+      expect(csp).toContain("object-src 'none'");
+      expect(csp).toContain("frame-ancestors 'none'");
+    }
+    expect((await site("no-such-shop", "/")).headers.get("content-security-policy")).toContain("script-src 'self'");
+  });
+
+  it("M4-2 インラインの script・on〜 の属性・javascript: の URL などがある HTML は 400", async () => {
+    const { owner, shop } = await world();
+    const bads = [
+      "<script>alert(1)</script>",
+      "<SCRIPT >alert(1)</SCRIPT>",
+      '<script type="module">import "x"</script>',
+      '<script src="https://evil.example/x.js"></script>',
+      '<script src="/media/ast_aaaaaaaaaaaa"></script>',
+      '<script src="//evil.example/x.js"></script>',
+      '<img src=x onerror="alert(1)">',
+      "<img src=x onerror=alert(1)>",
+      '<body onload="x()">',
+      '<svg><a xlink:href="javascript:alert(1)">x</a></svg>',
+      '<svg/onload=alert(1)>',
+      '<a href="javascript:alert(1)">x</a>',
+      '<a href="  JaVaScRiPt:alert(1)">x</a>',
+      '<a href="java&#x09;script:alert(1)">x</a>',
+      '<a href="&#106;avascript:alert(1)">x</a>',
+      '<a href="javascript&colon;alert(1)">x</a>',
+      '<a href="vbscript:x">x</a>',
+      '<iframe src="data:text/html,<script>alert(1)</script>"></iframe>',
+      '<iframe srcdoc="<b>x</b>"></iframe>',
+      '<meta http-equiv="refresh" content="0;url=https://evil.example">',
+      '<form action="javascript:alert(1)"><button>x</button></form>',
+      '<svg><script>alert(1)</script></svg>',
+      '<svg><svg:script>alert(1)</svg:script></svg>',
+      // ブラウザの読み方とずれてすり抜けるもの
+      '<svg><style><img src=x onerror=alert(1)></style></svg>',
+      '<noscript><p title="</noscript><img src=x onerror=alert(1)>"></noscript>',
+      '<style><!--</style><img src=x onerror=alert(1)>--></style>',
+      '<!-- <img src=x onerror=alert(1)> -->',
+      '<script type="application/ld+json">{"a":"</script><script>alert(1)</script>"}</script>',
+    ];
+    for (const html of bads) {
+      const r = await publishAll(owner.cookie, shop.id, { "/": "<p>ok</p>", "/menu": html });
+      expect(r.status, html).toBe(400);
+      const body = (await r.json()) as any;
+      expect(body.error, html).toBe("unsafe_html");
+      expect(body.page).toBe("/menu");
+    }
+    expect((await site(shop.slug, "/")).status).toBe(404); // どれも公開されていない
+  });
+
+  it("M4-3 構造化データ（ld+json）・決まったスクリプト（/_mikke/）・ふつうのリンクは通る", async () => {
+    const { owner, shop } = await world();
+    const html = [
+      "<!doctype html><html lang=ja><head>",
+      '<script type="application/ld+json">{"@context":"https://schema.org","@type":"Store","name":"芦屋堂"}</script>',
+      '<script src="/_mikke/site.js" defer></script>',
+      '<link rel="stylesheet" href="/style.css"><style>.a{color:#333}</style></head>',
+      '<body><a href="/menu">お品書き</a> <a href="tel:0797000000">電話</a> <a href="https://www.instagram.com/x">IG</a>',
+      '<img src="data:image/png;base64,iVBORw0KGgo=" alt="">',
+      '<iframe src="https://www.google.com/maps/embed?pb=x"></iframe>',
+      '<p data-on="x" title="online">オンラインの注文</p></body></html>',
+    ].join("");
+    const r = await publishAll(owner.cookie, shop.id, { "/": html });
+    expect(r.status, await r.clone().text()).toBe(200);
+    const js = await site(shop.slug, "/_mikke/site.js");
+    expect(js.status).toBe(200);
+    expect(js.headers.get("content-type")).toContain("text/javascript");
+    expect((await site(shop.slug, "/_mikke/evil.js")).status).toBe(404);
+  });
+
+  it("M4-4 sitemap.xml にスクリプトになりうるものがあれば 400", async () => {
+    const { owner, shop } = await world();
+    const x = '<?xml version="1.0"?><html xmlns="http://www.w3.org/1999/xhtml"><script>alert(1)</script></html>';
+    const r = await publishAll(owner.cookie, shop.id, { "/": "x" }, { files: { "sitemap.xml": x } });
+    expect(r.status).toBe(400);
+  });
+});
+
+describe("L1・M1・L10 公開の入口の守り", () => {
+  it("L1 files の名前に constructor・toString・__proto__ などは使えない（400）。公開ページでも出ない", async () => {
+    const { owner, shop } = await world();
+    for (const name of ["constructor", "toString", "hasOwnProperty", "__proto__"]) {
+      const body = `{"scope":"all","shopDraftVersion":1,"siteDraftVersion":1,"pages":{"/":"x"},"files":{"${name}":"<b>x</b>"}}`;
+      await allowPublish(shop.id);
+      const r = await call("POST", `/api/shops/${shop.id}/publish`, { cookie: owner.cookie, body, headers: { "content-type": "application/json" } });
+      expect(r.status, name).toBe(400);
+    }
+    await publishAll(owner.cookie, shop.id, { "/": "x" });
+    for (const p of ["/constructor", "/toString", "/__proto__"]) {
+      const r = await site(shop.slug, p);
+      expect(r.status, p).toBe(404);
+      expect(await r.text()).toContain("ページが見つかりません");
+    }
+  });
+
+  it("M1 入れ子の深すぎる JSON は 400（公開も、写真の台帳も）", async () => {
+    const { owner, shop } = await world();
+    const deep = "[".repeat(100) + "]".repeat(100);
+    const r = await call("POST", `/api/shops/${shop.id}/publish`, {
+      cookie: owner.cookie,
+      body: `{"scope":"all","shopDraftVersion":1,"siteDraftVersion":1,"pages":{"/":"x"},"x":${deep}}`,
+      headers: { "content-type": "application/json" },
+    });
+    expect(r.status).toBe(400);
+    expect(((await r.json()) as any).error).toBe("too_deep");
+  });
+
+  it("L10 公開は 1 分に 1 回まで（同時に 2 本来ても片方だけ）", async () => {
+    const { owner, shop } = await world();
+    expect((await publishAll(owner.cookie, shop.id)).status).toBe(200);
+    const again = await call("POST", `/api/shops/${shop.id}/publish`, { cookie: owner.cookie, json: { scope: "all", shopDraftVersion: 1, siteDraftVersion: 1, pages: { "/": "y" } } });
+    expect(again.status).toBe(429);
+    expect(Number(again.headers.get("retry-after"))).toBeGreaterThan(0);
+    await allowPublish(shop.id);
+    const rs = await Promise.all(
+      [1, 2].map(() => call("POST", `/api/shops/${shop.id}/publish`, { cookie: owner.cookie, json: { scope: "all", shopDraftVersion: 1, siteDraftVersion: 1, pages: { "/": "z" } } })),
+    );
+    expect(rs.map((r) => r.status).sort()).toEqual([200, 429]);
   });
 });

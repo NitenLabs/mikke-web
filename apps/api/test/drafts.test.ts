@@ -120,7 +120,9 @@ describe("変更の記録（いつ・誰が・どの層・前→後）", () => {
     expect(content).toHaveLength(1);
     expect(content[0]).toMatchObject({ layer: "site", action: "edit", before: '"〇"', after: '"一二三"' });
     expect(content[0].firstAt <= content[0].at).toBe(true);
-    expect(content[0].actor).toMatchObject({ kind: "owner", email: owner.email });
+    // L7：店主に返す記録には、メールアドレスを入れない（自分の分は self）
+    expect(content[0].actor).toMatchObject({ kind: "owner", self: true });
+    expect(content[0].actor.email).toBeUndefined();
     expect(ch.changes.some((c: any) => c.layer === "theme" && c.path.startsWith("/theme"))).toBe(true);
   });
 
@@ -131,5 +133,27 @@ describe("変更の記録（いつ・誰が・どの層・前→後）", () => {
     const ch = (await (await call("GET", `/api/shops/${shop.id}/changes`, { cookie: producer.cookie })).json()) as any;
     expect(ch.changes[0]).toMatchObject({ layer: "shop", path: "/basic/name", before: '"試しの店"', after: '"改名"' });
     expect(ch.changes[0].actor.kind).toBe("producer");
+  });
+});
+
+describe("M1 深い入れ子の JSON", () => {
+  it("M1-1 入れ子が 64 段を超える下書きは 400。保存もしない（版が上がらない）", async () => {
+    const { owner, shop } = await world();
+    for (const depth of [65, 2000, 100_000]) {
+      const deep = "[".repeat(depth) + "]".repeat(depth);
+      const body = `{"draft":{"template":{"name":"wa-01"},"sections":{},"x":${deep}}}`;
+      const r = await call("PUT", `/api/shops/${shop.id}/drafts/site`, { cookie: owner.cookie, body, headers: { "content-type": "application/json", "if-match": '"1"' } });
+      expect(r.status, String(depth)).toBe(400);
+      expect(((await r.json()) as any).error).toBe("too_deep");
+    }
+    expect((await getDraft(owner.cookie, shop.id, "site")).version).toBe(1);
+    expect((await call("GET", `/api/shops/${shop.id}/status`, { cookie: owner.cookie })).status).toBe(200);
+  });
+
+  it("M1-2 64 段までは保存できる", async () => {
+    const { owner, shop } = await world();
+    let x: unknown = 1;
+    for (let i = 0; i < 60; i++) x = { a: x };
+    expect((await putDraft(owner.cookie, shop.id, "site", 1, siteData({ content: { deep: x } }))).status).toBe(200);
   });
 });

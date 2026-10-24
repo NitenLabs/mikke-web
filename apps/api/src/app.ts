@@ -7,6 +7,7 @@ import { auth, me } from "./routes/auth";
 import { publicSite, shopSlugFromHost } from "./routes/public";
 import { publishing } from "./routes/publishing";
 import { shops } from "./routes/shops";
+import { assertConfig } from "./services/config";
 import { corsForApp, csrfGuard } from "./services/csrf";
 import { requireShop, requireUser } from "./services/session";
 
@@ -37,6 +38,13 @@ publicSite.onError(errorResponse);
 
 /** ホスト名で振り分ける：<slug>.<PUBLIC_DOMAIN> は公開ページ、それ以外は API */
 export function handleFetch(req: Request, env: Env, ctx: ExecutionContext): Response | Promise<Response> {
+  // L5・L6：危ない設定のままでは動かない（その isolate の最初の要求で確かめ、覚えておく）
+  try {
+    assertConfig(env);
+  } catch (e) {
+    console.error(String(e));
+    return new Response("設定に問題があるので動きません（ログを見てください）", { status: 500, headers: { "Content-Type": "text/plain; charset=utf-8" } });
+  }
   const slug = shopSlugFromHost(env, req.headers.get("host") ?? new URL(req.url).host);
   if (slug) return publicSite.fetch(req, env, ctx);
   return api.fetch(req, env, ctx);

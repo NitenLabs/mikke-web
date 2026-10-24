@@ -49,14 +49,16 @@ export async function login(email: string): Promise<string> {
   if (r.status !== 200) throw new Error(`request ${r.status} ${await r.text()}`);
   const mail = memoryOutbox.slice(before).find((m) => m.to === email);
   if (!mail) throw new Error("mail not sent");
-  const v = await call("POST", "/api/auth/verify", { json: { email, code: mail.code } });
+  const v = await call("POST", "/api/auth/verify", { json: { email, code: mail.code }, cookie: cookieFrom(r) });
   if (v.status !== 200) throw new Error(`verify ${v.status} ${await v.text()}`);
   return cookieFrom(v);
 }
 
+/** 答えの Set-Cookie から「名前=値」を取る（セッションがあればそれ、なければ最初のもの。消す Cookie は飛ばす） */
 export function cookieFrom(res: Response): string {
-  const sc = res.headers.get("set-cookie") || "";
-  return sc.split(";")[0];
+  const all = res.headers.getSetCookie().filter((s) => !/Max-Age=0/i.test(s));
+  const pick = all.find((s) => s.startsWith("__Host-mikke_sid=")) ?? all[0] ?? "";
+  return pick.split(";")[0];
 }
 
 export async function newProducer() {
@@ -139,7 +141,25 @@ export async function upload(cookie: string, shopId: string, bytes: Uint8Array, 
   return call("POST", `/api/shops/${shopId}/assets`, { cookie, body: bytes, headers: { "content-type": type } });
 }
 
+/** 公開は 1 分に 1 回まで（L10）なので、試験では前の公開を 1 分前にずらしてから公開する */
+export async function allowPublish(shopId: string) {
+  await env.DB.prepare("UPDATE shops SET last_publish_at = last_publish_at - 61000 WHERE id = ?").bind(shopId).run();
+}
+
+/** ログインの申し込み。答えと、届いたメールと、申し込んだブラウザの Cookie を返す */
+export async function requestLogin(email: string, browserCookie?: string) {
+  const before = memoryOutbox.length;
+  const r = await call("POST", "/api/auth/request", { json: { email }, cookie: browserCookie });
+  const mail = memoryOutbox.slice(before).find((m) => m.to === email.trim().toLowerCase());
+  const browser = cookieFrom(r) || browserCookie || "";
+  return { r, mail, browser };
+}
+
+/** リンクの合言葉（#t= の後ろ） */
+export const tokenOf = (link: string) => decodeURIComponent(new URL(link).hash.replace(/^#t=/, ""));
+
 export async function publishAll(cookie: string, shopId: string, pages: Record<string, string> = { "/": "<html>top</html>" }, extra: Record<string, unknown> = {}) {
+  await allowPublish(shopId);
   const shopD = await getDraft(cookie, shopId, "shop");
   const siteD = await getDraft(cookie, shopId, "site");
   return call("POST", `/api/shops/${shopId}/publish`, {

@@ -1,5 +1,6 @@
 import type { Context } from "hono";
 import { HTTPException } from "hono/http-exception";
+import { jsonDepth, MAX_JSON_DEPTH } from "./json";
 
 /** API のエラーは {error: 種類, message: 日本語の説明, ...ほか} で返す */
 export class ApiError extends Error {
@@ -43,11 +44,14 @@ export async function readJson<T = unknown>(c: Context, maxBytes = 256 * 1024): 
   } catch {
     throw bad("invalid_json", "本文が UTF-8 ではありません");
   }
+  let value: unknown;
   try {
-    return JSON.parse(text) as T;
+    value = JSON.parse(text);
   } catch {
     throw bad("invalid_json", "本文の JSON が壊れています");
   }
+  if (jsonDepth(value) > MAX_JSON_DEPTH) throw bad("too_deep", `JSON の入れ子が深すぎます（${MAX_JSON_DEPTH} 段まで）`);
+  return value as T;
 }
 
 /** 本文を上限つきで読む（Content-Length がなくても上限で止める） */

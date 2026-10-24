@@ -2,7 +2,7 @@ import { Hono } from "hono";
 import type { AppEnv } from "../env";
 import { ApiError, bad, isPlainObject, nowIso, readJson } from "../lib/http";
 import { canonJSON } from "../lib/json";
-import { actorOf, draftChangeRows, recordChanges } from "../services/changes";
+import { actorOf, actorView, draftChangeRows, recordChanges } from "../services/changes";
 import { draftJson, getDraft, MAX_DRAFT_BYTES, parseIfMatch, saveDraft, validateDraft, type DraftKind } from "../services/drafts";
 import { getPublished } from "../services/publish";
 
@@ -50,6 +50,8 @@ shops.put("/:shopId/drafts/:kind", async (c) => {
   validateDraft(kind, shopId, data);
   const before = await getDraft(c.env, shopId, kind);
   const user = c.get("user");
+  // 記録の行は保存の前に作る（ここで失敗したら、保存もしない。M1）
+  const rows = draftChangeRows(kind, before?.data, data);
   const saved = (before?.version ?? 0) === expected ? await saveDraft(c.env, shopId, kind, expected, data, user.id) : null;
   if (!saved) {
     const current = await getDraft(c.env, shopId, kind);
@@ -57,7 +59,7 @@ shops.put("/:shopId/drafts/:kind", async (c) => {
       current: current ? draftJson(kind, current) : { kind, version: 0, data: null },
     });
   }
-  await recordChanges(c.env, shopId, actorOf(user), draftChangeRows(kind, before?.data, data), true);
+  await recordChanges(c.env, shopId, actorOf(user), rows, true);
   return c.json({ kind, version: saved.version, updatedAt: saved.updatedAt }, 200, { ETag: `"${saved.version}"` });
 });
 
@@ -96,7 +98,7 @@ shops.get("/:shopId/status", async (c) => {
     shopSame,
     siteSame,
     drafts,
-    published: { number: pub.number, scope: pub.scope, publishedAt: pub.publishedAt, publishedBy: pub.publishedBy },
+    published: { number: pub.number, scope: pub.scope, publishedAt: pub.publishedAt, publishedBy: actorView(c.get("user"), pub.publishedBy) },
   });
 });
 
@@ -115,7 +117,7 @@ shops.get("/:shopId/changes", async (c) => {
       id: r.id,
       at: r.at,
       firstAt: r.first_at,
-      actor: { id: r.actor_id, kind: r.actor_kind, name: r.actor_name ?? null, email: r.actor_email ?? null },
+      actor: actorView(c.get("user"), { id: r.actor_id, kind: r.actor_kind, name: r.actor_name, email: r.actor_email }),
       layer: r.layer,
       action: r.action,
       path: r.path,
