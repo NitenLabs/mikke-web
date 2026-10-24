@@ -296,9 +296,10 @@ button:active{transform:translateY(1px)}
 .price-box{position:fixed;z-index:88;background:#fff;border:1px solid #bbb;border-radius:10px;box-shadow:0 6px 22px rgba(0,0,0,.2);padding:10px;font:13px/1.5 system-ui;width:320px;max-width:92vw}
 .price-box .pb-head{font-weight:700;margin-bottom:8px}
 .price-box .pb-row{display:flex;gap:6px;margin-bottom:6px;align-items:center}
-.price-box .pb-name{flex:1 1 90px;min-width:0;padding:5px 6px;border:1px solid #ccc;border-radius:6px;font:13px system-ui}
+.price-box .pb-name{flex:1 1 90px;min-width:96px;padding:5px 6px;border:1px solid #ccc;border-radius:6px;font:13px system-ui}
+/* J43 名前の欄が 14px まで縮むと、日本語の変換を決めるたびにカーソルが欄の頭に戻り「お茶→茶お」になる（Chrome）。打てる幅を残す。金額欄（type=number）は既定の最小幅 216px で名前の欄を押しつぶしていたので 76px に止める */
 .price-box .pb-type{flex:0 0 84px;padding:5px 4px;border:1px solid #ccc;border-radius:6px;font:13px system-ui}
-.price-box .pb-amt{flex:0 0 76px;padding:5px 6px;border:1px solid #ccc;border-radius:6px;font:13px system-ui}
+.price-box .pb-amt{flex:0 0 76px;min-width:0;width:76px;padding:5px 6px;border:1px solid #ccc;border-radius:6px;font:13px system-ui}
 .price-box .pb-del{flex:0 0 26px;border:1px solid #ccc;border-radius:6px;background:#fafafa;cursor:pointer}
 .price-box .pb-add{margin:2px 0 8px;border:none;background:none;color:#06c;cursor:pointer;font:13px system-ui;padding:2px}
 .price-box .pb-foot{display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #eee;padding-top:8px}
