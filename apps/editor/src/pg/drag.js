@@ -8,8 +8,12 @@ function beginDrag(clientX, clientY) {
   drag = { ids, sx: clientX, sy: clientY, lx: clientX, ly: clientY, baseT, origGeom: geometry() }; return true;
 }
 function curTranslate(n) { if (!n) return { tx: 0, ty: 0 }; const t = n.style.transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/); return t ? { tx: +t[1], ty: +t[2] } : { tx: 0, ty: 0 }; }
-function dragMove(clientX, clientY, alt) {
-  if (!drag) return; drag.lx = clientX; drag.ly = clientY;
+function dragMove(clientX, clientY, alt, shift) {
+  if (!drag) return;
+  // P15 Shift を押している間は縦か横にまっすぐ（動きの大きい方の軸だけ。もう一方の軸は吸い付きもしない）
+  drag.axis = null;
+  if (shift) { if (Math.abs(clientX - drag.sx) >= Math.abs(clientY - drag.sy)) { clientY = drag.sy; drag.axis = "x"; } else { clientX = drag.sx; drag.axis = "y"; } }
+  drag.lx = clientX; drag.ly = clientY;
   const dx = (clientX - drag.sx) / scale, dy = (clientY - drag.sy) / scale;
   for (const id of drag.ids) { const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + dx}px,${drag.baseT[id].ty + dy}px)`; }
   document.querySelectorAll(".anchor-line,.anchor-label,.mark-anchor,.reorder-line").forEach((n) => { if (n.classList.contains("mark-anchor")) n.classList.remove("mark-anchor"); else n.remove(); });
@@ -28,7 +32,8 @@ function dragMove(clientX, clientY, alt) {
       const xEq = !xAlign && eq.dxDist != null;
       const yAlign = alDY != null && (eq.dyDist == null || Math.abs(alDY) <= eq.dyDist + 1e-6);
       const yEq = !yAlign && eq.dyDist != null;
-      const sdx = xAlign ? alDX : (xEq ? eq.dx : 0); const sdy = yAlign ? alDY : (yEq ? eq.dy : 0);
+      let sdx = xAlign ? alDX : (xEq ? eq.dx : 0); let sdy = yAlign ? alDY : (yEq ? eq.dy : 0);
+      if (drag.axis === "x") sdy = 0; if (drag.axis === "y") sdx = 0;   // P15 まっすぐの軸は外さない
       drag.snapDX = sdx; drag.snapDY = sdy;
       if (sdx || sdy) { const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + dx + sdx}px,${drag.baseT[id].ty + dy + sdy}px)`; g = geometry(); }
       const gs = [];
@@ -143,13 +148,14 @@ function showReorderLine(id, ro) {
   s.appendChild(line);
 }
 function cancelDrag() { if (!drag) return; drag = null; clearGuides(); render(); }   // J29 ドラッグ中の Esc：取り消して元に戻す（離しても何も記録しない）
-function endDrag() {
+function endDrag(opts) {
   if (!drag) return;
+  if (opts && opts.dup && a2DupDrop()) return;   // P16 Option を押したまま離した＝元は残し、写しを離した所に出す
   let dx = (drag.lx - drag.sx) / scale + (drag.snapDX || 0), dy = (drag.ly - drag.sy) / scale + (drag.snapDY || 0);
   if (Math.abs(drag.lx - drag.sx) <= 0.5 && Math.abs(drag.ly - drag.sy) <= 0.5) { drag = null; clearGuides(); render(); return; }
   // J16 ドラッグした部品を自分のセクションの中身の枠に収める（左右の外・ヘッダー〔上端より上〕へは出さない）。単体のみ
   if (drag.ids.length === 1) { const id = drag.ids[0]; const e0 = drag.origGeom[id];
-    if (e0 && isDraggable(id)) { const { left: cL, right: cR } = contentEdges(); const nx = e0.x + dx, ny = e0.y + dy;
+    if (e0 && isDraggable(id)) { const cL = 0, cR = SPEC.DESIGN_W[state.device]; const nx = e0.x + dx, ny = e0.y + dy;   // E3：収めるのはページ（セクション）の左右の中。中身の幅の端で止めると、端にある見出しが少し動かせない
       // J16 左右の外・上端より上へは出さない（下への制限はしない＝W8 を壊さない）。中身の幅いっぱいの部品は横に寄せる余地がない＝横は動かさない（Z3 を壊さない）
       const cx = (cR - e0.w > cL) ? Math.min(Math.max(nx, cL), cR - e0.w) : nx, cy = Math.max(ny, 0);
       if (Math.abs(cx - nx) > 0.5 || Math.abs(cy - ny) > 0.5) { dx += cx - nx; dy += cy - ny; const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + dx}px,${drag.baseT[id].ty + dy}px)`; } } }
@@ -175,3 +181,33 @@ function endDrag() {
   }
 }
 
+
+// P16 Option（Alt）+ドラッグ＝複製して動かす（PowerPoint と同じ）。元は元の位置に戻し、写しを離した所に足す（足した部品＝元に付いていく）。
+// 写せない部品（品の並び・表の入れ物・品の中の1件）だけのときは false（ふつうの移動にする）。
+function a2DupDrop() {
+  const g = geometry(); const og = drag.origGeom;
+  const ids = drag.ids.filter((id) => isDraggable(id) && !isRepeat(id) && !/^I_(cards|table)$/.test(bareOf(canonId(id))) && g[id] && og[id]);
+  if (!ids.length) return false;
+  const dst = {}; for (const id of ids) dst[id] = { x: g[id].x, y: g[id].y };
+  drag = null; clearGuides();
+  const keepSel = new Set(state.selected), keepCb = state.clipboard; state.selected = new Set(ids); copySelection(); state.selected = keepSel;
+  const cb = state.clipboard; state.clipboard = keepCb;   // 複製のドラッグはクリップボードを変えない（PowerPoint と同じ）
+  if (!cb || cb.kind !== "parts" || !cb.parts.length) { render(); return true; }
+  const newIds = []; const grp = "dup" + Date.now();
+  for (const p of cb.parts) {
+    const o = og[p.id], d = dst[p.id]; if (!o || !d) continue;
+    const id = (p.kind === "photo" ? "addp_" : "add_") + (++state.addSeq);
+    const gap = +(d.y - (o.y + o.h)).toFixed(2), x = +d.x.toFixed(2);
+    a2AddCopy(p, id, secOf(p.id), p.id, gap, x, grp);
+    newIds.push(id);
+  }
+  selectMany(newIds);
+  return true;
+}
+// 写しを足す（貼り付けと同じ中身：明るさ・文の一部の見た目・部品のリンクも引き継ぐ）。grp＝戻す1回でまとめて戻す印（ops-history）
+function a2AddCopy(p, id, sec, anchor, gap, x, grp) {
+  commit({ t: "add", id, section: sec, kind: p.kind === "photo" ? "photo" : "text", styleName: styleOf(p.id), asset: p.kind === "photo" ? p.asset : undefined, w: p.w, wOther: p.wOther, h: p.kind === "photo" ? p.h : undefined, hOther: p.kind === "photo" ? p.hOther : undefined, text: p.text || "", anchor, gap, gapOther: 16, placedDevice: state.device, x, _grp: grp });
+  if (p.brightness) commit({ t: "bright", id, v: p.brightness, _grp: grp });
+  if (p.runs) commit({ t: "edit", id, runs: clone(p.runs), _grp: grp });
+  if (p.elink) commit({ t: "elink", id, link: clone(p.elink), _grp: grp });
+}

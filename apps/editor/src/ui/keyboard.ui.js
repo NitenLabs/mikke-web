@@ -51,7 +51,7 @@ window.addEventListener("keydown",(e)=>{
 });
 // 貼り付け：書き換え中はプレーン文字（§7.2）。書き換え中でなく写真を1つ選んでいて画像なら差し替える（§1.1・§7.7）
 window.addEventListener("paste",(e)=>{ const cd=e.clipboardData||window.clipboardData; if(!cd)return; const t=cd.getData&&cd.getData("text/plain"); window.__lastPlain=t;
-  if(PG.state.editing){ e.preventDefault(); if(!PG.editingPasteRich(t)&&!PG.editingPasteLink(t)) document.execCommand("inserttext",false,t); return; }   // §5 中のコピーは見た目つき／§2.5-2.6 URL・メール／よそからは文字だけ
+  if(PG.state.editing){ e.preventDefault(); if(!t) return; /* 文字の無い貼り付け（画像だけ）は書き換え中の選んだ文字を消さない（P3 でダブルクリックが語を選ぶようになったため） */ if(!PG.editingPasteRich(t)&&!PG.editingPasteLink(t)) document.execCommand("inserttext",false,t); return; }   // §5 中のコピーは見た目つき／§2.5-2.6 URL・メール／よそからは文字だけ
   const file=[...(cd.files||[])].find(f=>f.type.startsWith("image/")) || (()=>{ for(const it of (cd.items||[])){ if(it.kind==="file"){ const f=it.getAsFile&&it.getAsFile(); if(f&&f.type.startsWith("image/")) return f; } } return null; })();
   if(!file) return;   // 画像がなければ、今の貼り付け（部品・文字＝Cmd+V の keydown）に任せる
   const sel=[...PG.state.selected]; const one=sel.length===1?sel[0]:null; const n=one&&PG.elNode(one); const isPhoto=!!(n&&n.getAttribute("data-kind")==="photo");

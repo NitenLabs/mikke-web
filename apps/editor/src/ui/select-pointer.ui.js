@@ -39,7 +39,8 @@ stage.addEventListener("pointerdown",(e)=>{
   if(grp){ if(!PG.state.selected.has(grp)){ PG.selectOnly(grp); if(e.pointerType!=="touch") pending={sx:e.clientX,sy:e.clientY}; return; } else { pending={sx:e.clientX,sy:e.clientY,clickInner:rawId}; return; } }
   // P2/P6 動かせない文字（ヘッダーのロゴ・フッター・お品書き・アクセス）も1回で選び、押して離せば書き換え
   if(!PG.isDraggable(id)){ if(a2ClickEditable(id)&&e.button===0&&!e.shiftKey){ PG.selectOnly(id); pending={sx:e.clientX,sy:e.clientY,textClick:id}; return; } PG.selectMany([]); return; }
-  if((e.shiftKey&&e.pointerType!=="touch")){ PG.toggleSel(id); return; }
+  // P15 Shift：押して離す＝選択に足す・外す（今までどおり）、押してドラッグ＝縦か横にまっすぐ動かす。選んでいなければ押した時に足す
+  if((e.shiftKey&&e.pointerType!=="touch")){ e.preventDefault(); const was=PG.state.selected.has(id); if(!was) PG.toggleSel(id); pending={sx:e.clientX,sy:e.clientY,shiftOff:was?id:null}; return; }
   const inMulti=PG.state.selected.has(id)&&PG.state.selected.size>1;
   if(!inMulti) PG.selectOnly(id);
   const wasSel=inMulti||PG.state.selected.has(id);
@@ -51,10 +52,10 @@ window.addEventListener("pointermove",(e)=>{
   if(e.pointerType==="touch"){ if(tg) onPhoneMove(e); return; }   // J30 指は幅によらずスマホの動き
   if(isPhone()) return;
   // §2 Alt（Mac は Option）を押しながらは、そろえない
-  if(PG.isResizing()){ e.preventDefault(); PG.resizeMove(e.clientX,e.clientY,e.altKey); return; }
+  if(PG.isResizing()){ e.preventDefault(); PG.resizeMove(e.clientX,e.clientY,e.metaKey||e.ctrlKey); return; }   // P16 吸い付かないのは Cmd（Option は複製に使う）
   if(marquee){ const x=Math.min(marquee.x0,e.clientX),y=Math.min(marquee.y0,e.clientY),w=Math.abs(e.clientX-marquee.x0),h=Math.abs(e.clientY-marquee.y0); Object.assign(marquee.el.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"}); e.preventDefault(); return; }
   if(pending && !PG.isDragging() && Math.hypot(e.clientX-pending.sx,e.clientY-pending.sy)>3){ PG.beginDrag(pending.sx,pending.sy); lastImgClick=null; const pcb=document.getElementById("photoChangeBtn"); if(pcb) pcb.style.display="none"; }   // §2 動かし始めたら写真を変えるボタンを隠す・X10 ドラッグはダブルに数えない
-  if(PG.isDragging()){ e.preventDefault(); PG.dragMove(e.clientX,e.clientY,e.altKey); }
+  if(PG.isDragging()){ e.preventDefault(); PG.dragMove(e.clientX,e.clientY,e.metaKey||e.ctrlKey,e.shiftKey); }   // P16 Cmd＝吸い付かない・P15 Shift＝縦か横にまっすぐ
 },{passive:false});
 window.addEventListener("pointerup",(e)=>{
   if(e.pointerType==="touch"){ if(tg) onPhoneUp(e); return; }   // J30 指は幅によらずスマホの動き
@@ -67,13 +68,14 @@ window.addEventListener("pointerup",(e)=>{
     if(!chosen.length && r.width<6 && r.height<6){ // 余白をクリック＝セクションを選ぶ（§4）
       for(const hs of hosts){ const b=hs.getBoundingClientRect(); if(e.clientX>=b.left&&e.clientX<=b.right&&e.clientY>=b.top&&e.clientY<=b.bottom){ PG.selectSection(hs.id.replace("host_","")); break; } } return; }
     PG.selectMany(chosen); if(chosen.length) showFmenu(); return; }
-  if(PG.isDragging()){ PG.endDrag(); showFmenu(); return; }
+  if(PG.isDragging()){ PG.endDrag({dup:e.altKey}); showFmenu(); return; }   // P16 Option を押したまま離した＝複製して動かす
   // §2（試験台17）写真を選ぶ：空の枠を動かさずに離したら写真を選ぶ画面を開く
   if(wasPending && wasPending.photoChoose && Math.hypot(e.clientX-wasPending.sx,e.clientY-wasPending.sy)<=4){ startReplace(wasPending.photoChoose); return; }
   // §2/X10 写真を変える：左クリックで離したら「写真を選ぶ（1回目）／見せる範囲（2回目）」。右・Ctrl・ドラッグは数えない
   if(wasPending && wasPending.photoChange && e.button===0 && !e.ctrlKey && Math.hypot(e.clientX-wasPending.sx,e.clientY-wasPending.sy)<=4){ imgClickDone(wasPending.photoChange,e.clientX,e.clientY,true); return; }
   // X10 写真そのものの左クリック完了＝ダブルクリック判定に積む（2回目で見せる範囲）
   if(wasPending && wasPending.photoClick && e.button===0 && !e.ctrlKey && Math.hypot(e.clientX-wasPending.sx,e.clientY-wasPending.sy)<=4){ imgClickDone(wasPending.photoClick,e.clientX,e.clientY,false); return; }
+  if(wasPending && wasPending.shiftOff && Math.hypot(e.clientX-wasPending.sx,e.clientY-wasPending.sy)<3){ PG.toggleSel(wasPending.shiftOff); return; }   // P15 選んである部品の Shift+クリック＝外す
   // P2 文字の箱を押して離した（3px 未満の動き）＝押した所にカーソルを置いて書き換え（選んでいない箱・選んだ箱とも）
   if(wasPending && wasPending.textClick && e.button===0 && Math.hypot(e.clientX-wasPending.sx,e.clientY-wasPending.sy)<3){ a2EditAt(wasPending.textClick,wasPending.sx,wasPending.sy); return; }
   // X1：全体を選択中に中を押して動かさずに離した＝中の1件を選ぶ
