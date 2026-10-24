@@ -37,7 +37,7 @@ export function buildSeed({ shop, assets, theme, slug = "ashiyado", producerEmai
   const ownerId = `usr_seed${slug.replace(/[^a-z0-9]/g, "").slice(0, 12)}`;
 
   // 前に入れた同じお店は消してから入れ直す（何度流してもよい）
-  for (const t of ["version_assets", "versions", "drafts", "editor_settings", "memberships", "changes"]) statements.push(`DELETE FROM ${t} WHERE shop_id = ${q(shopId)};`);
+  for (const t of ["version_assets", "versions", "drafts", "editor_settings", "memberships", "changes", "asset_variants"]) statements.push(`DELETE FROM ${t} WHERE shop_id = ${q(shopId)};`);
   statements.push(`DELETE FROM backup_assets WHERE backup_id IN (SELECT id FROM draft_backups WHERE shop_id = ${q(shopId)});`);
   statements.push(`DELETE FROM draft_backups WHERE shop_id = ${q(shopId)};`);
   statements.push(`DELETE FROM assets WHERE shop_id = ${q(shopId)};`);

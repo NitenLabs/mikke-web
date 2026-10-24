@@ -3,6 +3,7 @@ import type { AppEnv, Env } from "../env";
 import { RESERVED_SLUGS, SLUG_RE } from "../lib/slug";
 import { SITE_SCRIPTS, SITE_SCRIPTS_VERSION } from "../site-assets";
 import { cssKey, EXTRA_FILES, fileKey, pageKey } from "../services/publish";
+import { VARIANT_FORMATS, variantWidths, type VariantFormat } from "../services/variants";
 
 /** ホスト名 → お店のスラッグ（<slug>.<PUBLIC_DOMAIN> のときだけ）。それ以外は null */
 export function shopSlugFromHost(env: Env, host: string | null | undefined): string | null {
@@ -37,6 +38,8 @@ const SECURITY_HEADERS: Record<string, string> = {
 const DEFAULT_404 = `<!doctype html><html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>ページが見つかりません</title>
 <style>body{margin:0;font-family:system-ui,sans-serif;color:#333;background:#fff;display:grid;place-items:center;min-height:100vh}main{padding:16px;text-align:center}</style></head>
 <body><main><h1>ページが見つかりません</h1><p>アドレスが変わったか、なくなったページです。</p></main></body></html>`;
+
+const IMMUTABLE = "public, max-age=31536000, immutable";
 
 type Ctx = { shopId: string; n: number; pages: Set<string>; files: Set<string>; hasCss: boolean };
 
@@ -92,17 +95,30 @@ publicSite.get("*", async (c) => {
   let path = url.pathname;
 
   // 写真：公開中の版が指している、このお店の写真だけ（ゴミ箱に入れていても、版が指していれば配る。C4）
-  const media = /^\/media\/(ast_[a-z0-9]{4,24})$/.exec(path);
+  // C3：/media/<ID>/<幅>.<webp|jpg> は大きさ違い
+  const media = /^\/media\/(ast_[a-z0-9]{4,24})(?:\/([1-9][0-9]{0,3})\.(webp|jpg))?$/.exec(path);
   if (media) {
     const a = await c.env.DB.prepare(
-      `SELECT a.r2_key, a.mime FROM assets a JOIN version_assets va ON va.asset_id = a.id AND va.shop_id = a.shop_id
+      `SELECT a.r2_key, a.mime, a.width FROM assets a JOIN version_assets va ON va.asset_id = a.id AND va.shop_id = a.shop_id
        WHERE a.id = ? AND a.shop_id = ? AND va.number = ? AND a.purged_at IS NULL`,
     )
       .bind(media[1], ctx.shopId, ctx.n)
-      .first<{ r2_key: string; mime: string }>();
-    // 写真の中身は ID ごとに変わらないので、長く覚えてよい
-    const r = a && (await serveObject(c, a.r2_key, a.mime, "public, max-age=31536000, immutable"));
-    return r || notFoundPage(c, ctx);
+      .first<{ r2_key: string; mime: string; width: number }>();
+    if (!a) return notFoundPage(c, ctx);
+    if (!media[2]) {
+      // 写真の中身は ID ごとに変わらないので、長く覚えてよい
+      return (await serveObject(c, a.r2_key, a.mime, IMMUTABLE)) || notFoundPage(c, ctx);
+    }
+    const w = Number(media[2]);
+    const fmt = media[3] as VariantFormat;
+    if (!variantWidths(a.width).includes(w)) return notFoundPage(c, ctx);
+    const vs = (await c.env.DB.prepare("SELECT width, format, r2_key FROM asset_variants WHERE asset_id = ? AND width = ?").bind(media[1], w).all<{ format: VariantFormat; r2_key: string }>())
+      .results;
+    // 1. 頼まれた形式 2. 同じ幅の JPEG（WebP を作れなかった写真）。大きさ違いは置いたら変えないので、どちらも長く覚えてよい
+    const v = vs.find((x) => x.format === fmt) ?? vs.find((x) => x.format === "jpg");
+    if (v) return (await serveObject(c, v.r2_key, VARIANT_FORMATS[v.format], IMMUTABLE)) || notFoundPage(c, ctx);
+    // 3. 大きさ違いのない（前に上げた 1 枚だけの）写真：元の 1 枚を返す。あとで大きさ違いを足せるので、短く覚える
+    return (await serveObject(c, a.r2_key, a.mime, "public, max-age=86400")) || notFoundPage(c, ctx);
   }
   if (path === "/style.css" && ctx.hasCss) {
     return (await serveObject(c, cssKey(ctx.shopId, ctx.n), "text/css; charset=utf-8", "no-cache")) || notFoundPage(c, ctx);

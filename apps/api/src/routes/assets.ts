@@ -2,16 +2,18 @@ import { Hono } from "hono";
 import type { AppEnv } from "../env";
 import { notFound, nowIso, readJson, readLimited } from "../lib/http";
 import { actorOf, recordChanges } from "../services/changes";
-import { assetJson, assetReferences, getAsset, MAX_UPLOAD_BYTES, patchAsset, TRASH_DAYS, uploadAsset, type AssetRow } from "../services/assets";
-import { ApiError } from "../lib/http";
+import { addVariants, assetJson, assetReferences, getAsset, MAX_UPLOAD_BYTES, patchAsset, TRASH_DAYS, uploadAsset, type AssetRow } from "../services/assets";
+import { listVariants, readImageForm, variantJson, variantWidths } from "../services/variants";
+import { ApiError, bad } from "../lib/http";
 
 export const assets = new Hono<AppEnv>();
 
 /** C2：写真を上げる。本文は写真そのもの（Content-Type: image/jpeg・image/png・image/webp） */
+/**
+ * C3：multipart/form-data なら、写真（file）と大きさ違い（<幅>.webp・<幅>.jpg）を一緒に受ける。
+ * それ以外は今までどおり、本文が写真そのもの（大きさ違いなし）
+ */
 assets.post("/:shopId/assets", async (c) => {
-  const declared = Number(c.req.header("content-length") || "0");
-  if (declared > MAX_UPLOAD_BYTES) throw new ApiError(413, "too_large", `写真は ${MAX_UPLOAD_BYTES / 1024 / 1024}MB まで`);
-  const bytes = await readLimited(c.req.raw, MAX_UPLOAD_BYTES);
   let name: string | undefined;
   const raw = c.req.header("x-file-name");
   if (raw) {
@@ -21,7 +23,18 @@ assets.post("/:shopId/assets", async (c) => {
       name = undefined;
     }
   }
-  const a = await uploadAsset(c.env, c.req.param("shopId"), actorOf(c.get("user")), c.req.header("content-type") || "", bytes, name);
+  const ct = c.req.header("content-type") || "";
+  const actor = actorOf(c.get("user"));
+  if (ct.toLowerCase().startsWith("multipart/form-data")) {
+    const { file, variants } = await readImageForm(c.req.raw);
+    if (!file) throw bad("missing_file", "写真（file）がありません");
+    const a = await uploadAsset(c.env, c.req.param("shopId"), actor, file.type, file.bytes, raw ? name : file.fileName, variants);
+    return c.json(a, 201);
+  }
+  const declared = Number(c.req.header("content-length") || "0");
+  if (declared > MAX_UPLOAD_BYTES) throw new ApiError(413, "too_large", `写真は ${MAX_UPLOAD_BYTES / 1024 / 1024}MB まで`);
+  const bytes = await readLimited(c.req.raw, MAX_UPLOAD_BYTES);
+  const a = await uploadAsset(c.env, c.req.param("shopId"), actor, ct, bytes, name);
   return c.json(a, 201);
 });
 
@@ -62,6 +75,23 @@ assets.get("/:shopId/assets/:assetId/file", async (c) => {
       "Content-Security-Policy": "default-src 'none'",
     },
   });
+});
+
+/** C3：大きさ違いの一覧 */
+assets.get("/:shopId/assets/:assetId/variants", async (c) => {
+  const row = await load(c);
+  return c.json({ id: row.id, widths: variantWidths(row.width), variants: (await listVariants(c.env, row.id)).map(variantJson) });
+});
+
+/** C3：前に上げた写真に、大きさ違いを足す（multipart/form-data。1 回だけ） */
+assets.post("/:shopId/assets/:assetId/variants", async (c) => {
+  const row = await load(c);
+  if (!(c.req.header("content-type") || "").toLowerCase().startsWith("multipart/form-data"))
+    throw new ApiError(415, "unsupported_media_type", "Content-Type は multipart/form-data にしてください");
+  const { file, variants } = await readImageForm(c.req.raw);
+  if (file) throw bad("invalid_variant", "ここでは写真（file）は送りません。大きさ違いだけ");
+  const list = await addVariants(c.env, row, actorOf(c.get("user")), variants);
+  return c.json({ id: row.id, widths: variantWidths(row.width), variants: list }, 201);
 });
 
 assets.patch("/:shopId/assets/:assetId", async (c) => {

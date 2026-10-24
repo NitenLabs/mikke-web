@@ -37,7 +37,7 @@ curl -H 'Host: ashiyado.localhost' localhost:8787/
 ## 試験
 
 ```sh
-npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。9 ファイル 114 件
+npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。10 ファイル 124 件
 npm run typecheck   # tsc
 ```
 
@@ -51,6 +51,7 @@ npm run typecheck   # tsc
 | `test/publish.test.ts` | D1 公開、D3 配信、D4 履歴と戻す、CSP と HTML の検査（M4）、L1・M1・L10 |
 | `test/htmlcheck.test.ts` | HTML の検査の細かいところ（M4） |
 | `test/assets.test.ts` | C2 写真の検査（M5）、C4 ゴミ箱、写真の量の上限（L10） |
+| `test/variants.test.ts` | C3 写真の大きさ違い（受け取り・検査・配信・前の写真・量・掃除） |
 | `test/cron.test.ts` | D6 毎日の描き直しの入口、1 軒の失敗で止まらない（M1）、期限切れの片づけ（L4） |
 | `test/config.test.ts` | 危ない設定では動かない（L5・L6） |
 | `test/seed.test.ts` | 芦屋堂の種まき |
@@ -83,10 +84,12 @@ npm run typecheck   # tsc
 | `GET /api/shops/:shopId/backups` | 戻す前の下書き（新しい方から 10） | 店 |
 | `GET /api/shops/:shopId/backups/:id` | その中身 `{shop, site}` | 店 |
 | `POST /api/shops/:shopId/backups/:id/restore` `{siteDraftVersion, shopDraftVersion}` | 戻す前の下書きを下書きに戻す（①②③） | 店 |
-| `POST /api/shops/:shopId/assets` | 写真を上げる。本文は写真そのもの、`Content-Type: image/jpeg\|png\|webp`、名前は `X-File-Name`（URL エンコード）。答え 201 で ④ の 1 件 `{id, kind, file:{key,mime,width,height,bytes,exifStripped}, uploadedAt, uploadedBy, origin, rights}` | 店 |
+| `POST /api/shops/:shopId/assets` | 写真を上げる。本文は写真そのもの、`Content-Type: image/jpeg\|png\|webp`、名前は `X-File-Name`（URL エンコード）。**大きさ違いも一緒に送るときは `multipart/form-data`**（下の「写真の大きさ違い」）。答え 201 で ④ の 1 件 `{id, kind, file:{key,mime,width,height,bytes,exifStripped}, uploadedAt, uploadedBy, origin, rights}`（大きさ違いは ④ に入れない） | 店 |
 | `GET /api/shops/:shopId/assets?trash=1` | ④ の一覧（`assets.json` と同じ `{schemaVersion, assets:{id: …}}`。`trash=1` でゴミ箱の中も） | 店 |
 | `GET /api/shops/:shopId/assets/:id` | 1 件 | 店 |
 | `GET /api/shops/:shopId/assets/:id/file` | 写真そのもの（編集画面用） | 店 |
+| `GET /api/shops/:shopId/assets/:id/variants` | 大きさ違いの一覧 `{id, widths:[640,1280,…], variants:[{width,height,format,mime,bytes,key}]}`（前に上げた写真は `variants: []`） | 店 |
+| `POST /api/shops/:shopId/assets/:id/variants` | 前に上げた 1 枚だけの写真に、大きさ違いを足す（`multipart/form-data`、`file` なしで大きさ違いだけ）。**1 回だけ**（もうあれば 409）。答え 201 で上と同じ形 | 店 |
 | `PATCH /api/shops/:shopId/assets/:id` `{alt?, slot?, kind?, rights?:{basis, note?}}` | 台帳を直す | 店 |
 | `DELETE /api/shops/:shopId/assets/:id` | ゴミ箱へ。答え `{trashedAt, purgeAfterDays:30, referencedBy:["version:3", "draft:site", …]}` | 店 |
 | `POST /api/shops/:shopId/assets/:id/restore` | ゴミ箱から戻す | 店 |
@@ -133,6 +136,7 @@ npm run typecheck   # tsc
 | `/`・`/menu`（`/menu/` も） | 公開中の版のページ。`Cache-Control: no-cache`＋`ETag`（公開したらすぐ変わる。304 も返す） |
 | `/style.css`・`/sitemap.xml`・`/robots.txt` | 公開のときに送ったもの |
 | `/media/ast_…` | 公開中の版が指している、このお店の写真だけ（ゴミ箱に入れていても、版が指していれば出す）。`immutable` |
+| `/media/ast_…/<幅>.webp`・`/media/ast_…/<幅>.jpg` | その写真の大きさ違い（C3。配ってよい写真の決まりは上と同じ）。幅は下の「写真の大きさ違い」の決まった幅だけ（ほかは 404）。WebP がない写真は同じ幅の JPEG を、大きさ違いのない前の写真は元の 1 枚を返す（このときだけ 1 日） |
 | `/_mikke/site.js` | 決まったスクリプト（お店によらず同じ） |
 | ほか | 404。お店の `/404` があればそれ、なければ決まった 404 ページ。まだ公開していないお店・知らないスラッグも 404 |
 
@@ -142,6 +146,33 @@ npm run typecheck   # tsc
 default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com;
 img-src 'self' data:; frame-src https://www.google.com; base-uri 'none'; form-action 'self'; object-src 'none'; frame-ancestors 'none'
 ```
+
+### 写真の大きさ違い（C3）
+
+Workers の中では画像を縮められない（有料の Cloudflare Images は使わない）ので、**編集画面が写真を上げるときに、ブラウザで大きさ違いを作って一緒に送る**。
+
+- **幅**：640・1280・2400 のうち写真の幅 W より小さいもの＋W（W は 2400 以下）。例 W=2400 → 640・1280・2400／W=2000 → 640・1280・2000／W=1000 → 640・1000／W=500 → 500。高さは元の比のまま `round(H × 幅 / W)`（±1 まで許す）
+- **形式**：JPEG（`<幅>.jpg`）は全部の幅が要る。WebP（`<幅>.webp`）は全部の幅か、まったくなし（`canvas.toBlob(…, "image/webp")` が WebP を返さないブラウザでは送らない。`blob.type` を見て決める）
+- **送り方**：`POST /api/shops/:shopId/assets` に `multipart/form-data`。`file` が写真（今までの 2400px の 1 枚。JPEG・PNG・WebP）、ほかの部分の名前が `640.webp`・`640.jpg`・`1280.webp`… 名前は `X-File-Name` か `file` のファイル名
+  ```js
+  const fd = new FormData();
+  fd.append("file", blob2400, "店の外観.jpg");
+  for (const w of widths) { fd.append(`${w}.jpg`, jpg[w]); if (webp) fd.append(`${w}.webp`, webp[w]); }
+  await fetch(`/api/shops/${shopId}/assets`, { method: "POST", body: fd, credentials: "include" }); // Content-Type は付けない（ブラウザが boundary を付ける）
+  ```
+- **検査**：大きさ違いもそれぞれ写真と同じ検査（M5：種類・撮影データ・終わりの後ろのデータ）。加えて名前・幅・高さ・そろい方。どれか 1 つでも通らなければ、写真も含めて何も置かない（`{error, message, variant:"640.jpg"}`。主な種類 `invalid_variant`・`incomplete_variants`・`variant_size_mismatch`・`metadata_present`・`trailing_data`(400)、`type_mismatch`・`not_an_image`(415)）。1 枚 10MB、本文全体 48MB まで。大きさ違いも写真の量（L10）に数える
+- **公開用の HTML**：写真は `srcset` で大きさ違いを指す（幅の並びは ④ の `file.width` から上の決まりで作れるので、API に聞かなくてよい）。`<picture>` で WebP を先に、`<img>` に JPEG を。`width`・`height` は ④ の値（並びが崩れないように）、`sizes` は写真の枠の表示幅
+  ```html
+  <picture>
+    <source type="image/webp" sizes="(min-width: 768px) 50vw, 100vw"
+      srcset="/media/ast_frma/640.webp 640w, /media/ast_frma/1280.webp 1280w, /media/ast_frma/2400.webp 2400w">
+    <img src="/media/ast_frma/1280.jpg" sizes="(min-width: 768px) 50vw, 100vw"
+      srcset="/media/ast_frma/640.jpg 640w, /media/ast_frma/1280.jpg 1280w, /media/ast_frma/2400.jpg 2400w"
+      width="2400" height="1600" alt="店の外観" loading="lazy" decoding="async">
+  </picture>
+  ```
+  ファーストビューの写真は `loading="lazy"` を付けず `fetchpriority="high"`（D7）。CSS の背景の写真は `image-set()` か、いちばん合う幅 1 つ
+- **前に上げた 1 枚だけの写真**：`/media/<ID>` は今までどおり。大きさ違いの道で頼まれても元の 1 枚を返すので、HTML は写真によらず同じ形で書いてよい。あとから `POST …/assets/:id/variants` で足せる（1 回だけ）
 
 ### エラーの形
 
@@ -177,7 +208,7 @@ img-src 'self' data:; frame-src https://www.google.com; base-uri 'none'; form-ac
 
 | もの | 上限 |
 |---|---|
-| 写真 | お店ごとに合計 1GB・2,000 枚（ゴミ箱の中も数える）。1 枚 10MB・長い辺 2400px |
+| 写真 | お店ごとに合計 1GB・2,000 枚（ゴミ箱の中も数える。大きさ違いの分も合計に数える）。1 枚 10MB・長い辺 2400px。写真と大きさ違いをまとめて送る本文は 48MB |
 | 公開 | 同じお店で 1 分に 1 回。ページ 50 枚・1 枚 2MB・CSS 1MB・本文全体 24MB。版は 30 まで残す（1 軒で最大およそ 700MB） |
 | 下書き | ① と ②③ それぞれ 900KB、JSON の入れ子 64 段 |
 | ログイン | 同じアドレスで 60 秒に 1 回・1 時間に 5 回。1 つのコードで 5 回、アカウントごとに 1 日 20 回まちがえたら 24 時間コードは止める |
@@ -218,6 +249,8 @@ img-src 'self' data:; frame-src https://www.google.com; base-uri 'none'; form-ac
 | 27 | API の答えにはいつも `Vary: Origin`（L11） | 途中の仕組みが、オリジンごとに違う答えを取り違えないように |
 | 28 | 期限の切れた申し込み（1 日後）・セッション・2 日より前の失敗の記録は、毎日の Cron で消す（L4） | 表が増え続けないように |
 | 29 | `MAILER=memory` は試験用。本番の設定の確かめでは止めない（`log` だけ止める） | 試験は本番と同じ `COOKIE_SECURE=true` で走らせたいため。本番で `memory` にしないこと |
+| 30 | 公開ページの写真の大きさ違い（C3）は、編集画面がブラウザで作って写真と一緒に送る（`multipart/form-data`）。幅は 640・1280・2400 のうち W より小さいもの＋W、形式は JPEG（必須）と WebP（全部かなし）。それぞれ M5 の検査と、名前・幅・高さ・そろい方を見て、1 つでも通らなければ何も置かない。台帳（④）には持たず、表 `asset_variants` と R2 の `assets/<お店>/<ID>/<幅>.<形式>` に置く。置いたら変えない（前の写真に足すのも 1 回だけ）ので `immutable`。ゴミ箱の掃除で写真と一緒に消す。#16 は今のまま（元の写真はまだ持たない） | Workers では画像を縮められず、有料の Images は使わない。DATA_SPEC 5.2「表示用の縮小版は台帳に持たない」 |
+| 31 | `/media/<ID>/<幅>.<形式>` で、頼まれた形式がなければ同じ幅の JPEG、大きさ違いがなければ元の 1 枚を返す（このときだけ 1 日で覚え直す） | HTML を写真によらず同じ形（srcset）で書ける。前の写真も切れない |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと
@@ -226,7 +259,7 @@ img-src 'self' data:; frame-src https://www.google.com; base-uri 'none'; form-ac
 - IP ごとの回数の制限（ログインの申し込み・確かめ）。本番では Cloudflare の Rate Limiting のルールで足す
 - 申し込みの回数の制限（同じアドレスで 1 時間に 5 回）は、ほかの人が先に使い切ると本人も 1 時間申し込めない（妨害の余地）。IP ごとの制限を足すときに見直す
 - `/_mikke/site.js` の中身（テンプレートの担当が決める。今は空）
-- 公開ページの写真を画面の大きさに合わせて配る（C3）・元の写真の保存（5.2 v4）
+- 元の写真の保存（5.2 v4）。大きさ違いは 2400px の写真から作る（C3 は済）
 - 毎日の描き直しそのもの（D6・M4）。今は一覧を返してログに出すまで
 - 毎日のバックアップ（B6）。D1 の Time Travel（30 日）を使う前提で、手順は本番のアカウントができてから
 - 独自ドメイン（v1 は制作側が手で設定）
