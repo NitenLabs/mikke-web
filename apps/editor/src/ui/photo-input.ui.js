@@ -70,5 +70,7 @@ function positionPhotoChangeBtn(){ const id=photoChangeBtn._for; if(!id){ photoC
   photoChangeBtn.style.left=((vx0+vx1)/2)+"px"; photoChangeBtn.style.top=((vy0+vy1)/2)+"px";
 }
 window.addEventListener("scroll",()=>{ if(!isPhone()&&photoChangeBtn._for) positionPhotoChangeBtn(); },{passive:true});
+// F44 窓の大きさが変わったら「写真を変える」・右クリックの一覧も写真に付いてくる（描き直しの後に置き直す）
+window.addEventListener("resize",()=>{ requestAnimationFrame(()=>requestAnimationFrame(()=>{ if(isPhone()) return; if(photoChangeBtn._for) positionPhotoChangeBtn(); if(fmenu.classList.contains("on")) positionFmenu(); })); });
 
 // --- §5 明るさ ---
