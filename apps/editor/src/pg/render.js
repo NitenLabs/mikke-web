@@ -83,7 +83,7 @@ function render() {
       const addedLocal = R.added.filter((a) => a.section === sec).map((a) => ({ ...a, section: inst.type, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined }));
       edits = { m1: pick(R.m1), m2: pick(R.m2), added: addedLocal, remove: R.remove.filter((id) => secOf(id) === sec).map(strip), clear: clearLocal, template: R.tpl, order: pick(R.order), sizes: pick(R.sizes) };
     }
-    if (state.preview || state._pubGeo) { edits.remove = [...(edits.remove || []), ...(edits.clear || [])]; edits.clear = []; }   // §22 §5 プレビュー/公開：写真のない枠は詰める（EMPTYFRAME を出さず流れから外す）
+    if (state.preview || state._pubGeo) { edits.keepX = [...(edits.clear || [])]; edits.remove = [...(edits.remove || []), ...(edits.clear || [])]; edits.clear = []; }   // F65 詰めた写真の横の場所は空けたまま（文の左右をずらさない）   // §22 §5 プレビュー/公開：写真のない枠は詰める（EMPTYFRAME を出さず流れから外す）
     if (inst.type === "items") { const cardsId = anchor ? "I_cards" : (pfx + "I_cards"); let cv = R.colsMap[cardsId] && R.colsMap[cardsId][state.device]; if (state.colsPreview && state.colsPreview.id === cardsId && state.colsPreview.device === state.device) cv = state.colsPreview.n; if (cv != null) edits.geom = { [state.device]: { cols: cv } }; }   // §20 列（仮表示を優先）
     if (inst.type === "feature") { const sw = R.swapMap[sec] && R.swapMap[sec][state.device]; if (sw) edits.swap = sw; }   // §5 左右入替
     // §20b §2.4 描画時クランプ：記録幅では値段が1行に入らない表を、表示だけ広い幅で描く（記録=edits.sizes には触らず transient な幅を差し込む）
