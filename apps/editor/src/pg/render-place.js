@@ -12,9 +12,9 @@ function placeAbsolute(R) {
     const flow = rawGeomOf(sec);
     // '@left' の x を、付いていく先の左端で埋める
     const overrides = {};
-    for (const [id, ov] of Object.entries(R.m2)) if (secOf(id) === sec) overrides[id] = ov;
-    // P29 複製したセクション（非 anchor）の足した部品：読み込み直すと付いていく先が素の名前になるので、このセクションの部品に読み替える
+    // P29 複製したセクション（非 anchor）の部品：読み込み直すと付いていく先が素の名前になるので、このセクションの部品に読み替える
     const ancOf = (k) => (k && !flow[k] && !isAdded(k) && flow[sec + SEP + k]) ? sec + SEP + k : k;
+    for (const [id, ov] of Object.entries(R.m2)) if (secOf(id) === sec) { const an = ancOf(ov.anchor); overrides[id] = an === ov.anchor ? ov : { ...ov, anchor: an }; }
     for (const a of R.added) if (a.section === sec) { const an = ancOf(a.anchor); overrides[a.id] = { anchor: an, gapY: a.gap, x: a.x === "@left" ? (flow[an]?.x ?? 0) : a.x }; }
     const placed = M.placeAnchored(flow, overrides);
     const bottoms = {};
