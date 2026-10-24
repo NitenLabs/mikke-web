@@ -37,7 +37,7 @@ curl -H 'Host: ashiyado.localhost' localhost:8787/
 ## 試験
 
 ```sh
-npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。12 ファイル 133 件
+npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。13 ファイル 137 件
 npm run typecheck   # tsc
 ```
 
@@ -47,6 +47,7 @@ npm run typecheck   # tsc
 |---|---|
 | `test/auth.test.ts` | B1 ログイン（M2・M3・L2・L3・L8・L9）・CSRF・CORS・Vary（L11） |
 | `test/mailer.test.ts` | B1 本物のメール（Resend に送る中身・文面・送れなかったとき・設定） |
+| `test/ratelimit.test.ts` | B1 ログインの手前の IP ごとの回数の制限（申し込み・確かめ・IPv6・binding がないとき） |
 | `test/perms.test.ts` | B2 権限（店主に制作側のアドレスを見せない L7） |
 | `test/drafts.test.ts` | B3・B4 下書き、編集の設定、変更の記録 |
 | `test/publish.test.ts` | D1 公開、D3 配信、D4 履歴と戻す、CSP と HTML の検査（M4）、L1・M1・L10 |
@@ -67,7 +68,7 @@ npm run typecheck   # tsc
 | 道 | 中身 | 権限 |
 |---|---|---|
 | `GET /api/health` | 生きているか | — |
-| `POST /api/auth/request` `{email}` | 6 桁のコードとリンクをメールで送る（有効 15 分、1 回だけ）。**申し込んだブラウザの Cookie（`__Host-mikke_lgn`）を付ける**。登録のないアドレスでも同じ答え。同じアドレスは 60 秒あける・1 時間に 5 回まで（429・`Retry-After`）。答え `{ok, expiresInMinutes, retryAfter}` | — |
+| `POST /api/auth/request` `{email}` | 6 桁のコードとリンクをメールで送る（有効 15 分、1 回だけ）。**申し込んだブラウザの Cookie（`__Host-mikke_lgn`）を付ける**。登録のないアドレスでも同じ答え。同じアドレスは 60 秒あける・1 時間に 5 回まで（429・`Retry-After`）。本番では同じ IP から 1 分に 10 回まで（429 `too_many_ip`）。答え `{ok, expiresInMinutes, retryAfter}` | — |
 | `POST /api/auth/verify` `{email, code}` か `{token}` | コードかリンクの合言葉で入る。Cookie を付けて `{user}`。**コードは申し込んだブラウザ（`__Host-mikke_lgn` を持つ）でだけ使える**。1 つのコードで 5 回まで。アカウントごとに 24 時間で 20 回まちがえたら、コードでは 24 時間入れない（429 `locked`。リンクでは入れる）。リンクの合言葉はどの端末でも使える | — |
 | `POST /api/auth/logout` | このセッションを消す | — |
 | `POST /api/auth/logout-all` | このユーザーの全部の端末のセッションを消す。答え `{ok, sessions}` | ログイン |
@@ -178,7 +179,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 
 ### エラーの形
 
-`{error: "種類", message: "日本語の説明", …}`。主な種類：`unauthenticated`(401)・`forbidden`/`bad_origin`(403)・`not_found`(404)・`conflict`(409)・`precondition_required`(428)・`too_soon`/`too_many`/`locked`(429)・`too_large`/`quota_exceeded`(413)・`unsupported_media_type`/`not_an_image`/`type_mismatch`(415)・`too_deep`/`unsafe_html`/`metadata_present`/`trailing_data`/`invalid_*`(400)
+`{error: "種類", message: "日本語の説明", …}`。主な種類：`unauthenticated`(401)・`forbidden`/`bad_origin`(403)・`not_found`(404)・`conflict`(409)・`precondition_required`(428)・`too_soon`/`too_many`/`too_many_ip`/`locked`(429)・`too_large`/`quota_exceeded`(413)・`unsupported_media_type`/`not_an_image`/`type_mismatch`(415)・`too_deep`/`unsafe_html`/`metadata_present`/`trailing_data`/`invalid_*`(400)
 
 ### 編集画面からの呼び方（守ること）
 
@@ -199,6 +200,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | アプリのドメイン | 編集画面と API。**公開のドメインとは別の親ドメインが必須**（例 公開 `mikke.site`／アプリ `app.mikke-web.jp`）。同じ親ドメインだと、起動したときに設定の問題として止まる（L5。公開ページはお店ごとに中身を作れるので、アプリと同じサイトに置かない）。`https` も必須 |
 | Resend | API キー（`wrangler secret put RESEND_API_KEY --env production`。権限は「Sending access」だけ・送り元のドメインに絞る）、送り元のドメインの確認（Resend の画面に出る SPF・DKIM の DNS を足す）、送り元のアドレス（`vars` の `MAIL_FROM`、例 `芦屋みっけ <login@mail.<アプリのドメイン>>`）、`MAILER = "resend"`。どちらかがなければ起動したときに止まる。**本番（`COOKIE_SECURE = "true"`）で `MAILER = "log"` も止まる**（L6） |
 | 秘密の値 | `wrangler secret put AUTH_SECRET`（`openssl rand -hex 32` など 32 文字以上） |
+| IP ごとの回数の制限 | `wrangler.toml` の環境ごとに `[[env.<名前>.ratelimits]]`（`name = "LOGIN_IP_LIMITER"`・`namespace_id` は環境ごとに別の数字・`simple = { limit = 10, period = 60 }`。`period` は 10 か 60 だけ）。上の段からは引き継がれないので、環境ごとに必ず書く。数えるのは 1 つの Cloudflare の拠点の中で（拠点をまたいだ合計ではない）、おおよその数 |
 
 `wrangler.toml` の `[env.staging]` にひな形を書いてある。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
 
@@ -235,7 +237,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | 写真 | お店ごとに合計 1GB・2,000 枚（ゴミ箱の中も数える。大きさ違いの分も合計に数える）。1 枚 10MB・長い辺 2400px。写真と大きさ違いをまとめて送る本文は 48MB |
 | 公開 | 同じお店で 1 分に 1 回。ページ 50 枚・1 枚 2MB・CSS 1MB・本文全体 24MB。版は 30 まで残す（1 軒で最大およそ 700MB） |
 | 下書き | ① と ②③ それぞれ 900KB、JSON の入れ子 64 段 |
-| ログイン | 同じアドレスで 60 秒に 1 回・1 時間に 5 回。1 つのコードで 5 回、アカウントごとに 1 日 20 回まちがえたら 24 時間コードは止める |
+| ログイン | 同じアドレスで 60 秒に 1 回・1 時間に 5 回。1 つのコードで 5 回、アカウントごとに 1 日 20 回まちがえたら 24 時間コードは止める。本番では加えて、同じ IP（IPv6 は /64）から申し込み・確かめそれぞれ 1 分に 10 回（429 `too_many_ip`） |
 | セッション | 使わない日が 30 日続いたら切れる。ログインしてから店主 90 日・制作側 14 日で必ず切れる |
 
 ## 決めたこと
@@ -277,13 +279,13 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | 31 | `/media/<ID>/<幅>.<形式>` で、頼まれた形式がなければ同じ幅の JPEG、大きさ違いがなければ元の 1 枚を返す（このときだけ 1 日で覚え直す） | HTML を写真によらず同じ形（srcset）で書ける。前の写真も切れない |
 | 32 | 毎日のバックアップ（B6）は、自分で D1 の全部の表を JSON にして R2 の `backups/<日本時間の日付>.json.gz` に置き、30 日分を残す。毎日の仕事のいちばん先に走らせる（その日の掃除の前の状態を残す）。戻すのは `scripts/restore-backup.mjs`（見るだけが既定、`--apply` で戻す）。rowid も戻し、長い値は 16,000 文字ずつに分けた SQL にする | D1 の Time Travel だけだとアカウントの外に持ち出せず、中身を見て確かめられない。戻す手順を local の試験で確かめられる。D1 の 1 文は 100KB まで |
 | 33 | 本物のメールは Resend（fetch で API を直に叩く。ライブラリは入れない）。文だけ・件名にコードを入れない。429・5xx・つながらないは同じ Idempotency-Key で 1 回だけやり直す。`MAILER=resend` は `RESEND_API_KEY`・`MAIL_FROM` がなければ起動しない（L6 と同じ考え） | 依存を増やさない。通知に出る件名にコードを出さない。やり直しで 2 通届かない |
+| 34 | ログインの申し込み・確かめの手前で、IP ごとの回数を Workers の Rate Limiting（`[[ratelimits]]` の binding `LOGIN_IP_LIMITER`）で数える。キーは `request:<IP>`・`verify:<IP>`、IPv6 は /64 にまとめる。binding がない（local・試験）・`CF-Connecting-IP` がない・数える仕組みが失敗したときは止めない。止めたときは D1 に何も書かず、メールも送らない | アドレスを変えながらの推し当て・申し込みのばらまきを 1 か所から絞る。数える仕組みの故障でログインが止まらないように（アドレスごとの制限は D1 で効いている） |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと
 
 - Resend で本当に届くか（迷惑メールに入らないか・Gmail・携帯のアドレス）は、アカウントとドメインができてから人が確かめる（試験は fetch を差し替えて、送る中身まで）
-- IP ごとの回数の制限（ログインの申し込み・確かめ）。本番では Cloudflare の Rate Limiting のルールで足す
-- 申し込みの回数の制限（同じアドレスで 1 時間に 5 回）は、ほかの人が先に使い切ると本人も 1 時間申し込めない（妨害の余地）。IP ごとの制限を足すときに見直す
+- 申し込みの回数の制限（同じアドレスで 1 時間に 5 回）は、ほかの人が先に使い切ると本人も 1 時間申し込めない（妨害の余地）。IP ごとの制限（#34）で 1 か所からの妨害は絞れたが、多くの IP からの妨害は残る。困ったら、アドレスごとの数を「ブラウザ（`__Host-mikke_lgn`）ごと」に分けるか、制作側が店主にリンクを出す道を足す
 - `/_mikke/site.js` の中身（テンプレートの担当が決める。今は空）
 - 元の写真の保存（5.2 v4）。大きさ違いは 2400px の写真から作る（C3 は済）
 - 毎日の描き直しそのもの（D6・M4）。今は一覧を返してログに出すまで

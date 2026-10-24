@@ -28,6 +28,9 @@ migrations_dir = "migrations"
 binding = "BUCKET"
 bucket_name = "mikke-media"
 
+# ログインの手前の IP ごとの回数の制限（Workers の Rate Limiting）は、local には置かない（なければ数えない）。
+# 本番・試しでは下の [[env.*.ratelimits]] を必ず書く（上の段からは引き継がれない）
+
 # 毎日 0 時（日本時間）＝ UTC 15:00
 [triggers]
 crons = ["0 15 * * *"]
@@ -40,3 +43,7 @@ crons = ["0 15 * * *"]
 # d1_databases = [{ binding = "DB", database_name = "mikke-staging", database_id = "<作ったときの ID>", migrations_dir = "migrations" }]
 # r2_buckets = [{ binding = "BUCKET", bucket_name = "mikke-media-staging" }]
 # triggers = { crons = ["0 15 * * *"] }
+# [[env.staging.ratelimits]]
+# name = "LOGIN_IP_LIMITER"
+# namespace_id = "1001"                 # アカウントの中で環境ごとに別の数字（本番は 1002 など）
+# simple = { limit = 10, period = 60 }  # 同じ IP から、申し込み・確かめそれぞれ 1 分に 10 回まで
