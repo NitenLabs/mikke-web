@@ -18,6 +18,7 @@ npm run dev                      # http://localhost:8787
 ```
 
 - `npm run seed` は、マイグレーションを当て、`samples/ashiyado` の ①（shop.json）・③（theme.json）・④（assets.json と media/ の写真 12 枚）から、お店 `shp_ashiyado`（スラッグ `ashiyado`）・制作側・店主・下書き・写真を local の D1・R2 に入れる。②の下書きは wa-01 の「何もしていない」形（`{template, sections}`）。`samples/` は読むだけ
+- `npm run seed -- --persist-to <フォルダ>`：local の D1・R2 をそのフォルダに置く（`wrangler dev --persist-to <同じフォルダ>` と組で使う）。編集画面の通しの試験（`apps/editor/test/e2e-api.test.mjs`）が毎回まっさらな置き場所で走るために足した（ログインの回数の制限が前の回から持ち越さないように）
 - ログイン：`POST /api/auth/request` を送ると、**wrangler dev の画面に `[mail] to=… code=123456 link=…` が出る**（local の `MAILER = "log"`。本番は `resend`）
 - 公開ページ：公開したあと `http://ashiyado.localhost:8787/`（Chrome・Firefox は `*.localhost` を手元に向ける。curl なら `-H "Host: ashiyado.localhost"`）
 - 毎日 0 時の仕事を手で走らせる：`npx wrangler dev --test-scheduled` で動かし、`curl -X POST localhost:8787/cdn-cgi/handler/scheduled`（バックアップが local の R2 の `backups/<日付>.json.gz` にできる）
@@ -37,7 +38,7 @@ curl -H 'Host: ashiyado.localhost' localhost:8787/
 ## 試験
 
 ```sh
-npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。13 ファイル 137 件
+npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。14 ファイル 139 件
 npm run typecheck   # tsc
 ```
 
@@ -54,6 +55,7 @@ npm run typecheck   # tsc
 | `test/htmlcheck.test.ts` | HTML の検査の細かいところ（M4） |
 | `test/assets.test.ts` | C2 写真の検査（M5）、C4 ゴミ箱、写真の量の上限（L10） |
 | `test/variants.test.ts` | C3 写真の大きさ違い（受け取り・検査・配信・前の写真・量・掃除） |
+| `test/visibility.test.ts` | D6 品を出す決まり（3.4）が packages/core と同じ（共通の例 `packages/core/test/visibility-cases.json`） |
 | `test/cron.test.ts` | D6 毎日の描き直しの入口、1 軒の失敗で止まらない（M1）、期限切れの片づけ（L4） |
 | `test/backup.test.ts` | B6 毎日のバックアップ（置き場所・中身・戻すと同じ・30 日・失敗してもほかは続く） |
 | `test/config.test.ts` | 危ない設定では動かない（L5・L6） |
@@ -280,6 +282,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | 32 | 毎日のバックアップ（B6）は、自分で D1 の全部の表を JSON にして R2 の `backups/<日本時間の日付>.json.gz` に置き、30 日分を残す。毎日の仕事のいちばん先に走らせる（その日の掃除の前の状態を残す）。戻すのは `scripts/restore-backup.mjs`（見るだけが既定、`--apply` で戻す）。rowid も戻し、長い値は 16,000 文字ずつに分けた SQL にする | D1 の Time Travel だけだとアカウントの外に持ち出せず、中身を見て確かめられない。戻す手順を local の試験で確かめられる。D1 の 1 文は 100KB まで |
 | 33 | 本物のメールは Resend（fetch で API を直に叩く。ライブラリは入れない）。文だけ・件名にコードを入れない。429・5xx・つながらないは同じ Idempotency-Key で 1 回だけやり直す。`MAILER=resend` は `RESEND_API_KEY`・`MAIL_FROM` がなければ起動しない（L6 と同じ考え） | 依存を増やさない。通知に出る件名にコードを出さない。やり直しで 2 通届かない |
 | 34 | ログインの申し込み・確かめの手前で、IP ごとの回数を Workers の Rate Limiting（`[[ratelimits]]` の binding `LOGIN_IP_LIMITER`）で数える。キーは `request:<IP>`・`verify:<IP>`、IPv6 は /64 にまとめる。binding がない（local・試験）・`CF-Connecting-IP` がない・数える仕組みが失敗したときは止めない。止めたときは D1 に何も書かず、メールも送らない | アドレスを変えながらの推し当て・申し込みのばらまきを 1 か所から絞る。数える仕組みの故障でログインが止まらないように（アドレスごとの制限は D1 で効いている） |
+| 35 | 品を出す決まり（3.4）は `packages/core/visibility.js` の 1 つを `src/lib/visibility.ts` から読んで使う（wrangler がまとめる）。日付は日本時間、販売の期間はその日を含む、`status` は `onSale` だけ | 編集画面（ブラウザの時刻の月・販売の期間を見ない）と API で食い違っていた（M3）。写しにすると、またずれる |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと

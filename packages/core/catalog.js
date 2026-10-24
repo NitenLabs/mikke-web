@@ -1,6 +1,8 @@
 // ① お店の情報（shop.json の catalog）から、品の並び・表・お品書きの中身を作る。値段の文字。① の op の畳み方。
 // ブラウザ（編集画面）でもサーバー（公開・毎日の描き直し）でも使う。DOM は使わない。
 // 元は experiments/layout/playground30/app.js の PG の中（試験台26・28）。中身は1文字も変えていない。
+import { jstDate, isItemDisplayable, itemVisibility } from "./visibility.js";
+export { jstDate, isItemDisplayable, itemVisibility } from "./visibility.js";
 const clone = (o) => JSON.parse(JSON.stringify(o));
 // 1件 ID ↔ 品 ID（テンプレの既存部品は別名、それ以外は c_/t_＋品ID）
 const CARD_ALIAS = { itm_jonama: "c_jonama", itm_warabi: "c_warabi", itm_dorayaki: "c_dora" };
@@ -16,9 +18,10 @@ const itemOfTablePart = (pid) => REV_TABLE[pid] || (pid.indexOf("t_") === 0 ? pi
 const fmtAmt = (n) => Number(n).toLocaleString("en-US");
 function fmtPriceOpt(p) { const nm = p.name ? p.name + " " : ""; if (p.type === "market") return nm + "時価"; if (p.type === "ask") return nm + "応相談"; if (p.type === "free") return nm + "無料"; if (p.type === "range") return nm + fmtAmt(p.amount) + "円〜" + fmtAmt(p.amount2) + "円"; if (p.type === "from") return nm + fmtAmt(p.amount) + "円〜"; return nm + fmtAmt(p.amount) + "円"; }
 function formatPrices(prices) { if (!prices || !prices.length) return ""; const money = prices.some((p) => ["fixed", "from", "range"].includes(p.type)); return prices.map(fmtPriceOpt).join("／") + (money ? "（税込）" : ""); }
-// 表示するか（3.4）：販売中・今月が販売時期に入る（載せ方があることは呼び出し側で保証）
-const curMonth = () => new Date().getMonth() + 1;
-function isDisplayable(item) { if (!item) return false; if (item.status && item.status !== "onSale") return false; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) return false; return true; }
+// 表示するか（3.4）：販売中・今月が販売時期に入る・販売の期間の中（載せ方があることは呼び出し側で保証）。
+// 決まりは packages/core/visibility.js の1つ（API・公開と同じ。日付は日本時間）
+const curMonth = () => jstDate(new Date()).month;
+function isDisplayable(item) { return isItemDisplayable(item); }
 function priceOf(shop, itemId, placementId) { const cat = (shop && shop.catalog) || {}; const plc = (placementId && cat.placements) ? cat.placements[placementId] : null; const item = cat.items ? cat.items[itemId] : null; return (plc && plc.prices) ? plc.prices : (item ? item.prices : null); }
 // ===================== 試験台28 §2.4：お品書き本体（MENU）を ① から組む =====================
 // メニューごと（店頭販売・甘味処）→ 括り（カテゴリ）順 → 品（placement 順）。行は placement 主キー（同じ品が両メニューでも衝突しない）。
@@ -34,7 +37,8 @@ function fmtMonths(months) {
   while (seen < 12) { if (set.has(m)) { const a = m; let b = m; while (set.has(b % 12 + 1) && b % 12 + 1 !== a && seen < 12) { b = b % 12 + 1; seen++; } runs.push(a === b ? a + "月" : a + "〜" + b + "月"); m = b; } m = m % 12 + 1; seen++; }
   return runs.join("・");
 }
-function hiddenReason(it) { if (it.status && it.status !== "onSale") return "休んでいます"; if (it.season && it.season.months && it.season.months.length) return fmtMonths(it.season.months) + "だけ出ます"; return ""; }
+function hiddenReason(it) { const v = itemVisibility(it); if (v.why === "status") return "休んでいます"; if (v.why === "season") return fmtMonths(it.season.months) + "だけ出ます"; if (v.why === "notYet") return fmtDay(it.availableFrom) + "から出ます"; if (v.why === "ended") return fmtDay(it.availableUntil) + "で終わりました"; return ""; }
+const fmtDay = (d) => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(d || "")); return m ? (+m[2]) + "月" + (+m[3]) + "日" : String(d || ""); };
 function deriveMenuGroups(shop) {
   const cat = (shop && shop.catalog) || {}; const menus = cat.menus || {}, cats = cat.categories || {}, items = cat.items || {}, placements = cat.placements || {};
   return MENU_ORDER.filter((id) => menus[id]).map((menuId) => {

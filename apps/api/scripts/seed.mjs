@@ -20,6 +20,10 @@ const opt = (name, def) => {
 const producerEmail = opt("producer", "producer@example.com");
 const ownerEmail = opt("owner", "owner@ashiyado.example");
 const slug = opt("slug", "ashiyado");
+// local の D1・R2 の置き場所（wrangler の --persist-to）。編集画面の通しの試験（apps/editor/test/e2e-api.test.mjs）が、
+// 毎回まっさらな置き場所で走らせるのに使う。なければ wrangler の既定（.wrangler/state）
+const persistTo = opt("persist-to", null);
+const persist = persistTo ? ["--persist-to", resolve(persistTo)] : [];
 
 const read = (f) => JSON.parse(readFileSync(join(samples, f), "utf8"));
 const assets = read("assets.json");
@@ -31,13 +35,13 @@ const seed = buildSeed({ shop: read("shop.json"), assets, theme: read("theme.jso
 const wrangler = join(root, "node_modules/.bin/wrangler");
 const run = (a) => execFileSync(wrangler, a, { cwd: root, stdio: ["ignore", "inherit", "inherit"] });
 
-run(["d1", "migrations", "apply", "mikke", "--local"]);
+run(["d1", "migrations", "apply", "mikke", "--local", ...persist]);
 mkdirSync(join(root, ".wrangler"), { recursive: true });
 const sqlPath = join(root, ".wrangler/seed.sql");
 writeFileSync(sqlPath, seed.statements.join("\n") + "\n");
-run(["d1", "execute", "mikke", "--local", "--file", sqlPath]);
+run(["d1", "execute", "mikke", "--local", "--file", sqlPath, ...persist]);
 for (const o of seed.objects) {
-  run(["r2", "object", "put", `mikke-media/${o.key}`, "--local", "--file", join(samples, "media", o.file), "--content-type", o.mime]);
+  run(["r2", "object", "put", `mikke-media/${o.key}`, "--local", "--file", join(samples, "media", o.file), "--content-type", o.mime, ...persist]);
 }
 console.log(`\n種まき済み：${seed.shopId}（${slug}）写真 ${seed.objects.length} 枚`);
 console.log(`制作側 ${producerEmail} ／ 店主 ${ownerEmail} でログインできます（コードは wrangler dev のログに出る）`);

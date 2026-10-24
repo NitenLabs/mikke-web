@@ -47,7 +47,7 @@ window.addEventListener("keydown",(e)=>{
   if(meta&&e.key.toLowerCase()==="x"){ e.preventDefault(); PG.cutSelection(); return; }
   if(meta&&e.key.toLowerCase()==="v"){ e.preventDefault(); PG.paste(); return; }
   if(meta&&e.key.toLowerCase()==="d"){ e.preventDefault(); PG.duplicate(); return; }
-  if(e.key==="Delete"||e.key==="Backspace"){ if(PG.state.selected.size){ e.preventDefault(); PG.deleteSelected(); } return; }
+  if(e.key==="Delete"||e.key==="Backspace"){ if(PG.state.selected.size){ e.preventDefault(); PG.deleteSelected(); } else if(PG.state.selectedSection&&!isPhone()){ e.preventDefault(); a3_secOp("del",PG.state.selectedSection); } return; }   // P25 選んだセクションを消す（知らせと戻す）
   const arrows={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
   if(arrows[e.key]&&PG.state.selected.size){ e.preventDefault(); const s=e.shiftKey?10:1; PG.nudgeSelected(arrows[e.key][0]*s,arrows[e.key][1]*s); }
 });

@@ -25,7 +25,10 @@
 | `build.mjs` | 1つの HTML にまとめる（esbuild・pg/ui をつなぐ・見本の中身と ① お店の情報・写真の焼き込み・Google Fonts のリンク・試験の画像の写し） |
 | `src/parts.mjs` | pg/・ui/ のファイルの並びと担当の線 |
 | `src/lib/entry.js` | ES モジュールの側の入口（packages/core を試験台30 と同じ形の SPEC・RESOLVE・BANCHOR・C3・TEXT・CATALOG にして渡す） |
-| `src/lib/store.js` | **保存先の差し替え口**。`LocalStore`（IndexedDB `mikke-editor`）。M3 で `ApiStore` を足して `saveStore` を選び分ける |
+| `src/lib/store.js` | **保存先の差し替え口**。`LocalStore`（IndexedDB `mikke-editor`）。`ApiStore`（apps/api）。どちらを使うかをここで選ぶ（下の「API につなぐ」） |
+| `src/lib/api-store.js` | `ApiStore`：保存先を apps/api に（下書き ①・②③、編集の設定、版の一覧・前の版・戻す前の下書き、写真を上げる、公開）。M3 |
+| `src/lib/login.js` | ログインの箱（メールアドレス → 6 桁のコード → 入る。`/login#t=…` のリンクでも入る）。M3 |
+| `src/lib/photo-upload.js` | 写真を上げる本文（描き直した 2400px の 1 枚＋幅 640・1280・2400 の JPEG・WebP。`multipart/form-data`）。M3 |
 | `src/editor.css` | 編集画面の CSS（試験台30 の UI_CSS） |
 | `src/body.html` | 編集画面の HTML（道具の並び・帯・箱。試験台30 の UI_BODY） |
 | `testimg/` | 試験の画像（試験台30 の testimg の写し。dist/editor_testimg に写す） |
@@ -63,6 +66,7 @@
 | `src/pg/testapi-presets.js` | 510 | 共通 | 試験の再現（プリセット Q/R・runStep） |
 | `src/pg/select-align.js` | 56 | A2 | 配置（揃え・整列） |
 | `src/pg/photo.js` | 91 | A3 | 写真の描画・差し替え・見せる範囲（トリミング）・試験画像 |
+| `src/pg/m3-api.js` | 88 | M3 | API につないだとき：写真を上げたら ④ の ID に付け替える・公開（`buildPublishBundle` → 写真 → `POST /publish`）・版から戻す |
 | `src/pg/publish-bundle.js` | 120 | C | 公開の一式（`PG.buildPublishBundle()`）：各ページ・PC とスマホをプレビューの描き方で写し取り、`packages/core/publish` で HTML・CSS・sitemap を作る |
 | `src/pg/testapi.js` | 166 | 共通 | 入力の種類・試験の窓口（draft・roundTrip）・PG.api（window.__playground） |
 
@@ -93,6 +97,7 @@
 | `src/ui/touch.ui.js` | 107 | A5 | 指の操作（タップ・長押し・ドラッグ・自動スクロール） |
 | `src/ui/touch-bars.ui.js` | 116 | A5 | スマホの帯・文字の帯・その他・重ねる物の位置合わせ |
 | `src/ui/touch-crop.ui.js` | 18 | A3 | 指での見せる範囲の操作 |
+| `src/ui/m3-api.ui.js` | 25 | M3 | API につないだときの公開の流れ（公開しています…・公開しました＋公開ページのアドレス・できなかった理由） |
 | `src/ui/boot.ui.js` | 8 | 共通 | 起動（スマホの判定・PG.boot） |
 
 ### packages/core/（ブラウザでもサーバーでも使う。ES モジュール）
@@ -139,3 +144,39 @@ python3 tools/verify-audit/verify_audit_text.py $PWD/apps/editor/dist/editor_sin
 - 結果は `apps/editor/dist/editor/verify-audit/`・`verify-linux/` に出る。
 - 重い確かめは同時に2本走らせない（IndexedDB と CPU の取り合いで判定が揺れる）。
 - IndexedDB の名前は `mikke-editor`。確認スクリプト（verify_extra_save・catalog・align）は DB の名前を `'mikke-' + ファイル名から _single.html を除いたもの` で決めて中を見る・消すので、ファイル名 `editor_single.html` に合わせた（試験台30 が `mikke-playground30` だったのも同じ決まり。`mikke-playground30` のままだと verify_extra_save の S6・S7 が前の項目の下書きを消せずに NG になる）。`<title>` は試験台30 と同じ。
+
+## API につなぐ（M3）
+
+何も付けなければ今までどおり **LocalStore**（ブラウザの IndexedDB。確認スクリプトはこちら）。次のどれかで **ApiStore**（apps/api）になる。
+
+| 選び方 | 例 |
+|---|---|
+| URL に `?api=<API のオリジン>`（と `&shop=<お店の ID>`。無ければログインした人の最初のお店） | `http://localhost:8788/?api=http://localhost:8787&shop=shp_ashiyado` |
+| 組み立てのときに `MIKKE_API` | `MIKKE_API=https://app.example.jp node apps/editor/build.mjs`（`MIKKE_API=same` ＝ページと同じオリジンの API） |
+| メールのリンク `<APP_ORIGINS の先頭>/login#t=…` で来たとき | 前にこのブラウザで開いた API・お店（`localStorage` の `mikke-api-config`）を使う |
+
+ローカルで動かす：
+
+```sh
+npm run build:editor
+cd apps/api && cp .dev.vars.example .dev.vars && npm run seed && npx wrangler dev --var APP_ORIGINS:http://localhost:8788   # API は 8787
+npx http-server apps/editor/dist -p 8788   # など。/ と /login で editor_single.html を返すもの（試験は自前の小さなサーバー）
+# → http://localhost:8788/editor_single.html?api=http://localhost:8787&shop=shp_ashiyado を開く。コードは wrangler dev の画面の [mail] の行
+```
+
+- 編集画面のオリジンは API の `APP_ORIGINS` に入れる（CSRF・CORS。書き込みは `credentials: "include"`）。localhost の番号違いは同じサイトなので Cookie が届く
+- **ログイン**：`ApiStore.open()` が `GET /api/me` を見て、401 なら編集画面の前にログインの箱を出す（`src/lib/login.js`）。メールアドレス → `POST /api/auth/request` → 6 桁のコード → `POST /api/auth/verify`（同じブラウザ）。`#t=…` で来たら `{token}` で入り、すぐ `#t=` を消す
+- **保存**：`pg/store-save.js` の自動保存（500ms）がそのまま `put` を呼ぶ。`draft` → `PUT /drafts/site`（`{draft, theme}`。③ は読んだまま返す）、`shop` → `PUT /drafts/shop`、`settings` → `PUT /settings`。中身が前と同じなら送らない。`If-Match` は読んだ（保存した）版。書き込みは1本ずつ（自分どうしでぶつからない）
+  - 409（ほかの端末・タブが先に保存）：書かずに「**ほかで変更されました。読み込み直してください**」（状態の文字と知らせ。別タブの知らせ J25 と同じ扱い。公開もしない）
+  - つながらない・5xx：「保存できませんでした…」にして 3 秒ごとにやり直す（今までと同じ J27）
+  - 下書きを読めなかったら保存しない（テンプレートのままで上書きしないように）
+- **版**：`versions` は `GET /versions`・`/versions/:n`（公開した版）と `/backups`・`/backups/:id`（戻す前の下書き）を編集画面の形にして読む。「この版を下書きにする」は、置き換える前の下書きを先に保存してから `POST /versions/:n/restore`（`includeShop`）か `POST /backups/:id/restore` を通す（サーバーにも「戻す前の下書き」が残る）
+- **写真**：差し替え・追加で選んだ写真は、今までどおりブラウザで向きを直して長い辺 2400px に縮め、キャンバスに描き直す（位置情報などは残らない。HEIC はブラウザが読めればそのまま、読めなければ「この写真は読み込めません」）。保存のときに、まだ上げていない写真（`img_…`）を、幅 640・1280・2400（写真の幅より小さいもの＋写真の幅）の JPEG と WebP（作れるブラウザだけ）を添えて `POST /assets`（multipart）。上がるまではブラウザの中のデータで見せ、上がったら下書き・記録・版の中の ID を ④ の ID（`ast_…`）に付け替えて保存し直す。読み込み直したときは `GET /assets/:id/file` で見せる
+- **公開**：「公開」→ 公開前の確認（今までどおり）→ 保存を落ち着かせる → 上げている写真を待つ → `PG.buildPublishBundle({assets, origin: publicUrl})` → まだ上げていない写真があれば上げて作り直す → `POST /publish`（描いたときの下書きの版つき）→「公開しました　公開ページ：<アドレス>」。409 は「ほかで変更されました。読み込み直してから公開してください」、429 などはサーバーの説明
+- 通しの試験：`npm run build:editor` の後 `node --test apps/editor/test/e2e-api.test.mjs`（種まき → wrangler dev → ログイン → 直す → 読み込み直す → 写真 → 公開 → 公開ページ → 別のブラウザで 409。約 1〜2 分。ブラウザを使うので、ほかの確かめと同時に走らせない）。置き場所は毎回まっさら（`dist/e2e-api/state`）、wrangler のログは `dist/e2e-api/wrangler.log`
+
+### まだのこと（M3 の残り）
+- ログアウトの道具（`ApiStore.logout()` はある。道具の並びにはまだ置いていない）・セッションが切れたとき（401）にログインの箱を出し直す（今は「保存できませんでした」のままやり直す）
+- 409 のときに「ほかの変更を読み込む／自分の変更で上書きする」を選ぶ箱（今は読み込み直してもらう。自分の直しは読み込み直すと消える）
+- 写真を上げている途中に閉じると、その写真は失われる（下書きにはブラウザの中の ID が残る。公開の前には必ず上げる）
+- staging に出す（Cloudflare のアカウント待ち）

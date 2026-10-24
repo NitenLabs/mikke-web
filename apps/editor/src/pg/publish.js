@@ -39,6 +39,7 @@ function restoreVersion(id) {
   state.viewing = null; state.viewBackup = null;
   state.base = v.draft || null; state.shopBase = v.shop || null; state.ops = []; state.cursor = 0; state.undoBase = 0; const sq = seqOf(v.draft); state.secSeq = sq.sec; state.addSeq = sq.add; recomputeShopSeq(state.shopBase || SHOP_JSON);
   state.selected = new Set(); state.selectedSection = null; state.editing = null;
+  m3OnRestore(v);   // M3 API のときはサーバーの戻す道も通す（pg/m3-api.js）
   render(); scheduleSave();
 }
 
@@ -111,9 +112,11 @@ function publishCheck() {
     // 写真のない枠（まだ写真が無い＝足したセクション等）。端末に依らないので1枠1回
     const phList = photosApi();
     for (const ph of phList) if (ph.missing && !emptySeen.has(ph.part)) { emptySeen.add(ph.part); items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `足した${emptyPhotoName(ph.part, phList)}がまだありません。公開すると、この枠は詰めて出しません` }); }
+    // F64 元からある写真を外した枠も、公開すると詰めて出さないので知らせる
+    for (const ph of phList) if (ph.cleared && !ph.missing && !emptySeen.has(ph.part)) { emptySeen.add(ph.part); items.push({ device: dev, kind: "emptyPhoto", parts: [ph.part], text: `${emptyPhotoName(ph.part, phList)}を外しています。公開すると、この枠は詰めて出しません` }); }
     // 仕組みの重なり・はみ出し（ふつうは空）
     for (const o of w.overlaps || []) items.push({ device: dev, kind: "system", parts: [canonId(o.a), canonId(o.b)], text: `${DL}：${M.friendly(o.a)}が、${M.friendly(o.b)}に重なっています` });
-    for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: `${DL}：${M.friendly(o.id)}がはみ出しています` });
+    for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: o.dir ? `${DL}：${M.friendly(o.id)}が画面の${o.dir}へはみ出しています（${o.dir}の端が切れて見えます）` : `${DL}：${M.friendly(o.id)}がはみ出しています` });   // F68 どの部品が・どちらへ
   }
   state.device = curDev; render();
   for (const it of shopInfoChecks()) items.push(it);   // F24 お店の情報（①）の電話・住所が空・電話でない値（pg/shopinfo-pages.js）

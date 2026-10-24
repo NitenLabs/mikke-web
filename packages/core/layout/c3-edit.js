@@ -104,7 +104,9 @@ export function buildFeature(content, device, H, edits = {}) {
       const tgDy = tgOrder.reduce((a, cid) => a + dyOf(cid), 0);   // P12 手で幅を変えた文字は上の辺を動かさない＝塊の縦の真ん中そろえから外す
       const tg = tgKids ? `<div class="tg" style="position:relative;top:${px(c.centerOff + tgDy)};width:${px(c.tW)};flex:none">${tgKids}</div>` : "";
       const pdy = dyOf(`F_p${i}`);   // P1 上の角で縮めた写真は下の辺を動かさない＝上に空きを足す
-      const photo = isOut(`F_p${i}`) ? "" : `<div style="flex:none${off(`F_p${i}`)}${pdy ? `;margin-top:${px(pdy)}` : ""}">${photoInner(i)}</div>`;
+      // F65 写真のない枠を詰めるとき（keepX）は、高さだけ詰めて横の場所は残す＝文の左右がずれない
+      const keepX = (edits.keepX || []).includes(`F_p${i}`) && m2[`F_p${i}`] == null;
+      const photo = isOut(`F_p${i}`) ? (keepX ? `<div style="flex:none;width:${px(pwOf(`F_p${i}`))}"></div>` : "") : `<div style="flex:none${off(`F_p${i}`)}${pdy ? `;margin-top:${px(pdy)}` : ""}">${photoInner(i)}</div>`;
       const padL = reversed ? c.b2PadL : c.b1PadL;
       const kids = reversed ? photo + tg : tg + photo;
       return `<div class="row" style="display:flex;align-items:center;padding-left:${px(padL)};gap:${px(c.b1Gap)};margin-top:${px(i === 0 ? c.hgToBlk : c.blkGap)}">${kids}</div>`;
@@ -352,11 +354,11 @@ function absLayer(m2, added, innerMap, device) {
 
 function rowHtml(r, device, c, H) {
   if (device === "pc") {
-    const left = `<div style="flex:none;width:${px(c.vlineLeft)}px">
+    const left = `<div style="flex:none;width:${px(c.vlineLeft)}">
       ${T(`row_name_${r.id}`, "tName", device, c.tableNameW, thtml(H, `I_tn_${r.id}`))}
       ${r.desc ? T(`row_desc_${r.id}`, "tDesc", device, c.tableNameW, thtml(H, `I_td_${r.id}`), `margin-top:${px(c.rowNameDesc)}`) : ""}</div>`;
     const price = `<div style="flex:1;display:flex;justify-content:flex-end">${T(`row_price_${r.id}`, "tPriceR", device, c.tablePriceW, thtml(H, `I_tp_${r.id}`))}</div>`;
-    const vline = `<div data-el="row_vline_${r.id}" data-kind="line" style="position:absolute;left:${px(c.vlineLeft)}px;top:22px;width:1px;height:64px;background:${COLORS.line}"></div>`;
+    const vline = `<div data-el="row_vline_${r.id}" data-kind="line" style="position:absolute;left:${px(c.vlineLeft)};top:22px;width:1px;height:64px;background:${COLORS.line}"></div>`;
     return `<div class="krow" style="position:relative;display:flex;align-items:baseline;padding:${px(c.rowTop)} 0 ${px(c.rowBottomPad)}">${left}${price}${vline}</div>`;
   }
   return `<div class="krow" style="display:flex;flex-direction:column;padding:${px(c.rowTop)} 0 ${px(c.rowBottomPad)}">

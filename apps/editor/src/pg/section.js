@@ -20,22 +20,28 @@ function sectionDuplicate(id) {
   const osec = (k) => (/^F/.test(bareOf(k)) ? "feature" : "items");
   const ownPart = (k) => !isAdded(k) && (srcPfx ? k.startsWith(srcPfx) : (!k.includes(SEP) && secOf(k) === id));
   const ownOrder = (k) => srcPfx ? k.startsWith(srcPfx) : (!k.includes(SEP) && osec(k) === id);
+  // P29 足した部品も複製先に同じ所に出す：足した部品の新しい ID と、付いていく先（元のセクションの部品・足した部品）を複製先のものに付け替える
+  const addMap = {}; for (const a of Rpc.adds) if (a.section === id) addMap[a.id] = (a.kind === "photo" ? "addp_" : "add_") + (++state.addSeq);
+  const mapKey = (k) => addMap[k] || (ownPart(k) ? remap(k) : null);
+  const mapAnchor = (k) => (k && mapKey(k)) || k;
+  const m2c = (v) => { const o = clone(v); if (o && o.anchor) o.anchor = mapAnchor(o.anchor); return o; };
   const perDev = (R) => { const e = { m1: {}, m2: {}, sizes: {}, zmap: {}, order: {} };
-    for (const k in R.m1) if (ownPart(k)) e.m1[remap(k)] = clone(R.m1[k]);
-    for (const k in R.m2) if (ownPart(k)) e.m2[remap(k)] = clone(R.m2[k]);
-    for (const k in R.sizes) if (ownPart(k)) e.sizes[remap(k)] = clone(R.sizes[k]);
-    for (const k in R.zmap) if (ownPart(k)) e.zmap[remap(k)] = R.zmap[k];
+    for (const k in R.m1) { const nk = mapKey(k); if (nk) e.m1[nk] = clone(R.m1[k]); }
+    for (const k in R.m2) { const nk = mapKey(k); if (nk) e.m2[nk] = m2c(R.m2[k]); }
+    for (const k in R.sizes) { const nk = mapKey(k); if (nk) e.sizes[nk] = clone(R.sizes[k]); }
+    for (const k in R.zmap) { const nk = mapKey(k); if (nk) e.zmap[nk] = R.zmap[k]; }
     for (const k in R.order) if (ownOrder(k)) e.order[remap(k)] = R.order[k].slice();
     return e; };
   const shared = { textStyles: {}, runsMap: {}, linkMap: {}, replace: {}, viewAll: {}, bright: {}, clear: [] };
-  for (const k in Rpc.textStyles) if (ownPart(k)) shared.textStyles[remap(k)] = clone(Rpc.textStyles[k]);
-  for (const k in Rpc.runsMap) if (ownPart(k)) shared.runsMap[remap(k)] = clone(Rpc.runsMap[k]);
-  for (const k in Rpc.linkMap) if (ownPart(k)) shared.linkMap[remap(k)] = clone(Rpc.linkMap[k]);
-  for (const k in Rpc.replaceMap) if (ownPart(k)) shared.replace[remap(k)] = Rpc.replaceMap[k];
-  for (const k in Rpc.viewAll) if (ownPart(k)) shared.viewAll[remap(k)] = clone(Rpc.viewAll[k]);
-  for (const k in Rpc.brightMap) if (ownPart(k)) shared.bright[remap(k)] = Rpc.brightMap[k];
-  for (const cid of Rpc.clear) if (ownPart(cid)) shared.clear.push(remap(cid));
-  const added = Rpc.adds.filter((a) => a.section === id).map((a) => ({ ...clone(a), id: (a.kind === "photo" ? "addp_" : "add_") + (++state.addSeq), section: newId }));
+  const tsKey = (k) => { const m = k.match(/^(.*?)(\|.*)?$/); const nk = mapKey(m[1]); return nk ? nk + (m[2] || "") : null; };
+  for (const k in Rpc.textStyles) { const nk = ownPart(k) ? remap(k) : tsKey(k); if (nk) shared.textStyles[nk] = clone(Rpc.textStyles[k]); }
+  for (const k in Rpc.runsMap) { const nk = mapKey(k); if (nk) shared.runsMap[nk] = clone(Rpc.runsMap[k]); }
+  for (const k in Rpc.linkMap) { const nk = mapKey(k); if (nk) shared.linkMap[nk] = clone(Rpc.linkMap[k]); }
+  for (const k in Rpc.replaceMap) { const nk = mapKey(k); if (nk) shared.replace[nk] = Rpc.replaceMap[k]; }
+  for (const k in Rpc.viewAll) { const nk = mapKey(k); if (nk) shared.viewAll[nk] = clone(Rpc.viewAll[k]); }
+  for (const k in Rpc.brightMap) { const nk = mapKey(k); if (nk) shared.bright[nk] = Rpc.brightMap[k]; }
+  for (const cid of Rpc.clear) { const nk = mapKey(cid); if (nk) shared.clear.push(nk); }
+  const added = Rpc.adds.filter((a) => a.section === id).map((a) => { const n = { ...clone(a), id: addMap[a.id], section: newId, anchor: mapAnchor(a.anchor) }; if (n.placed && n.placed.anchor) n.placed.anchor = mapAnchor(n.placed.anchor); return n; });
   const removed = (Rpc.removedAll || []).filter((k) => ownPart(k)).map(remap);   // J46 消した部品は複製先にも「消した」で持ち越す（元に戻らない）
   commit({ t: "secDup", srcId: id, afterId: id, newId, type, content, edits: { pc: perDev(Rpc), sp: perDev(Rsp), ...shared }, added, removed, page: pg });
 }

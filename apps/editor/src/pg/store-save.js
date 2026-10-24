@@ -44,12 +44,14 @@ async function doSave() {
     await saveStore.put(_db, "assets", assets); await saveStore.put(_db, "settings", { recentColors: state.recentColors });
     _saveStatus = "saved"; _lastSavedAt = Date.now(); bumpSeq();   // J25 保存した版番号を上げて他タブに知らせる
   }
-  catch (e) { _saveStatus = "error"; _saveTimer = setTimeout(doSave, 3000); }   // §2.6 失敗＝状態をオレンジに／J27 間を空けて自動で保存し直す
+  catch (e) { if (e && e.conflict) { _conflict = true; if (typeof _onExternalConflict === "function") _onExternalConflict(); if (typeof onRender === "function") onRender(); return; }   // M3 サーバーで版がぶつかった（409）＝別タブと同じ扱い
+    _saveStatus = "error"; _saveTimer = setTimeout(doSave, 3000); }   // §2.6 失敗＝状態をオレンジに／J27 間を空けて自動で保存し直す
   if (typeof onRender === "function") onRender();
   for (const id in collectAssets()) ensureNat(id);
 }
 async function boot() {
   try {
+    if (saveStore.attach) saveStore.attach(m3Hooks());   // M3 ApiStore に写真の付け替えなどの口を渡す（pg/m3-api.js）
     _db = await saveStore.open();
     const vs = await saveStore.get(_db, "versions"); if (Array.isArray(vs) && vs.length) { _versions = vs; _verSeq = Math.max(_verSeq, ...vs.map((v) => (+String(v.id).replace(/\D/g, "") || 0))) + 1; }
     const assets = await saveStore.get(_db, "assets"); if (assets) for (const id in assets) ASSET[id] = assets[id];
@@ -67,7 +69,7 @@ function currentPublished() { const p = _versions.filter((v) => v.kind === "publ
 function draftSig() { return canonJSON(currentDraft()); }   // §6 今の形を、鍵をそろえた文字列で
 function publishedEqual() { const p = currentPublished(); if (!p || !p.draft) return false; return canonJSON(p.draft) === draftSig() && canonJSON(p.shop || null) === canonJSON(currentShop()); }   // §3.2 ①②の両方を比べる・一度も公開していなければ false・「直してから元どおり」で一致
 function statusLabel() {
-  if (_conflict) return "ほかのタブで変更が保存されました。読み込み直してください";   // J25
+  if (_conflict) return saveStore.conflictLabel || "ほかのタブで変更が保存されました。読み込み直してください";   // J25（M3 API のときは「ほかで変更されました」）
   if (_saveStatus === "saving") return "保存しています…";
   if (_saveStatus === "error") return "保存できませんでした。インターネットのつながりを確かめてください";
   const p = currentPublished(); if (!p) return "まだ公開していません";
@@ -78,6 +80,7 @@ function simulateSaveError(on) { _simErr = !!on; }
 function setExternalConflictHandler(fn) { _onExternalConflict = fn; }   // J25 WIRING から知らせの出し方を渡す
 // §4.3 公開：今の形を「公開した版」として履歴へ。公開した版は新しい方から30まで。最初の形は常に持つ。
 function publish(opts) {
+  if (m3IsApi()) return m3Publish(opts);   // M3 API に公開（Promise。pg/m3-api.js）
   const v = { id: "v" + (_verSeq++), kind: "published", at: Date.now(), draft: currentDraft(), shop: currentShop() };   // 試験台26：①②の組で持つ
   _versions.push(v);
   const pubs = _versions.filter((x) => x.kind === "published");

@@ -31,6 +31,21 @@ jobs:
           npm ci
           npm test
 
+  e2e-api:
+    # 編集画面 ⇄ API の通しの試験（ログイン・保存・写真・公開・ぶつかり）。wrangler dev をローカルで立てる
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npm ci
+        working-directory: apps/api
+      - run: npm run build:editor
+      - run: npm run test:publish
+      - run: node --test apps/editor/test/e2e-api.test.mjs
+
   build-editor:
     runs-on: ubuntu-latest
     steps:

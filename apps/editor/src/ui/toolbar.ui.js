@@ -15,7 +15,7 @@ function opText(op){ const nm=id=>C3.friendly(id);
   return op.t; }
 function refreshStudio(){ const ol=document.getElementById("oplog"); if(ol){ ol.innerHTML=""; for(const op of PG.api.ops()){ const li=document.createElement("li"); li.textContent=opText(op); ol.appendChild(li);} }
   const ul=document.getElementById("anchorlist"); if(ul){ ul.innerHTML=""; for(const a of PG.anchorsList()){ const li=document.createElement("li"); li.textContent=a.partName+"："+(a.mode==="M1"?"塊の中でずらす":a.anchorName+"の下（空き"+a.gapY+"）"); ul.appendChild(li);} } }
-window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); if(typeof updateItemTools==="function") updateItemTools(); if(typeof updateAlignTools==="function") updateAlignTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); if(typeof syncHistoryUI==="function") syncHistoryUI(); };
+window.onRender=function(){ restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); if(typeof updateItemTools==="function") updateItemTools(); if(typeof updateAlignTools==="function") updateAlignTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); if(typeof syncHistoryUI==="function") syncHistoryUI(); if(typeof a3_syncUndoBtns==="function") a3_syncUndoBtns(); };
 // §19b（X20）上の道具を常に1段に保ち、入りきらないぶんを「その他 ▾」にしまう（窓の幅で機能を隠さない）
 const toolbarEl=document.getElementById("toolbar");
 const tMore=document.getElementById("tMore");
@@ -86,6 +86,10 @@ document.addEventListener("compositionstart",()=>{ if(PG.state.editing) PG.imeBo
 document.addEventListener("compositionend",()=>{ if(PG.state.editing) PG.imeBoundary("end"); },true);
 document.getElementById("tUndo").onclick=()=>PG.undo();
 document.getElementById("tRedo").onclick=()=>PG.redo();
+// P28（線 A3）戻す・やり直すのボタンは、戻せない・やり直せないときは灰色で押せない（書き換え中は細かく戻せるので押せるまま）
+function a3_syncUndoBtns(){ const u=document.getElementById("tUndo"), r=document.getElementById("tRedo"); if(!u||!r) return; const ed=!!PG.state.editing;
+  const cu=ed||PG.canUndo(), cr=ed||PG.canRedo(); u.disabled=!cu; r.disabled=!cr; u.setAttribute("aria-disabled",String(!cu)); r.setAttribute("aria-disabled",String(!cr)); }
+a3_syncUndoBtns();
 document.getElementById("tResetPage").onclick=()=>PG.resetScope("page",null,["pc","sp"]);
 const DEV=/[?&]dev=1/.test(location.search||"");   // J21 制作用（試験ボタン）は ?dev=1 のときだけ出す＝店主の画面には出さない
 if(!DEV){ const _ts=document.getElementById("tStudio"); if(_ts) _ts.style.display="none"; const _st=document.getElementById("studio"); if(_st) _st.style.display="none"; }

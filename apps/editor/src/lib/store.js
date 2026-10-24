@@ -4,7 +4,9 @@
 //   put(h, key, val)  → 書き終わったら解ける Promise
 //   name              → 名前（別タブの保存を知る localStorage の鍵 `${name}:seq` にも使う）
 // 鍵は draft（今の形）・shop（① の下書き）・versions（版）・assets（写真）・settings（最近使った色）。
-// 今は LocalStore（ブラウザの IndexedDB）。M3 で ApiStore（apps/api）を足し、下の saveStore を選び分ける。
+// LocalStore（ブラウザの IndexedDB）と ApiStore（apps/api。lib/api-store.js）。どちらを使うかは下の saveStore で選ぶ：
+//   URL に ?api=<API のオリジン>（&shop=<お店の ID>）があるか、組み立てのときに MIKKE_API を渡したら ApiStore。
+//   何も付けなければ今までどおり LocalStore（確認スクリプトはこちら）。
 
 // IndexedDB の名前は「mikke-」＋ページのファイル名（editor_single.html → mikke-editor）。
 // 確認スクリプト（verify_extra_save・catalog・align）が 'mikke-' + basename(HTML).replace('_single.html','') で
@@ -21,4 +23,8 @@ export function LocalStore(name = LOCAL_DB_NAME, ver = 1, storeName = "state") {
   };
 }
 
-export const saveStore = LocalStore();
+import { ApiStore, apiConfigFromLocation } from "./api-store.js";
+// 組み立てのときの設定（apps/editor/build.mjs が MIKKE_API を __MIKKE_API__ に入れる。"same" ＝このページと同じオリジン）
+const BUILD_API = typeof __MIKKE_API__ !== "undefined" ? __MIKKE_API__ : "";
+function pickStore() { const cfg = typeof location !== "undefined" ? apiConfigFromLocation(BUILD_API) : null; return cfg ? ApiStore(cfg) : LocalStore(); }
+export const saveStore = pickStore();

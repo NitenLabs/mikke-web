@@ -10,9 +10,9 @@ stage.addEventListener("contextmenu",(e)=>{
   if(id){ e.preventDefault();
     const catId=PG.menuCatId(id);   // 試験台28 §2.4：括りの見出しを右クリック → 括りを足す/消す
     if(catId){ PG.selectOnly(PG.canonId(id)); showCategoryMenu(catId,e.clientX,e.clientY); return; }
-    if((PG.currentPage&&PG.currentPage()==="pg_menu")&&PG.menuRowPlc(id)){ PG.selectOnly(PG.canonId(id)); showFmenu(); return; }   // 試験台28：お品書き本体の行は行そのものを選ぶ（偽のグループを選ばない）
+    if((PG.currentPage&&PG.currentPage()==="pg_menu")&&PG.menuRowPlc(id)){ PG.selectOnly(PG.canonId(id)); showFmenu(e.clientX,e.clientY); return; }   // 試験台28：お品書き本体の行は行そのものを選ぶ（偽のグループを選ばない）
     const grp=PG.groupOf(id); const sel=[...PG.state.selected]; const innerSel = grp && sel.length===1 && PG.isRepeat(sel[0]) && PG.groupOf(sel[0])===grp;   // 試験台26：中の1件を選んでいて同じ並びを右クリック → 1件のメニュー（品を足す等）
-    if(!innerSel) PG.selectOnly(grp||PG.canonId(id)); showFmenu(); return; }
+    if(!innerSel) PG.selectOnly(grp||PG.canonId(id)); showFmenu(e.clientX,e.clientY); return; }
   const host=e.target.closest&&e.target.closest("#sectionwrap .host");
   if(host){ e.preventDefault(); const sec=host.id.replace("host_",""); PG.selectSection(sec); showSectionMenu(sec,e.clientX,e.clientY); }
 });
@@ -21,11 +21,14 @@ stage.addEventListener("contextmenu",(e)=>{
 function showSectionMenu(sec,cx,cy){
   const can=PG.sectionCan(sec); if(!can.exists){ fmenu.classList.remove("on"); return; }
   fmenu.innerHTML="";
-  const add=(label,fn)=>{ const b=document.createElement("button"); b.textContent=label; b.setAttribute("data-sec-menu",label); b.onclick=(ev)=>{ ev.stopPropagation(); fmenu.classList.remove("on"); fn(); }; fmenu.appendChild(b); };
-  if(can.up) add("上へ",()=>PG.sectionMove(sec,-1));
-  if(can.down) add("下へ",()=>PG.sectionMove(sec,1));
-  add("複製",()=>PG.sectionDuplicate(sec));
-  if(can.del) add("削除",()=>PG.sectionDelete(sec));
+  fmenu.classList.toggle("pcmenu",!isPhone()); fmenu._pcAt=null; fmenu.style.visibility="";   // P26 PC は縦の一覧
+  // F22 出せない操作は消さずに灰色（disabled）にする
+  const add=(label,fn,dis)=>{ if(dis&&isPhone()) return;   // スマホの長押しの帯は今のまま（出せないものは出さない）
+    const b=document.createElement("button"); b.type="button"; b.setAttribute("role","menuitem"); b.textContent=label; b.setAttribute("data-sec-menu",label); if(dis){ b.disabled=true; b.setAttribute("aria-disabled","true"); } else b.onclick=(ev)=>{ ev.stopPropagation(); fmenu.classList.remove("on"); fn(); }; fmenu.appendChild(b); };
+  add("上へ",()=>a3_secOp("up",sec),!can.up);
+  add("下へ",()=>a3_secOp("down",sec),!can.down);
+  add("複製",()=>a3_secOp("dup",sec));
+  add("削除",()=>a3_secOp("del",sec),!can.del);
   fmenu._section=true; fmenu._secId=sec; fmenu._follow="section"; fmenu._place=null;
   const _h=document.getElementById("host_"+sec); const _hr=_h?_h.getBoundingClientRect():{top:cy,left:cx}; fmenu._secTopOff=cy-_hr.top; fmenu._secCX=cx; fmenu._secClientX=cx; fmenu._secClientY=cy;   // 指の位置をセクションからの相対で覚える（§X8 付いていく）
   fmenu.classList.add("on");
@@ -35,7 +38,7 @@ function showSectionMenu(sec,cx,cy){
 
 // ---- 試験台28 §2.4：括りの見出しの右クリック（括りを足す（この下に）／括りを消す） ----
 function showCategoryMenu(catId,cx,cy){
-  fmenu.innerHTML="";
+  fmenu.innerHTML=""; fmenu.classList.toggle("pcmenu",!isPhone()); fmenu._pcAt=null; fmenu.style.visibility="";
   const add=(label,fn,disabled)=>{ const b=document.createElement("button"); b.textContent=label; b.setAttribute("data-cat-menu",label); if(disabled){ b.disabled=true; } else { b.onclick=(ev)=>{ ev.stopPropagation(); fmenu.classList.remove("on"); fn(); }; } fmenu.appendChild(b); };
   add("括りを足す（この下に）",()=>PG.categoryAdd(catId));
   add("括りを消す",()=>PG.categoryDelete(catId), !PG.categoryCanDelete(catId));   // §2.4 品が残っていれば灰色
