@@ -17,3 +17,5 @@ export const C3 = {
   placeAnchored: C.placeAnchored, classifyDrop: C.classifyDrop, reorderWithin: C.reorderWithin, sectionMinHeight: C.sectionMinHeight,
   friendly: C.friendly, FRIENDLY: C.FRIENDLY, CLUSTER: C.CLUSTER, REPEAT_GROUP: C.REPEAT_GROUP,
 };
+// ① お店の情報から品の並び・表・お品書きを作る（pg/catalog-derive.js が CATALOG として使う）
+export * as CATALOG from "../../../../packages/core/catalog.js";
