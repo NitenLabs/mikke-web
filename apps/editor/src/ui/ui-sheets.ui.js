@@ -32,3 +32,10 @@ function showMenuSheet(id){ fmenu.innerHTML=""; const c=PG.itemCtx(id); if(!c){ 
   fmenu.classList.add("on"); positionFmenu(); }
 
 // ===== §19 リンクの札（ホバー）=====
+// F34 書き換え中・見せる範囲の中にナビを押したら、確定してから1回でページを移る
+//   （押した時に書き換え・見せる範囲を終える描き直しでナビが作り直され、click が届かないため、離した時に移る）
+let a5NavPending=null;
+window.addEventListener("pointerdown",(e)=>{ a5NavPending=null; const n=e.target&&e.target.closest&&e.target.closest("#sectionwrap .navitem[data-page]"); if(!n) return;
+  if(PG.state.editing||PG.isCropping()) a5NavPending=n.getAttribute("data-page"); },true);
+window.addEventListener("pointerup",()=>{ const pgid=a5NavPending; a5NavPending=null; if(!pgid) return;
+  setTimeout(()=>{ if(PG.isCropping()){ PG.cropCommit(); exitCropOverlay(); } if(PG.currentPage()!==pgid) PG.setPage(pgid); },0); },true);
