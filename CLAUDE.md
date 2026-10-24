@@ -1,8 +1,16 @@
 # 芦屋みっけ Web制作システム（作業フォルダ）
 
-芦屋みっけの③層（有料クライアント）向けWebサイトを、「決まった材料」と「共通のデータの形」で作る仕組み。いまは実装前の検証段階。
+芦屋みっけの③層（有料クライアント）向けWebサイトを、「決まった材料」と「共通のデータの形」で作る仕組み。
 
-## 読む順番
+## まず読むもの（2026-10-24 から。進め方を組み替えた）
+- `docs/plan/STATUS.md` — 今どこか・誰が何をしているか
+- `docs/plan/RELEASE.md` — リリースの条件（ゴール）
+- `docs/plan/ARCHITECTURE.md` — 作り（packages/core・apps/editor・apps/api）
+- `docs/plan/ROADMAP.md` — 段と並行の線
+- `docs/plan/DECISIONS.md` — 決めたこと・ユーザー待ち
+- `experiments/`（試験台1〜30）は凍結。新しい作業は `packages/`・`apps/` で
+
+## データについて読む順番
 1. `docs/DATA_SPEC.md` — データの形（確定版、schemaVersion 1）。**データについてはこれが最優先**
 2. `docs/reference_analysis_guide.md` — 参考サイトの分析の手順（STEP 0〜4）と燃費のルール
 3. `docs/handoff_note_web_system_01.md`・`02.md` — 編集体験と素材集めの決定事項（背景。データの形については DATA_SPEC が新しい）
