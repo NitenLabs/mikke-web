@@ -19,3 +19,5 @@ export const C3 = {
 };
 // ① お店の情報から品の並び・表・お品書きを作る（pg/catalog-derive.js が CATALOG として使う）
 export * as CATALOG from "../../../../packages/core/catalog.js";
+// 保存先（差し替え口。pg/store-save.js が saveStore として使う）
+export { saveStore } from "./store.js";

@@ -88,7 +88,7 @@ async function build() {
 
   // つなぐ順は試験台30 と同じ：core → 見本の中身・お店の情報・写真 → PG → 画面のつなぎ
   const lines = (t) => t.split("\n").length - 1;
-  let script = `${lib}const { SPEC, RESOLVE, BANCHOR, C3, TEXT, CATALOG } = __MIKKE;\n`;
+  let script = `${lib}const { SPEC, RESOLVE, BANCHOR, C3, TEXT, CATALOG, saveStore } = __MIKKE;\n`;
   script += `const CONTENT_JSON = ${JSON.stringify(CONTENT)};\nconst SHOP_JSON = ${JSON.stringify(SHOP)};\nconst PHOTOS_JSON = ${JSON.stringify(photos)};\n`;
   script += PG_HEAD;
   const pieces = [{ start: lines(script) + 1, map: pg.map }];
