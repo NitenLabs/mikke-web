@@ -1,0 +1,106 @@
+{
+ "feature": {
+  "label": "FEATURE",
+  "heading": "芦屋堂の味",
+  "blocks": [
+   {
+    "id": "f1",
+    "photo": {
+     "asset": "ast_frme",
+     "h": {
+      "pc": 404,
+      "sp": 258
+     }
+    },
+    "heading": "季節の上生菓子",
+    "body": "練り切りときんとんの意匠は、ひと月ごとに変わります。季節の移ろいを、小さな菓子に写してお届けします。"
+   },
+   {
+    "id": "f2",
+    "photo": {
+     "asset": "ast_frmf",
+     "h": {
+      "pc": 404,
+      "sp": 258
+     }
+    },
+    "heading": "店の奥の、甘味処",
+    "body": "店の奥の8席で、わらび餅や抹茶をお召し上がりいただけます。わらび餅は本わらび粉を使い、ご注文ごとに切り分けます。"
+   }
+  ]
+ },
+ "items": {
+  "label": "ITEMS",
+  "heading": "おすすめの品",
+  "cards": [
+   {
+    "id": "c_jonama",
+    "photo": {
+     "asset": "ast_frmg"
+    },
+    "name": "季節の上生菓子",
+    "desc": "月ごとに意匠が変わる、練り切りときんとん。",
+    "price": "380円（税込）"
+   },
+   {
+    "id": "c_warabi",
+    "photo": {
+     "asset": "ast_frmi"
+    },
+    "name": "わらび餅",
+    "desc": "本わらび粉を使い、注文ごとに切り分けます。",
+    "price": "450円（税込）"
+   },
+   {
+    "id": "c_dora",
+    "photo": {
+     "asset": "ast_frmh"
+    },
+    "name": "どら焼き",
+    "desc": "ふっくら焼いた皮に、自家製の粒餡をはさみました。",
+    "price": "250円（税込）"
+   }
+  ],
+  "kanmiLabel": "（甘味処）",
+  "kanmiTime": "提供時間 11:00〜17:00（L.O. 16:30）",
+  "table": [
+   {
+    "id": "t_warabi",
+    "name": "わらび餅",
+    "desc": "本わらび粉を使い、注文ごとに切り分けます。",
+    "price": "お茶付き 650円（税込）"
+   },
+   {
+    "id": "t_matcha",
+    "name": "抹茶（上生菓子付き）",
+    "desc": "",
+    "price": "1,100円（税込）"
+   }
+  ],
+  "pill": "お品書きをすべて見る ›"
+ },
+ "header": {"logo":"御菓子司 芦屋堂"},
+ "footer": {"name":"御菓子司 芦屋堂","addr":"兵庫県芦屋市大原町","copy":"© 2026 御菓子司 芦屋堂"},
+ "menuHdr": {"en":"MENU","title":"お品書き"},
+ "contactHdr": {"en":"CONTACT","title":"ご予約・お問い合わせ"},
+ "menu": {"groups":[
+   {"id":"tento","name":"店頭販売","cats":[
+     {"id":"namagashi","name":"上生菓子","rows":[{"id":"tento_jonama","name":"季節の上生菓子","desc":"その月だけの意匠。練り切り・きんとん。","price":"380円（税込）"}]},
+     {"id":"mochi","name":"餅菓子","rows":[{"id":"tento_sakura","name":"桜餅","desc":"2〜4月の季節商品。","price":"250円（税込）"},{"id":"tento_warabi","name":"わらび餅","desc":"本わらび粉。ご注文ごとに切り分けます。","price":"450円（税込）"}]},
+     {"id":"yakigashi","name":"焼き菓子","rows":[{"id":"tento_monaka","name":"芦屋最中","desc":"","price":"1個 220円／5個入り 1,200円（税込）"},{"id":"tento_dora","name":"どら焼き","desc":"","price":"250円（税込）"}]},
+     {"id":"higashi","name":"干菓子","rows":[{"id":"tento_wasan","name":"和三盆 季節の干菓子","desc":"","price":"小箱 864円（税込）"}]}
+   ]},
+   {"id":"kanmi","name":"甘味処","time":"提供時間 11:00〜17:00（L.O. 16:30）","cats":[
+     {"id":"kanmi","name":"甘味","rows":[{"id":"kanmi_warabi","name":"わらび餅","desc":"","price":"450円（税込）"},{"id":"kanmi_matcha","name":"抹茶（上生菓子付き）","desc":"","price":"1,100円（税込）"}]}
+   ]}
+ ]},
+ "contact": {"lead":"ご予約・お問い合わせは、お電話またはお問い合わせフォームから承ります。上生菓子のご予約は前日17時まで。","rows":[
+   {"id":"addr","label":"住所","value":"〒659-0000 兵庫県芦屋市大原町0-0"},
+   {"id":"access","label":"アクセス","value":"阪神芦屋駅から徒歩5分（北出口から芦屋川沿いに北へ） ／ JR芦屋駅から徒歩8分"},
+   {"id":"parking","label":"駐車場","value":"店の東隣にコインパーキングがあります"},
+   {"id":"hours","label":"営業時間","value":"9:00〜18:00（日曜は17:00まで）"},
+   {"id":"closed","label":"定休日","value":"水曜・第3火曜・年末年始"},
+   {"id":"tel","label":"電話","value":"0797-00-0000"},
+   {"id":"pay","label":"お支払い","value":"現金 ／ カード（Visa・Mastercard・JCB） ／ 交通系IC ／ PayPay"}
+ ]}
+}
