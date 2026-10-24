@@ -344,3 +344,5 @@ button:active{transform:translateY(1px)}
 .pg-phone .sec-add-hit{display:block;touch-action:manipulation}
 /* ＋を出さないとき（PC の見え方／書き換え中／動かし・大きさ変え中） */
 .pg-phone.pg-hideadd .sec-add-zone{visibility:hidden;pointer-events:none}
+/* P13 上の「テキスト」で足した空の箱の見本の文字（打つと消える） */
+[data-placeholder]:empty::before{content:attr(data-placeholder);color:#a0a0a0;pointer-events:none}
