@@ -29,6 +29,9 @@ window.addEventListener("keydown",(e)=>{
     if(["ArrowUp","ArrowDown","Home","End","PageUp","PageDown"].includes(e.key)) e.preventDefault();
     if(e.key!=="Escape") return;
   }
+  // P4 文字の箱を選んだだけ（書き換えていない）で文字を打つ＝書き換えに入り、打った文字で置き換える。Enter・F2＝書き換えに入り、全部を選ぶ
+  if(!meta&&!e.altKey&&PG.state.selected.size===1){ const one=[...PG.state.selected][0];
+    if(a2ClickEditable(one)){ if(e.key==="Enter"||e.key==="F2"){ e.preventDefault(); PG.startEdit(one,true); return; } if(e.key.length===1){ PG.startEdit(one,true); return; } } }
   // §27 Esc：書き換え・見せる範囲でなく、メニュー・箱が開いていなければ選択を外す。開いていれば閉じるだけ（選択は残す）
   if(e.key==="Escape"){
     if(e.defaultPrevented) return;   // すでに箱/メニューを閉じた（capture の Esc ＝公開・プレビュー・履歴・書体・列・明るさ）
