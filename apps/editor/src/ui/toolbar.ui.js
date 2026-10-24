@@ -17,7 +17,11 @@ function refreshStudio(){ const ol=document.getElementById("oplog"); if(ol){ ol.
   const ul=document.getElementById("anchorlist"); if(ul){ ul.innerHTML=""; for(const a of PG.anchorsList()){ const li=document.createElement("li"); li.textContent=a.partName+"："+(a.mode==="M1"?"塊の中でずらす":a.anchorName+"の下（空き"+a.gapY+"）"); ul.appendChild(li);} } }
 // F32・F35 端末のボタン（PC／スマホ）は、いつも今の端末（戻す・読み込み直しで変わることがある）に合わせる
 function a5SyncDevBtns(){ const d=PG.state.device, pc=document.getElementById("dPC"), sp=document.getElementById("dSP"); if(pc) pc.classList.toggle("on",d==="pc"); if(sp) sp.classList.toggle("on",d==="sp"); }
-window.onRender=function(){ a5SyncDevBtns(); restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); if(typeof updateItemTools==="function") updateItemTools(); if(typeof updateAlignTools==="function") updateAlignTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); if(typeof syncHistoryUI==="function") syncHistoryUI(); };
+// F35 読み込み直したら、前に開いていたページ・端末に戻る（このタブの sessionStorage。読めなければ TOP・PC のまま）
+const A5_VIEW_KEY="mikke-editor-view";
+try{ const v=JSON.parse(sessionStorage.getItem(A5_VIEW_KEY)||"null"); if(v){ if(PG.pages().some(p=>p.id===v.page)) PG.state.page=v.page; if(v.device==="pc"||v.device==="sp") PG.state.device=v.device; } }catch(_){}
+function a5SaveView(){ try{ sessionStorage.setItem(A5_VIEW_KEY, JSON.stringify({page:PG.state.page, device:PG.state.device})); }catch(_){} }
+window.onRender=function(){ a5SyncDevBtns(); a5SaveView(); restoreFromMore(); applyPhotos(); refreshStudio(); positionFmenu(); updateTextTools(); updatePhotoTools(); updateElemTools(); updateCardsTools(); if(typeof updateItemTools==="function") updateItemTools(); if(typeof updateAlignTools==="function") updateAlignTools(); refreshPhotoBtns(); updateAddZones(); addHandleHits(); refreshPhoneUI(); syncOverlays(); if(typeof updateSaveUI==="function") updateSaveUI(); layoutToolbar(); if(typeof updateMoreStatus==="function") updateMoreStatus(); if(typeof syncPreviewUI==="function") syncPreviewUI(); if(typeof syncHistoryUI==="function") syncHistoryUI(); };
 // §19b（X20）上の道具を常に1段に保ち、入りきらないぶんを「その他 ▾」にしまう（窓の幅で機能を隠さない）
 const toolbarEl=document.getElementById("toolbar");
 const tMore=document.getElementById("tMore");
