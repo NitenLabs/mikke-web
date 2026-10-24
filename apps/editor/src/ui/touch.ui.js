@@ -93,21 +93,27 @@ function startAuto(){ if(autoRAF) return; autoLast=performance.now();
 }
 
 // §3.2.7 つまみの押せる範囲（44×44・data-hit）。見た目のつまみ（.rz-handle）に重ねる。内側に入るのは部品の幅・高さの1/4まで。
+// F40 指で触る端末（横向き・iPad の幅＝スマホの画面でないとき）も、つまみ・帯・上の並びのボタンを 44px の押せる大きさに
+function a5TouchPC(){ try{ const coarse=!!(window.matchMedia&&window.matchMedia("(pointer: coarse)").matches); return !isPhone()&&(coarse||(navigator.maxTouchPoints||0)>0); }catch(_){ return false; } }
 function addHandleHits(){
   document.querySelectorAll(".hit-handle").forEach((n)=>n.remove());
-  if(!phoneEdit()) return;
+  const tpc=a5TouchPC(); document.body.classList.toggle("a5-touch",tpc);
+  if(!phoneEdit()&&!tpc) return;
   const sel=[...PG.state.selected]; if(sel.length!==1) return; const id=sel[0]; const g=PG.api.geometry()[id]; if(!g) return;
   const sc=PG.getScale(); const HIT=44/sc;
   for(const h of document.querySelectorAll(".rz-handle")){
     const dir=h.getAttribute("data-handle"); if(h.getAttribute("data-handle-for")!==id) continue;
+    if(tpc&&!phoneEdit()&&(((dir==="e"||dir==="w")&&g.h*sc<88)||((dir==="n"||dir==="s")&&g.w*sc<88))){ h.style.display="none"; continue; }   // F40 小さい部品は辺の真ん中のつまみを出さない（角の 44px の範囲と重なるため。PowerPoint の指の操作と同じ）
     const cx=parseFloat(h.style.left), cy=parseFloat(h.style.top);
     const inX=Math.min(HIT/2,g.w/4), inY=Math.min(HIT/2,g.h/4);
     let left,top;
     if(/e/.test(dir)) left=cx-inX; else if(/w/.test(dir)) left=cx-(HIT-inX); else left=cx-HIT/2;
     if(/s/.test(dir)) top=cy-inY; else if(/n/.test(dir)) top=cy-(HIT-inY); else top=cy-HIT/2;
     const hit=document.createElement("div"); hit.className="hit-handle"; hit.setAttribute("data-hit","handle-"+dir); hit.setAttribute("data-handle",dir); hit.setAttribute("data-handle-for",id);
-    hit.style.left=left+"px"; hit.style.top=top+"px"; hit.style.width=HIT+"px"; hit.style.height=HIT+"px";
-    h.parentNode.appendChild(hit);
+    hit.style.width=HIT+"px"; hit.style.height=HIT+"px";
+    if(tpc&&!phoneEdit()){ const hs=h.offsetWidth||0, bw=parseFloat(getComputedStyle(h).borderLeftWidth)||0;   // F40 見た目のつまみの子にする＝つまみの真ん中を押しても 44px の範囲がつまみのもの
+      hit.style.left=(left-(cx-hs/2)-bw)+"px"; hit.style.top=(top-(cy-hs/2)-bw)+"px"; h.appendChild(hit); }
+    else { hit.style.left=left+"px"; hit.style.top=top+"px"; h.parentNode.appendChild(hit); }
   }
 }
 
