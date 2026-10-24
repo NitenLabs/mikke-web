@@ -100,7 +100,7 @@ function startEdit(id, selectAll) {
   const selc = window.getSelection(); selc.removeAllRanges(); selc.addRange(range);
   if (selectAll) { const o = caretOffsets(n); if (o) state.editing.lastSel = o; }
   // 道具に触れて選択が外れても使えるよう、選択を覚えておく
-  state.editing.selWatch = () => { if (!state.editing) return; const nn = elNode(state.editing.id); if (!nn) return; const o = caretOffsets(nn); if (o && o.e > o.s) state.editing.lastSel = o; };
+  state.editing.selWatch = () => { if (!state.editing) return; const nn = elNode(state.editing.id); if (!nn) return; const o = caretOffsets(nn); if (o) state.editing.lastSel = o; a1SelMoved(); };   // J9 カーソルだけも覚える・P7 動いたら使っていない見た目を捨てる
   document.addEventListener("selectionchange", state.editing.selWatch);
   n.oninput = (e) => { if (composing || (e && e.isComposing)) return; handleEditInput(e); if (typeof onEditInput === "function") onEditInput(e); };  // 変換中は取り込まない（§2.1/§23a）。区切り判定は handleEditInput（§23b）。§19 自動リンクは onEditInput で
   n.oncompositionstart = () => imeBoundary("start");

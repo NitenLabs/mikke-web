@@ -28,10 +28,10 @@ moreMenu.appendChild(moOshinaga);
 let movedToMore=[];
 // §20（X23.②）しまったボタンは名前で出す（アイコンだけの物に名前・色は見本を名前の左に）
 const MORE_NAMES={tStudio:"制作用",tPeek:"元の配置を見る",tResetPage:"このページを元に戻す",dPC:"PC",dSP:"スマホ",tPhoto:"写真",tText:"テキスト",tBright:"明るさ",tCols:"列",tSell:"販売",tMonth:"出す月",tLabels:"ラベル",tMenus:"メニュー",tElemLink:"リンク",tAlign:"配置"};
-const TS_NAMES={font:"書体",shrink:"小さく","size":"大きさ","size-list":"よく使う大きさ",grow:"大きく",bold:"太字",color:"文字の色",link:"リンク"};
+const TS_NAMES={font:"書体",shrink:"小さく","size":"大きさ","size-list":"よく使う大きさ",grow:"大きく",bold:"太字",italic:"斜体",underline:"下線",color:"文字の色",link:"リンク",align:"文字の揃え"};
 function moreNameOf(el){ if(el.id&&MORE_NAMES[el.id]) return MORE_NAMES[el.id]; const ts=el.getAttribute&&el.getAttribute("data-ts"); if(ts&&TS_NAMES[ts]) return TS_NAMES[ts]; return (el.textContent||"").trim(); }
 // §20（X23.④）並びと同じ順（PC→スマホ）。左→右＝上→下
-const TB_ORDER=["tText","tPhoto","dPC","dSP","tPeek","tResetPage","ts:font","ts:shrink","ts:size","ts:grow","ts:size-list","ts:bold","ts:color","ts:link","tBright","tCols","tSell","tMonth","tLabels","tMenus","tElemLink","tStudio"];
+const TB_ORDER=["tText","tPhoto","dPC","dSP","tPeek","tResetPage","ts:font","ts:shrink","ts:size","ts:grow","ts:size-list","ts:bold","ts:italic","ts:underline","ts:color","ts:link","ts:align","tBright","tCols","tSell","tMonth","tLabels","tMenus","tElemLink","tStudio"];
 function orderKey(el){ if(el.id){ const i=TB_ORDER.indexOf(el.id); if(i>=0) return i; } const ts=el.getAttribute&&el.getAttribute("data-ts"); if(ts){ const i=TB_ORDER.indexOf("ts:"+ts); if(i>=0) return i; } return 999; }
 function restoreFromMore(){ for(let i=movedToMore.length-1;i>=0;i--){ const m=movedToMore[i]; m.el.removeAttribute("data-more-name"); try{ m.parent.insertBefore(m.el, m.next&&m.next.parentNode===m.parent?m.next:null); }catch(_){ m.parent.appendChild(m.el); } } movedToMore=[]; }
 function moveToMore(el){ movedToMore.push({el, parent:el.parentNode, next:el.nextSibling}); el.setAttribute("data-more-name", moreNameOf(el)); moreMenu.appendChild(el); }
@@ -50,7 +50,7 @@ function cleanupDividers(){ for(const host of [toolbarEl, document.getElementByI
     if(!prevBtn||!nextBtn||prevIsDiv) c.style.display="none"; } } }
 function overflowCandidates(){ const out=[]; const push=(sel)=>{ const el=typeof sel==="string"?document.querySelector(sel):sel; if(el) out.push(el); };
   push("#tStudio"); push("#tHistory"); push("#tPreview"); push("#tPeek"); push("#tResetPage"); push("#dSP"); push("#dPC"); push("#tPhoto"); push("#tText");   // §22 §3.3 しまう順：制作用→履歴→プレビュー→元の配置→このページ→PC/スマホ→テキスト/写真（公開・戻す・やり直すはしまわない）
-  for(const sel of ['#tAlign','#tstools [data-ts="link"]','#tstools [data-ts="color"]','#tstools [data-ts="bold"]','#tstools [data-ts="size-list"]','#tstools [data-ts="grow"]','#tstools [data-ts="size"]','#tstools [data-ts="shrink"]','#tstools [data-ts="font"]','#tBright','#tMenus','#tLabels','#tMonth','#tSell','#tCols','#tElemLink']) push(sel);   // それでも入らなければ道具の右から（配置を先に＝記録 13.2）
+  for(const sel of ['#tAlign','#tstools [data-ts="align"]','#tstools [data-ts="link"]','#tstools [data-ts="color"]','#tstools [data-ts="underline"]','#tstools [data-ts="italic"]','#tstools [data-ts="bold"]','#tstools [data-ts="size-list"]','#tstools [data-ts="grow"]','#tstools [data-ts="size"]','#tstools [data-ts="shrink"]','#tstools [data-ts="font"]','#tBright','#tMenus','#tLabels','#tMonth','#tSell','#tCols','#tElemLink']) push(sel);   // それでも入らなければ道具の右から（配置を先に＝記録 13.2）
   return out; }   // 「戻す」「やり直す」は最後までしまわない
 let laying=false;
 function layoutToolbar(){ if(laying) return; laying=true;

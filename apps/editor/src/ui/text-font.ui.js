@@ -1,7 +1,7 @@
 // 書体の選び箱
 // 線：A1｜画面のつなぎ（ui/ のファイルは上から順に1つのスクリプトとして走る。並びは src/parts.mjs）
 const fontPop=document.getElementById("fontPop");
-function applyFont(fontKey){ if(partMode()) PG.applyPartStyle("font", fontKey); else { beforeTs(); PG.textSetFont(fontKey); } }
+function applyFont(fontKey){ a1Style("font", fontKey); }   // P7 書き換え中でカーソルだけなら、次に打つ文字の書体
 let fontPreview=null;
 function previewFont(fontKey){ clearFontPreview(); const fam=fontKey?SPEC.FONT[fontKey]:""; const els=[];
   const ids = PG.state.editing? [PG.state.editing.id] : [...PG.state.selected];

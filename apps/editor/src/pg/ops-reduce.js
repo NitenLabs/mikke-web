@@ -95,7 +95,8 @@ function seedFromBase(b, device, full) {
     if (isGroupId(id) && v && typeof v === "object" && !Array.isArray(v) && (v.menu || v.pick)) { S.baseSource[id] = clone(v); continue; }
     if (Array.isArray(v)) { S.runsMap[id] = clone(v); seedText(S, id, v.map((r) => r.text).join("")); }
     else if (typeof v === "string") { seedText(S, id, v); }
-    else if (v && typeof v === "object") { if (v.asset != null) seedAsset(S, id, v.asset); if (v.bright) S.brightMap[id] = v.bright; if (v.cleared) S.clearL.push(id); if (v.link) S.linkMap[id] = clone(v.link); }
+    else if (v && typeof v === "object") { if (Array.isArray(v.runs)) { S.runsMap[id] = clone(v.runs); seedText(S, id, v.runs.map((r) => r.text).join("")); } else if (typeof v.text === "string") seedText(S, id, v.text);   // P14 文字の箱まるごとのリンク {text|runs, link}
+      if (v.asset != null) seedAsset(S, id, v.asset); if (v.bright) S.brightMap[id] = v.bright; if (v.cleared) S.clearL.push(id); if (v.link) S.linkMap[id] = clone(v.link); }
   }
   S.textStyles = clone(b.textStyle || {});
   // 4. adjust[端末]→入れ物。端末共通のマップ（cols/view/swap）は両端末ぶんを集める。端末ごと（m1/m2/order/sizes/z）は今の端末だけ。
@@ -193,7 +194,7 @@ function reduce(ops, device, peek) {
     else if (op.t === "cols") { const m = colsMap[op.id] = colsMap[op.id] || {}; m[op.device] = op.n; }   // §20 列（端末ごと。両端末ぶんを溜める）
     else if (op.t === "swap") { const s = swapMap[op.sec] = swapMap[op.sec] || {}; const d = s[op.device] = s[op.device] || {}; d[op.block] = !d[op.block]; if (op.device === device) for (const pid of (op.clearM1 || [])) { delete m1[pid]; delete m2[pid]; } }   // §5 左右入替（トグル）＋ 2つの子の M1 を消す
     // §12 文字の見た目：weight/color は端末共通（device で絞らない）、size は op.device の枠へ（両端末ぶんを溜める）
-    else if (op.t === "tstyle") { for (const k of op.keys) { const s = textStyles[k] = textStyles[k] || {}; if (op.weight != null) s.weight = op.weight; if (op.color != null) s.color = op.color; if (op.font != null) s.font = op.font; if (op.size != null) { s.size = s.size || {}; s.size[op.device] = op.size; } } }
+    else if (op.t === "tstyle") { for (const k of op.keys) { const s = textStyles[k] = textStyles[k] || {}; if (op.weight != null) s.weight = op.weight; if (op.color != null) s.color = op.color; if (op.font != null) s.font = op.font; if (op.italic != null) s.italic = op.italic; if (op.underline != null) s.underline = op.underline; if (op.align != null) s.align = op.align; if (op.size != null) { s.size = s.size || {}; s.size[op.device] = op.size; } } }
     // 文字の見た目を元に戻す：箱まるごと（鍵）＋文の一部（部品の runs）の両方（§2.2 書式のクリア）
     else if (op.t === "tstyleReset") { for (const k of op.keys) delete textStyles[k]; if (op.parts) for (const pid of op.parts) delete runsMap[pid]; }
     else if (op.t === "elink") { if (op.link) linkMap[op.id] = clone(op.link); else delete linkMap[op.id]; }   // §19 部品まるごとのリンク

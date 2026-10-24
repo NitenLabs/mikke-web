@@ -154,6 +154,9 @@ function applyTextStyles(R) {
       if (ts.weight != null) el.style.fontWeight = ts.weight;
       if (ts.color != null) el.style.color = colorVal(ts.color);
       if (ts.font != null) el.style.fontFamily = SPEC.FONT[ts.font] || ts.font;   // §19 箱まるごとの書体
+      if (ts.italic != null) el.style.fontStyle = ts.italic ? "italic" : "normal";   // J4・P27 箱まるごとの斜体・下線、P11 揃え（両端末で共通）
+      if (ts.underline != null) el.style.textDecoration = ts.underline ? "underline" : "none";
+      if (ts.align != null) el.style.textAlign = ts.align;
     }
   }
   a1KeepEmptyText();   // J10 空にした見出し・品名などは1行分の高さを残す（text-style.js）

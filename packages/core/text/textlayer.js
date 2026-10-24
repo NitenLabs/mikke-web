@@ -28,6 +28,8 @@ export const TEXT = (function () {
     // §19 文の一部の書体（テンプレートの heading/body を参照）。font/link が無い run の出力は従来と1文字も変えない。
     if (r.font && typeof SPEC !== "undefined" && SPEC.FONT) s.push("font-family:" + (SPEC.FONT[r.font] || r.font));
     if (r.bold) s.push("font-weight:700");
+    if (r.italic) s.push("font-style:italic");          // J4 斜体・下線（run に無ければ出力は従来と同じ）
+    if (r.underline && !r.link) s.push("text-decoration:underline");
     if (r.color) s.push("color:" + (/^#/.test(r.color) ? r.color : ("var(--c-" + r.color + ")")));
     if (r.scale && r.scale !== 1) s.push("font-size:" + r.scale + "em");
     // §19 リンクの見た目：下線 1px・文字の下 3px・色はまわりと同じ（テンプレートの決まり）
