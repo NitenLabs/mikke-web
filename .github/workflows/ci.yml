@@ -24,6 +24,7 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
+      - run: npx playwright install --with-deps   # 古い書き出しの試験（metacheck）が chromium・webkit・firefox を使う
       - run: npm test
       - name: API の試験（apps/api があれば）
         if: hashFiles('apps/api/package.json') != ''
