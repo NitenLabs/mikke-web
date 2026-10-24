@@ -120,9 +120,15 @@ function a3_showPartMenuPC(sel,cx,cy){
   if(fmenu.lastChild&&fmenu.lastChild.className==="fdiv") fmenu.removeChild(fmenu.lastChild);
   fmenu._follow="part"; fmenu._secId=null; fmenu._place=null;
   fmenu.classList.add("on");
-  // 押した所（座標が無いときは部品の上の外側）に出し、部品からのずれを覚える
+  // 押した所の近くで、選んだ部品に重ならない所に出す（W11）：部品の右 → 左 → 下 → 上 → 押した所。部品からのずれを覚える
   const pid=one||sel[0]; const r=a3_partRect(pid);
-  if(cx==null||cy==null){ if(r){ cx=r.left; cy=r.top-(fmenu.offsetHeight||30)-6; if(cy<a3_toolbarBottom()+4) cy=r.bottom+6; } else { cx=innerWidth/2; cy=innerHeight/2; } }
+  if(cy==null) cy=r?r.top:innerHeight/2; if(cx==null) cx=r?r.left:innerWidth/2;
+  if(r){ const mw=fmenu.offsetWidth||180, mh=fmenu.offsetHeight||30, tbb=a3_toolbarBottom(), G=6;
+    const y=Math.max(tbb+4,Math.min(cy,innerHeight-8-mh)), x=Math.max(8,Math.min(cx,innerWidth-8-mw));
+    if(r.right+G+mw<=innerWidth-8){ cx=r.right+G; cy=y; }
+    else if(r.left-G-mw>=8){ cx=r.left-G-mw; cy=y; }
+    else if(r.bottom+G+mh<=innerHeight-8){ cx=x; cy=r.bottom+G; }
+    else if(r.top-G-mh>=tbb+4){ cx=x; cy=r.top-G-mh; } }
   clampMenuAt(cx,cy);
   const L=parseFloat(fmenu.style.left)||0, T=parseFloat(fmenu.style.top)||0;
   fmenu._pcAt={ id:pid, cx, cy, offX:r?L-r.left:0, offY:r?T-r.top:0 };
