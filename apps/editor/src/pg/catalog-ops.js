@@ -278,5 +278,5 @@ function catalogView() {
   return { menus };
 }
 const kindOf = (id) => (/^F_p|^I_.*photo|photo/.test(id) ? "photo" : "text");
-const styleOf = (id) => (/_h\d$/.test(id) || id === "F_h0" ? "featHead" : "featBody");
+const styleOf = (id) => (isAdded(id) ? (styleNameOf(id) || "featBody") : (/_h\d$/.test(id) || id === "F_h0" ? "featHead" : "featBody"));   // F15 足した文字（複製の複製）は自分の段を引き継ぐ
 
