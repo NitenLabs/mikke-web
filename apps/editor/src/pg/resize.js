@@ -6,7 +6,7 @@ function contentEdges() { const dw = SPEC.DESIGN_W[state.device]; const CW = sta
 // 向きと動かした量（設計px）から、変える値を出す。w/h は絶対、padB は文字の下の空き。
 // 動かした辺の反対側の辺は動かさない（中央そろえでも左そろえでも同じ＝位置ずれは commitSize が実測で記録する）。
 function computeResize(r, ddx, ddy) {
-  const s = r.start; const { left: cL, right: cR } = contentEdges(); const MIN = (r.kind === "cards" || r.kind === "table") ? minWidthOf(r.id) : 40; const H = r.handle;
+  const s = r.start; const { left: cL, right: cR } = contentEdges(); const MIN = (r.kind === "cards" || r.kind === "table") ? minWidthOf(r.id) : (r.kind === "text" ? a1TextMinW(r.id) : 40); const H = r.handle;   // F2 文字の箱は4文字分・80 以上
   const toLeft = /w/.test(H), toRight = /e/.test(H);
   if (r.kind === "text" && H === "s") return { padB: Math.max(0, Math.round(r.padB0 + ddy)) };  // 下の辺＝文字の下の空き（文字より短くはしない）
   let newW = toRight ? s.w + ddx : toLeft ? s.w - ddx : s.w;
@@ -23,7 +23,7 @@ function beginResize(id, handle, clientX, clientY) { if (id === "@multi") return
 function resizeResult(r, ddx, ddy, alt) {
   const out = computeResize(r, ddx, ddy); let guides = [];
   if (!alt && out.w != null) { const toRight = /e/.test(r.handle), toLeft = /w/.test(r.handle);
-    if (toRight || toLeft) { const { left: cL, right: cR } = contentEdges(); const MIN = 40;
+    if (toRight || toLeft) { const { left: cL, right: cR } = contentEdges(); const MIN = r.kind === "text" ? a1TextMinW(r.id) : 40;
       const movingX = toRight ? r.start.x + out.w : (r.start.x + r.start.w) - out.w;
       const { V } = snapTargets(secOf(r.id), new Set([r.id]));
       const best = nearestLine(V.filter((t) => t.kind === "edge"), [{ pos: movingX, kind: "edge" }], (inputMode() === "phone" ? 10 / (window.visualViewport ? window.visualViewport.scale : 1) : 6) / scale);   // §3.2.8 スマホは画面上10px

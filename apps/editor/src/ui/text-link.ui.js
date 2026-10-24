@@ -44,7 +44,9 @@ function chooseLink(link){ if(!linkCtx) return; const ctx=linkCtx; linkPanel.cla
   else { if(PG.state.editing && PG.state.editing.id===ctx.part){ PG.applyPartStyleRange("link", link, ctx.s, ctx.e); } else { PG.setPartLinkCommitted(ctx.part, ctx.s, ctx.e, link); } } }
 // リンクのボタン（文の一部）＝書き換え中＋選択あり
 tsEl("link").onmousedown=(e)=>e.preventDefault();
-tsEl("link").onclick=(e)=>{ e.stopPropagation(); if(tsEl("link").disabled) return; openLinkFromSelection(); };
+tsEl("link").onclick=(e)=>{ e.stopPropagation(); if(tsEl("link").disabled) return; const one=a1BoxLinkSel(); if(one){ const n=PG.elNode(one); const r=n?n.getBoundingClientRect():e.currentTarget.getBoundingClientRect(); openLinkPanelElement(one,{left:r.left,top:r.top,bottom:r.bottom}); return; } openLinkFromSelection(); };
+// P14 書き換えていない文字の箱を1つ選んでいる＝その箱まるごとにリンク
+function a1BoxLinkSel(){ if(PG.state.editing||isPhone()) return null; const sel=[...PG.state.selected]; return (sel.length===1&&PG.isText(sel[0])&&PG.canElementLink(sel[0]))?sel[0]:null; }
 function openLinkFromSelection(){ if(!PG.state.editing) return; const o=PG.editingSelRange(); if(!o||o.e<=o.s) return;
   const r=PG.editingRangeRect(o.s,o.e)||{left:0,top:0,bottom:0};   // §19b（X22）選んだ範囲のすぐ下に出す（押す前の範囲を覚えて使う）
   openLinkPanelPart(PG.state.editing.id, o.s, o.e, {left:r.left, top:r.top, bottom:r.bottom}); }
@@ -54,7 +56,7 @@ window.addEventListener("pointerdown",(e)=>{ if(linkPanel.classList.contains("on
 // ===== §19 部品まるごとリンク（写真・ボタン）=====
 const elemTools=document.getElementById("elemTools");
 function updateElemTools(){ const sel=[...PG.state.selected]; const one=sel.length===1?sel[0]:null;
-  const show=!!(one && PG.canElementLink(one) && !PG.state.editing && !isPhone());
+  const show=!!(one && PG.canElementLink(one) && !PG.isText(one) && !PG.state.editing && !isPhone());   // P14 文字の箱は文字の道具の「リンク」で付ける
   elemTools.style.display=show?"inline-flex":"none"; }
 document.getElementById("tElemLink").onmousedown=(e)=>e.preventDefault();
 document.getElementById("tElemLink").onclick=(e)=>{ e.stopPropagation(); const sel=[...PG.state.selected]; const one=sel.length===1?sel[0]:null; if(!one||!PG.canElementLink(one)) return; const n=PG.elNode(one); const r=n?n.getBoundingClientRect():e.currentTarget.getBoundingClientRect(); openLinkPanelElement(one,{left:r.left,top:r.top,bottom:r.bottom}); };   // §19b（X22）部品のすぐ下（入らなければ上）

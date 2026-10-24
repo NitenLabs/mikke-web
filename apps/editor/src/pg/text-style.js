@@ -79,3 +79,86 @@ const FONTS = [{ key: "heading", label: "明朝", role: "見出しの書体" }, 
 const fontLabel = (k) => (FONTS.find((f) => f.key === k) || {}).label || k;
 function fontsApi() { return FONTS.map((f) => ({ ...f })); }
 
+
+// ---- J10・J56・J41 空にした文字の箱 ----
+// 見出し・本文・品名など、空では意味をなさない文字は、空にしても高さ 0 にせず1行分の高さを残す（選べる・書き直せる）。
+// 公開前の確認に「空の文字」として出す。説明・値段・時間など、もとから空でよい文字は対象にしない（高さ 0 のまま＝配置を変えない）。
+function a1MustHaveText(id) { const b = bareOf(id); return /^(F_h\d*|I_h|F_b\d+|logo|fname|mtitle|ctitle)$/.test(b) || /^(card_name_|row_name_|mg_|mc_|add_)/.test(b); }
+function a1KeepEmptyText() {
+  for (const inst of state.secList) {
+    const host = document.getElementById(secHostId(inst)); if (!host) continue;
+    for (const el of host.querySelectorAll('[data-kind="text"]')) {
+      const id = el.getAttribute("data-el"); if (!id || !a1MustHaveText(id)) continue;
+      if ((el.textContent || "").trim() === "") { el.style.minHeight = "1lh"; el.setAttribute("data-empty-text", "1"); }
+    }
+  }
+}
+// 公開前の確認：今のページの空の文字（端末に依らないので1つ1回）
+function a1EmptyTextItems(dev, items, seen) {
+  for (const el of document.querySelectorAll('#sectionwrap [data-kind="text"]')) {
+    const id = el.getAttribute("data-el"); if (!id || !a1MustHaveText(id)) continue;
+    if ((el.innerText || el.textContent || "").trim()) continue;
+    const r = el.getBoundingClientRect(); if (r.width === 0 && r.height === 0) continue;
+    if (seen.has("text:" + id)) continue; seen.add("text:" + id);
+    items.push({ device: dev, kind: "emptyText", parts: [id], text: `${/^(card|row)_name_/.test(bareOf(id)) ? "品の名前" : M.friendly(id)}が空です。文字を入れるか、いらなければ消してください` });
+  }
+}
+
+// ---- J4・P27・P11 箱まるごとの斜体・下線・揃え（太字と同じ tstyle。両端末で共通・「このページを元に戻す」で戻る）----
+function curItalicOf(id) { const ts = curTs(id); return !!(ts && ts.italic); }
+function curUnderlineOf(id) { const ts = curTs(id); return !!(ts && ts.underline); }
+function curAlignOf(id) { const ts = curTs(id); if (ts && ts.align) return ts.align; const st = SPEC.STYLES[styleNameOf(id)]; return (st && st.align) || "left"; }
+function textToggleItalic() { const prim = primaryTextSel(); if (!prim) return; const keys = selTextKeys(); if (!keys.length) return; commit({ t: "tstyle", keys, italic: !curItalicOf(prim) }); }
+function textToggleUnderline() { const prim = primaryTextSel(); if (!prim) return; const keys = selTextKeys(); if (!keys.length) return; commit({ t: "tstyle", keys, underline: !curUnderlineOf(prim) }); }
+const A1_ALIGNS = ["left", "center", "right", "justify"];
+function textSetAlign(a) { if (!A1_ALIGNS.includes(a)) return; const keys = selTextKeys(); if (!keys.length) return; const prim = primaryTextSel(); if (prim && keys.length === 1 && curAlignOf(prim) === a) return; commit({ t: "tstyle", keys, align: a }); }
+// 書き換え中に箱まるごとの操作（揃え）：書き換えを終えずに続ける＝決めてから当て、同じ所にカーソルを戻して書き換えに入り直す
+function a1BoxOpWhileEditing(fn) {
+  if (!state.editing) { fn(); return; }
+  const id = state.editing.id; const n = elNode(id); const o = (n && caretOffsets(n)) || state.editing.lastSel || null;
+  commitEdit(); fn();
+  startEdit(id); const nn = elNode(id); if (nn && o && state.editing) { setCaretOffsets(nn, o.s, o.e); state.editing.lastSel = { s: o.s, e: o.e }; }
+}
+
+// ---- P7・J9 カーソルだけ（選んでいない）で付けた見た目＝次に打つ文字に効く（PowerPoint）----
+// state.editing.pending = { bold?, italic?, underline?, scale?, color?, font? }、pendingAt＝その時のカーソルの位置。
+// カーソルを動かしたら捨てる（text-runs.js の reconcileEdit が打った文字に当てて使い終わる）。
+function a1CaretOffset() { if (!state.editing) return null; const n = elNode(state.editing.id); if (!n) return null; const o = caretOffsets(n); if (o) return o; const l = state.editing.lastSel; return l ? { s: l.s, e: l.e } : null; }
+// カーソルの所の見た目（前の文字。頭なら次の文字）に、まだ使っていない見た目を重ねたもの
+function a1CaretStyle() {
+  if (!state.editing) return {}; const n = elNode(state.editing.id); const runs = state.editing.runs || (n ? domToRuns(n) : []);
+  const o = a1CaretOffset(); const at = o ? o.s : 0; const base = stAtChar(runs, at > 0 ? at - 1 : 0);
+  const pd = (state.editing.pending && state.editing.pendingAt === at) ? state.editing.pending : {};
+  return { ...base, ...pd };
+}
+function a1SetPending(kind, value) {
+  if (!state.editing) return false; const o = a1CaretOffset(); if (!o) return false;
+  if (state.editing.pendingAt !== o.s) state.editing.pending = null;
+  const cur = a1CaretStyle(); const p = { ...(state.editing.pending || {}) };
+  if (kind === "bold" || kind === "italic" || kind === "underline") p[kind] = !cur[kind];
+  else if (kind === "scale") p.scale = value;
+  else if (kind === "color") p.color = value;
+  else if (kind === "font") p.font = value || null;
+  state.editing.pending = p; state.editing.pendingAt = o.s;
+  const n = elNode(state.editing.id); if (n) { try { n.focus(); setCaretOffsets(n, o.s, o.s); } catch (e) {} }
+  if (typeof onRender === "function") onRender();
+  return true;
+}
+// 選択が動いたら、使っていない見た目を捨てる（変換中は動いても捨てない）
+function a1SelMoved() { if (!state.editing || !state.editing.pending || composing) return; const n = elNode(state.editing.id); if (!n) return; const o = caretOffsets(n); if (!o) return; if (o.s !== o.e || o.s !== state.editing.pendingAt) state.editing.pending = null; }
+// 道具の並びに出す見た目（P8）：選んだ所（またはカーソルの所）。混ざっていれば mixed。
+function a1EditingLook() {
+  if (!state.editing) return null; const id = state.editing.id; const n = elNode(id); if (!n) return null;
+  const runs = state.editing.runs || domToRuns(n); const o = liveSel() || caretOffsets(n) || { s: 0, e: 0 };
+  const boxPx = boxSizePx(id); const boxBold = curWeightOf(id) >= 700;
+  if (o.e <= o.s) { const st = a1CaretStyle(); return { bold: !!st.bold || boxBold, italic: !!st.italic || curItalicOf(id), underline: !!st.underline || curUnderlineOf(id), size: Math.round(boxPx * (st.scale || 1)), color: st.color != null ? st.color : null }; }
+  const cov = runsSlice(runs, o.s, o.e); if (!cov.length) return null;
+  const sizes = new Set(cov.map((r) => Math.round(boxPx * (r.scale || 1))));
+  const colors = new Set(cov.map((r) => (r.color == null ? null : r.color)));
+  return { bold: boxBold || cov.every((r) => r.bold), italic: curItalicOf(id) || cov.every((r) => r.italic), underline: curUnderlineOf(id) || cov.every((r) => r.underline), size: sizes.size === 1 ? [...sizes][0] : null, color: colors.size === 1 ? [...colors][0] : "__mixed__" };
+}
+function a1Exports() { return { a1InsertNewline, curItalicOf, curUnderlineOf, curAlignOf, textToggleItalic, textToggleUnderline, textSetAlign, a1BoxOpWhileEditing, a1SetPending, a1CaretStyle, a1SelMoved, a1EditingLook, a1CaretOffset, curWeightOf }; }
+// P13 足したばかりの空の箱に見せる見本の文字（CSS の ::before。文には入らない）
+function a1MarkPlaceholder(id) { const n = elNode(id); if (n) n.setAttribute("data-placeholder", "テキストを入力"); }
+// F2 文字の箱の幅の下限：その箱の文字の大きさで4文字分、かつ 80 以上（設計の px）
+function a1TextMinW(id) { let px = 16; try { px = curSizeOf(id) || 16; } catch (e) {} return Math.max(80, Math.ceil(px * 4)); }

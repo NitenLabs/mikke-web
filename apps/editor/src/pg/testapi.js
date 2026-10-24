@@ -26,7 +26,7 @@ function snapForRT(b, ops, dev, sb) {
     if (slice && slice.cards) slice.cards.forEach((cd) => { if (cd.photo) asset[P("card_photo_" + cd.id)] = cd.photo.asset || null; }); };
   for (const sec in R.secContent) scanSlice(sec, R.secContent[sec]);
   for (const a of R.added) if (a.kind === "photo") asset[a.id] = a.asset || null;
-  const runsOf = (id) => R.runsMap[id] ? R.runsMap[id].map((r) => ({ text: r.text, bold: !!r.bold, color: r.color || null, scale: r.scale || 1, font: r.font || null, link: r.link || null })) : null;
+  const runsOf = (id) => R.runsMap[id] ? R.runsMap[id].map((r) => ({ text: r.text, bold: !!r.bold, color: r.color || null, scale: r.scale || 1, font: r.font || null, link: r.link || null, ...(r.italic ? { italic: true } : {}), ...(r.underline ? { underline: true } : {}) })) : null;
   const ids = new Set([...Object.keys(g), ...Object.keys(R.runsMap), ...Object.keys(asset), ...Object.keys(R.brightMap), ...R.clear, ...Object.keys(R.linkMap), ...Object.keys(R.colsMap)]);
   for (const id of ids) attr[id] = { runs: runsOf(id), asset: (id in asset) ? asset[id] : null, view: R.viewAll[id] ? (R.viewAll[id][dev] || null) : null, bright: R.brightMap[id] || 0, link: R.linkMap[id] || null, cols: R.colsMap[id] ? (R.colsMap[id][dev] || null) : null, cleared: R.clear.includes(id) };
   const swap = {}; for (const sec in R.swapMap) swap[sec] = (R.swapMap[sec][dev] || null);
@@ -166,4 +166,5 @@ return {
   applyPartStyleRange, autoLinkBeforeCaret, editingPasteLink, editingUndoAutoLink, editingHasAutoUndo, editingSelRange, editingSelFont,
   editingRangeRect: (s, e) => state.editing ? rangeRectOf(elNode(state.editing.id), s, e) : null,
   captureEditingCopy, editingPasteRich,
+  ...a1Exports(),   // 線 A1：斜体・下線・揃え・カーソルだけの見た目（text-style.js）
 };

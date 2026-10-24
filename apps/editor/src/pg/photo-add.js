@@ -44,12 +44,14 @@ async function addPhotoAtPoint(file, sec, cx, cy) {
   return id;
 }
 // 文字を足す：幅は PC 600・スマホ 351。置いたらすぐ書き換え（全選択）。空で終えたらなかったことに（commitEdit）。
-function addTextAtPoint(sec, cx, cy) {
+// P13 上の「テキスト」から（opts.placeholder）は、空の箱に薄い「テキストを入力」を見せる。何も打たずに外を押したら消える（commitEdit）。
+function addTextAtPoint(sec, cx, cy, opts) {
   const here = state.device; const w = here === "pc" ? 600 : 351; const wO = here === "pc" ? 351 : 600;
   const id = "add_" + (++state.addSeq);
-  commit({ t: "add", id, section: sec, kind: "text", styleName: "featBody", w, wOther: wO, text: "テキスト", anchor: provAnchorOf(sec), gap: 0, gapOther: 16, x: "@left", placedDevice: here });
+  commit({ t: "add", id, section: sec, kind: "text", styleName: "featBody", w, wOther: wO, text: (opts && opts.placeholder) ? "" : "テキスト", anchor: provAnchorOf(sec), gap: 0, gapOther: 16, x: "@left", placedDevice: here });
   finalizeAddedAt(id, cx, cy);
   state.pendingNewText = id; selectOnly(id); startEdit(id, true);
+  if (opts && opts.placeholder) a1MarkPlaceholder(id);
   return id;
 }
 
