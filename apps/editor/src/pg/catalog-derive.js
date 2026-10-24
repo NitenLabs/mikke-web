@@ -8,7 +8,7 @@ const defaultSecList = () => [{ id: "feature", type: "feature" }, { id: "items",
 const shopTpl = () => JSON.parse(JSON.stringify(SHOP_JSON));
 const shopBase = () => (state && state.shopBase ? state.shopBase : SHOP_JSON);
 // 品の並び・表・お品書きを ① から作る関数・値段の文字・① の op の畳み方は packages/core/catalog.js（ブラウザでもサーバーでも使う）。
-const { CARD_ALIAS, TABLE_ALIAS, REV_CARD, REV_TABLE, cardPartId, tablePartId, itemOfCardPart, itemOfTablePart, fmtAmt, fmtPriceOpt, formatPrices, curMonth, isDisplayable, priceOf, MENU_ORDER, fmtServing, hiddenReason, deriveMenuGroups, deriveGroup, applyShopOps, isShopOp } = CATALOG;
+const { CARD_ALIAS, TABLE_ALIAS, REV_CARD, REV_TABLE, cardPartId, tablePartId, itemOfCardPart, itemOfTablePart, fmtAmt, fmtPriceOpt, formatPrices, curMonth, isDisplayable, priceOf, MENU_ORDER, fmtServing, fmtMonths, hiddenReason, deriveMenuGroups, deriveGroup, applyShopOps, isShopOp } = CATALOG;
 // 並びの設定：テンプレの既定（I_cards＝店頭販売のおすすめ3件／I_table＝甘味処の全品）
 function templateSource(gid) { const b = bareOf(gid); if (b === "I_cards") return { menu: "mnu_tento", label: "lbl_recommended", count: 3 }; if (b === "I_table") return { menu: "mnu_kanmi" }; return null; }
 const isGroupId = (id) => { const b = bareOf(id); return b === "I_cards" || b === "I_table"; };

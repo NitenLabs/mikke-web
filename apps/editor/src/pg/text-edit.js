@@ -92,6 +92,7 @@ function startEdit(id, selectAll) {
   state.selectedSection = null; state.selected = new Set([c]);
   const runs = rawRuns(c);
   state.editing = { id: c, runs, lastRuns: clone(runs), mode: null };   // §23b lastRuns＝直前の区切り、mode＝打つ/消す
+  catalogEditBegin(c);   // F6・F62 品名・説明の書き換えの知らせ（pg/catalog-ops.js）
   n.innerHTML = runsToEditHtml(runs);         // 見た目つきの切れ目（文の一部の見た目）を見せて編集（§13）
   n.setAttribute("contenteditable", "true");
   n.style.whiteSpace = "pre-wrap"; n.style.wordBreak = "normal"; n.style.outline = "2px solid #06c";
@@ -113,6 +114,7 @@ function startEdit(id, selectAll) {
 function liveReflow() { placeAbsolute(); if (typeof onRender === "function") onRender(); }
 function commitEdit() {
   if (!state.editing) return; const id = state.editing.id; const n = elNode(id);
+  catalogEditEnd(id);   // F6・F62（確定の後に知らせる）
   clearBreakTimer();
   if (n) reconcileEdit();
   const wasNew = state.pendingNewText === id;   // §4（試験台17）この書き換えが「足したばかりの文字」の最初の書き換えか

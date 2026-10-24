@@ -19,7 +19,43 @@ function priceOwnerOf(info) { const cat = info.R.effShop.catalog; const plc = (i
 // 値段の箱が読む：今の有効な価格と持ち主・品名
 function effPricesOf(fullId) { const info = partInfo(fullId); if (!info || !info.entry) return null; const cat = info.R.effShop.catalog; const own = priceOwnerOf(info); const src = own.kind === "placement" ? cat.placements[own.id] : cat.items[own.id]; return { owner: own, prices: clone((src && src.prices) || []), name: (cat.items[info.entry._itemId] || {}).name || "" }; }
 // 値段を決める（その並びのメニューの載せ方の価格、なければ品の価格を書き換える。1操作1undo）
-function setPrices(fullId, prices) { const info = partInfo(fullId); if (!info || !info.entry) return false; const own = priceOwnerOf(info); const withIds = (prices || []).map((p) => p.id ? clone(p) : Object.assign({ id: mintShopId("prc") }, p)); commit({ t: "catAct", shops: [{ t: "shopPrice", target: own, prices: withIds }] }); return true; }
+function setPrices(fullId, prices) { const info = partInfo(fullId); if (!info || !info.entry) return false; const own = priceOwnerOf(info); const withIds = (prices || []).map((p) => p.id ? clone(p) : Object.assign({ id: mintShopId("prc") }, p)); commit({ t: "catAct", shops: [{ t: "shopPrice", target: own, prices: withIds }] });
+  const elsewhere = itemShownElsewhere(info.entry._itemId, fullId); pgToastMsg("『" + ((curCat().items[info.entry._itemId] || {}).name || "品") + "』の値段を直しました" + (elsewhere ? "。" + elsewhere + "にも出ています" : ""), true); return true; }
+// 品がほかのどこに出ているか（知らせの文に使う：「お品書き」「TOPのおすすめの品」）。fromId の部品の場所は除く
+function itemShownElsewhere(itemId, fromId) {
+  if (!itemId) return ""; const R = reduce(activeOps()); const fromSec = fromId ? secOf(fromId) : null; const where = [];
+  for (const inst of (R.allSecs || [])) { if (inst.id === fromSec) continue; const c = R.secContent[inst.id]; if (!c) continue;
+    let hit = false; if (inst.type === "menu") { for (const g of (c.groups || [])) for (const ct of (g.cats || [])) for (const row of (ct.rows || [])) if (row._itemId === itemId) hit = true; }
+    else if (inst.type === "items") hit = (c.cards || []).some((e) => e._itemId === itemId) || (c.table || []).some((e) => e._itemId === itemId);
+    if (!hit) continue; const nm = inst.type === "menu" ? "お品書き" : pageLabelOf(R.secPageMap[inst.id]) + "の" + friendlySec(inst.id); if (!where.includes(nm)) where.push(nm); }
+  if (fromSec && secOf(fromId) !== "menu" && !where.includes("お品書き") && curCat().placements && Object.keys(curCat().placements).some((k) => curCat().placements[k].itemId === itemId)) where.unshift("お品書き");   // トップの品は必ずお品書きの品
+  return where.join("・");
+}
+// F45 並びから消えた部品は選択から外す（ページに無い部品を選んだままにしない）
+function pruneGoneSelection() { const s = [...state.selected]; const keep = s.filter((id) => !!elNode(id)); if (keep.length !== s.length) { state.selected = new Set(keep); render(); } }
+// F62 同じ名前の品がほかにもあるか（止めずに知らせる）
+function sameNameItems(itemId) { const cat = curCat(); const it = cat.items[itemId]; const nm = it && (it.name || "").trim(); if (!nm) return []; return Object.keys(cat.items).filter((k) => k !== itemId && (cat.items[k].name || "").trim() === nm); }
+// F6・F62 品名・説明をその場で書き換えたときの知らせ（書き換えの始め・終わりは pg/text-edit.js から呼ぶ）
+let _a4EditSnap = null;
+function itemOfTextPart(fullId) {
+  const b = bareOf(fullId); let m;
+  if (secOf(fullId) === "menu" && (m = b.match(/^row_(name|desc)_(.+)$/))) { const p = curCat().placements[m[2]]; return p ? { itemId: p.itemId, field: m[1] } : null; }
+  if ((m = b.match(/^(?:card|row)_(name|desc)_/))) { const info = partInfo(fullId); return (info && info.entry) ? { itemId: info.entry._itemId, field: m[1] } : null; }
+  return null;
+}
+function catalogEditBegin(id) { _a4EditSnap = null; try { const t = itemOfTextPart(id); if (!t) return; const it = curCat().items[t.itemId] || {}; _a4EditSnap = { id, itemId: t.itemId, field: t.field, before: (t.field === "name" ? it.name : it.description) || "" }; } catch (e) { _a4EditSnap = null; } }
+function catalogEditEnd(id) {
+  const snap = _a4EditSnap; _a4EditSnap = null; if (!snap || snap.id !== id) return;
+  setTimeout(() => { try {
+    const it = curCat().items[snap.itemId]; if (!it) return; const now = (snap.field === "name" ? it.name : it.description) || "";
+    if (now === snap.before) return;
+    const where = itemShownElsewhere(snap.itemId, id); const dup = snap.field === "name" ? sameNameItems(snap.itemId) : [];
+    let msg = snap.field === "name" ? "品名を『" + now + "』に直しました" : "『" + (it.name || "品") + "』の説明を直しました";
+    if (where) msg += "。" + where + "にも出ています";
+    if (dup.length) msg += "（同じ名前の品がほかにもあります）";
+    pgToastMsg(msg, false);
+  } catch (e) {} }, 0);
+}
 
 // ---- catalog を読む補助 ----
 const curCat = () => reduce(activeOps(), "pc").effShop.catalog;
@@ -55,6 +91,7 @@ function tableDuplicate(fullId) {
   const placement = { id: plcId, itemId, menuId, categoryId, order: orderAfter(cat, menuId, categoryId, srcPlc) };
   if (srcPlc && srcPlc.prices) placement.prices = srcPlc.prices.map((p) => Object.assign(clone(p), { id: mintShopId("prc") }));
   commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }] });
+  afterItemDuplicate(info.pfx + "row_name_" + tablePartId(itemId), item.name);
   return { itemId, partId: tablePartId(itemId) };
 }
 function tableDelete(fullId) {
@@ -89,16 +126,30 @@ function cardsAddNew(gid, categoryId) {
   const spec = ensurePickSpec(gid); spec.pick.push(itemId); commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid, spec } });
   return { itemId, partId: cardPartId(itemId) };
 }
+// F8 品を貼った・複製したら：新しい品を選び、お品書きに新しい品ができたことを知らせる
+const _a4DupChain = {};
+function afterItemDuplicate(newPart, name) {
+  state.selectedSection = null; state.selected = new Set([newPart]); render();
+  const cat = curCat(); const n = Object.keys(cat.items).filter((k) => (cat.items[k].name || "").trim() === (name || "").trim()).length;
+  pgToastMsg("お品書きに新しい品『" + (name || "品") + "』を作りました" + (n > 1 ? "（同じ名前の品が" + n + "つあります）" : ""), true);
+}
 function cardsDuplicate(fullId) {
   const info = partInfo(fullId); if (!info || !info.entry) return; const cat = info.R.effShop.catalog;
   const srcItemId = info.entry._itemId, srcItem = cat.items[srcItemId]; const srcPlc = info.entry._placementId ? cat.placements[info.entry._placementId] : null;
   const menuId = (info.entry._menu) || (srcPlc && srcPlc.menuId); const categoryId = srcPlc ? srcPlc.categoryId : null;
   const itemId = mintShopId("itm"), plcId = mintShopId("plc");
   const item = clone(srcItem); item.id = itemId; if (item.prices) item.prices = item.prices.map((p) => Object.assign(clone(p), { id: mintShopId("prc") }));
-  const placement = { id: plcId, itemId, menuId, categoryId, order: orderAfter(cat, menuId, categoryId, srcPlc) };
+  // F8 同じ品を続けて貼るときは、前に貼った品のすぐ後ろへ（2回貼っても順が逆にならない）
+  const chainKey = info.gid + "|" + srcItemId; const prevCopy = _a4DupChain[chainKey];
+  const spec = ensurePickSpec(info.gid); const after = (prevCopy && spec.pick.includes(prevCopy)) ? prevCopy : srcItemId;
+  const afterPlcId = after === srcItemId ? (srcPlc && srcPlc.id) : Object.keys(cat.placements).find((k) => cat.placements[k].itemId === after && cat.placements[k].menuId === menuId);
+  const afterPlc = (afterPlcId && cat.placements[afterPlcId]) || srcPlc;
+  const placement = { id: plcId, itemId, menuId, categoryId: afterPlc ? afterPlc.categoryId : categoryId, order: orderAfter(cat, menuId, afterPlc ? afterPlc.categoryId : categoryId, afterPlc) };
   if (srcPlc && srcPlc.prices) placement.prices = srcPlc.prices.map((p) => Object.assign(clone(p), { id: mintShopId("prc") }));
-  const spec = ensurePickSpec(info.gid); const i = spec.pick.indexOf(srcItemId); if (i >= 0) spec.pick.splice(i + 1, 0, itemId); else spec.pick.push(itemId);
+  const i = spec.pick.indexOf(after); if (i >= 0) spec.pick.splice(i + 1, 0, itemId); else spec.pick.push(itemId);
   commit({ t: "catAct", shops: [{ t: "shopAdd", item, placement }], src: { gid: info.gid, spec } });
+  _a4DupChain[chainKey] = itemId;
+  afterItemDuplicate(info.pfx + "card_name_" + cardPartId(itemId), item.name);
   return { itemId, partId: cardPartId(itemId) };
 }
 function cardsDelete(fullId) {
@@ -137,7 +188,9 @@ function menuMoveRow(plcId, destCatId, beforePlcId) {
     const cur = placementsInCat(cat, menuId, destCatId, null); const curNext = cur[cur.indexOf(plcId) + 1] || null;
     if ((curNext || null) === (beforePlcId || null)) return false;
   }
+  const fromCat = plc.categoryId;
   commit({ t: "catAct", shops: [{ t: "shopReorder", placementId: plcId, menuId, categoryId: destCatId, order }] });
+  if (fromCat !== destCatId) pgToastMsg("『" + ((cat.items[plc.itemId] || {}).name || "この品") + "』を「" + (destCat.name || "") + "」に移しました", true);   // F25 別の括りへ移したら知らせ
   return true;
 }
 // §2.7 お品書き本体の行を消す＝その載せ方（placement）を消す。ほかのメニューに残らなければ品も ① から消える
@@ -147,9 +200,15 @@ function menuRowDelete(fullId) {
   const itemId = p.itemId, item = cat.items[itemId];
   const others = placementsOfItem(cat, itemId).filter((k) => k !== plc);
   const alsoItem = others.length === 0; const name = (item && item.name) || "品";
+  const before = shownItems();
   commit({ t: "catAct", shops: [{ t: "shopDel", placementId: plc, itemId, alsoItem }] });
-  if (alsoItem) pgToastMsg("『" + name + "』をお品書きから消しました", true);
-  else { const rem = [...new Set(others.map((k) => cat.placements[k].menuId))].map((m) => menuName(m)); pgToastMsg("『" + name + "』を" + menuName(p.menuId) + "から外しました（" + rem.join("・") + "に残っています）", true); }
+  // F59 トップの並び・表からも消えたら、どこから消えたかも言う
+  const after = shownItems(); const R = reduce(activeOps()); const gone = [];
+  for (const k of before.keys()) { if (after.has(k)) continue; const [inst, kind] = k.split(":"); if (kind === "menu") continue; const nm = pageLabelOf(R.secPageMap[inst]) + "の" + friendlySec(inst); if (!gone.includes(nm)) gone.push(nm); }
+  const also = gone.length ? "。" + gone.join("・") + "の並びからも消えました" : "";
+  if (alsoItem) pgToastMsg("『" + name + "』をお品書きから消しました" + also, true);
+  else { const rem = [...new Set(others.map((k) => cat.placements[k].menuId))].map((m) => menuName(m)); pgToastMsg("『" + name + "』を" + menuName(p.menuId) + "から外しました（" + rem.join("・") + "に残っています）" + also, true); }
+  pruneGoneSelection();
   return true;
 }
 // トップのおすすめ等（絞り込んだ並び）の並べ替え＝pick の順番（4.6「触った並びだけ」）。① の載せ方・ラベルは変えない。
@@ -204,7 +263,7 @@ function shownItems() { const R = reduce(activeOps()); const m = new Map(); cons
   return m; }
 function withDropNotice(fn) { const before = shownItems(); const r = fn(); const after = shownItems();
   const names = [...new Set([...before.keys()].filter((k) => !after.has(k)).map((k) => before.get(k)))];
-  if (names.length) pgToastMsg(names.map((n) => "『" + n + "』").join("・") + "が並びに出なくなりました", true); return r; }
+  if (names.length) pgToastMsg(names.map((n) => "『" + n + "』").join("・") + "が並びに出なくなりました", true); pruneGoneSelection(); return r; }
 function setItemStatus(fullId, status) { const id = itemIdOfSel(fullId); if (!id) return false; return withDropNotice(() => { commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "status", value: status }] }); return true; }); }
 // 出す月＝品の season.months（空＝いつでも＝season を外す）
 function setItemMonths(fullId, months) { const id = itemIdOfSel(fullId); if (!id) return false; const ms = (months || []).slice().sort((a, b) => a - b); const value = ms.length ? { months: ms } : null; return withDropNotice(() => { commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "season", value }] }); return true; }); }
@@ -213,9 +272,12 @@ function setItemLabels(fullId, labelIds) { const id = itemIdOfSel(fullId); if (!
 // 新しいラベルを作って付ける（お店のラベル＝① の labels に足す＋この品に付ける。戻す1回でまとめて戻る）
 function addItemLabel(fullId, name) {
   const id = itemIdOfSel(fullId); if (!id) return null; const cat = curCat(); const it = cat.items[id];
+  const nm = String(name == null ? "" : name).trim(); if (!nm) { pgToastMsg("ラベルの名前を入れてください", false); return null; }   // F49
+  const same = Object.keys(cat.labels || {}).find((k) => ((cat.labels[k].name || "").trim()) === nm);   // F48 同じ名前のラベルは作らず、あるものを付ける
+  if (same) { const cur = ((it.labels) || []).slice(); if (cur.includes(same)) { pgToastMsg("『" + nm + "』はもう付いています", false); return same; } cur.push(same); setItemLabels(fullId, cur); pgToastMsg("『" + nm + "』はもうあるラベルなので、それを付けました", false); return same; }
   const lid = mintShopId("lbl"); const mx = Math.max(0, ...Object.keys(cat.labels || {}).map((k) => cat.labels[k].order || 0));
   const labels = ((it.labels) || []).slice(); labels.push(lid);
-  commit({ t: "catAct", shops: [{ t: "shopLabelDef", labelId: lid, name: (name || "新しいラベル"), order: mx + 1 }, { t: "shopLabels", itemId: id, labels }] });
+  commit({ t: "catAct", shops: [{ t: "shopLabelDef", labelId: lid, name: nm, order: mx + 1 }, { t: "shopLabels", itemId: id, labels }] });
   return lid;
 }
 // 載せるメニュー：付ける＝そのメニューの一番近い（最初の）括りの最後に載せる／外す＝そのメニューの載せ方を消す（最後の1つは外せない）
@@ -235,7 +297,7 @@ function setItemMenu(fullId, menuId, on) {
   return withDropNotice(() => { commit({ t: "catAct", shops: myInMenu.map((k) => ({ t: "shopDel", placementId: k, itemId: id, alsoItem: false })) }); return true; });   // J38 メニューから外して表の行が消えたら知らせる
 }
 // 品を選ぶ一覧（そのメニューの品を括りごと。今出ている品は選べない扱い、出ない品は理由つき）
-function outReason(item) { if (!item) return ""; if (item.status === "paused") return "一時休止中"; if (item.status && item.status !== "onSale") return "販売していません"; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) { const ms = item.season.months; return ms[0] + "〜" + ms[ms.length - 1] + "月だけ"; } return "今は並びに出ません"; }
+function outReason(item) { if (!item) return ""; if (item.status === "paused") return "一時休止中"; if (item.status && item.status !== "onSale") return "販売していません"; if (item.season && item.season.months && item.season.months.length && !item.season.months.includes(curMonth())) return fmtMonths(item.season.months) + "だけ"; return "今は並びに出ません"; }   // F46 出す月の文字
 function itemPickerData(gid) {
   const R = reduce(activeOps(), "pc"); const spec = R.sourceResolved[gid] || templateSource(gid); const cat = R.effShop.catalog; const menuId = spec.menu;
   const sec = gid.indexOf(SEP) >= 0 ? instTag(gid) : "items"; const c = R.secContent[sec]; const shown = new Set(((c && c.cards) || []).map((e) => e._itemId));
