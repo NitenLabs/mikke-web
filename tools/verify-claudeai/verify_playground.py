@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# 2026-10-25（線 A2 に合わせる）：部品を選ぶクリックは click_sel（クリック→書き換えに入っていたら Esc 1回。P2）、吸い付かないキーは版で Alt か MOD（P16）、
+#   ダブルクリックの後にそのまま打つ所はカーソルを末尾に置いてから（P3）。手順だけを変え、判定は変えていない
 # 2026-10-24（Claude.ai）：上の並びの「戻す」「やり直す」を #tUndo・#tRedo で名指しにした。試験台29 で知らせの中にも「戻す」ボタンができ、名前で探すと2つに当たって止まったため（判定は変えていない）
 """
 芦屋みっけ wa-01 試験台（playgroundN_single.html）を、Claude.ai 側で別に確かめるスクリプト。
@@ -141,7 +143,30 @@ async def setdev(pg, dev):
 async def host_of(pg, part):
     return await pg.evaluate(f"(()=>{{const e=document.querySelector('[data-el=\"{part}\"]');if(!e)return null;const h=e.closest('[id^=host_]');return h?h.id:'?'}})()")
 
-NO_SNAP = True  # これまでの試験は、吸い付かないように Alt を押しながら動かす
+NO_SNAP = True  # これまでの試験は、吸い付かないように Alt を押しながら動かす（P16 の入った版は MOD。nosnap_key を見る）
+MOD = 'Meta' if sys.platform == 'darwin' else 'Control'
+
+async def nosnap_key(pg):
+    # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製して動かす、吸い付かない＝Cmd（MOD）。
+    # 版の見分け：試験用 API に a2AutoScroll（線 A2 の P19 で足した関数）があれば P16 の入った版＝MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg, '_nosnap'):
+        pg._nosnap = MOD if await pg.evaluate("typeof window.__playground.a2AutoScroll==='function'") else 'Alt'
+    return pg._nosnap
+
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。
+    # 書き換えに入っていたら（editingId() が null でない）Esc を1回＝箱を選んだだけの状態（P2 の無い版では書き換えに入らないので Esc を押さない）
+    if await pg.evaluate("!!(window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+
+async def click_sel(pg, x, y):
+    # 部品を「選ぶ」ためのクリック（P2：クリック→書き換えに入っていたら Esc）
+    await pg.mouse.click(x, y); await esc_if_editing(pg)
+
+async def caret_end(pg):
+    # P3 に合わせて手順を変えた（判定は同じ）：ダブルクリックは語を選ぶので、そのまま打つと語が置き換わる。選択の API でカーソルを末尾に置く
+    await pg.evaluate("(()=>{const a=document.activeElement;if(!a||!a.isContentEditable)return;const r=document.createRange();r.selectNodeContents(a);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);document.dispatchEvent(new Event('selectionchange'))})()")
+    await pg.wait_for_timeout(80)
 
 async def drag(pg, part, dx, dy, grab_offset_y=None, pre_click=True):
     """本物のマウスで、部品を設計上の px で dx,dy 動かす（画面の縮小率を考えて換算）。
@@ -154,13 +179,14 @@ async def drag(pg, part, dx, dy, grab_offset_y=None, pre_click=True):
     x = bb['x'] + min(20, bb['width'] / 2)
     y = bb['y'] + (bb['height'] / 2 if grab_offset_y is None else grab_offset_y * s)
     if pre_click:
-        await pg.mouse.click(x, y); await pg.wait_for_timeout(80)
-    if NO_SNAP: await pg.keyboard.down('Alt')
+        await click_sel(pg, x, y); await pg.wait_for_timeout(80)   # P2 に合わせて手順を変えた（判定は同じ）
+    k = await nosnap_key(pg)   # P16 に合わせて手順を変えた（判定は同じ）
+    if NO_SNAP: await pg.keyboard.down(k)
     await pg.mouse.move(x, y); await pg.mouse.down()
     for i in range(1, 11):
         await pg.mouse.move(x + dx * s * i / 10, y + dy * s * i / 10)
     await pg.mouse.up(); await pg.wait_for_timeout(300)
-    if NO_SNAP: await pg.keyboard.up('Alt')
+    if NO_SNAP: await pg.keyboard.up(k)
 
 async def drag_center_to(pg, part, target_cy, dx=0, pre_click=True):
     """部品の縦の中心が target_cy に来るように、本物のドラッグで動かす"""
@@ -446,7 +472,7 @@ async def main():
             hs = await pg.query_selector('#host_items'); await hs.scroll_into_view_if_needed(); hb = await hs.bounding_box()
             Gi = await geo(pg); s = hb['width'] / 1440
             px, py = hb['x'] + 20 * s, hb['y'] + (Gi['I_kanmi']['y'] + 5) * s
-            await pg.mouse.click(px, py); await pg.wait_for_timeout(150)
+            await click_sel(pg, px, py); await pg.wait_for_timeout(150)   # P2 に合わせて手順を変えた（判定は同じ）
             await pg.keyboard.press('Meta+v'); await pg.wait_for_timeout(300)
             G = await geo(pg); adds = [k for k in G if k.startswith('add_')]
             hosts = {k: await host_of(pg, k) for k in adds}
@@ -544,6 +570,7 @@ async def main():
         await fresh(pg)
         el = await pg.query_selector('[data-el="F_b1"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
         await pg.mouse.dblclick(bb['x'] + 50, bb['y'] + 10); await pg.wait_for_timeout(200)
+        await caret_end(pg)   # P3 に合わせて手順を変えた（判定は同じ）
         await pg.evaluate("""(()=>{const dt=new DataTransfer();dt.setData('text/html','<b style="color:red">太字の赤</b>');dt.setData('text/plain','太字の赤');document.activeElement.dispatchEvent(new ClipboardEvent('paste',{clipboardData:dt,bubbles:true,cancelable:true}));})()""")
         await pg.wait_for_timeout(200)
         html = await pg.evaluate("document.activeElement.innerHTML")
@@ -654,7 +681,7 @@ async def main():
                     await fresh(pg, dev); G = await geo(pg)
                     el = await pg.query_selector(f'[data-el="{inner}"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
                     x, y = bb['x'] + 5, bb['y'] + bb['height'] / 2
-                    await pg.mouse.click(x, y); await pg.wait_for_timeout(300)
+                    await click_sel(pg, x, y); await pg.wait_for_timeout(300)   # P2 に合わせて手順を変えた（判定は同じ）
                     await pg.mouse.move(x, y); await pg.mouse.down()
                     for i in range(1, 11): await pg.mouse.move(x, y - 6 * i)
                     await pg.mouse.up(); await pg.wait_for_timeout(300)
@@ -669,16 +696,16 @@ async def main():
                 # W10 表の文字を1回・2回クリック
                 await fresh(pg, dev)
                 el = await pg.query_selector('[data-el="row_name_t_warabi"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
-                await pg.mouse.click(bb['x'] + 8, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
+                await click_sel(pg, bb['x'] + 8, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)   # P2 に合わせて手順を変えた（判定は同じ）
                 s1 = await pg.evaluate("[...document.querySelectorAll('.mark-sel')].map(e=>e.dataset.el||(e.closest('[data-el]')||{}).dataset?.el)")
-                await pg.mouse.click(bb['x'] + 8, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
+                await click_sel(pg, bb['x'] + 8, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)   # P2 に合わせて手順を変えた（判定は同じ）
                 s2 = await pg.evaluate("[...document.querySelectorAll('.mark-sel')].map(e=>e.dataset.el||(e.closest('[data-el]')||{}).dataset?.el)")
                 ok(f'W10 {dev} 1回目で表全体、2回目で行の文字', 'I_table' in json.dumps(s1) and 'row_' in json.dumps(s2), f'{s1} → {s2}')
                 # W11 操作ボタンが選んだ部品に重ならない
                 for part in ['F_b0', 'I_table', 'I_pillbg']:
                     await fresh(pg, dev)
                     el = await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
-                    await pg.mouse.click(bb['x'] + min(20, bb['width'] / 2), bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(150)
+                    await click_sel(pg, bb['x'] + min(20, bb['width'] / 2), bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(150)   # P2 に合わせて手順を変えた（判定は同じ）
                     await pg.mouse.click(bb['x'] + min(20, bb['width'] / 2), bb['y'] + bb['height'] / 2, button='right'); await pg.wait_for_timeout(250)
                     bb = await el.bounding_box(); m = await menu_box()
                     over = m is not None and not (m['y'] + m['h'] <= bb['y'] + 0.5 or m['y'] >= bb['y'] + bb['height'] - 0.5 or m['x'] + m['w'] <= bb['x'] or m['x'] >= bb['x'] + bb['width'])
@@ -692,7 +719,7 @@ async def main():
                 return await pg.evaluate("[...document.querySelectorAll('.mark-sel')].map(e=>e.dataset.el)")
             async def pick(part):
                 el = await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
-                await pg.mouse.click(bb['x'] + min(10, bb['width'] / 2), bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
+                await click_sel(pg, bb['x'] + min(10, bb['width'] / 2), bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)   # P2 に合わせて手順を変えた（判定は同じ）
                 return bb
             async def handle_drag(part, hd, dx, dy):
                 """部品を選び、つまみ hd を設計の px で dx,dy 動かす"""
@@ -701,11 +728,12 @@ async def main():
                 h = await pg.evaluate(f"""(()=>{{const h=[...document.querySelectorAll('[data-handle="{hd}"]')].find(x=>x.offsetParent);if(!h)return null;const r=h.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]}})()""")
                 if not h: return False
                 x, y = h
-                if NO_SNAP: await pg.keyboard.down('Alt')
+                k = await nosnap_key(pg)   # P16 に合わせて手順を変えた（判定は同じ）
+                if NO_SNAP: await pg.keyboard.down(k)
                 await pg.mouse.move(x, y); await pg.mouse.down()
                 for i in range(1, 11): await pg.mouse.move(x + dx * s * i / 10, y + dy * s * i / 10)
                 await pg.mouse.up(); await pg.wait_for_timeout(350)
-                if NO_SNAP: await pg.keyboard.up('Alt')
+                if NO_SNAP: await pg.keyboard.up(k)
                 return True
             async def append_text(part, text):
                 el = await pg.query_selector(f'[data-el="{part}"]'); bb = await el.bounding_box()
@@ -725,7 +753,7 @@ async def main():
                 el = await pg.query_selector('[data-el="row_name_t_warabi"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
                 s_ = bb['width'] / G['row_name_t_warabi']['w']
                 x, y = bb['x'] + 5, bb['y'] + bb['height'] / 2
-                await pg.mouse.click(x, y); await pg.wait_for_timeout(300)
+                await click_sel(pg, x, y); await pg.wait_for_timeout(300)   # P2 に合わせて手順を変えた（判定は同じ）
                 await pg.mouse.move(x, y); await pg.mouse.down()
                 for i in range(1, 11): await pg.mouse.move(x, y + 20 * s_ * i / 10)
                 await pg.mouse.up(); await pg.wait_for_timeout(300)
@@ -735,7 +763,7 @@ async def main():
                 _dy = G1['I_table']['y'] - G['I_table']['y']; _th = 6 if dev == 'pc' else 10
                 ok(f'Y1 {dev} 選んでからドラッグで表全体が約20下がる（等間隔に吸い付きうる）・中は選ばれない', (20 - _th - TOL) <= _dy <= (20 + _th + TOL) and not any(str(k).startswith('row_') for k in sl), f"{box(G,'I_table')}→{box(G1,'I_table')} 下がり {_dy:.1f} 選択 {sl}")
                 el = await pg.query_selector('[data-el="row_name_t_warabi"]'); bb = await el.bounding_box()
-                await pg.mouse.click(bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(300)
+                await click_sel(pg, bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(300)   # P2 に合わせて手順を変えた（判定は同じ）
                 sl = await sel_ids()
                 ok(f'Y2 {dev} 動かさずにクリックで行の文字が選ばれる', any(str(k).startswith('row_') for k in sl), f'選択 {sl}')
                 # Y3
@@ -837,19 +865,20 @@ async def main():
                 el = await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
                 s = bb['width'] / G[part]['w']
                 if handle:
-                    await pg.mouse.click(bb['x'] + min(10, bb['width'] / 2), bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
+                    await click_sel(pg, bb['x'] + min(10, bb['width'] / 2), bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)   # P2 に合わせて手順を変えた（判定は同じ）
                     pos = await pg.evaluate(f"""(()=>{{const h=[...document.querySelectorAll('[data-handle="{handle}"]')].find(x=>x.offsetParent);if(!h)return null;const r=h.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]}})()""")
                     x, y = pos
                 else:
                     x, y = bb['x'] + min(20, bb['width'] / 2), bb['y'] + bb['height'] / 2
-                    await pg.mouse.click(x, y); await pg.wait_for_timeout(80)
-                if alt: await pg.keyboard.down('Alt')
+                    await click_sel(pg, x, y); await pg.wait_for_timeout(80)   # P2 に合わせて手順を変えた（判定は同じ）
+                k = await nosnap_key(pg)   # P16 に合わせて手順を変えた（判定は同じ）：「Alt」＝吸い付かないキー（P16 の版は MOD）
+                if alt: await pg.keyboard.down(k)
                 await pg.mouse.move(x, y); await pg.mouse.down()
                 for i in range(1, 11): await pg.mouse.move(x + dx * s * i / 10, y + dy * s * i / 10)
                 await pg.wait_for_timeout(120)
                 mid = await api(pg, f"{P}.guides()")
                 await pg.mouse.up(); await pg.wait_for_timeout(300)
-                if alt: await pg.keyboard.up('Alt')
+                if alt: await pg.keyboard.up(k)
                 return mid
             def has_ref(gl, ref, d='v'):
                 return any(g.get('dir') == d and g.get('ref') == ref for g in gl or [])
@@ -882,7 +911,7 @@ async def main():
                 # Z5
                 await fresh(pg, dev); G = await geo(pg)
                 el = await pg.query_selector('[data-el="F_h0"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
-                await pg.mouse.click(bb['x'] + 10, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(200)
+                await click_sel(pg, bb['x'] + 10, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(200)   # P2 に合わせて手順を変えた（判定は同じ）
                 for i in range(3): await pg.keyboard.press('ArrowRight'); await pg.wait_for_timeout(120)
                 G1 = await geo(pg); gl = await api(pg, f"{P}.guides()")
                 ok(f'Z5 {dev} 矢印キー3回で3右へ・吸い付かない', abs(G1['F_h0']['x'] - G['F_h0']['x'] - 3) <= TOL and not gl, f"{G['F_h0']['x']:.1f}→{G1['F_h0']['x']:.1f} {gl}")
@@ -935,7 +964,7 @@ async def main():
                 return out
             async def menu(part, label):
                 bb = await bbox(part)
-                await pg.mouse.click(bb['x'] + 12, bb['y'] + 12); await pg.wait_for_timeout(150)
+                await click_sel(pg, bb['x'] + 12, bb['y'] + 12); await pg.wait_for_timeout(150)   # P2 に合わせて手順を変えた（判定は同じ）
                 await pg.mouse.click(bb['x'] + 12, bb['y'] + 12, button='right'); await pg.wait_for_timeout(250)
                 return pg.locator('#fmenu button', has_text=label).first
             async def choose(part, name):
@@ -946,7 +975,7 @@ async def main():
                 await ch.set_files(os.path.join(IMG, name)); await pg.wait_for_timeout(900)
             async def send_file(part, name, kind):
                 bb = await bbox(part)
-                await pg.mouse.click(bb['x'] + 12, bb['y'] + 12); await pg.wait_for_timeout(150)
+                await click_sel(pg, bb['x'] + 12, bb['y'] + 12); await pg.wait_for_timeout(150)   # P2 に合わせて手順を変えた（判定は同じ）
                 ext = name.rsplit('.', 1)[1]
                 await pg.evaluate("""([b64, name, mime, kind, x, y]) => {
                     const bin = atob(b64); const a = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) a[i] = bin.charCodeAt(i);
@@ -1162,6 +1191,7 @@ async def main():
                 if shift: await pg.keyboard.down('Shift')
                 await pg.mouse.click(bb['x'] + 8, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
                 if shift: await pg.keyboard.up('Shift')
+                await esc_if_editing(pg)   # P2 に合わせて手順を変えた（判定は同じ）
             async def tools_visible():
                 return await pg.evaluate("""['size','bold','color'].every(k=>{const e=document.querySelector(`[data-ts="${k}"]`);return e&&e.offsetParent})""")
             async def set_size(n):
@@ -1218,8 +1248,8 @@ async def main():
                 # J7
                 await fresh(pg, dev)
                 bb = await bbox('card_name_c_warabi')
-                await pg.mouse.click(bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
-                await pg.mouse.click(bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
+                await click_sel(pg, bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)   # P2 に合わせて手順を変えた（判定は同じ）
+                await click_sel(pg, bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
                 await pg.locator('[data-ts="color"]').first.click(); await pg.wait_for_timeout(250)
                 await pg.evaluate("""(()=>{const i=document.querySelector('[data-ts="color-custom"]');i.value='#c03030';i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}))})()"""); await pg.wait_for_timeout(300)
                 names = [(await css(f'card_name_c_{k}'))['color'] for k in ['jonama', 'warabi', 'dora']]
@@ -1486,7 +1516,7 @@ async def main():
             G = await geo(pg); dn = [k for k in G if k.endswith('card_name_c_warabi') and k != 'card_name_c_warabi']
             if dn:
                 bb = await bbox(dn[0])
-                for i in range(2): await pg.mouse.click(bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)
+                for i in range(2): await click_sel(pg, bb['x'] + 5, bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(250)   # P2 に合わせて手順を変えた（判定は同じ）
                 await pg.locator('[data-ts="color"]').first.click(); await pg.wait_for_timeout(200)
                 await pg.locator('[data-ts-color="#7B7B7B"]').first.click(); await pg.wait_for_timeout(300)
                 await retype(dn[0], 'わらび餅（冷）')

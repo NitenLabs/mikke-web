@@ -84,12 +84,20 @@ async def scrollto(pg, id):
     await ev(pg, "s=>{const e=document.querySelector('[data-el=\"'+s+'\"]');if(e)e.scrollIntoView({block:'center'})}", id)
     await pg.wait_for_timeout(250)
 
-async def click(pg, id, dx=None, dy=None, n=1, button='left', scroll=True):
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る（押した所にカーソル）。
+    # 部品を「選ぶ」クリックの後、書き換えに入っていたら（editingId() が null でない）Esc を1回＝箱を選んだだけ（Esc の後も選ばれたまま）。
+    # P2 の無い版（試験台28・29）では書き換えに入らないので Esc を押さない（押すと選択が外れるため）
+    if await pg.evaluate("!!(window.__playground&&window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+
+async def click(pg, id, dx=None, dy=None, n=1, button='left', scroll=True, esc=True):
     if scroll: await scrollto(pg, id)
     r = await bb(pg, id)
     if not r: raise RuntimeError('部品が見えない: ' + id)
     x = r['x'] + (dx if dx is not None else min(40, r['w'] / 2)); y = r['y'] + (dy if dy is not None else min(12, r['h'] / 2))
     await pg.mouse.click(x, y, click_count=n, button=button); await pg.wait_for_timeout(380)
+    if esc and n == 1 and button == 'left': await esc_if_editing(pg)   # P2 に合わせて手順を変えた（判定は同じ）
     return r
 
 async def sel(pg): return await ev(pg, f"{P}.selected()")

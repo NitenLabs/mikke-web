@@ -8,6 +8,16 @@ import asyncio, json, sys, re
 from playwright.async_api import async_playwright
 URL='file://'+sys.argv[1]; P='window.__playground'
 R=[]
+MOD='Meta' if sys.platform=='darwin' else 'Control'
+async def nosnap_key(pg):
+    # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
+    # 版の見分け：試験用 API に a2AutoScroll（線 A2 で足した関数）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof window.__playground.a2AutoScroll==='function'") else 'Alt'
+    return pg._nosnap
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
+    if await pg.evaluate("!!(window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
 def rec(k,ok,msg): R.append((k,ok,msg)); print(('OK ' if ok is True else ('NG ' if ok is False else '-- '))+k+' | '+msg, flush=True)
 async def main():
   async with async_playwright() as p:
@@ -25,10 +35,10 @@ async def main():
     async def drag(pg,part,dx,dy):
         el=await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(100)
         r=await bb(pg,part); s=await scale(pg,part); x=r['x']+min(20,r['w']/2); y=r['y']+r['h']/2
-        await pg.mouse.click(x,y); await pg.wait_for_timeout(350); await pg.keyboard.down('Alt')
+        await pg.mouse.click(x,y); await esc_if_editing(pg); await pg.wait_for_timeout(350); await pg.keyboard.down(await nosnap_key(pg))   # P2・P16 に合わせて手順を変えた（判定は同じ）
         await pg.mouse.move(x,y); await pg.mouse.down()
         for i in range(1,11): await pg.mouse.move(x+dx*s*i/10,y+dy*s*i/10); await pg.wait_for_timeout(10)
-        await pg.mouse.up(); await pg.wait_for_timeout(350); await pg.keyboard.up('Alt')
+        await pg.mouse.up(); await pg.wait_for_timeout(350); await pg.keyboard.up(await nosnap_key(pg))   # P16 に合わせて手順を変えた（判定は同じ）
     async def menu_of(pg,part,dx=30,dy=30):
         el=await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(100)
         r=await bb(pg,part); await pg.mouse.click(r['x']+dx,r['y']+dy,button='right'); await pg.wait_for_timeout(400)
@@ -79,11 +89,11 @@ async def main():
     t=await pg.evaluate("document.getElementById('fixedTop').getBoundingClientRect().toJSON()")
     el=await pg.query_selector('[data-el="F_h0"]'); await el.scroll_into_view_if_needed(); r=await bb(pg,'F_h0')
     t=await pg.evaluate("document.getElementById('fixedTop').getBoundingClientRect().toJSON()")
-    await pg.mouse.click(r['x']+20,r['y']+r['h']/2); await pg.wait_for_timeout(300); await pg.keyboard.down('Alt')
+    await pg.mouse.click(r['x']+20,r['y']+r['h']/2); await esc_if_editing(pg); await pg.wait_for_timeout(300); await pg.keyboard.down(await nosnap_key(pg))   # P2・P16 に合わせて手順を変えた（判定は同じ）
     await pg.mouse.move(r['x']+20,r['y']+r['h']/2); await pg.mouse.down()
     ty=t['y']+t['height']/2; 
     for i in range(1,16): await pg.mouse.move(r['x']+20,r['y']+r['h']/2+(ty-(r['y']+r['h']/2))*i/15); await pg.wait_for_timeout(15)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(400)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(400)   # P16 に合わせて手順を変えた（判定は同じ）
     r2=await bb(pg,'F_h0'); t2=await pg.evaluate("document.getElementById('fixedTop').getBoundingClientRect().toJSON()")
     inside=r2['y']<t2['y']+t2['height']
     rec('V3 見出しを一番上の仮の箱の上へ落とす',None,f"見出しの上端（画面）{r2['y']:.0f} 仮の箱 {t2['y']:.0f}〜{t2['y']+t2['height']:.0f} 箱に入った={inside} 記録={json.dumps((await pg.evaluate(f'{P}.ops()'))[-1:],ensure_ascii=False)[:200]}")
@@ -249,7 +259,7 @@ async def main():
     await pg.context.close()
 
     # V16 プレビューの帯・選ばない・スクロールを保つ・戻ると選び直さない
-    pg=await fresh(); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+8); await pg.wait_for_timeout(300)
+    pg=await fresh(); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+8); await esc_if_editing(pg); await pg.wait_for_timeout(300)   # P2 に合わせて手順を変えた（判定は同じ）
     await pg.evaluate("window.scrollTo(0,900)"); await pg.wait_for_timeout(300); y0=await pg.evaluate('scrollY'); o0=len(await pg.evaluate(f"{P}.ops()"))
     await pg.evaluate("document.getElementById('tPreview').click()"); await pg.wait_for_timeout(600)
     bar=await pg.evaluate("(()=>{const b=document.getElementById('previewBar');return [b.classList.contains('on'),[...b.children].filter(c=>c.offsetParent||c.getClientRects().length).map(c=>c.textContent.trim())]})()")

@@ -848,6 +848,10 @@ async def t_P15(br, url):
         try:
             await scrollto(pg, id); r0 = await vb(pg, id)
             if lbl == '写真':
+                # P15 の確かめたいこと（まっすぐ動く）に合わせて向きを変えた（判定は同じ）：写真を右へ 150px はページの右の端を越え、
+                # J16（部品をページの中に収める）で止まって「150 動かない」になる。ページ（特集のセクションの枠）の中に収まる向きにする
+                sec = await pg.evaluate("(()=>{const e=document.querySelector('.sec-wrap[data-sec=feature]')||document.querySelector('[data-sec=feature]');const r=e.getBoundingClientRect();return {x:r.x,r:r.right}})()")
+                if r0['x'] + r0['w'] + d[0] > sec['r'] - 4 and r0['x'] - d[0] >= sec['x'] + 4: d = (-d[0], d[1])
                 await press_release(pg, (r0['x'] + r0['w'] / 2, r0['y'] + r0['h'] / 2), jitter=0)
                 if await sel(pg) != [id]: return False, f'準備失敗：{id} が選べない'
                 pt = (r0['x'] + r0['w'] / 2, r0['y'] + r0['h'] / 2)

@@ -5,6 +5,16 @@
 import asyncio, json, sys
 from playwright.async_api import async_playwright
 URL='file://'+sys.argv[1]; P='window.__playground'
+MOD='Meta' if sys.platform=='darwin' else 'Control'
+async def nosnap_key(pg):
+    # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
+    # 版の見分け：試験用 API に a2AutoScroll（線 A2 で足した関数）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof window.__playground.a2AutoScroll==='function'") else 'Alt'
+    return pg._nosnap
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
+    if await pg.evaluate("!!(window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
 R=[]
 def rec(k,ok,msg): R.append((k,ok,msg)); print(('OK ' if ok is True else ('NG ' if ok is False else '-- '))+k+' | '+msg, flush=True)
 async def main():
@@ -23,14 +33,15 @@ async def main():
         el=await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(100)
         r=await bb(pg,part); s=await scale(pg,part)
         x=r['x']+min(20,r['w']/2); y=r['y']+r['h']/2
-        if pre: await pg.mouse.click(x,y); await pg.wait_for_timeout(350)
-        if alt: await pg.keyboard.down('Alt')
+        if pre: await pg.mouse.click(x,y); await esc_if_editing(pg); await pg.wait_for_timeout(350)   # P2 に合わせて手順を変えた（判定は同じ）
+        k=await nosnap_key(pg)   # P16 に合わせて手順を変えた（判定は同じ）
+        if alt: await pg.keyboard.down(k)
         await pg.mouse.move(x,y); await pg.mouse.down()
         for i in range(1,11): await pg.mouse.move(x+dx*s*i/10,y+dy*s*i/10); await pg.wait_for_timeout(10)
         await pg.wait_for_timeout(150)
         if hold: return
         await pg.mouse.up(); await pg.wait_for_timeout(350)
-        if alt: await pg.keyboard.up('Alt')
+        if alt: await pg.keyboard.up(k)
     async def drag_cy(pg,part,target_cy,hold=False):
         g=(await G(pg))[part]; await drag(pg,part,0,target_cy-(g['y']+g['h']/2),hold=hold)
     async def ops(pg): return await pg.evaluate(f"{P}.ops()")
@@ -50,7 +61,7 @@ async def main():
         pg=await fresh(dev=dev); g=await G(pg)
         await drag_cy(pg,'I_divider',g['I_cards']['y']-20,hold=True)
         dt=await pg.evaluate(f"{P}.dropTarget()"); line=await pg.evaluate("[...document.querySelectorAll('[data-drop-line]')].filter(e=>e.getBoundingClientRect().width>0).length")
-        await pg.mouse.up(); await pg.wait_for_timeout(350); await pg.keyboard.up('Alt')
+        await pg.mouse.up(); await pg.wait_for_timeout(350); await pg.keyboard.up(await nosnap_key(pg))   # P16
         o=await ops(pg); g1=await G(pg)
         hg_b=g['I_hg']['y']+g['I_hg']['h']
         rec(f'K0 {dev} 見出しの組と品の並びの間に落とす（Y14）',o and o[-1].get('t')=='reorder',
@@ -149,9 +160,9 @@ async def main():
     hs=await pg.evaluate("[...document.querySelectorAll('.rz-handle')].map(h=>{const r=h.getBoundingClientRect();return [h.dataset.dir||h.className,r.x+r.width/2,r.y+r.height/2]})")
     e=[h for h in hs if 'e' == str(h[0])[-1:] or 'e'==h[0]]
     if hs:
-        h=max(hs,key=lambda q:q[1]); await pg.keyboard.down('Alt'); await pg.mouse.move(h[1],h[2]); await pg.mouse.down()
+        h=max(hs,key=lambda q:q[1]); await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(h[1],h[2]); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
         for i in range(1,11): await pg.mouse.move(h[1]-800*i/10,h[2])
-        await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(400)
+        await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(400)   # P16 に合わせて手順を変えた（判定は同じ）
     ll=await pg.evaluate(f"{P}.listLayout()")
     rec('K10 sp 表の最小 200',abs(ll['I_table']['w']-200)<=0.5,f'つまみ={hs} 後={ll}')
     await pg.context.close()
@@ -160,9 +171,9 @@ async def main():
     pg=await fresh(); el=await pg.query_selector('[data-el="row_name_t_warabi"]'); await el.scroll_into_view_if_needed()
     r=await bb(pg,'row_name_t_warabi'); await pg.mouse.click(r['x']+20,r['y']+5); await pg.wait_for_timeout(400)
     hs=await pg.evaluate("[...document.querySelectorAll('.rz-handle')].map(h=>{const r=h.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})")
-    h=max(hs,key=lambda q:q[0]); await pg.keyboard.down('Alt'); await pg.mouse.move(h[0],h[1]); await pg.mouse.down()
+    h=max(hs,key=lambda q:q[0]); await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(h[0],h[1]); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,11): await pg.mouse.move(h[0]-2000*i/10,h[1])
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(400)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(400)   # P16 に合わせて手順を変えた（判定は同じ）
     r=await bb(pg,'row_name_t_matcha'); await pg.mouse.dblclick(r['x']+10,r['y']+r['h']/2); await pg.wait_for_timeout(400)
     await pg.keyboard.press('End'); await pg.keyboard.type('と季節の和菓子の盛り合わせ'); await pg.wait_for_timeout(200)
     await pg.keyboard.press('Escape'); await pg.mouse.click(5,1050); await pg.wait_for_timeout(400)
@@ -179,9 +190,9 @@ async def main():
         r=await bb(pg,'row_name_t_warabi'); await pg.mouse.click(r['x']+20,r['y']+5); await pg.wait_for_timeout(400)
     async def handle_drag(pg,dx):
         hs=await pg.evaluate("[...document.querySelectorAll('.rz-handle')].filter(h=>h.getBoundingClientRect().width>0).map(h=>{const r=h.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})")
-        h=max(hs,key=lambda q:q[0]); await pg.keyboard.down('Alt'); await pg.mouse.move(h[0],h[1]); await pg.mouse.down()
+        h=max(hs,key=lambda q:q[0]); await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(h[0],h[1]); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
         for i in range(1,11): await pg.mouse.move(h[0]+dx*i/10,h[1]); await pg.wait_for_timeout(10)
-        await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(400)
+        await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(400)   # P16 に合わせて手順を変えた（判定は同じ）
         return h
     async def handles(pg):
         return await pg.evaluate("[...document.querySelectorAll('.rz-handle')].filter(h=>h.getBoundingClientRect().width>0).map(h=>{const r=h.getBoundingClientRect();return Math.round(r.x+r.width/2)})")
@@ -263,7 +274,7 @@ async def main():
         pg=await fresh(dev=dev); g=await G(pg)
         ty=(g[target]['y']+off) if off>=0 else (g[target]['y']+g[target]['h']+off)
         await drag_cy(pg,part,ty,hold=True); dt=await pg.evaluate(f"{P}.dropTarget()")
-        await pg.mouse.up(); await pg.wait_for_timeout(300); await pg.keyboard.up('Alt'); await pg.context.close(); return dt
+        await pg.mouse.up(); await pg.wait_for_timeout(300); await pg.keyboard.up(await nosnap_key(pg)); await pg.context.close(); return dt   # P16
     for dev in ('pc','sp'):
         for part,target,off,want in (('I_divider','I_cards',8,'reorder'),('I_time','I_cards',-8,'reorder'),('I_divider','I_table',8,'reorder'),('I_divider','I_table',-8,'reorder'),('I_divider','I_cards',60,'overlap')):
             dt=await probe(dev,part,target,off)

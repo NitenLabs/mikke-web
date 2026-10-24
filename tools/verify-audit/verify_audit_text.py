@@ -61,10 +61,19 @@ async def scrollto(pg, id):
     await pg.evaluate("s=>{const e=document.querySelector('[data-el=\"'+s+'\"]');if(e)e.scrollIntoView({block:'center'})}", id)
     await pg.wait_for_timeout(250)
 
-async def click(pg, id, dx=40, dy=12, n=1):
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る（押した所にカーソル）。
+    # 部品を「選ぶ」クリックの後、書き換えに入っていたら（editingId() が null でない）Esc を1回＝箱を選んだだけ（Esc の後も選ばれたまま）。
+    # P2 の無い版（試験台28・29）では書き換えに入らないので Esc を押さない（押すと選択が外れるため）
+    if await pg.evaluate("!!(window.__playground&&window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+
+async def click(pg, id, dx=40, dy=12, n=1, esc=True):
     await scrollto(pg, id); r = await vb(pg, id)
     await pg.mouse.click(r['x'] + min(dx, max(1, r['w'] - 2)), r['y'] + min(dy, max(1, r['h'] / 2)), click_count=n)
-    await pg.wait_for_timeout(350); return r
+    await pg.wait_for_timeout(350)
+    if esc and n == 1: await esc_if_editing(pg)   # P2 に合わせて手順を変えた（判定は同じ）
+    return r
 
 async def dbl(pg, id, dx=60, dy=12):
     await scrollto(pg, id); r = await vb(pg, id)
@@ -185,6 +194,7 @@ async def t_J2(br, url):
 async def t_J3(br, url):
     pg = await fresh(br, url)
     r = await dbl(pg, 'F_b0', 100)
+    await caret_end(pg)   # P3 に合わせて手順を変えた（判定は同じ）：ダブルクリックは語を選ぶので、末尾にカーソルを置いてから打つ
     await pg.keyboard.type('AB'); await pg.wait_for_timeout(150)
     await pg.mouse.dblclick(r['x'] + 100, r['y'] + 12); await pg.wait_for_timeout(400)
     ce = await pg.evaluate("document.querySelector('[data-el=F_b0]').getAttribute('contenteditable')")

@@ -86,12 +86,21 @@ async def vb(pg, id):
     """画面上の位置（なければ None）"""
     return await pg.evaluate("s=>{const e=document.querySelector('[data-el=\"'+s+'\"]');if(!e)return null;const r=e.getBoundingClientRect();if(r.width==0&&r.height==0)return null;return {x:r.x,y:r.y,w:r.width,h:r.height,py:r.y+scrollY}}", id)
 
-async def click(pg, id, dx=40, dy=12, mods=(), button='left'):
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る（押した所にカーソル）。
+    # 部品を「選ぶ」クリックの後、書き換えに入っていたら（editingId() が null でない）Esc を1回＝箱を選んだだけ（Esc の後も選ばれたまま）。
+    # P2 の無い版（試験台28・29）では書き換えに入らないので Esc を押さない（押すと選択が外れるため）
+    if await pg.evaluate("!!(window.__playground&&window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+
+async def click(pg, id, dx=40, dy=12, mods=(), button='left', esc=True):
     await scrollto(pg, id); r = await vb(pg, id)
     for m in mods: await pg.keyboard.down(m)
     await pg.mouse.click(r['x'] + dx, r['y'] + dy, button=button)
     for m in mods: await pg.keyboard.up(m)
-    await pg.wait_for_timeout(350); return r
+    await pg.wait_for_timeout(350)
+    if esc and button == 'left': await esc_if_editing(pg)   # P2 に合わせて手順を変えた（判定は同じ）
+    return r
 
 async def dbl(pg, id, dx=60, dy=12):
     await scrollto(pg, id); r = await vb(pg, id)
@@ -261,8 +270,14 @@ async def t_J16(br, url, imgs):
         pg = await fresh(br, url)
         try:
             r = await click(pg, 'F_h0', 60); r = await vb(pg, 'F_h0'); a = (r['x'] + 60, r['y'] + 12)
-            await mdrag(pg, a, target(a), steps=20)
+            # P2 に合わせて準備の確かめを足した（判定は同じ）：線 A2 で、書き換え中の箱の中のドラッグは文字の選択になり箱が動かない。
+            # その空振りで「収まっている」と合格しないよう、ドラッグの途中で部品のドラッグになっている（isDragging）か、離した後に動いたことを確かめる
+            await pg.mouse.move(*a); await pg.mouse.down(); await pg.mouse.move(*target(a), steps=20)
+            dragging = await pg.evaluate(f"!!({P}.isDragging&&{P}.isDragging())")
+            await pg.mouse.up(); await pg.wait_for_timeout(500)
             e = await vb(pg, 'F_h0')
+            if not dragging and e and abs(e['x'] - r['x']) < 1 and abs(e['y'] - r['y']) < 1:
+                return False, f'準備失敗：{label} へのドラッグで F_h0 が動かない（部品のドラッグにならない）'
             s = await pg.evaluate("(()=>{const e=document.querySelector('.sec-wrap[data-sec=feature]')||document.querySelector('[data-sec=feature]');const r=e.getBoundingClientRect();return {x:r.x,y:r.y,r:r.right,b:r.bottom}})()")
             inside = e and e['x'] >= s['x'] - 4 and e['x'] + e['w'] <= s['r'] + 4 and e['y'] >= s['y'] - 4 and e['y'] + e['h'] <= s['b'] + 4
             ok &= bool(inside)
