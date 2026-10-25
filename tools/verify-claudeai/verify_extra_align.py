@@ -43,6 +43,11 @@ async def main():
                 cur = (await G(pg))[pid]
                 if abs(cur['x'] - tx) <= 0.6 and abs(cur['y'] - ty) <= 0.6: break
                 await drag(pg, pid, tx - cur['x'], ty - cur['y'], alt=True)
+            # 準備の直し（判定は同じ。G・L の試験の操作はドラッグのまま）：線 A1（F2）で見出しの幅の下限が 96 になり、
+            # 並べた見出しの横へ本文を落とすと「並び替え」の帯に入って縦積みへ戻される。並べるだけの準備なので、届かなければ API で置く
+            cur = (await G(pg))[pid]
+            if abs(cur['x'] - tx) > 0.6 or abs(cur['y'] - ty) > 0.6:
+                await ev(pg, f"{P}.nudge('{pid}',{tx - cur['x']},{ty - cur['y']})"); await pg.wait_for_timeout(60)
         # 横に並んだ3つ（テンプレの文字 F_h0・F_b0・F_h1 を細くして同じ行に並べる）。gaps が等しくない初期配置。
         # 既定は左寄せ＝動かす F_h1 が自分の塊（block1・右）より左に来るので M2 のまま＝離しても位置が保たれる
         async def setup_row(pg, ys=700, xs=(100, 240, 650), w=80):
