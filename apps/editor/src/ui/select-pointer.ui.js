@@ -99,7 +99,8 @@ window.addEventListener("pointerup",(e)=>{
   // P2 文字の箱を押して離した（3px 未満の動き）＝押した所にカーソルを置いて書き換え（選んでいない箱・選んだ箱とも）
   if(wasPending && wasPending.textClick && e.button===0 && Math.hypot(e.clientX-wasPending.sx,e.clientY-wasPending.sy)<3){ a2EditAt(wasPending.textClick,wasPending.sx,wasPending.sy); return; }
   // X1：全体を選択中に中を押して動かさずに離した＝中の1件を選ぶ
-  if(wasPending && wasPending.clickInner){ PG.selectMany([wasPending.clickInner]); showFmenu(); }
+  // P23・P26：PC の一覧は右クリックだけ（PowerPoint と同じ）。左クリックで出すと、隣の品の名前に重なって次のクリックを取られる
+  if(wasPending && wasPending.clickInner){ PG.selectMany([wasPending.clickInner]); if(isPhone()) showFmenu(); else fmenu.classList.remove("on"); }
 });
 // ダブルクリック＝文字はその場書き換え、写真は見せる範囲（§2.1）
 // ===================== 試験台26：① 連動の UI（知らせ・値段の箱・品を選ぶ一覧・連動の知らせ・お品書きの板） =====================
