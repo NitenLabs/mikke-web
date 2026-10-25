@@ -256,7 +256,8 @@ function a2CrossSecDrop(dx, dy) {
     const grp = "xsec" + Date.now(); const items = [];
     for (const c of cross) {
       const tn = secNode(c.tgt.id); const tr = tn.getBoundingClientRect();
-      const x = (c.r.left - tr.left) / scale, y = Math.max(0, (c.r.top - tr.top) / scale), w = c.r.width / scale, h = c.r.height / scale;   // SP-6 移す先でもセクションの上端より上へは出さない（J16 と同じ）
+      // 離した所にそのまま置く（上端より上に少し出ても寄せない：寄せると下の見出しに重なる。verify_extra_photo H2）
+      const x = (c.r.left - tr.left) / scale, y = (c.r.top - tr.top) / scale, w = c.r.width / scale, h = c.r.height / scale;
       const g0 = geometry(); const g = {}; for (const k in g0) if (k !== c.id && secOf(k) === c.tgt.id) g[k] = g0[k];   // 移す先のセクションの部品だけ（座標はセクションごと）
       g[c.id] = { ...(g0[c.id] || {}), x, y, w, h };   // 移す先の座標で測った自分
       const pr = reanchorX(g, c.id, c.tgt.id) || { anchor: "@section", gapY: +y.toFixed(2), x: +x.toFixed(2) };
