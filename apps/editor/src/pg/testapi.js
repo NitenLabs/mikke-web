@@ -152,7 +152,7 @@ return {
   resetScope, peekOn, peekOff, addTextAt, anchorsList, classify: (id) => M.classifyDrop(geometry(), id, [id]),
   bringToFront, sendToBack, bringForward, sendBackward, hasOverlapPartner, zOrderList,
   beginResize, resizeMove, endResize, isResizing: () => !!rz, programResize, handlesFor,
-  a2AutoScroll, a2StopAutoScroll,   // 線 A2：P19 端での自動スクロール（WIRING から使う）
+  a2AutoScroll, a2StopAutoScroll, dragScrollSync, a2AutoScrollMaxY,   // 線 A2：P19 端での自動スクロール（WIRING から使う）
   align, canAlign,   // §27 配置（揃え・整列）
   paintPhotos, photosApi, replacePhotoFile, loadImageFile, assetUrl, assetNat,
   setBrightness, brightnessOf, addPhotoAtPoint, addTextAtPoint,   // §3/§4/§5（試験台17）

@@ -48,7 +48,7 @@ function onPhoneMove(e){
   if(tg.kind==="resize"){ e.preventDefault(); const c=dragClient(); PG.resizeMove(c.x,c.y,false); return; }
   if(tg.kind==="drag"){ e.preventDefault(); const c=dragClient(); PG.dragMove(c.x,c.y,false); return; }
   if((tg.kind==="pending"&&tg.selStart)||tg.kind==="longpressed"){   // §3.2.1 選んでいる部品を6以上なぞる→動かす
-    if(dist>DRAG_MOVE&&PG.beginDrag(tg.sx,tg.sy)){ tg.kind="drag"; fmenu.classList.remove("on"); e.preventDefault(); const c=dragClient(); PG.dragMove(c.x,c.y,false); startAuto(); }
+    if(dist>DRAG_MOVE&&PG.beginDrag(tg.sx,tg.sy,{touch:true})){ tg.kind="drag"; fmenu.classList.remove("on"); e.preventDefault(); const c=dragClient(); PG.dragMove(c.x,c.y,false); startAuto(); }
   }
   // それ以外（選んでいない所）は preventDefault しない＝ブラウザがスクロール
 }
@@ -57,6 +57,7 @@ function onPhoneUp(e){
   if(!tg) return; const t=tg; clearLP(); stopAuto();
   if(t.kind==="resize"){ PG.endResize(); tg=null; showFmenu(); return; }
   if(t.kind==="drag"){ PG.endDrag(); tg=null; showFmenu(); return; }   // §3.2.6 動かした後に箱
+  if(t.kind==="cancelled"){ tg=null; return; }   // PC-10 取り消したドラッグ
   if(t.kind==="longpressed"||t.kind==="longpressed-sec"){ tg=null; return; }   // 箱は出したまま
   tg=null; if(t.moved) return;   // 少し動いた＝スクロール寄り→何もしない
   onTap(t,e);
@@ -86,6 +87,7 @@ function startAuto(){ if(autoRAF) return; autoLast=performance.now();
     if(isPhone() && pbar && pbar.style.display!=="none"){ const br=pbar.getBoundingClientRect(); if(br.height) vbot=Math.min(vbot, br.top); }
     let v=0;
     if(tg.cy<vtop+EDGE) v=-EDGE_MAXV*(1-(tg.cy-vtop)/EDGE); else if(tg.cy>vbot-EDGE) v=EDGE_MAXV*(1-(vbot-tg.cy)/EDGE);
+    if(v>0&&tg.kind==="drag"){ const ins=Math.max(0,window.innerHeight-vbot); v=Math.min(v,Math.max(0,(PG.a2AutoScrollMaxY(ins)-window.scrollY)/Math.max(dt,0.001))); }   // SP-2（DECISIONS #31）ページの下端より下へは自動でスクロールしない
     if(!v) return;
     window.scrollBy(0,v*dt);
     const c=dragClient(); if(tg.kind==="drag") PG.dragMove(c.x,c.y,false); else PG.resizeMove(c.x,c.y,false);

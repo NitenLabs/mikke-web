@@ -65,6 +65,9 @@ const isFloat = (id) => isAdded(id) || isCarried(id);
 // 品の並び・表（① とつながる）・中の1件・セクションの見出しの組・区切り線・ボタン・ヘッダー/フッターの部品は移せない
 const CROSS_BARE = /^(F_p\d|F_h\d|F_b\d|I_kanmi|I_time)$/;
 const canCrossSec = (id) => isAdded(id) || CROSS_BARE.test(bareOf(id));
+// PC-2・SP-1（DECISIONS #30）流れの中にしか描けない部品（品の並び・表・ボタン）。塊の外（M2）にすると絶対配置の層に描く物が無く、知らせなしに消えていた。
+// ドラッグで塊の外・ほかの部品の上に離しても、流れの中のずれ（M1）で離した所に置く（重なってよい。PowerPoint と同じく離した所に残る）
+const isFlowOnly = (id) => /^(I_cards|I_table|I_pillbg)$/.test(bareOf(canonId(id)));
 const secOf = (id) => { const mv = movedSecMap()[id]; if (mv) return mv; const t = instTag(id); if (t) return t; if (isAdded(id)) { const op = activeOps().find((o) => o.t === "add" && o.id === id); if (op) return op.section; const ba = ((state.base && state.base.added) || []).find((a) => a.id === id); if (ba) return ba.section || secOf(ba.anchor); return "items"; } return id.startsWith("F_") ? "feature" : "items"; };
 // 並び替え（§6／§10.1）：縦に並んだ塊の中だけ。PC は文字の塊（見出し・本文）＝写真は横並びで対象外。SP はブロック（写真・見出し・本文）。
 function reorderClusterOf(id) {

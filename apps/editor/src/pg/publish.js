@@ -121,7 +121,7 @@ function publishCheck() {
     a1EmptyTextItems(dev, items, emptySeen);   // J56・J41 空の見出し・品名（text-style.js）
     // 仕組みの重なり・はみ出し（ふつうは空）
     for (const o of w.overlaps || []) items.push({ device: dev, kind: "system", parts: [canonId(o.a), canonId(o.b)], text: `${DL}：${M.friendly(o.a)}が、${M.friendly(o.b)}に重なっています` });
-    for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: o.dir ? `${DL}：${M.friendly(o.id)}が画面の${o.dir}へはみ出しています（${o.dir}の端が切れて見えます）` : `${DL}：${M.friendly(o.id)}がはみ出しています` });   // F68 どの部品が・どちらへ
+    for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: o.edge === "縦" ? `${DL}：${M.friendly(o.id)}が、セクションの上へはみ出しています（上のセクションの裏に隠れて見えません）` : o.dir ? `${DL}：${M.friendly(o.id)}が画面の${o.dir}へはみ出しています（${o.dir}の端が切れて見えます）` : `${DL}：${M.friendly(o.id)}がはみ出しています` });   // F68 どの部品が・どちらへ
   }
   state.device = curDev; render();
   for (const it of s_deadLinkItems()) items.push(it);   // PC-25 行き先のセクションを消したリンク

@@ -60,6 +60,11 @@ stage.addEventListener("pointerdown",(e)=>{
   if(e.pointerType!=="touch"||wasSel){ const nn=PG.elNode(id); const isPh=!!(nn&&nn.getAttribute("data-kind")==="photo"&&!nn.classList.contains("empty")); pending={sx:e.clientX,sy:e.clientY,photoClick:(isPh&&e.button===0&&!e.ctrlKey)?id:null,textClick:(a2ClickEditable(id)&&e.button===0&&!e.ctrlKey)?id:null}; }
 },{passive:false});
 let pending=null;
+// PC-10（J29 の再発）ドラッグ中の Esc の後は、離すまでマウスを動かしてもドラッグを始め直さない（前は pending が残り、3px 動かすと始め直して、離すと記録された）。PowerPoint と同じ
+let a2DragDead=false;
+function a2DragCancelled(){ pending=null; a2DragDead=true; PG.a2StopAutoScroll(); a2NoTextSel(true); if(typeof tg!=="undefined"&&tg&&tg.kind==="drag"){ stopAuto(); tg.kind="cancelled"; } }
+// PC-11 ドラッグ中にホイールなどでページがスクロールしたら、部品をマウスの下に付いてこさせる
+window.addEventListener("scroll",()=>{ if(PG.isDragging()) PG.dragScrollSync(); },{passive:true});
 // F20 マウスを乗せた部品に細い枠（選んでいる・書き換え中・ドラッグ中は出さない）
 let a2HoverId=null;
 function a2SetHover(id){ if(id&&id===a2HoverId){ const n=PG.elNode(id); if(n) n.classList.add("a2-hover"); return; } const old=a2HoverId&&PG.elNode(a2HoverId); if(old) old.classList.remove("a2-hover"); a2HoverId=id; const n=id&&PG.elNode(id); if(n) n.classList.add("a2-hover"); }
@@ -74,12 +79,14 @@ window.addEventListener("pointermove",(e)=>{
   // §2 Alt（Mac は Option）を押しながらは、そろえない
   if(PG.isResizing()){ e.preventDefault(); PG.resizeMove(e.clientX,e.clientY,e.metaKey||e.ctrlKey); PG.a2AutoScroll(e.clientX,e.clientY,e.metaKey||e.ctrlKey,false); return; }   // P16 吸い付かないのは Cmd（Option は複製に使う）
   if(marquee){ const x=Math.min(marquee.x0,e.clientX),y=Math.min(marquee.y0,e.clientY),w=Math.abs(e.clientX-marquee.x0),h=Math.abs(e.clientY-marquee.y0); Object.assign(marquee.el.style,{left:x+"px",top:y+"px",width:w+"px",height:h+"px"}); e.preventDefault(); return; }
+  if(a2DragDead) return;   // PC-10
   if(pending && !PG.isDragging() && Math.hypot(e.clientX-pending.sx,e.clientY-pending.sy)>3){ PG.beginDrag(pending.sx,pending.sy); a2NoTextSel(); lastImgClick=null; const pcb=document.getElementById("photoChangeBtn"); if(pcb) pcb.style.display="none"; }   // §2 動かし始めたら写真を変えるボタンを隠す・X10 ドラッグはダブルに数えない
   if(PG.isDragging()){ e.preventDefault(); PG.dragMove(e.clientX,e.clientY,e.metaKey||e.ctrlKey,e.shiftKey); PG.a2AutoScroll(e.clientX,e.clientY,e.metaKey||e.ctrlKey,e.shiftKey); }   // P16 Cmd＝吸い付かない・P15 Shift＝縦か横にまっすぐ
 },{passive:false});
 window.addEventListener("pointerup",(e)=>{
   if(e.pointerType==="touch"){ if(tg) onPhoneUp(e); return; }   // J30 指は幅によらずスマホの動き
   if(isPhone()) return;
+  if(a2DragDead){ a2DragDead=false; pending=null; return; }   // PC-10 Esc で取り消したドラッグの離し＝何もしない
   const wasPending=pending; pending=null; PG.a2StopAutoScroll(); a2NoTextSel(true);
   if(PG.isResizing()){ PG.endResize(); return; }   // F63 大きさを変えた後も帯は出さない
   if(marquee){ const r=marquee.el.getBoundingClientRect(); marquee.el.remove(); marquee=null; const chosen=[];

@@ -119,7 +119,10 @@ function render() {
     if (!(host._rSig === sig && host._rSnap != null && host.innerHTML === host._rSnap)) host.innerHTML = html;
     host._rSig = sig;
     // §20b §2.4 広げるのは右へ（左端は動かさない）＝中央そろえ(margin:auto)を左端固定に上書き
-    if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tn = host.querySelector('#host_items [data-el="I_table"]') || host.querySelector('[data-el="I_table"]'); if (tn) { const dw = SPEC.DESIGN_W[state.device]; const recW = (R.sizes && R.sizes["I_table"] && R.sizes["I_table"].w != null) ? R.sizes["I_table"].w : 968; tn.style.marginLeft = Math.min((dw - recW) / 2, contentEdges().right - state._tableDispW) + "px"; tn.style.marginRight = "0"; } }   // K15 右端に当たったら、残りは左へ広げる
+    if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tn = host.querySelector('#host_items [data-el="I_table"]') || host.querySelector('[data-el="I_table"]'); if (tn) { const dw = SPEC.DESIGN_W[state.device]; const recW = (R.sizes && R.sizes["I_table"] && R.sizes["I_table"].w != null) ? R.sizes["I_table"].w : 968; const tid = anchor ? "I_table" : (pfx + "I_table"); const mdx = (R.m1 && R.m1[tid] && R.m1[tid].dx) || 0; const ce = contentEdges();
+        // PC-8・PC-9 左端は「流れの中のずれ（左の辺から縮めた分・動かした分）」も入れて測る。前は margin だけで測り、ずれの分（-148 など）だけページの左へはみ出した。中身の左端より左へは出さない
+        const left = Math.max(ce.left, Math.min((dw - recW) / 2 + mdx, ce.right - state._tableDispW));
+        tn.style.marginLeft = (left - mdx) + "px"; tn.style.marginRight = "0"; } }   // K15 右端に当たったら、残りは左へ広げる
     host._padBottom = out.padBottom;
     // §2.2 背景は並び順で（feature/items のみ）。試験台28：ヘッダー（見える並びの先頭）を除いたページ内の順で交互。新しいセクションは builder の背景を残す。
     if (inst.type === "feature" || inst.type === "items") { const s = host.querySelector("#sec"); if (s) s.style.background = SPEC.COLORS[secBgName(idx - 1)]; }

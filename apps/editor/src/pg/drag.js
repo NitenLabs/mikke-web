@@ -2,10 +2,11 @@
 // 線：A2｜PG の中（pg/ のファイルは1つのスコープを分け合う。並びは src/parts.mjs）
 // ---- ドラッグ（M1/M2 を離した位置で判定）----
 let drag = null;
-function beginDrag(clientX, clientY) {
+// opts.touch＝指のドラッグ（指は touch.ui.js の dragClient がスクロールの分を足して渡すので、こちらでは足さない）
+function beginDrag(clientX, clientY, opts) {
   const ids = [...state.selected].filter(isDraggable); if (!ids.length) return false;
   const baseT = {}; for (const id of ids) { const n = elNode(id); baseT[id] = curTranslate(n); }
-  drag = { ids, sx: clientX, sy: clientY, lx: clientX, ly: clientY, baseT, origGeom: geometry() };
+  drag = { ids, sx: clientX, sy: clientY, lx: clientX, ly: clientY, rx: clientX, ry: clientY, baseT, origGeom: geometry(), touch: !!(opts && opts.touch), lastScroll: window.scrollY };
   a2DragHostsOn(ids); return true;
 }
 // PC-13 ドラッグ中は、動かしている部品のセクションを前に出す（後ろのセクションの背景に隠れて、移す先で部品が見えなかった）。終わったら戻す
@@ -32,6 +33,7 @@ const a2VertOnly = (id) => state.device === "pc" && /^(F_hg|I_hg)$/.test(bareOf(
 function curTranslate(n) { if (!n) return { tx: 0, ty: 0 }; const t = n.style.transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/); return t ? { tx: +t[1], ty: +t[2] } : { tx: 0, ty: 0 }; }
 function dragMove(clientX, clientY, alt, shift) {
   if (!drag) return;
+  drag.rx = clientX; drag.ry = clientY; drag.alt = alt; drag.shift = shift;   // PC-11 スクロールしたときに同じマウスの位置で描き直す
   // P15 Shift を押している間は縦か横にまっすぐ（動きの大きい方の軸だけ。もう一方の軸は吸い付きもしない）
   drag.axis = null;
   if (drag.ids.length === 1 && a2VertOnly(drag.ids[0])) { clientX = drag.sx; drag.axis = "y"; }   // PC-14 PC の見出しの組は上下だけ（吸い付きも横は外す）
@@ -184,7 +186,7 @@ function showReorderLine(id, ro) {
   line.style.cssText = `position:absolute;left:${me.x}px;top:${y}px;width:${me.w}px;height:2px;background:#06c;pointer-events:none;z-index:6`;
   s.appendChild(line);
 }
-function cancelDrag() { if (!drag) return; drag = null; a2DragHostsOff(); a2NoDropMark(false); clearGuides(); render(); }   // J29 ドラッグ中の Esc：取り消して元に戻す（離しても何も記録しない）
+function cancelDrag() { if (!drag) return; drag = null; a2StopAutoScroll(); a2DragHostsOff(); a2NoDropMark(false); clearGuides(); render(); }   // J29 ドラッグ中の Esc：取り消して元に戻す（離しても何も記録しない）
 // PC-26 離したときの計算で例外が出ても、ドラッグは必ず終える（前は drag が残り、離した後も部品がマウスに付いて回った）
 function endDrag(opts) {
   if (!drag) return;
@@ -213,7 +215,7 @@ function endDragInner(opts) {
   // §22a X29：順の判定は「40px 内のずらし（M1）」が先。実際に並びが変われば reorder をコミット。40px 外の帯の no-op（縁）だけ流れに戻す（M2 にしない）。小さなずらしは下の M1 へ落とす。
   if (drag.ids.length === 1) { const id = drag.ids[0]; const roReal = reorderPreview(g, id); if (roReal) { drag = null; commit({ t: "reorder", device: state.device, key: roReal.key, id, order: roReal.order }); return; } if (reorderActive(g, id)) { drag = null; render(); return; } }
   // M1/M2 を判定。M2 の付いていく先・間隔は「離した瞬間（元の場所を詰める前）の配置」で決める（§2.2）。
-  const decided = drag.ids.map((id) => ({ id, mode: classify(g, id) }));
+  const decided = drag.ids.map((id) => { const m = classify(g, id); return { id, mode: (m === "M2" && isFlowOnly(id)) ? "M1" : m }; });   // PC-2・SP-1 品の並び・表・ボタンは M2 にしない（消えていた）
   if (decided.some((d) => d.mode === "M2")) {
     const finalItems = decided.map((d) => {
       if (d.mode === "M1") { const bt = drag.baseT[d.id], p0 = prior[d.id] || { dx: 0, dy: 0 }; return { id: d.id, mode: "M1", dx: Math.round((p0.dx || 0) + bt.tx + dxOf(d.id)), dy: Math.round((p0.dy || 0) + bt.ty + dy) }; }
@@ -232,6 +234,15 @@ function endDragInner(opts) {
 }
 
 
+// PC-4・SP-2 ページの下端（全部のセクションの下端）の client の y。ドラッグ中の部品は transform で描くので、ページの高さ（scrollHeight）は伸びて見える。セクションの箱の高さで測る
+function a2PageBottomClient() { let b = -Infinity; for (const inst of state.secList) { const h = document.getElementById(secHostId(inst)); if (!h) continue; const r = h.getBoundingClientRect(); if (r.height > 0) b = Math.max(b, r.bottom); } return b === -Infinity ? Infinity : b; }
+// PC-4・SP-2 端の自動スクロールで下へ行ける一番下の scrollY（ページの下端が窓の下端〔bottomInset＝下の並びの分は上〕に来るまで）。PowerPoint もスライドの外へは自動スクロールしない
+function a2AutoScrollMaxY(bottomInset) { const pb = a2PageBottomClient(); if (!isFinite(pb)) return Infinity; return Math.max(0, pb + window.scrollY - (window.innerHeight - (bottomInset || 0)) + 16); }
+// PC-11（DECISIONS #32）ドラッグ中にページがスクロールした（ホイール・端の自動スクロール）ら、部品をマウスの下に付いてこさせる（PowerPoint と同じ）。指は dragClient が足すので除く
+function dragScrollSync() {
+  if (!drag || drag.touch) return; const d = window.scrollY - drag.lastScroll; if (!d) return;
+  drag.lastScroll = window.scrollY; drag.sy -= d; dragMove(drag.rx, drag.ry, drag.alt, drag.shift);
+}
 // ---- J17 別のセクションへ移す ----
 // client の点が、今のページのどのセクションの上か（ヘッダー・フッターも返す。どれでもなければ null）
 function a2SecAtClientY(cy) {
@@ -248,7 +259,8 @@ function a2CrossSecDrop(dx, dy) {
     const own = secOf(id); const ownN = secNode(own); if (!ownN) continue; const orr = ownN.getBoundingClientRect();
     if (cyC >= orr.top && cyC < orr.bottom) continue;   // 自分のセクションの中
     const tgt = a2SecAtClientY(cyC);
-    if (!tgt) continue;   // ページの外（一番下より下など）は従来どおり
+    // PC-4・SP-2（DECISIONS #31）ページの一番下（全部のセクションの下端）より下で離したら、フッターの上と同じ＝移さず自分のセクションの中にとどめる（前はずっと下に置かれ、セクションが数千 px 伸びた）
+    if (!tgt) { if (cyC >= a2PageBottomClient()) held.push({ id, e0 }); continue; }
     const okT = (tgt.type === "feature" || tgt.type === "items") && tgt.id !== own;
     if (okT && canCrossSec(id)) cross.push({ id, tgt, r }); else held.push({ id, e0 });
   }
@@ -358,8 +370,9 @@ function a2AutoScroll(x, y, noSnap, shift) {
 }
 function a2AutoStep() {
   if (!a2as) return; a2as.raf = 0; if (!a2as.v || (!drag && !rz)) return;
-  const y0 = scrollY; window.scrollBy(0, a2as.v); const d = scrollY - y0; if (!d) return;   // 端まで来た
-  if (drag) { drag.sy -= d; dragMove(a2as.x, a2as.y, a2as.noSnap, a2as.shift); } else if (rz) { rz.sy -= d; resizeMove(a2as.x, a2as.y, a2as.noSnap); }
+  let v = a2as.v; if (v > 0) { const mx = a2AutoScrollMaxY(0); v = Math.min(v, Math.max(0, Math.floor(mx - scrollY))); }   // PC-4 ページの下端より下へは自動でスクロールしない
+  const y0 = scrollY; if (v) window.scrollBy(0, v); const d = scrollY - y0; if (!d) { a2as.raf = requestAnimationFrame(a2AutoStep); return; }   // 端まで来た（戻ってきたら続けて動けるよう待つ）
+  if (drag) { dragScrollSync(); } else if (rz) { rz.sy -= d; resizeMove(a2as.x, a2as.y, a2as.noSnap); }
   a2as.raf = requestAnimationFrame(a2AutoStep);
 }
 function a2StopAutoScroll() { if (a2as && a2as.raf) cancelAnimationFrame(a2as.raf); a2as = null; }

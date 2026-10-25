@@ -214,6 +214,27 @@ async def main():
     mo=await pg.evaluate("(()=>{const b=[...document.querySelectorAll('#pbar button')].find(b=>b.textContent.trim()==='その他');const r=b.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()")
     await tap(*mo); r=await rect('F_h0'); await lp(r['cx'],r['cy'])
     ok('N10 「その他」を開いたまま部品を長押し → 一覧は閉じて、箱が出る', (await el('#pmore')) is None and (await menu()) is not None, f"一覧 {bool(await el('#pmore'))} 箱 {bool(await menu())}")
+    # ---- 4回目の精査（線 T・D） ----
+    # N11 SP-1 表を1回タップして選び、指で上へ 550px 引いて離す → 表は消えない（スマホのプレビューにも残る）
+    await load(); await pg.evaluate("scrollTo(0,3222-650)"); await pg.wait_for_timeout(300)
+    r=await rect('row_name_t_matcha'); await tap(r['cx'],r['cy']); await pg.wait_for_timeout(300)
+    r=await rect('row_name_t_matcha'); await swipe(r['cx'],r['cy'],0,-550,step=18); await pg.wait_for_timeout(400)
+    tb=await rect('I_table'); rows=await pg.evaluate("document.querySelectorAll('[data-el^=\"row_name_\"]').length")
+    pc=await pg.evaluate(f"JSON.stringify({P}.ops())")
+    ok('N11 SP-1 表を指で上へ 550px 引いても表は消えない', bool(tb and tb['h']>20 and rows>=2), f'表 {tb and round(tb["h"])} 行 {rows} 記録 {pc[:160]}')
+    # N12 SP-2 写真を選んで、指を下の帯の少し上で 3.5 秒押さえ続ける → ページの下端より下へスクロールせず、セクションも伸びない
+    await load()
+    H0=await pg.evaluate(f"Object.values({P}.sections()).reduce((a,s)=>a+s.height,0)"); maxS=await pg.evaluate("document.documentElement.scrollHeight-innerHeight")
+    await pg.evaluate("scrollTo(0,700)"); await pg.wait_for_timeout(300)
+    r=await rect('F_p1'); await tap(r['cx'],r['cy']); await pg.wait_for_timeout(300)
+    r=await rect('F_p1'); x0,y0=r['cx'],r['cy']
+    await swipe(x0,y0,0,770-y0,end=False,step=12)
+    mx=0
+    for k in range(14):
+        await T('touchMove',[(0,x0+(k%2)*2,770)]); await pg.wait_for_timeout(250); mx=max(mx,await sy())
+    await T('touchEnd',[]); await pg.wait_for_timeout(500)
+    H1=await pg.evaluate(f"Object.values({P}.sections()).reduce((a,s)=>a+s.height,0)")
+    ok('N12 SP-2 下の端で 3.5 秒押さえてもページの外へ行かない・セクションが伸びない', mx<=maxS+60 and H1<=H0+200, f'scrollY の最大 {mx}（ページの終わり {maxS}） 高さの合計 {H0:.0f}→{H1:.0f}')
     print('\n合計', sum(1 for x in R if x[1]),'/',len(R))
     await b.close()
 asyncio.run(main())

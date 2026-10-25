@@ -120,7 +120,8 @@ function seedFromBase(b, device, full) {
       if (d === device) {
         if (e.order) S.order[key] = clone(e.order);
         if (e.move) S.m1[key] = clone(e.move);
-        if (e.place) S.m2[key] = { anchor: seedRef(e.place.after), gapY: e.place.gap, x: e.place.x };   // §2.1 全部の ID → 内部の素の ID
+        if (e.place && !isFlowOnly(key)) S.m2[key]   // PC-2・SP-1 品の並び・表・ボタンの塊の外の記録は使わない（描けずに消えていた）
+ = { anchor: seedRef(e.place.after), gapY: e.place.gap, x: e.place.x };   // §2.1 全部の ID → 内部の素の ID
         if (e.size) S.sizes[key] = clone(e.size);
         if (e.z != null) S.zmap[key] = e.z;
       }
@@ -196,7 +197,8 @@ function reduce(ops, device, peek) {
       for (const a of (op.added || [])) adds.push(clone(a));
       for (const rid of (op.removed || [])) removed.add(rid);   // J46 複製先でも消した部品は出さない
     }
-    else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; if (sizes[it.id] && sizes[it.id].dy != null) delete sizes[it.id].dy; } }   // P1 塊の外へ出したら流れの中の縦のずれは要らない
+    else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode !== "M1" && isFlowOnly(it.id)) continue;   // PC-2・SP-1 前の版で残った品の並び・表・ボタンの M2 は使わない（描けずに消えていた。流れの中に戻して見せる）
+        if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; if (sizes[it.id] && sizes[it.id].dy != null) delete sizes[it.id].dy; } }   // P1 塊の外へ出したら流れの中の縦のずれは要らない
       for (const it of op.items) if (it.mode === "M2" && isAdded(it.id)) placedFollow[it.id] = { anchor: it.anchor, device: op.device }; }   // §X13 置いた端末での今の付いていく先
     // J17（DECISIONS #17）別のセクションへ移す：所属は端末共通、位置は動かした端末だけ M2（もう一方の端末は移った先の既定の場所）。1操作=1undo
     else if (op.t === "xsec") { for (const it of op.items) {

@@ -4,7 +4,7 @@ window.addEventListener("keydown",(e)=>{
   if(e.isComposing||e.keyCode===229) return;   // §23a X33 日本語の変換中のキーはページで拾わない（preventDefault もしない）
   if((PG.previewMode()||PG.viewingVersion())&&e.key!=="Escape"){ if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End","PageUp","PageDown"," "].includes(e.key)) e.preventDefault(); return; }   // J50/J52 プレビュー・見るだけでは部品の操作をしない（矢印でページが横にずれないよう既定も止める）
   const meta=e.metaKey||e.ctrlKey;
-  if(PG.isDragging&&PG.isDragging()){ if(e.key==="Escape"){ e.preventDefault(); PG.cancelDrag(); } return; }   // J29 ドラッグ中の Esc で取り消す
+  if(PG.isDragging&&PG.isDragging()){ if(e.key==="Escape"){ e.preventDefault(); PG.cancelDrag(); a2DragCancelled(); } return; }   // J29 ドラッグ中の Esc で取り消す（PC-10 その後のマウスの動き・指では始め直さない）
   if(PG.isCropping()){ // 見せる範囲：Enter で決め、Esc で取り消す（ほかのキーは効かない）
     if(e.key==="Enter"){ e.preventDefault(); PG.cropCommit(); exitCropOverlay(); }
     else if(e.key==="Escape"){ e.preventDefault(); PG.cropCancel(); exitCropOverlay(); }

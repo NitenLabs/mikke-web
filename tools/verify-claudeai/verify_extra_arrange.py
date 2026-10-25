@@ -345,6 +345,78 @@ async def main():
         k21.append((case, bool(ok_h and w1 is not None and w1 < w0 - 50 and w2 is not None and abs(w2 - w1) <= 0.5), f'{nid} 幅 {w0:.0f}→離した後 {w1}→読み込み直し {w2}（戻す {w3} は値だけ。読み込み直しで記録の列は空）'))
         await pg.context.close()
     rec('K21 PC-20 足した・複製・貼り付けた部品もつまみで大きさが変わる', all(x[1] for x in k21), json.dumps(k21, ensure_ascii=False))
+
+    # ---------- 4回目の精査・線 T・D（2026-10-26） ----------
+    async def table_lr(pg):
+        return await pg.evaluate("(()=>{const t=document.querySelector('[data-el=\"I_table\"]');const s=document.querySelector('#host_items #sec')||t.closest('#sec');const sr=s.getBoundingClientRect(),r=t.getBoundingClientRect();const k=sr.width/1440;const n=document.querySelector('[data-el=\"row_name_t_warabi\"]').getBoundingClientRect();return {l:(r.left-sr.left)/k,r:(r.right-sr.left)/k,name:(n.left-sr.left)/k}})()")
+    # K22 PC-8 一番狭くした表で値段の文字を 32 まで大きく → 表の左端は中身の左端（57）より左へ出ない・公開の確認にはみ出しが出ない
+    pg = await fresh(); await sel_table(pg); await handle_drag(pg, -2000)
+    await pg.evaluate(f"{P}.selectOnly('row_price_t_warabi')"); await pg.wait_for_timeout(200)
+    for _ in range(5): await pg.evaluate(f"{P}.textStep(1)"); await pg.wait_for_timeout(150)
+    ps = [x for x in await pg.evaluate(f"{P}.textStyles()") if x.get('part') == 'row_price_t_warabi']; psz = ps[0].get('size') if ps else None
+    await pg.evaluate(f"{P}.clearSel()"); await pg.wait_for_timeout(200)
+    lr = await table_lr(pg); w = await pg.evaluate(f"{P}.warnings()")
+    rec('K22 PC-8 狭めた表で値段の文字を大きくしても左へはみ出さない', bool(psz and psz >= 32) and lr['l'] >= 57 - 0.5 and lr['name'] >= 57 - 0.5 and lr['r'] <= 1383 + 0.5 and not w['overflows'],
+        f"値段の大きさ {psz} 表 {lr} overflows={w['overflows']}")
+    await pg.context.close()
+    # K23 PC-9 一番狭くした表で値段を長く（名前・金額）→ 左へはみ出さない
+    pg = await fresh(); await sel_table(pg); await handle_drag(pg, -2000)
+    await pg.evaluate(f"{P}.setPrices('row_price_t_warabi', [{{'name':'お茶とお菓子と季節の和菓子付きセット','type':'fixed','amount':1234567}}])"); await pg.wait_for_timeout(400)
+    await pg.evaluate(f"{P}.clearSel()"); await pg.wait_for_timeout(200)
+    lr = await table_lr(pg); w = await pg.evaluate(f"{P}.warnings()"); txt = await pg.evaluate("document.querySelector('[data-el=\"row_price_t_warabi\"]').textContent")
+    rec('K23 PC-9 狭めた表で値段を長くしても左へはみ出さない', '1,234,567' in txt and lr['l'] >= 57 - 0.5 and lr['name'] >= 57 - 0.5 and not w['overflows'], f"値段 {txt} 表 {lr} overflows={w['overflows']}")
+    await pg.context.close()
+
+    async def sec_total(pg): return await pg.evaluate(f"Object.values({P}.sections()).reduce((a,s)=>a+s.height,0)")
+    async def grab(pg, part, sy):
+        await pg.evaluate(f"scrollTo(0,{sy})"); await pg.wait_for_timeout(200)
+        r = await bb(pg, part); x = r['x'] + r['w'] / 2; y = r['y'] + min(20, r['h'] / 2)
+        await pg.mouse.click(x, y); await esc_if_editing(pg); await pg.wait_for_timeout(300)
+        await pg.mouse.move(x, y); await pg.mouse.down(); return x, y
+    # K24 PC-4 ドラッグで窓の下端に入って押さえ続けても、ページの下端より下へは自動でスクロールせず、ページも伸びない
+    pg = await fresh(h=1000); H0 = await sec_total(pg); maxS0 = await pg.evaluate("document.documentElement.scrollHeight-innerHeight")
+    x, y = await grab(pg, 'F_b1', 1000)
+    for i in range(1, 31): await pg.mouse.move(x, y + (995 - y) * i / 30); await pg.wait_for_timeout(15)
+    mx = 0
+    for _ in range(15): await pg.wait_for_timeout(100); mx = max(mx, await pg.evaluate('scrollY'))
+    await pg.mouse.up(); await pg.wait_for_timeout(500)
+    H1 = await sec_total(pg); g = await G(pg); sc = await pg.evaluate(f"{P}.sections()")
+    rec('K24 PC-4 窓の下端で押さえ続けてもページの外へ行かない', mx <= maxS0 + 40 and H1 <= H0 + 120, f"scrollY の最大 {mx}（ページの終わり {maxS0}） セクションの高さの合計 {H0:.0f}→{H1:.0f} 記録={json.dumps(await ops(pg), ensure_ascii=False)[:200]}")
+    await pg.context.close()
+    # K25 PC-10 ドラッグ中に Esc → マウスを動かして離しても、何も動かない・記録しない（同じセクションの中・別のセクションへ）
+    k25 = []
+    for dy in (150, 660):
+        pg = await fresh(h=1000); g0 = await G(pg)
+        x, y = await grab(pg, 'F_b1', 1000)
+        for i in range(1, 11): await pg.mouse.move(x, y + min(dy, 900 - y) * i / 10); await pg.wait_for_timeout(15)
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+        await pg.mouse.move(x + 5, y + min(dy, 900 - y) + 5); await pg.wait_for_timeout(150); await pg.mouse.move(x + 10, y + min(dy, 900 - y) + 30); await pg.wait_for_timeout(150)
+        dragging = await pg.evaluate("(()=>{const f=window.__playground.isDragging||(typeof PG!=='undefined'&&PG.isDragging);return f?!!f():null})()")
+        await pg.mouse.up(); await pg.wait_for_timeout(400); o = await ops(pg); g1 = await G(pg)
+        k25.append((dy, not o and not dragging and abs(g1['F_b1']['y'] - g0['F_b1']['y']) <= 0.5, f"動かし直した={dragging} 記録={json.dumps(o, ensure_ascii=False)[:120]} y {g0['F_b1']['y']:.1f}→{g1['F_b1']['y']:.1f}"))
+        await pg.context.close()
+    rec('K25 PC-10 ドラッグ中の Esc の後に動かしてもドラッグは続かない', all(k[1] for k in k25), json.dumps(k25, ensure_ascii=False))
+    # K26 PC-11 ドラッグ中のホイールで、部品はマウスの下に付いてくる
+    pg = await fresh(h=1000)
+    x, y = await grab(pg, 'F_b1', 1000); r0 = await bb(pg, 'F_b1'); off = (y - r0['y'])
+    await pg.mouse.move(x, y + 10); await pg.mouse.move(x, y + 20); await pg.wait_for_timeout(100)
+    await pg.mouse.wheel(0, 500); await pg.wait_for_timeout(400)
+    await pg.mouse.move(x, y + 60); await pg.wait_for_timeout(50); await pg.mouse.move(x, y + 120); await pg.wait_for_timeout(200)
+    r1 = await bb(pg, 'F_b1'); gap = (r1['y'] + off) - (y + 120)
+    await pg.mouse.up(); await pg.wait_for_timeout(400)
+    rec('K26 PC-11 ドラッグ中のホイールで部品がマウスに付いてくる', abs(gap) <= 8, f"マウス y {y+120:.0f} 部品のつかんだ点 {r1['y']+off:.0f}（ずれ {gap:.0f}）")
+    await pg.context.close()
+    # K27 PC-15 矢印キー（Shift+↑ 80回）でもセクションの上端で止まる。前の版で上へ出した部品は公開の確認に出る
+    pg = await fresh()
+    await pg.evaluate("document.querySelector('[data-el=\"F_h0\"]').scrollIntoView({block:'center'})"); await pg.wait_for_timeout(200)
+    r = await bb(pg, 'F_h0'); await pg.mouse.click(r['x'] + 20, r['y'] + r['h'] / 2); await pg.wait_for_timeout(300); await esc_if_editing(pg)
+    await pg.evaluate(f"{P}.selectOnly('F_h0')")
+    for _ in range(80): await pg.keyboard.press('Shift+ArrowUp')
+    await pg.wait_for_timeout(300); g = await G(pg)
+    await pg.evaluate(f"{P}.applyOps([{{'t':'move','device':'pc','items':[{{'id':'F_b0','mode':'M1','dx':0,'dy':-900}}]}}])"); await pg.wait_for_timeout(300)
+    pc = await pg.evaluate(f"{P}.publishCheck()"); hit = [x['text'] for x in pc if 'F_b0' in x.get('parts', [])]
+    rec('K27 PC-15 矢印キーでセクションの上端を越えない・越えた物は公開の確認に出る', g['F_h0']['y'] >= -0.5 and bool(hit), f"F_h0 の y {g['F_h0']['y']:.1f} 公開の確認 {hit}")
+    await pg.context.close()
     print(f"\n合計 {sum(1 for r in R if r[1] is True)} / {sum(1 for r in R if r[1] is not None)}（-- は値だけ）")
     await br.close()
 asyncio.run(main())

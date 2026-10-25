@@ -310,6 +310,39 @@ async def main():
         fit = pr is not None and pr['l'] >= -1 and pr['r'] <= 391
         rec('M25 スマホの その他 → お品書きを見る が出て画面に収まる', panelOpen and fit, f"panelOpen={panelOpen} rect={pr}")
 
+        # ---------- M26・M27：4回目の精査 PC-2（線 T）ドラッグで表・ボタンが消えない ----------
+        async def drag_to(pg, part, tx, ty, edge=False):
+            await ev(pg, f"{P}.selectOnly('{part}')"); await ev(pg, f"document.querySelector('[data-el=\"{part}\"]').scrollIntoView({{block:'center'}})"); await pg.wait_for_timeout(200)
+            r = await ev(pg, f"(()=>{{const r=document.querySelector('[data-el=\"{part}\"]').getBoundingClientRect();return [r.x+Math.min(40,r.width/2),r.y+Math.min(10,r.height/2)]}})()")
+            await pg.mouse.move(*r); await pg.mouse.down()
+            if edge:   # 窓の上端で自動スクロールし、特集が見えたら特集の中で離す
+                for i in range(1, 21): await pg.mouse.move(r[0], r[1] + (45 - r[1]) * i / 20); await pg.wait_for_timeout(15)
+                for _ in range(200):
+                    await pg.wait_for_timeout(30)
+                    if (await ev(pg, "document.getElementById('host_feature').getBoundingClientRect().bottom")) > 500: break
+                await pg.mouse.move(r[0], 350); await pg.wait_for_timeout(100)
+            else:
+                t = await ev(pg, f"(()=>{{const r=document.querySelector('[data-el=\"{tx}\"]').getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]}})()")
+                for i in range(1, 21): await pg.mouse.move(r[0] + (t[0] - r[0]) * i / 20, r[1] + (t[1] - r[1]) * i / 20); await pg.wait_for_timeout(15)
+            await pg.mouse.up(); await pg.wait_for_timeout(500)
+        async def shown(pg, part): return await ev(pg, f"(()=>{{const e=document.querySelector('[data-el=\"{part}\"]');if(!e)return 0;const r=e.getBoundingClientRect();return r.width>0&&r.height>0?1:0}})()")
+        m26 = []
+        for part, how in (('I_table', 'photo'), ('I_pillbg', 'photo'), ('I_table', 'feature'), ('I_pillbg', 'feature')):
+            pg = await fresh()
+            await drag_to(pg, part, 'card_photo_c_warabi', None, edge=(how == 'feature'))
+            s1 = await shown(pg, part); rows = len(await rowNames(pg)) if part == 'I_table' else -1; o1 = await ev(pg, f'{P}.ops()')
+            await settle(pg); await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(800)
+            s2 = await shown(pg, part)
+            m26.append((part, how, bool(o1 and s1 and s2 and rows != 0), f"離した後 {s1} 読み込み直し {s2} 行 {rows} 記録 {json.dumps(o1, ensure_ascii=False)[:120]}"))
+            await pg.context.close()
+        rec('M26 PC-2 表・ボタンを品の写真の上・特集の中で離しても消えない（読み込み直しても）', all(x[2] for x in m26), json.dumps(m26, ensure_ascii=False))
+        # M27 前の版で残った「表・ボタン・品の並びの M2」の記録でも消えない
+        pg = await fresh()
+        await apply(pg, [{'t': 'move', 'device': 'pc', 'items': [{'id': 'I_table', 'mode': 'M2', 'anchor': 'I_table', 'gapY': -163.58, 'x': 472}, {'id': 'I_pillbg', 'mode': 'M2', 'anchor': '@section', 'gapY': 120, 'x': 679}, {'id': 'I_cards', 'mode': 'M2', 'anchor': '@section', 'gapY': 300, 'x': 57}]}])
+        s = [await shown(pg, k) for k in ('I_table', 'I_pillbg', 'I_cards')]
+        rec('M27 PC-2 前の版の記録（表・ボタン・品の並びを塊の外へ）でも消えない', all(s), f"表・ボタン・品の並び {s}")
+        await pg.context.close()
+
         # ---------- pageerror まとめ ----------
         rec('pageerror が無い', len(pg._errs) == 0, f"errs={pg._errs[:3]}")
         await br.close()

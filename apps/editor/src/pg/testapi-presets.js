@@ -497,7 +497,7 @@ function programMove(ids, targetOf, opts) {
     if (e) { const snap = snapBox(secOf(id), e, true, !ro0, new Set([id])); if (snap.dx || snap.dy) { const n = elNode(id); const tg = targetOf(id, 0); if (n) n.style.transform = `translate(${tg.x - g[id].x + snap.dx}px,${tg.y - g[id].y + snap.dy}px)`; g2 = geometry(); } } }
   if (ids.length === 1 && !opts.noReorder) { const roReal = reorderPreview(g2, ids[0], g); if (roReal) { commit({ t: "reorder", device: state.device, key: roReal.key, id: ids[0], order: roReal.order }); return; } if (reorderActive(g2, ids[0], g)) { render(); return; } }   // §22a X29：M1(40px内)が先・順が変われば reorder・縁の no-op は流れに戻す（§27 配置は noReorder＝並び替えにしない）
   const m1Of = (d) => ({ id: d.id, mode: "M1", dx: Math.round((prior[d.id]?.dx || 0) + g2[d.id].x - g[d.id].x), dy: Math.round((prior[d.id]?.dy || 0) + g2[d.id].y - g[d.id].y) });
-  const decided = ids.map((id) => ({ id, mode: isAdded(id) ? "M2" : classifyDropX(g2, id, ids, g) }));
+  const decided = ids.map((id) => { const m = isAdded(id) ? "M2" : classifyDropX(g2, id, ids, g); return { id, mode: (m === "M2" && isFlowOnly(id)) ? "M1" : m }; });   // PC-2・SP-1
   if (decided.some((d) => d.mode === "M2")) {
     const finalItems = decided.map((d) => d.mode === "M1"
       ? m1Of(d)

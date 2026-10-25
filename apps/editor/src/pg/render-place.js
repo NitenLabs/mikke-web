@@ -150,6 +150,8 @@ function warnings() {
   // はみ出しは横だけ見る（§1.1：下方向はセクションが伸びるので警告しない）
   const overflows = [];
   for (const [id, e] of items) if (e.x < -1 || e.x + e.w > SPEC.DESIGN_W[state.device] + 1) overflows.push({ id, edge: "横", dir: e.x < -1 ? "左" : "右" });   // F68 どちらへはみ出したか
+  // PC-15 セクションの上端より上へ半分以上出た部品（上のセクション・ヘッダーの裏に隠れる）。前の版で動かした物も公開の確認で知らせる
+  for (const [id, e] of items) if (e.y < -Math.max(8, e.h / 2) && !overflows.some((o) => o.id === id)) overflows.push({ id, edge: "縦", dir: "上" });
   return { overlaps, overflows, ownerOverlaps };
 }
 
