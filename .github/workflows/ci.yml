@@ -24,7 +24,10 @@ jobs:
         with: { node-version: 22, cache: npm }
       - run: npm ci
       - run: npx playwright install --with-deps   # 古い書き出しの試験（metacheck）が chromium・webkit・firefox を使う
-      - run: npm test
+      - name: npm test（落ちたら要所を注記に出す。ログの保管場所が読めない所からも見られるように）
+        run: |
+          set -o pipefail
+          npm test 2>&1 | tee test.log || { grep -E "not ok|Error|error:|expected|actual|✖" test.log | head -80 | python3 -c "import sys;t=sys.stdin.read()[-6000:];print('::error title=%s::'%sys.argv[1]+t.replace('%','%25').replace('\\r','').replace('\\n','%0A'))" npm-test; exit 1; }
       - name: API の試験（apps/api があれば）
         if: hashFiles('apps/api/package.json') != ''
         working-directory: apps/api
@@ -94,4 +97,6 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { pattern: 'audit-*', path: logs, merge-multiple: true }
       - name: 今 NG でよい一覧と比べる（一覧の外の NG があれば失敗）
-        run: python3 tools/verify-audit/ratchet.py logs tools/verify-audit/expected_ng.txt
+        run: |
+          set -o pipefail
+          python3 tools/verify-audit/ratchet.py logs tools/verify-audit/expected_ng.txt 2>&1 | tee ratchet.log || { grep -E "^(NG|合計)" logs/*.log | cut -c1-200 > ng.txt; tail -40 ratchet.log | python3 -c "import sys;t=sys.stdin.read()[-6000:];print('::error title=%s::'%sys.argv[1]+t.replace('%','%25').replace('\\r','').replace('\\n','%0A'))" ratchet; python3 -c "import sys;t=sys.stdin.read()[:20000];print('::error title=%s::'%sys.argv[1]+t.replace('%','%25').replace('\\r','').replace('\\n','%0A'))" all-ng < ng.txt; exit 1; }
