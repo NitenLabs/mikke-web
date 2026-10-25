@@ -214,6 +214,94 @@ async def main():
     mo=await pg.evaluate("(()=>{const b=[...document.querySelectorAll('#pbar button')].find(b=>b.textContent.trim()==='その他');const r=b.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()")
     await tap(*mo); r=await rect('F_h0'); await lp(r['cx'],r['cy'])
     ok('N10 「その他」を開いたまま部品を長押し → 一覧は閉じて、箱が出る', (await el('#pmore')) is None and (await menu()) is not None, f"一覧 {bool(await el('#pmore'))} 箱 {bool(await menu())}")
+    # ---- 4回目の精査・線 C（見せる範囲）・線 U（道具の置き場所）----
+    async def crop_in():
+        await load(); r=await center('F_p0'); await tap(r['cx'],r['cy']); await pg.wait_for_timeout(400); await lp(r['cx'],r['cy'])
+        if not await mbtn('見せる範囲'): return None
+        await pg.wait_for_timeout(300); c=await pg.evaluate(f"{P}.cropState()"); pg._z0=c and c['view']['zoom']; return c   # 前の項目で保存した拡大から始まることがある（保存は読み込み直しても残る）。期待は入ったときの拡大＋0.4
+    async def zoom(): s=await pg.evaluate(f"{P}.cropState()"); return s and round(s['view']['zoom'],3)
+    async def pview(part='F_p0'): return next((x['view'] for x in await pg.evaluate(f"{P}.photos()") if x['part']==part),None)
+    async def plus2():   # 見せる範囲の棒の「＋」（セクションを足す「＋」と取り違えない）
+        for i in range(2):
+            q=await pg.evaluate("(()=>{const b=document.querySelector('[data-crop-step=\"1\"]');if(!b||!b.offsetParent)return null;const r=b.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()")
+            if q: await tap(*q)
+            await pg.wait_for_timeout(700)
+    async def tap2(x,y):   # 2回のタップ（ダブルタップにならないよう間を空ける）
+        await tap(x,y); await pg.wait_for_timeout(400); await tap(x,y); await pg.wait_for_timeout(400)
+    # N11 SP-5 見せる範囲の途中でアプリを切り替える（隠れる）→ 合わせた範囲が保存され、読み込み直しても残る
+    c=await crop_in(); await plus2(); z=await zoom()
+    await pg.evaluate("Object.defineProperty(document,'visibilityState',{value:'hidden',configurable:true});document.dispatchEvent(new Event('visibilitychange'))"); await pg.wait_for_timeout(900)
+    v1=await pview(); await pg.reload(); await pg.wait_for_timeout(1500); v2=await pview()
+    ok('N11 SP-5 見せる範囲の途中で隠れても、合わせた範囲が残る（読み込み直し後も）', c and z and abs(z-pg._z0-0.4)<0.01 and v1 and abs(v1['zoom']-z)<0.01 and v2 and abs(v2['zoom']-z)<0.01, f'途中 {z} 隠れた後 {v1} 読み込み直し {v2}')
+    # N12 SP-15 写真の外を指でなぞってスクロールしても見せる範囲は続き、重ね描きは写真に付いてくる。外をタップすると決まる
+    c=await crop_in(); await plus2(); y0=await sy()
+    # なぞる所＝拡大した写真（重ね描きの暗い所）より下の、写真の外（下の並びより上）
+    db=await pg.evaluate("(()=>{const d=document.querySelector('#cropwrap .dim');const z=document.getElementById('cropzoom').getBoundingClientRect();return Math.max(d.getBoundingClientRect().bottom,z.bottom)})()")
+    yy=min(760,db+40); await swipe(195,yy,0,-300); await pg.wait_for_timeout(400)
+    still=await pg.evaluate(f"{P}.cropState()"); off=await pg.evaluate("(()=>{const c=document.querySelector('#cropwrap .clip');const p=document.querySelector('[data-el=F_p0]').getBoundingClientRect();if(!c||!c.offsetParent)return null;const r=c.getBoundingClientRect();return Math.max(Math.abs(r.x-p.x),Math.abs(r.y-p.y))})()")
+    y1=await sy()
+    # 外のタップ＝拡大した写真の暗い所（重ね描き）・棒・下の並びの外
+    tp=await pg.evaluate("(()=>{const ok=(x,y)=>{const e=document.elementFromPoint(x,y);return e&&!e.closest('#cropwrap,#cropzoom,#pbar')};for(let y=120;y<760;y+=20)for(const x of [6,384,195])if(ok(x,y))return [x,y];return null})()")
+    await tap(*(tp or (8,150))); await pg.wait_for_timeout(300); after=await pg.evaluate(f"{P}.cropState()"); v=await pview()
+    ok('N12 SP-15 外をなぞってスクロールしても続く・外のタップで決まる', y1-y0>100 and still and off is not None and off<=2 and after is None and v and abs(v['zoom']-pg._z0-0.4)<0.01, f'なぞった y={yy:.0f} タップ {tp} scrollY {y0}→{y1} 続いている={bool(still)} 重ね描きのずれ {off} タップの後 {after and after["view"]} 決まった {v}')
+    # N13 SP-18 見せる範囲のままスクロールしても、「完了」「取り消す」の棒は見えている所にあり、別の写真を押すと前の写真は決まって終わる
+    c=await crop_in(); await plus2(); await pg.evaluate("window.scrollTo(0,900)"); await pg.wait_for_timeout(500)
+    zb=await el('#cropzoom'); pb=await el('#pbar')
+    off13=await pg.evaluate("(()=>{const c=document.querySelector('#cropwrap .clip');const p=document.querySelector('[data-el=F_p0]').getBoundingClientRect();if(!c||!c.offsetParent)return 0;const r=c.getBoundingClientRect();return Math.max(Math.abs(r.x-p.x),Math.abs(r.y-p.y))})()")   # 重ね描きが残るなら写真に付いてくる（前は元の場所に残り、ほかの写真のタップを取った）
+    r=await rect('F_p1'); await tap(r['cx'],r['cy']); await pg.wait_for_timeout(300)
+    after=await pg.evaluate(f"{P}.cropState()"); v=await pview()
+    ok('N13 SP-18 スクロールしても棒は画面の中・重ね描きは写真に付く・別の写真を押すと決まって終わる', off13<=2 and zb and zb['y']>=0 and pb and zb['b']<=pb['y']+1 and after is None and v and abs(v['zoom']-pg._z0-0.4)<0.01, f"重ね描きのずれ {off13:.0f} 棒 {zb and (round(zb['y']),round(zb['b']))} 下の並び {pb and round(pb['y'])} 押した後 {after and after['id']} 決まった {v}")
+    # N14 SP-12 見せる範囲のつまみ・ボタンの押せる大きさ（＋−・完了・取り消す・棒の高さは 44 以上、写真の四隅は見た目 28・押せる所 44）
+    c=await crop_in()
+    sz=await pg.evaluate("[...document.querySelectorAll('#cropzoom button,#cropzoom input')].map(b=>{const r=b.getBoundingClientRect();return [b.textContent.trim()||b.type,Math.round(r.width),Math.round(r.height)]})")
+    ch=await pg.evaluate("[...document.querySelectorAll('#cropwrap .ch')].map(h=>{const r=h.getBoundingClientRect();const a=getComputedStyle(h,'::after');return [Math.round(r.width),parseFloat(a.width)||0]})")
+    ok('N14 SP-12 見せる範囲の押す所は 44px 前後', c and sz and all(h>=44 for _,w,h in sz) and all(w>=44 for t,w,h in sz if t in ('−','＋')) and ch and all(a>=44 and w>=24 for w,a in ch), f'棒 {sz} 四隅 {ch}')
+    # N15 SP-13 スマホで値段（表の値段）を長押し →「大きさ」→ 28 で値段の文字が 28px
+    await load(); r=await center('row_price_t_warabi'); await tap2(r['cx'],r['cy']); await lp(r['cx'],r['cy'])
+    m=await menu(); got=None
+    if m and '大きさ' in m['items']:
+        await mbtn('大きさ'); b28=await pg.evaluate("(()=>{const b=[...document.querySelectorAll('#pSize button')].find(b=>b.textContent==='28');if(!b)return null;const r=b.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()")
+        if b28: await tap(*b28); await pg.wait_for_timeout(300)
+        got=await pg.evaluate("getComputedStyle(document.querySelector('[data-el=row_price_t_warabi]')).fontSize")
+    ok('N15 SP-13 スマホで値段の文字の大きさを変えられる', got=='28px', f"一覧 {m and m['items']} 値段 {got}")
+    # N16 SP-16 文字の大きさの一覧（品の名前を書き換え→大きさ）が全部、下の帯に隠れずに押せる
+    await load(); r=await center('card_name_c_warabi'); await tap2(r['cx'],r['cy']); await lp(r['cx'],r['cy']); await mbtn('書き換える'); await pg.wait_for_timeout(300)
+    await tapbtn('大きさ'); await pg.wait_for_timeout(300)
+    hid=await pg.evaluate("[...document.querySelectorAll('#pSize button')].filter(b=>{const r=b.getBoundingClientRect();const e=document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);return e!==b}).map(b=>b.textContent)")
+    n=await pg.evaluate("document.querySelectorAll('#pSize button').length")
+    ok('N16 SP-16 大きさの一覧が全部見えて押せる', n>=10 and not hid, f'{n} 個のうち隠れている {hid}')
+    # N17 SP-17 品の写真を長押し：「お品書きと連動しています」の知らせが一覧のボタンに重ならない
+    await load(); r=await center('card_photo_c_warabi'); await tap2(r['cx'],r['cy']); await lp(r['cx'],r['cy'])
+    over=await pg.evaluate("(()=>{const n=document.getElementById('connNotice');if(!n)return 'なし';const q=n.getBoundingClientRect();return [...document.querySelectorAll('#fmenu.on button')].filter(b=>{const r=b.getBoundingClientRect();return r.top<q.bottom&&r.bottom>q.top&&r.left<q.right&&r.right>q.left}).map(b=>b.textContent)})()")
+    ok('N17 SP-17 連動の知らせが一覧に重ならない', over=='なし' or over==[], f'重なるボタン {over}')
+    # N18 SP-14 「PC の見え方を見る」で PC のページが画面の幅にまるごと入る（右端のナビ・特集2の本文も見える）
+    await load(); await tapbtn('その他'); await pg.wait_for_timeout(200); await tapbtn('PC の見え方を見る'); await pg.wait_for_timeout(600)
+    rr=await pg.evaluate("['F_b1','header__nav'].map(id=>{const e=document.querySelector('[data-el=\"'+id+'\"]');if(!e)return null;const r=e.getBoundingClientRect();return [id,Math.round(r.left),Math.round(r.right)]})")
+    dev=await pg.evaluate(f"{P}.state?{P}.state.device:PG.state.device")
+    ok('N18 SP-14 スマホの PC の見え方は横が全部入る', dev=='pc' and all(x and x[1]>=0 and x[2]<=390 for x in rr), f'{dev} {rr}')
+    # N19 SP-9 iPad（820x1180・指）：選んだ写真の長押しで一覧、「写真を変える」の帯のタップで写真を選ぶ画面、上の並び（その他）に「見せる範囲」
+    ipad=await b.new_context(viewport={'width':820,'height':1180},device_scale_factor=2,is_mobile=True,has_touch=True)
+    ip=await ipad.new_page(); icdp=await ipad.new_cdp_session(ip); await ip.goto(URL); await ip.wait_for_timeout(1200)
+    async def iT(kind,pts): await icdp.send('Input.dispatchTouchEvent',{'type':kind,'touchPoints':[{'x':x,'y':y,'id':i} for (i,x,y) in pts]})
+    await ip.evaluate("document.querySelector('[data-el=F_p0]').scrollIntoView({block:'center'})"); await ip.wait_for_timeout(300)
+    r=await ip.evaluate("(()=>{const r=document.querySelector('[data-el=F_p0]').getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()")
+    await iT('touchStart',[(0,*r)]); await ip.wait_for_timeout(60); await iT('touchEnd',[]); await ip.wait_for_timeout(400)
+    lps=[]
+    for ms in (600,900,1500):
+        await iT('touchStart',[(0,*r)]); await ip.wait_for_timeout(ms); await iT('touchEnd',[]); await ip.wait_for_timeout(300)
+        lps.append(await ip.evaluate("document.getElementById('fmenu').classList.contains('on')"))
+        await ip.evaluate("document.getElementById('fmenu').classList.remove('on')"); await ip.evaluate("PG.selectOnly('F_p0')"); await ip.wait_for_timeout(300)
+    band=await ip.evaluate("(()=>{const b=document.getElementById('photoChangeBtn');const r=b.getBoundingClientRect();return b.style.display!=='none'&&r.width?[r.x+r.width/2,r.y+r.height/2]:null})()"); chooser=False
+    if band:
+        try:
+            async with ip.expect_file_chooser(timeout=2000):
+                await iT('touchStart',[(0,*band)]); await ip.wait_for_timeout(60); await iT('touchEnd',[])
+            chooser=True
+        except Exception: pass
+    await ip.wait_for_timeout(500); await ip.evaluate("PG.selectOnly('F_p0')"); await ip.wait_for_timeout(300)
+    crop_entry=await ip.evaluate("!!document.getElementById('tCrop')&&(document.getElementById('tCrop').offsetParent!==null||document.getElementById('moreMenu').contains(document.getElementById('tCrop')))")
+    ok('N19 SP-9 iPad：選んだ写真の長押しで一覧・帯のタップで写真を選ぶ・上の並びに見せる範囲', all(lps) and chooser and crop_entry, f'長押し {lps} 帯 {band and [round(x) for x in band]} 選ぶ画面 {chooser} 見せる範囲の入口 {crop_entry}')
+    await ipad.close()
     print('\n合計', sum(1 for x in R if x[1]),'/',len(R))
     await b.close()
 asyncio.run(main())

@@ -46,28 +46,48 @@ async function replacePhotoFile(id, file) {
 }
 
 // ---- 見せる範囲（§2）＝トリミング。ダブルクリックで入り、ドラッグ／つまみ／横棒／ホイールで直し、Enter で決め Esc で取り消す。----
-let crop = null, panBase = null, cornerBase = null;
+let crop = null, panBase = null, cornerBase = null, frameBase = null;
 function beginCrop(id) {
   const g = geometry(); const e = g[id]; if (!e || e.kind !== "photo") return false;
   const R = reduce(activeOps()); if ((R.clear || []).includes(id)) return false;   // 空枠は対象外
   const asset = assetOfPart(id, R); const nat = assetNat(asset); if (!nat) ensureNat(asset);
   const v = effView(id, state.device, R.viewAll);
-  crop = { id, device: state.device, view: { x: v.x, y: v.y, zoom: v.zoom }, start: { x: v.x, y: v.y, zoom: v.zoom }, natW: nat ? nat.w : 0, natH: nat ? nat.h : 0, w: e.w, h: e.h };
+  // hist/fwd：PC-19 見せる範囲の中の戻す・やり直す（1手ずつ）。cursor0：始めたときの記録の位置（枠を変えた記録を「取り消す」で外す）
+  crop = { id, device: state.device, view: { x: v.x, y: v.y, zoom: v.zoom }, start: { x: v.x, y: v.y, zoom: v.zoom }, natW: nat ? nat.w : 0, natH: nat ? nat.h : 0, w: e.w, h: e.h, hist: [], fwd: [], cursor0: state.cursor };
   selectOnly(id); return true;
 }
+// PC-19 戻す1手の区切り：変える前の見せる範囲を積む。key が同じで 600ms 以内（ホイール・＋の連打）は1手にまとめる
+function cropMark(key) { if (!crop) return; const now = Date.now(); if (key && crop._k === key && now - crop._t < 600) { crop._t = now; return; } crop._k = key || null; crop._t = now; crop.hist.push({ view: { ...crop.view } }); crop.fwd = []; }
+const sameView = (a, b) => Math.abs(a.x - b.x) < 1e-6 && Math.abs(a.y - b.y) < 1e-6 && Math.abs(a.zoom - b.zoom) < 1e-6;
+// 1手戻す。戻すものが無ければ false（呼び手が見せる範囲を取り消して、その前の手直しを戻す）
+function cropUndo() {
+  if (!crop || !crop.hist.length) return false; crop._k = null; const e = crop.hist.pop();
+  if (e.frame) { crop.fwd.push({ view: { ...crop.view }, frame: true }); undo(); a3CropSyncFrame(); }   // 枠を変えた1手＝記録（大きさ＋見せる範囲）ごと戻す
+  else crop.fwd.push({ view: { ...crop.view } });
+  crop.view = { ...e.view }; if (e.frame) crop.start = { ...e.view }; cropRefresh(); return true;
+}
+function cropRedo() {
+  if (!crop || !crop.fwd.length) return false; crop._k = null; const e = crop.fwd.pop();
+  if (e.frame) { crop.hist.push({ view: { ...crop.view }, frame: true }); redo(); a3CropSyncFrame(); crop.start = { ...e.view }; }
+  else crop.hist.push({ view: { ...crop.view } });
+  crop.view = { ...e.view }; cropRefresh(); return true;
+}
+// 戻す・やり直すの後、枠の大きさを今の描画から取り直す（選ぶのも見せる範囲の写真のまま）
+function a3CropSyncFrame() { if (!crop) return; const e = geometry()[crop.id]; if (e) { crop.w = e.w; crop.h = e.h; } state.selected = new Set([crop.id]); render(); }
 function cropState() {
   if (!crop) return null;
   const c = coverBG(crop.w, crop.h, crop.natW, crop.natH, crop.view);
-  return { id: crop.id, device: crop.device, w: crop.w, h: crop.h, natW: crop.natW, natH: crop.natH, view: { ...crop.view }, display: c ? { dw: c.dw, dh: c.dh, ox: c.ox, oy: c.oy } : null };
+  return { id: crop.id, device: crop.device, w: crop.w, h: crop.h, natW: crop.natW, natH: crop.natH, view: { ...crop.view }, display: c ? { dw: c.dw, dh: c.dh, ox: c.ox, oy: c.oy } : null, live: crop.live || null, framable: cropFramable(), steps: crop.hist.length };
 }
 function cropRefresh() { const c = coverBG(crop.w, crop.h, crop.natW, crop.natH, crop.view); if (c) { crop.view.x = c.x; crop.view.y = c.y; } if (typeof onCrop === "function") onCrop(); }
-function cropPanStart() { if (!crop) return; const c = coverBG(crop.w, crop.h, crop.natW, crop.natH, crop.view); panBase = { x: crop.view.x, y: crop.view.y, dw: c ? c.dw : crop.w, dh: c ? c.dh : crop.h }; }
+function cropPanStart() { if (!crop) return; cropMark(); const c = coverBG(crop.w, crop.h, crop.natW, crop.natH, crop.view); panBase = { x: crop.view.x, y: crop.view.y, dw: c ? c.dw : crop.w, dh: c ? c.dh : crop.h }; }
 function cropPanBy(ddx, ddy) { if (!crop || !panBase) return; crop.view.x = panBase.x - ddx / panBase.dw; crop.view.y = panBase.y - ddy / panBase.dh; cropRefresh(); }
 // 横棒・ホイール＝枠の真ん中を中心に拡大縮小（見ている所が逃げない。N3）
-function cropZoomTo(z) { if (!crop) return; crop.view.zoom = Math.min(4, Math.max(1, z)); cropRefresh(); }
-function cropWheel(deltaY) { if (!crop) return; cropZoomTo(crop.view.zoom * Math.pow(1.0015, -deltaY)); }
+function cropZoomTo(z, key) { if (!crop) return; if (key !== false) cropMark(key || "zoom"); crop.view.zoom = Math.min(4, Math.max(1, z)); cropRefresh(); }
+// PC-18 ふつうのホイールはページのスクロール（画面側で素通し）。トラックパッドのピンチ（Ctrl＋ホイール）だけ拡大縮小
+function cropWheel(deltaY) { if (!crop) return; cropZoomTo(crop.view.zoom * Math.pow(1.0015, -deltaY), "wheel"); }
 // 四隅のつまみ＝動かしている角の反対の角を止めて拡大縮小（N2）。隙間ができるなら隙間がなくなるよう位置をずらす（clampView が勝つ）。
-function cropCornerStart(dir) { if (!crop) return; const c = coverBG(crop.w, crop.h, crop.natW, crop.natH, crop.view); if (!c) return; cornerBase = { dir, ox: c.ox, oy: c.oy, dw: c.dw, dh: c.dh, s0: Math.max(crop.w / crop.natW, crop.h / crop.natH) }; }
+function cropCornerStart(dir) { if (!crop) return; cropMark(); const c = coverBG(crop.w, crop.h, crop.natW, crop.natH, crop.view); if (!c) return; cornerBase = { dir, ox: c.ox, oy: c.oy, dw: c.dw, dh: c.dh, s0: Math.max(crop.w / crop.natW, crop.h / crop.natH) }; }
 function cropCornerBy(ddx, ddy) {
   if (!crop || !cornerBase) return; const b = cornerBase, dir = b.dir, iw = crop.natW, ih = crop.natH;
   const hGrow = /e/.test(dir) ? ddx : (/w/.test(dir) ? -ddx : 0);   // 東の角は右へ＝拡大／西の角は左へ＝拡大
@@ -80,9 +100,49 @@ function cropCornerBy(ddx, ddy) {
   crop.view = clampView(crop.w, crop.h, iw, ih, { x, y, zoom });    // 隙間を作らない決まりが勝つ
   cropRefresh();
 }
-function cropCommit() { if (!crop) return; const id = crop.id, dev = crop.device, v = { ...crop.view }; crop = null; panBase = cornerBase = null; commit({ t: "view", id, device: dev, x: +v.x.toFixed(6), y: +v.y.toFixed(6), zoom: +v.zoom.toFixed(6) }); }
-function cropCancel() { if (!crop) return; crop = null; panBase = cornerBase = null; render(); }
+function cropCommit() { if (!crop) return; const id = crop.id, dev = crop.device, v = { ...crop.view }; const framed = state.cursor > crop.cursor0 && sameView(v, crop.start); a3CropEnd(); if (framed) { render(); return; }   /* 枠を変えた記録（見せる範囲も入っている）の後に動かしていなければ、もう一度は記録しない */ commit({ t: "view", id, device: dev, x: +v.x.toFixed(6), y: +v.y.toFixed(6), zoom: +v.zoom.toFixed(6) }); }
+// 取り消す：見せる範囲に入ってからの手直し（枠を変えた記録も）を捨てて、入る前の形に戻す
+function cropCancel() { if (!crop) return; const c0 = crop.cursor0; a3CropEnd(); if (state.cursor > c0) { state.ops = state.ops.slice(0, c0); state.cursor = c0; scheduleSave(); } render(); }
+function a3CropEnd() { crop = null; panBase = cornerBase = frameBase = null; if (typeof window !== "undefined" && typeof window.onCropEnd === "function") window.onCropEnd(); }
 const isCropping = () => !!crop;
+
+// ---- SP-11（線 C）枠のつまみ（PowerPoint の黒いつまみ）＝写真はその場のまま、見せる枠だけを狭める・広げる ----
+// 四隅の白い丸（cropCorner*）は今までどおり写真の大きさ。枠は写真の外へは広げない（隙間を作らない＝公開ページで空きが出ない）。
+// 枠の大きさは部品の大きさ（size の w・h）として、見せる範囲（view）と一緒に1つの手直しで記録する（戻す1回で両方戻る）。
+const cropFramable = () => !!crop && resizableKind(crop.id) === "photo";
+function cropFrameStart(dir) {
+  if (!cropFramable()) return false; const e = geometry()[crop.id]; const c = coverBG(crop.w, crop.h, crop.natW, crop.natH, crop.view); if (!e || !c) return false;
+  frameBase = { dir, x: e.x, y: e.y, w: e.w, h: e.h, ox: c.ox, oy: c.oy, dw: c.dw, dh: c.dh, v0: { ...crop.view }, w0: crop.w, h0: crop.h, live: null }; return true;
+}
+// 動かした量（設計px）から新しい枠（元の枠の左上からの L,T と幅・高さ）を出す。写真の外・ページの中身の外へは出さない。拡大は4倍まで
+function cropFrameRect(b, ddx, ddy) {
+  const { left: cL, right: cR } = contentEdges(); const MINW = Math.max(40, b.dw / 4), MINH = Math.max(40, b.dh / 4);
+  let L = 0, T = 0, Rr = b.w, B = b.h; const d = b.dir;
+  if (/w/.test(d)) L = Math.min(Math.max(ddx, b.ox, cL - b.x), Rr - MINW);
+  if (/e/.test(d)) Rr = Math.max(Math.min(b.w + ddx, b.ox + b.dw, cR - b.x), L + MINW);
+  if (/n/.test(d)) T = Math.min(Math.max(ddy, b.oy), B - MINH);
+  if (/s/.test(d)) B = Math.max(Math.min(b.h + ddy, b.oy + b.dh), T + MINH);
+  const W = Math.round(Rr - L), H = Math.round((B - T) * 100) / 100;
+  if (/w/.test(d)) L = Rr - W; else Rr = L + W; if (/n/.test(d)) T = B - H;
+  return { L, T, W, H };
+}
+function cropFrameBy(ddx, ddy) {
+  if (!crop || !frameBase) return; const b = frameBase; const f = cropFrameRect(b, ddx, ddy); b.live = f;
+  // 写真の見える位置・大きさ（dw・dh）はそのまま。新しい枠から見た見せる範囲を出す
+  crop.w = f.W; crop.h = f.H; const s0 = Math.max(f.W / crop.natW, f.H / crop.natH); const zoom = Math.min(4, Math.max(1, b.dw / (crop.natW * s0)));
+  crop.view = { x: (f.W / 2 - (b.ox - f.L)) / b.dw, y: (f.H / 2 - (b.oy - f.T)) / b.dh, zoom }; crop.live = { L: f.L, T: f.T };
+  if (typeof onCrop === "function") onCrop();
+}
+function cropFrameEnd() {
+  if (!crop || !frameBase) return; const b = frameBase; frameBase = null; const f = b.live; crop.live = null;
+  if (!f || (Math.abs(f.W - b.w) < 0.5 && Math.abs(f.H - b.h) < 0.5)) { crop.w = b.w0; crop.h = b.h0; crop.view = b.v0; if (typeof onCrop === "function") onCrop(); return; }
+  const id = crop.id, dev = crop.device, v = { ...crop.view }; const grp = "crf" + Date.now();
+  crop.hist.push({ view: { ...b.v0 }, frame: true }); crop.fwd = []; crop._k = null;
+  if (!sameView(b.v0, crop.start)) commit({ t: "view", id, device: dev, x: +b.v0.x.toFixed(6), y: +b.v0.y.toFixed(6), zoom: +b.v0.zoom.toFixed(6) });   // 枠を変える前に合わせた所は別の1手に（戻す1回で枠だけ戻る）
+  commitSize({ id, handle: b.dir, kind: "photo", start: { x: b.x, y: b.y, w: b.w, h: b.h } }, { w: f.W, h: f.H }, grp);
+  commit({ t: "view", id, device: dev, x: +v.x.toFixed(6), y: +v.y.toFixed(6), zoom: +v.zoom.toFixed(6), _grp: grp });
+  const e = geometry()[id]; if (e) { crop.w = e.w; crop.h = e.h; } crop.start = { ...v }; state.selected = new Set([id]); cropRefresh();
+}
 
 // ---- プリセット用の試験画像（§6：プリセットの中で作る。四分割の色は4章どおり）----
 function quadCanvas(w, h) { const cv = document.createElement("canvas"); cv.width = w; cv.height = h; const g = cv.getContext("2d"); g.fillStyle = "#d00000"; g.fillRect(0, 0, w / 2, h / 2); g.fillStyle = "#00a000"; g.fillRect(w / 2, 0, w / 2, h / 2); g.fillStyle = "#0040d0"; g.fillRect(0, h / 2, w / 2, h / 2); g.fillStyle = "#e0c000"; g.fillRect(w / 2, h / 2, w / 2, h / 2); return cv; }

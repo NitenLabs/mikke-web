@@ -200,7 +200,11 @@ function layoutScale() {
   //   ページ全体を横スクロールできるようにする（ページ全体の横スクロールが出るのはこの場合だけ）。
   // §1（試験台16・X4）スマホは #stage の余白を外してある。PC の窓で「スマホ」を直すとき（phone でない）は従来どおり 1 を超えない。
   let rawScale, overflowX = false;
-  if (phone) {
+  if (phone && state.device === "pc") {
+    // SP-14（線 U）スマホで「PC の見え方を見る」：PC のページ（1440）を画面の幅にまるごと収める（PowerPoint の iPhone 版がスライド全体を画面に収めるのと同じ）。
+    //   前は 0.82 倍の下限のままで右半分が切れ、横にもスクロールできなかった。細かい所はピンチで拡大して見る（見るだけの見え方）
+    rawScale = scale = stage.clientWidth / dw;
+  } else if (phone) {
     rawScale = stage.clientWidth / dw;
     scale = Math.max(0.82, Math.min(1.15, rawScale));
     overflowX = rawScale < 0.82;                     // 320 未満＝縮めきれない分は横に流す

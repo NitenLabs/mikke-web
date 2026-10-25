@@ -33,8 +33,8 @@ function placeAbovePtext(el){ const g=vvGeom(); placeFloat(el, g.ox+8, barTopRen
 function pbtn(label,fn,attr){ const b=document.createElement("button"); b.textContent=label; if(attr)b.setAttribute(attr,"1"); b.addEventListener("pointerdown",(e)=>e.preventDefault()); b.onclick=(e)=>{ e.stopPropagation(); fn(); }; return b; }
 function buildPbar(){ pbar.innerHTML="";
   if(phoneView()){ pbar.appendChild(pbtn("スマホの編集に戻る",()=>setPhoneDevice("sp"),"data-pbar-back")); return; }   // §2.4
-  pbar.appendChild(pbtn("戻す",()=>PG.undo(),"data-pbar-undo"));
-  pbar.appendChild(pbtn("やり直す",()=>PG.redo(),"data-pbar-redo"));
+  pbar.appendChild(pbtn("戻す",()=>{ if(typeof cropUndoUI==="function"&&cropUndoUI()) return; PG.undo(); },"data-pbar-undo"));   // PC-19 見せる範囲の中は1手ずつ
+  pbar.appendChild(pbtn("やり直す",()=>{ if(typeof cropRedoUI==="function"&&cropRedoUI()) return; PG.redo(); },"data-pbar-redo"));
   pbar.appendChild(pbtn("その他",()=>togglePmore(),"data-pbar-more"));
   const sp=document.createElement("span"); sp.className="sp"; pbar.appendChild(sp);   // §22 §3.4 右端に公開
   pbar.appendChild(pbtn("公開",()=>phonePublish(),"data-pbar-publish"));
@@ -70,7 +70,8 @@ function showPtext(){ buildPtext(); ptext.classList.add("on"); placePtext(); }
 function ptBold(){ if(!PG.state.editing){ PG.textToggleBold(); return; } if(!PG.editingHasSelection()) selectAllEditing(); PG.applyPartStyle("bold"); }
 function ptApplySize(px){ if(PG.state.editing){ if(!PG.editingHasSelection()) selectAllEditing(); const box=PG.boxSizePx(PG.state.editing.id)||px; PG.applyPartStyle("scale", px/box); } else { PG.textSetSize(px); } }
 function ptApplyColor(hex){ if(PG.state.editing){ if(!PG.editingHasSelection()) selectAllEditing(); PG.applyPartStyle("color",hex); } else { PG.textSetColor(hex); } }
-function togglePSize(){ if(pSize.classList.contains("on")){ pSize.classList.remove("on"); return; } pColor.classList.remove("on"); pSize.innerHTML=""; for(const n of PG.SIZE_LIST){ const b=document.createElement("button"); b.textContent=String(n); b.setAttribute("data-ts-size",String(n)); b.addEventListener("pointerdown",(e)=>e.preventDefault()); b.onclick=(e)=>{ e.stopPropagation(); ptApplySize(n); pSize.classList.remove("on"); }; pSize.appendChild(b); } pSize.classList.add("on"); placeAbovePtext(pSize); }
+// SP-13 noEdit=true：書き換えていない部品（値段）の大きさ。一覧は下の並びの上に出し、今の大きさに印
+function togglePSize(noEdit){ if(pSize.classList.contains("on")){ pSize.classList.remove("on"); return; } const cur=(()=>{ try{ const id=PG.primaryTextSel&&PG.primaryTextSel(); const t=id&&(PG.textStylesApi()||[]).find(x=>PG.canonId(x.part)===PG.canonId(id)); return t&&t.size; }catch(_){ return null; } })(); pColor.classList.remove("on"); pSize.innerHTML=""; for(const n of PG.SIZE_LIST){ const b=document.createElement("button"); b.textContent=String(n); b.setAttribute("data-ts-size",String(n)); b.addEventListener("pointerdown",(e)=>e.preventDefault()); if(n===cur) b.classList.add("cur"); b.onclick=(e)=>{ e.stopPropagation(); ptApplySize(n); pSize.classList.remove("on"); }; pSize.appendChild(b); } pSize.classList.add("on"); if(noEdit===true||!ptext.classList.contains("on")){ fmenu.classList.remove("on"); placeAboveBar(pSize); } else placeAbovePtext(pSize); }
 function togglePColor(){ if(pColor.classList.contains("on")){ pColor.classList.remove("on"); return; } pSize.classList.remove("on"); pColor.innerHTML=""; for(const pair of PHONE_COLORS){ const b=document.createElement("button"); b.className="cell"; b.style.background=pair[1]; b.title=pair[0]; b.setAttribute("data-ts-color",pair[1]); b.setAttribute("data-color-name",pair[0]); b.addEventListener("pointerdown",(e)=>e.preventDefault()); b.onclick=(e)=>{ e.stopPropagation(); ptApplyColor(pair[1]); pColor.classList.remove("on"); }; pColor.appendChild(b); } pColor.classList.add("on"); placeAbovePtext(pColor); }
 function ptDone(){ pSize.classList.remove("on"); pColor.classList.remove("on"); if(PG.state.editing) PG.commitEdit(); const ae=document.activeElement; if(ae&&ae.blur) ae.blur(); }   // §3.5 書き換えを終える・キーボードを閉じる
 

@@ -36,7 +36,7 @@ function showFmenu(cx,cy){ fmenu._section=false; fmenu._pcAt=null; fmenu.style.v
   if(sel.length>1){ add("元の位置に戻す",()=>a5ResetParts(sel)); add("消す",()=>PG.deleteSelected()); }
   else if(one&&PG.isRepeat(one)){ const info=PG.partInfo(one); const isRow=info&&info.kind==="table"; const bare1=PG.canonId(one).replace(/.*__/,""); const isPrice=/_price_/.test(bare1);
     const isMenuRow=(PG.currentPage&&PG.currentPage()==="pg_menu")&&!!PG.menuRowPlc(one);   // 試験台28：お品書き本体の行（① の載せ方そのもの）
-    if(isPrice) add("値段を変える",()=>openPriceBox(one)); else add("書き換える",()=>PG.startEdit(one));   // J19 お品書き本体の値段も値段の箱で（①連動＝読み込み直しても残る）
+    if(isPrice){ add("値段を変える",()=>openPriceBox(one)); add("大きさ",()=>togglePSize(true)); } else add("書き換える",()=>PG.startEdit(one));   // SP-13 スマホでも値段の文字の大きさ（書き換えに入らない値段は一覧から）。J19 お品書き本体の値段も値段の箱で（①連動＝読み込み直しても残る）
     if(!isMenuRow){ add(isRow?"行を足す…":"品を足す…",()=>{ if(isRow) addRowFlow(one); else openItemPicker(one); }); add("複製",()=>PG.duplicate()); }
     add("削除",()=>PG.deleteSelected());
     add("",null,isMenuRow?"品を選ぶと上の並びに道具が出ます":(isRow?"1行の作りを変えると全部に効きます":"品は位置を動かせません")); }
@@ -62,6 +62,7 @@ function showFmenu(cx,cy){ fmenu._section=false; fmenu._pcAt=null; fmenu.style.v
   if(ph && PG.canAlign().enabled) add("配置",()=>showAlignSheet());   // §27 スマホの長押しの箱に「配置」（PC は右クリックに入れない）
   fmenu._follow="part"; fmenu._secId=null; fmenu._place=null;   // §1/§4（試験台16）箱は部品に付いていく
   fmenu.classList.add("on"); positionFmenu();
+  try{ updateConnNotice(); }catch(_){}   // SP-17 連動の知らせを一覧に重ねない
 }
 
 // ---- 選択・ドラッグ・範囲選択 ----

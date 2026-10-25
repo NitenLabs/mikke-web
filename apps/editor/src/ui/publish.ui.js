@@ -25,7 +25,10 @@ window.addEventListener("pagehide",_flushSaveNow);
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden") _flushSaveNow(); });
 function closePublishBox(){ document.getElementById("publishBox").classList.remove("on"); }
 function scrollPartToCenter(part){ const n=PG.elNode(PG.canonId(part)); if(!n) return; n.scrollIntoView({block:"center"}); const r=n.getBoundingClientRect(); window.scrollBy(0,(r.top+r.height/2)-innerHeight/2); }   // §4.1.5 部品の真ん中が画面の真ん中
-function seeItem(it){ closePublishBox(); if(it.page&&PG.setPage) PG.setPage(it.page); PG.setDevice(it.device); const dSP=document.getElementById("dSP"),dPC=document.getElementById("dPC"); if(it.device==="sp"){dSP.classList.add("on");dPC.classList.remove("on");}else{dPC.classList.add("on");dSP.classList.remove("on");} const part=it.parts[0]; PG.selectOnly(PG.canonId(part)); scrollPartToCenter(part); }
+function seeItem(it){ closePublishBox(); if(it.page&&PG.setPage) PG.setPage(it.page); PG.setDevice(it.device); const dSP=document.getElementById("dSP"),dPC=document.getElementById("dPC"); if(it.device==="sp"){dSP.classList.add("on");dPC.classList.remove("on");}else{dPC.classList.add("on");dSP.classList.remove("on");} const part=it.parts[0]; PG.selectOnly(PG.canonId(part)); scrollPartToCenter(part);
+  // SP-8（線 U）前に選んでいた部品の一覧（長押し・右クリック）を残さない。スマホで編集できる見え方なら、選んだ部品の一覧を出し直す（出る道具＝選んだ物）
+  if(typeof fmenu!=="undefined"){ fmenu.classList.remove("on"); if(typeof phoneEdit==="function"&&phoneEdit()&&PG.state.selected.size) showFmenu(); }
+  if(typeof pmore!=="undefined") pmore.classList.remove("on"); }
 function showPublishBox(items){ const box=document.getElementById("publishBox"); box.innerHTML="";
   const inner=document.createElement("div"); inner.className="pbox-inner";
   const title=document.createElement("div"); title.className="pbox-title"; title.setAttribute("data-pbox-title",String(items.length)); title.textContent="公開する前に、見てほしい所が "+items.length+" つあります"; inner.appendChild(title);

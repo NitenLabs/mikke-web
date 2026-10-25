@@ -371,6 +371,40 @@ async def main():
     await pg.screenshot(path='V26.png')
     rec('V26 履歴の板と帯',w==300 and len(rows)>=4 and band and band[0] and '見るだけ' in band[1] and 'この版を下書きにする' in band[1],f"幅 {w} 行 {rows} 帯 {band}")
     await pg.context.close()
-    print(f"\n合計 {sum(1 for r in R if r[1] is True)} / {sum(1 for r in R if r[1] is not None)}（-- は値だけ）")
+    # ---- 4回目の精査・線 U ----
+    # V27 SP-7（F21 の再発）すべてのページ・両方の端末・複製したセクションの全部の部品で、店主に見せる名前に内部名（英字の ID）が出ない。
+    #     特集の写真を品のセクションへ移した後の公開の確認にも内部名が出ず、同じ文の行が並ばない
+    pg=await fresh()
+    await pg.evaluate(f"{P}.sectionDuplicate('feature')"); await pg.evaluate(f"{P}.sectionDuplicate('items')"); await pg.wait_for_timeout(400)
+    bad=await pg.evaluate("""(()=>{const out={}; for(const pgid of PG.pages().map(p=>p.id)){ PG.setPage(pgid); for(const d of ['pc','sp']){ PG.setDevice(d);
+      for(const e of document.querySelectorAll('#sectionwrap [data-el]')){ const raw=e.getAttribute('data-el'); for(const id of [raw,PG.canonId(raw)]){ const f=C3.friendly(id); if(/[A-Za-z_]{2,}/.test(f)) out[id]=f; } } } } PG.setPage('pg_home'); PG.setDevice('pc'); return out; })()""")
+    await pg.context.close()
+    pg=await fresh(); await pg.evaluate("window.scrollTo(0,1000)"); await pg.wait_for_timeout(300)
+    r=await bb(pg,'F_p1'); x,y=r['x']+r['w']/2,r['y']+r['h']/2
+    await pg.mouse.move(x,y); await pg.mouse.down(); await pg.mouse.move(x+300,y+600,steps=25); await pg.mouse.up(); await pg.wait_for_timeout(400)
+    items=await pg.evaluate(f"{P}.publishCheck()"); texts=[(i['device'],i['kind'],i['text']) for i in items]
+    raw=[t for t in texts if re.search(r'[A-Za-z_]{2,}',t[2].replace('PC',''))]; dup=len(texts)-len(set(texts))
+    rec('V27 SP-7 店主に見せる名前に内部名が出ない・同じ文が並ばない',not bad and not raw and dup==0 and len(items)>0,f"内部名の部品 {dict(list(bad.items())[:6])}（{len(bad)} 件） 確認の文 {[t[2] for t in texts][:6]} 内部名 {len(raw)} 重複 {dup}")
+    await pg.context.close()
+    # V28 SP-8 スマホ（390・指）：写真の長押しの一覧が出ている所から、公開の確認の「見る」（PC の件・スマホの件）→ 選ばれた物と出ている一覧が合う（写真の道具が残らない）
+    ctx=await br.new_context(viewport={'width':390,'height':844},device_scale_factor=3,is_mobile=True,has_touch=True); pg=await ctx.new_page(); await pg.goto(URL); await pg.wait_for_timeout(1500)
+    res={}
+    for dev in ('pc','sp'):
+        await pg.evaluate("(()=>{setPhoneDevice('sp');window.scrollTo(0,250);PG.selectOnly('F_p1');showFmenu();})()"); await pg.wait_for_timeout(300)
+        m0=await pg.evaluate("[...document.querySelectorAll('#fmenu.on button')].map(b=>b.textContent.trim())")
+        await pg.evaluate(f"seeItem({{device:'{dev}',kind:'overlap',parts:['I_hg'],text:'x'}})"); await pg.wait_for_timeout(400)
+        res[dev]=(m0[:2],await pg.evaluate(f"{P}.selected()"),await pg.evaluate("[...document.querySelectorAll('#fmenu.on button')].map(b=>b.textContent.trim())"))
+    rec('V28 SP-8 「見る」で選んだ物と一覧が合う',all(r[1]==['I_hg'] and r[0] and not any('写真' in t for t in r[2]) for r in res.values()),f"{res}")
+    await ctx.close()
+    # V29 PC-27 1440・1280 で、値段・見出し・何も選ばないときのどれでも、PC/スマホ・履歴・プレビューが並びにある（「その他」に移らない）
+    bad=[]
+    for W in (1440,1280):
+        for s_ in (None,'row_price_t_warabi','F_h0'):
+            pg=await fresh(w=W,h=900)
+            if s_: await pg.evaluate(f"PG.selectOnly('{s_}')"); await pg.wait_for_timeout(300)
+            v=await pg.evaluate("['dPC','dSP','tHistory','tPreview'].filter(id=>{const b=document.getElementById(id);return !(b&&b.offsetParent&&!document.getElementById('moreMenu').contains(b)&&b.getBoundingClientRect().right<=innerWidth)})")
+            if v: bad.append((W,s_,v))
+            await pg.context.close()
+    rec('V29 PC-27 画面の切り替えは何を選んでも並びにある',not bad,f"しまわれた {bad}")
     await br.close()
 asyncio.run(main())

@@ -5,9 +5,11 @@ window.addEventListener("keydown",(e)=>{
   if((PG.previewMode()||PG.viewingVersion())&&e.key!=="Escape"){ if(["ArrowLeft","ArrowRight","ArrowUp","ArrowDown","Home","End","PageUp","PageDown"," "].includes(e.key)) e.preventDefault(); return; }   // J50/J52 プレビュー・見るだけでは部品の操作をしない（矢印でページが横にずれないよう既定も止める）
   const meta=e.metaKey||e.ctrlKey;
   if(PG.isDragging&&PG.isDragging()){ if(e.key==="Escape"){ e.preventDefault(); PG.cancelDrag(); } return; }   // J29 ドラッグ中の Esc で取り消す
-  if(PG.isCropping()){ // 見せる範囲：Enter で決め、Esc で取り消す（ほかのキーは効かない）
+  if(PG.isCropping()){ // 見せる範囲：Enter で決め、Esc で取り消す。PC-19 Cmd+Z／Cmd+Shift+Z（Cmd+Y）は見せる範囲の中の1手ずつ（ほかのキーは効かない）
     if(e.key==="Enter"){ e.preventDefault(); PG.cropCommit(); exitCropOverlay(); }
     else if(e.key==="Escape"){ e.preventDefault(); PG.cropCancel(); exitCropOverlay(); }
+    else if(meta&&e.key.toLowerCase()==="z"){ e.preventDefault(); if(e.shiftKey) cropRedoUI(); else cropUndoUI(); }
+    else if(meta&&e.key.toLowerCase()==="y"){ e.preventDefault(); cropRedoUI(); }
     return;
   }
   if(PG.state.editing){ // 書き換え中：文字入力・Esc・Cmd+B・Cmd+K のみ。Cmd+Z は自動リンクの取り消しだけ受ける

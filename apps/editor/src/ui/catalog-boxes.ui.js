@@ -88,6 +88,9 @@ function updateConnNotice(){
   n.textContent="お品書きと連動しています。書き換えるとお品書きも変わります";
   const node=PG.elNode(one)||document.querySelector('[data-el="'+one+'"]'); if(!node){ n.remove(); return; }
   const r=node.getBoundingClientRect(); let top=r.top-n.offsetHeight-4; if(top<4) top=r.bottom+4;
+  // SP-17（線 U）出ている一覧（長押しの箱）に重なるなら、一覧の上（入らなければ下）へずらす（前はスマホで「メニュー」ボタンに重なった）
+  if(typeof fmenu!=="undefined"&&fmenu.classList.contains("on")){ const m=fmenu.getBoundingClientRect(); const h=n.offsetHeight;
+    if(m.width&&top<m.bottom&&top+h>m.top){ const up=Math.min(r.top,m.top)-h-4, dn=Math.max(r.bottom,m.bottom)+4; top=(up>=4)?up:dn; } }
   let left=Math.max(6,Math.min(innerWidth-6-n.offsetWidth, r.left)); n.style.left=Math.round(left)+"px"; n.style.top=Math.round(top)+"px";
 }
 
