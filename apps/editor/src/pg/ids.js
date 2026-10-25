@@ -40,9 +40,22 @@ function movedSecMap() {
   if (_mvc && _mvc.base === state.base && _mvc.ops === state.ops && _mvc.cursor === state.cursor) return _mvc.map;
   const m = {}; const b = state.base;
   if (b && b.relocated) for (const k in b.relocated) if (b.relocated[k] && b.relocated[k].section) m[k] = b.relocated[k].section;
-  for (const op of activeOps()) if (op.t === "xsec") for (const it of op.items) { if (!isAdded(it.id) && it.to === homeSec(it.id)) delete m[it.id]; else m[it.id] = it.to; }
+  for (const op of activeOps()) { if (op.t === "xsec") for (const it of op.items) { if (!isAdded(it.id) && it.to === homeSec(it.id)) delete m[it.id]; else m[it.id] = it.to; }
+    else if (op.t === "resetScope") for (const id of resetRelocIds(op, m)) delete m[id]; }   // PC-7（DECISIONS #21）元に戻すで生まれたセクションへ戻す
   _mvc = { base: state.base, ops: state.ops, cursor: state.cursor, map: m };
   return m;
+}
+// PC-7（DECISIONS #21）「このページを元に戻す」「このセクションを元に戻す」「元の位置に戻す」で、生まれたセクションへ戻すテンプレの部品。
+// cur＝その時点の「部品 ID → 今のセクション」。ページ：今いるか生まれたセクションがそのページ。セクション：今いるか生まれたのがそのセクション。部品：その部品
+function resetRelocIds(op, cur) {
+  const out = []; const ps = op.scope === "page" && op.pageSecs ? new Set(op.pageSecs) : null;
+  const tid = op.id ? canonId(op.id) : null;
+  const secAt = (id) => cur[id] || homeSec(id);
+  for (const id in cur) { if (isAdded(id)) continue; const s = cur[id], h = homeSec(id);
+    if (op.scope === "page") { if (!ps || ps.has(s) || ps.has(h)) out.push(id); }
+    else if (op.scope === "part") { if (tid === id) out.push(id); }
+    else if (tid) { const sec = secAt(tid); if (s === sec || h === sec) out.push(id); } }
+  return out;
 }
 // テンプレの部品で、今は生まれたのと別のセクションにあるもの（足した部品は含めない）
 const isCarried = (id) => !isAdded(id) && Object.prototype.hasOwnProperty.call(movedSecMap(), id);

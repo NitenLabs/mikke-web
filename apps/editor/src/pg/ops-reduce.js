@@ -198,7 +198,7 @@ function reduce(ops, device, peek) {
       if (op.device === device) m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x };
       if (isAdded(it.id)) { const i = adds.findIndex((a) => a.id === it.id); if (i >= 0) { adds[i] = { ...adds[i], section: it.to, anchor: it.anchor, placed: { device: op.device, anchor: it.anchor, gapY: it.gapY, x: it.x } }; placedCleared.delete(it.id); placedFollow[it.id] = { anchor: it.anchor, device: op.device }; } }   // 記録の列の add op を書き換えない（写して差し替える）
       else if (it.to === homeSec(it.id)) delete relocated[it.id];   // 生まれたセクションへ戻した＝ふつうの M2
-      else relocated[it.id] = { section: it.to, anchor: it.anchor };
+      else relocated[it.id] = { section: it.to, anchor: it.relAnchor || it.anchor };   // PC-5・PC-6 もう一方の端末の付いていく先は、離した所より上に丸ごとある部品（relAnchor。DECISIONS #22）
     } }
     else if (op.t === "reorder") { if (op.device === device) { order[op.key] = op.order.slice(); delete m1[op.id]; delete m2[op.id]; } }
     else if (op.t === "zorder") { if (op.device === device) { if (op.zs) Object.assign(zmap, op.zs); else zmap[op.id] = op.z; } }   // §4/§22 重なり順（単体 z か、cluster まとめの zs）
@@ -206,13 +206,16 @@ function reduce(ops, device, peek) {
     else if (op.t === "size") { if (op.device === device) { const s = sizes[op.id] || {}; if (op.w != null) s.w = op.w; if (op.h != null) s.h = op.h; if (op.padB != null) s.padB = op.padB; sizes[op.id] = s; if (op.dx) { const m = m1[op.id] || { dx: 0, dy: 0 }; m1[op.id] = { dx: (m.dx || 0) + op.dx, dy: m.dy || 0 }; }
       if (op.dy) { if (m2[op.id]) m2[op.id] = { ...m2[op.id], gapY: +((m2[op.id].gapY || 0) + op.dy).toFixed(2) }; else s.dy = +((s.dy || 0) + op.dy).toFixed(2); } } }   // P1/P12 動かさない辺のための縦のずれ：塊の外（M2）は付いていく間隔に、流れの中は sizes.dy に
     else if (op.t === "cols") { const m = colsMap[op.id] = colsMap[op.id] || {}; m[op.device] = op.n; }   // §20 列（端末ごと。両端末ぶんを溜める）
-    else if (op.t === "swap") { const s = swapMap[op.sec] = swapMap[op.sec] || {}; const d = s[op.device] = s[op.device] || {}; d[op.block] = !d[op.block]; if (op.device === device) for (const pid of (op.clearM1 || [])) { delete m1[pid]; delete m2[pid]; } }   // §5 左右入替（トグル）＋ 2つの子の M1 を消す
+    else if (op.t === "swap") { const s = swapMap[op.sec] = swapMap[op.sec] || {}; const d = s[op.device] = s[op.device] || {}; d[op.block] = !d[op.block]; if (op.device === device) for (const pid of (op.clearM1 || [])) { if (relocated[pid]) continue; delete m1[pid]; delete m2[pid]; } }   // PC-12 よそへ移した部品は入れ替えの相手にしない（位置を消さない）   // §5 左右入替（トグル）＋ 2つの子の M1 を消す
     // §12 文字の見た目：weight/color は端末共通（device で絞らない）、size は op.device の枠へ（両端末ぶんを溜める）
     else if (op.t === "tstyle") { for (const k of op.keys) { const s = textStyles[k] = textStyles[k] || {}; if (op.weight != null) s.weight = op.weight; if (op.color != null) s.color = op.color; if (op.font != null) s.font = op.font; if (op.italic != null) s.italic = op.italic; if (op.underline != null) s.underline = op.underline; if (op.align != null) s.align = op.align; if (op.size != null) { s.size = s.size || {}; s.size[op.device] = op.size; } } }
     // 文字の見た目を元に戻す：箱まるごと（鍵）＋文の一部（部品の runs）の両方（§2.2 書式のクリア）
     else if (op.t === "tstyleReset") { for (const k of op.keys) delete textStyles[k]; if (op.parts) for (const pid of op.parts) delete runsMap[pid]; }
     else if (op.t === "elink") { if (op.link) linkMap[op.id] = clone(op.link); else delete linkMap[op.id]; }   // §19 部品まるごとのリンク
-    else if (op.t === "resetScope") { if (op.devices.includes(device)) {
+    else if (op.t === "resetScope") {
+      // PC-7（DECISIONS #21）別のセクションへ移したテンプレの部品は、生まれたセクションの元の場所へ戻す（所属は端末共通なので、どの端末の「元に戻す」でも戻す）。位置の手直しも両端末で消す
+      { const cur = {}; for (const k in relocated) cur[k] = relocated[k].section; for (const id of resetRelocIds(op, cur)) { delete relocated[id]; delete m1[id]; delete m2[id]; if (sizes[id]) delete sizes[id]; } }
+      if (op.devices.includes(device)) {
       if (op.scope === "page") {
         // §13.1「このページを元に戻す」＝そのページの全セクションのデザインに関わるもの全部（セクションの並び・追加・複製・削除は §2.2 により戻さない）。
         // 試験台28：今のページのセクションだけ（op.pageSecs）。古い op（pageSecs 無し）は全ページ＝従来どおり。
@@ -302,6 +305,8 @@ function reduce(ops, device, peek) {
   }
   // J17 別のセクションへ移したテンプレの部品：移った先で絶対配置（足した部品と同じ）。中身は生まれたセクションの content から。m2 は R.m2 にも残す（矢印・元に戻す・保存が m2 を見る）
   const carried = [];
+  // PC-24「元の配置を見る」の間は、今のページで別のセクションへ移した部品も生まれたセクションの元の場所に見せる（記録は変えない）
+  if (peek) { for (const id of Object.keys(relocated)) if (secPageMap[relocated[id].section] === curPage || secPageMap[homeSec(id)] === curPage) delete relocated[id]; }
   for (const id in relocated) {
     if (removed.has(id)) continue;
     const rl = relocated[id]; const bare = bareOf(id); const df = M.floatDefaults(bare, device); if (!df) continue;

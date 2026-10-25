@@ -95,6 +95,8 @@ button:active{transform:translateY(1px)}
 #stage{padding:12px;min-height:60vh}
 .seclabel{font:12px monospace;color:#888;margin:6px 0 2px}
 .host{border:1px solid #ddd;background:#fff;overflow:visible;position:relative;touch-action:pan-y}
+.host.a2-draghost{z-index:25}   /* PC-13 ドラッグ中の部品のセクションを前に（移す先のセクションの背景に隠れない）。道具の並び（30）より下 */
+body.a2-nodrop,body.a2-nodrop *{cursor:no-drop!important}
 .mark-manual{outline:2px dashed #e08a00 !important;outline-offset:-1px}
 .mark-warn{outline:2px solid #d00 !important;outline-offset:-1px}
 .mark-sel{outline:2px solid #06c !important;outline-offset:-1px}

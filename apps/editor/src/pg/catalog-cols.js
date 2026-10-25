@@ -25,6 +25,6 @@ function listLayout(device) {
 function colsApi() { return { choices: COL_CHOICES(state.device), current: colsOf("I_cards"), enabled: COL_CHOICES(state.device).map((n) => ({ n, enabled: colEnabled("I_cards", n), w: +colWidthFor("I_cards", n).toFixed(2) })) }; }
 // §5 左右を入れ替える（横並びの組＝PC の特集の2つの組の子のとき）
 function blockOfPart(id) { const m = bareOf(canonId(id)).match(/^F_[phb](\d)$/); return m ? +m[1] : null; }
-function canSwap(id) { if (state.device !== "pc") return false; const c = canonId(id); if (blockOfPart(c) == null) return false; const inst = reduce(activeOps()).secList.find((s) => s.id === secOf(c)); return !!(inst && inst.type === "feature"); }
-function swapHoriz(id) { const c = canonId(id); const block = blockOfPart(c); if (block == null) return; const sec = secOf(c); const pfx = isAnchorSec(sec) ? "" : sec + SEP; const clearM1 = ["F_p", "F_h", "F_b"].map((p) => pfx + p + block); commit({ t: "swap", device: state.device, sec, block, clearM1 }); }
+function canSwap(id) { if (state.device !== "pc") return false; const c = canonId(id); if (blockOfPart(c) == null || isCarried(c)) return false; /* PC-12 よそへ移した部品は入れ替えの入口を出さない */ const inst = reduce(activeOps()).secList.find((s) => s.id === secOf(c)); return !!(inst && inst.type === "feature"); }
+function swapHoriz(id) { const c = canonId(id); const block = blockOfPart(c); if (block == null) return; const sec = secOf(c); const pfx = isAnchorSec(sec) ? "" : sec + SEP; const clearM1 = ["F_p", "F_h", "F_b"].map((p) => pfx + p + block).filter((p) => !isCarried(p)); /* PC-12 よそへ移した部品は、元のセクションの左右の入れ替えで動かさない */ commit({ t: "swap", device: state.device, sec, block, clearM1 }); }
 // 文字の見た目を元に戻す：箱まるごと（鍵）＋文の一部（この部品の runs）の両方（§2.2）

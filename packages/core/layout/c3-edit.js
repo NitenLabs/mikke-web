@@ -351,6 +351,8 @@ function absLayer(m2, added, innerMap, device) {
   let out = "";
   for (const [id, ov] of Object.entries(m2)) {
     if (!(id in innerMap)) continue;
+    // PC-14・PC-22 PC のセクションの見出しの組は、塊の外へ出してもページの幅いっぱい（中央寄せのまま）。前は中身の幅に縮んで左端に貼り付いた
+    if (device === "pc" && /^[FI]_hg$/.test(id)) { out += absWrap(id, innerMap[id], ov.anchor, ov.gapY, 0).replace("position:absolute;", `position:absolute;width:${px(DESIGN_W[device])};`); continue; }
     out += absWrap(id, innerMap[id], ov.anchor, ov.gapY, ov.x);
   }
   for (const a of added) {
@@ -385,6 +387,8 @@ export const FRIENDLY = {
   F_p1: "特集2の写真", F_h1: "特集2の見出し", F_b1: "特集2の本文",
   I_hg: "おすすめの見出しの組", I_divider: "区切り線", I_kanmi: "甘味処の見出し", I_time: "甘味処の時間",
   I_cards: "品の並び", I_table: "甘味処の表", I_pillbg: "ボタン", "@section": "セクションの先頭",
+  // PC-12・SP-6 見出しの組の中の部品も店主の言葉で（前は公開の確認に I_lbl・I_h と出た）
+  F_lbl: "特集の見出しの英字", F_h: "特集の見出し", F_rule: "特集の見出しの線", I_lbl: "おすすめの見出しの英字", I_h: "おすすめの見出し", I_rule: "おすすめの見出しの線", I_pilltext: "ボタン",
 };
 export function friendly(id) {
   if (FRIENDLY[id]) return FRIENDLY[id];

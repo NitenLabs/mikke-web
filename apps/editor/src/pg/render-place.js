@@ -14,10 +14,13 @@ function placeAbsolute(R) {
     const overrides = {};
     // P29 複製したセクション（非 anchor）の部品：読み込み直すと付いていく先が素の名前になるので、このセクションの部品に読み替える
     const ancOf = (k) => (k && !flow[k] && !isAdded(k) && flow[sec + SEP + k]) ? sec + SEP + k : k;
-    for (const [id, ov] of Object.entries(R.m2)) if (secOf(id) === sec) { const an = ancOf(ov.anchor); overrides[id] = an === ov.anchor ? ov : { ...ov, anchor: an }; }
+    for (const [id, ov] of Object.entries(R.m2)) if (secOf(id) === sec) { const an = ancOf(ov.anchor); overrides[id] = an === ov.anchor ? ov : { ...ov, anchor: an }; if (state.device === "pc" && /^[FI]_hg$/.test(bareOf(id))) overrides[id] = { ...overrides[id], x: 0 }; }   // PC-14 PC の見出しの組はページの幅いっぱい（左端 0。古い記録の x は使わない）
     for (const a of R.added) if (a.section === sec) { const an = ancOf(a.anchor); overrides[a.id] = { anchor: an, gapY: a.gap, x: a.x === "@left" ? (flow[an]?.x ?? 0) : a.x }; }
     const floats = [...R.added, ...(R.carried || [])].filter((a) => a.section === sec);   // J17 移ってきた部品も足した部品と同じ（付いていく先・自動の位置・押し下げ）
-    for (const a of (R.carried || [])) if (a.section === sec) { const an = ancOf(a.anchor); overrides[a.id] = { anchor: an, gapY: a.gap, x: a.x === "@left" ? (flow[an]?.x ?? 0) : a.x }; }
+    // PC-6・SP-6 移ってきた部品の「左端そろえ」：付いていく先がページの幅いっぱいの見出しの組・セクションの先頭なら、中身の左端にそろえる（前はページの端 x=0 に貼り付いた）
+    const contentL = (SPEC.DESIGN_W[state.device] - (state.device === "pc" ? 1326 : 351)) / 2;
+    const leftOfC = (an) => (!an || an[0] === "@" || /^[FI]_hg$/.test(bareOf(an)) || !flow[an]) ? contentL : flow[an].x;
+    for (const a of (R.carried || [])) if (a.section === sec) { const an = ancOf(a.anchor); overrides[a.id] = { anchor: an, gapY: a.gap, x: a.x === "@left" ? leftOfC(an) : a.x }; }
     const placed = M.placeAnchored(flow, overrides);
     const bottoms = {};
     for (const [id, pos] of Object.entries(placed)) {
@@ -48,6 +51,8 @@ function placeAbsolute(R) {
     for (const [fid, dy] of Object.entries(pushMap)) {
       const gp = groupOf(fid); if (gp && pushMap[gp]) continue;   // J17 品の並び・表ごと押し下げたら、中の1件は重ねて押さない（前は2倍下がり、下のボタンに重なることがあった）
       const el = s.querySelector('[data-el="' + fid + '"]'); if (!el) continue;
+      // PC-5・SP-6 入れ物（見出しの組・ボタン）ごと押し下げたら、中の部品（I_lbl・I_h・I_rule・ボタンの文字）は重ねて押さない（前は2倍下がり、見出しが品の写真の下に隠れた）
+      { let up = el.parentElement && el.parentElement.closest("[data-el]"), dup = false; while (up && s.contains(up)) { if (pushMap[up.getAttribute("data-el")]) { dup = true; break; } up = up.parentElement && up.parentElement.closest("[data-el]"); } if (dup) continue; }
       el.style.transform = (el.style.transform ? el.style.transform + " " : "") + "translateY(" + dy + "px)";
       el.classList.add("autopush");
       const fe = flow[fid]; if (fe) bottoms["push_" + fid] = fe.y + fe.h + dy;

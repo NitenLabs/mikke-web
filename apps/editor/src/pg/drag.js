@@ -5,17 +5,40 @@ let drag = null;
 function beginDrag(clientX, clientY) {
   const ids = [...state.selected].filter(isDraggable); if (!ids.length) return false;
   const baseT = {}; for (const id of ids) { const n = elNode(id); baseT[id] = curTranslate(n); }
-  drag = { ids, sx: clientX, sy: clientY, lx: clientX, ly: clientY, baseT, origGeom: geometry() }; return true;
+  drag = { ids, sx: clientX, sy: clientY, lx: clientX, ly: clientY, baseT, origGeom: geometry() };
+  a2DragHostsOn(ids); return true;
 }
+// PC-13 ドラッグ中は、動かしている部品のセクションを前に出す（後ろのセクションの背景に隠れて、移す先で部品が見えなかった）。終わったら戻す
+function a2DragHostsOn(ids) { for (const id of ids) { const n = elNode(id); const h = n && n.closest(".host"); if (h) h.classList.add("a2-draghost"); } }
+function a2DragHostsOff() { document.querySelectorAll(".host.a2-draghost").forEach((h) => h.classList.remove("a2-draghost")); }
+// PC-14 移せない部品をほかのセクションの上へ持っていったら、ドラッグ中に「ここへは移せません」を出す（離すと自分のセクションの中にとどまる。#20）
+function a2NoDropMark(on, cx, cy) {
+  let el = document.getElementById("a2NoDrop");
+  if (!on) { if (el) el.style.display = "none"; document.body.classList.remove("a2-nodrop"); return; }
+  if (!el) { el = document.createElement("div"); el.id = "a2NoDrop"; el.setAttribute("data-nodrop", ""); el.textContent = "ここへは移せません"; document.body.appendChild(el); }
+  el.style.cssText = `position:fixed;left:${cx + 14}px;top:${cy + 14}px;z-index:85;background:#333;color:#fff;font:12px system-ui;padding:4px 8px;border-radius:6px;pointer-events:none;display:block`;
+  document.body.classList.add("a2-nodrop");
+}
+function a2NoDropCheck(clientX, clientY) {
+  if (!drag) return; let bad = false;
+  for (const id of drag.ids) { const c = canonId(id); const n = elNode(c); if (!n) continue; const r = n.getBoundingClientRect(); const cyC = r.top + r.height / 2;
+    const own = secOf(c); const on = secNode(own); if (!on) continue; const orr = on.getBoundingClientRect(); if (cyC >= orr.top && cyC < orr.bottom) continue;
+    const tgt = a2SecAtClientY(cyC); if (!tgt) continue;
+    if (!((tgt.type === "feature" || tgt.type === "items") && canCrossSec(c))) { bad = true; break; } }
+  a2NoDropMark(bad, clientX, clientY);
+}
+// PC-14・PC-22 PC のセクションの見出しの組はページの幅いっぱい（中央寄せ）なので、横には動かさない（上下だけ）。左右へ動かすとページの外へ出るため（#15・DECISIONS #21）
+const a2VertOnly = (id) => state.device === "pc" && /^(F_hg|I_hg)$/.test(bareOf(canonId(id)));
 function curTranslate(n) { if (!n) return { tx: 0, ty: 0 }; const t = n.style.transform.match(/translate\(([-\d.]+)px,\s*([-\d.]+)px\)/); return t ? { tx: +t[1], ty: +t[2] } : { tx: 0, ty: 0 }; }
 function dragMove(clientX, clientY, alt, shift) {
   if (!drag) return;
   // P15 Shift を押している間は縦か横にまっすぐ（動きの大きい方の軸だけ。もう一方の軸は吸い付きもしない）
   drag.axis = null;
-  if (shift) { if (Math.abs(clientX - drag.sx) >= Math.abs(clientY - drag.sy)) { clientY = drag.sy; drag.axis = "x"; } else { clientX = drag.sx; drag.axis = "y"; } }
+  if (drag.ids.length === 1 && a2VertOnly(drag.ids[0])) { clientX = drag.sx; drag.axis = "y"; }   // PC-14 PC の見出しの組は上下だけ（吸い付きも横は外す）
+  else if (shift) { if (Math.abs(clientX - drag.sx) >= Math.abs(clientY - drag.sy)) { clientY = drag.sy; drag.axis = "x"; } else { clientX = drag.sx; drag.axis = "y"; } }
   drag.lx = clientX; drag.ly = clientY;
   const dx = (clientX - drag.sx) / scale, dy = (clientY - drag.sy) / scale;
-  for (const id of drag.ids) { const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + dx}px,${drag.baseT[id].ty + dy}px)`; }
+  for (const id of drag.ids) { const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + (a2VertOnly(id) ? 0 : dx)}px,${drag.baseT[id].ty + dy}px)`; }
   document.querySelectorAll(".anchor-line,.anchor-label,.mark-anchor,.reorder-line").forEach((n) => { if (n.classList.contains("mark-anchor")) n.classList.remove("mark-anchor"); else n.remove(); });
   let g = geometry();
   const single = drag.ids.length === 1;
@@ -45,6 +68,7 @@ function dragMove(clientX, clientY, alt, shift) {
     } }
   else setGuides([], null);
   if (ro) showReorderLine(drag.ids[0], ro);
+  a2NoDropCheck(clientX, clientY);
 }
 // J17 別のセクションへ移した部品も足した部品と同じ（絶対配置だけ）
 function classify(g, id) { if (isFloat(id)) return "M2"; const base = classifyDropX(g, id, drag ? drag.ids : [id], drag ? drag.origGeom : g);
@@ -64,17 +88,19 @@ function dropTarget() {
 // §2 複製・追加したセクションは、座標がセクションごとに独立する。C3 には「そのセクションだけ・素の ID」の実測を渡す（anchor は従来どおり全体で）。
 // J17 別のセクションへ移した部品は「~ID」に（移った先の素の ID とぶつからない）
 function stripGeom(gMerged, sec) { const pfx = sec + SEP; const out = {}; for (const k in gMerged) if (secOf(k) === sec) out[isCarried(k) ? "~" + k : (k.startsWith(pfx) ? k.slice(pfx.length) : k)] = gMerged[k]; return out; }
-// J17 特集・品（素の ID のセクション）は全部のセクションを混ぜた実測で測る。よそへ移っていった部品（座標が別のセクションのもの）は混ぜない
-function anchorGeom(gMerged, sec) { const ms = movedSecMap(); let hit = false; for (const k in ms) if (k in gMerged && ms[k] !== sec) { hit = true; break; } if (!hit) return gMerged; const out = {}; for (const k in gMerged) if (!(k in ms && secOf(k) !== sec)) out[k] = gMerged[k]; return out; }
+// J17 特集・品（素の ID のセクション）は、そのセクションの部品だけで測る（座標はセクションごと）。よそへ移っていった部品・ほかのセクション（ヘッダー・フッター・複製）の部品は混ぜない。
+// keep＝動かしている部品（移す先で測るとき、まだ元のセクションの子なので secOf では外れてしまう。PC-26）
+// PC-22 前は全部のセクションを混ぜていて、品の部品の付いていく先にフッターの部品（footer__fnav）が選ばれ、変な位置に貼り付いた
+function anchorGeom(gMerged, sec, keep) { const out = {}; for (const k in gMerged) if (k === keep || secOf(k) === sec) out[k] = gMerged[k]; return out; }
 function classifyDropX(gMerged, id, ids, origMerged) {
-  const sec = secOf(id); if (isAnchorSec(sec)) return M.classifyDrop(anchorGeom(gMerged, sec), id, ids, anchorGeom(origMerged, sec));
+  const sec = secOf(id); if (isAnchorSec(sec)) return M.classifyDrop(anchorGeom(gMerged, sec, id), id, ids, anchorGeom(origMerged, sec, id));
   const pfx = sec + SEP; const strip = (k) => isCarried(k) ? "~" + k : (k.startsWith(pfx) ? k.slice(pfx.length) : k);
   return M.classifyDrop(stripGeom(gMerged, sec), strip(id), ids.map(strip), stripGeom(origMerged, sec));
 }
 function reanchorX(gMerged, id, secArg) {
   const sec = secArg || secOf(id);
   if (isAnchorSec(sec)) {   // J17 よそから移ってきた部品も付いていく先の候補にする（素の ID の頭で特集・品を見分けるので、頭をそろえた仮の名前で渡す）
-    const ag = anchorGeom(gMerged, sec); const ms = movedSecMap(); const tag = sec === "feature" ? "F_~" : "~"; let geo = ag;
+    const ag = anchorGeom(gMerged, sec, id); const ms = movedSecMap(); const tag = sec === "feature" ? "F_~" : "~"; let geo = ag;
     if (Object.keys(ms).some((k) => ms[k] === sec && k in ag && k !== id && (sec === "feature") !== k.startsWith("F_"))) { geo = {}; for (const k in ag) geo[(k !== id && ms[k] === sec && (sec === "feature") !== k.startsWith("F_")) ? tag + k : k] = ag[k]; }
     const pr = M.reanchor(geo, id, sec); if (pr && pr.anchor && pr.anchor.startsWith(tag) && pr.anchor.length > tag.length) { const real = pr.anchor.slice(tag.length); if (real in ag) pr.anchor = real; }
     return pr;
@@ -158,15 +184,23 @@ function showReorderLine(id, ro) {
   line.style.cssText = `position:absolute;left:${me.x}px;top:${y}px;width:${me.w}px;height:2px;background:#06c;pointer-events:none;z-index:6`;
   s.appendChild(line);
 }
-function cancelDrag() { if (!drag) return; drag = null; clearGuides(); render(); }   // J29 ドラッグ中の Esc：取り消して元に戻す（離しても何も記録しない）
+function cancelDrag() { if (!drag) return; drag = null; a2DragHostsOff(); a2NoDropMark(false); clearGuides(); render(); }   // J29 ドラッグ中の Esc：取り消して元に戻す（離しても何も記録しない）
+// PC-26 離したときの計算で例外が出ても、ドラッグは必ず終える（前は drag が残り、離した後も部品がマウスに付いて回った）
 function endDrag(opts) {
   if (!drag) return;
+  try { endDragInner(opts); }
+  catch (e) { drag = null; clearGuides(); try { render(); } catch (e2) {} throw e; }
+  finally { a2DragHostsOff(); a2NoDropMark(false); }
+}
+function endDragInner(opts) {
   if (opts && opts.dup && a2DupDrop()) return;   // P16 Option を押したまま離した＝元は残し、写しを離した所に出す
   let dx = (drag.lx - drag.sx) / scale + (drag.snapDX || 0), dy = (drag.ly - drag.sy) / scale + (drag.snapDY || 0);
   if (Math.abs(drag.lx - drag.sx) <= 0.5 && Math.abs(drag.ly - drag.sy) <= 0.5) { drag = null; clearGuides(); render(); return; }
+  if (drag.ids.some(a2VertOnly)) { const only = drag.ids.length === 1; if (only) dx = 0; }   // PC-14 見出しの組だけなら横は動かさない
+  const dxOf = (id) => (a2VertOnly(id) ? 0 : dx);   // PC-22 複数のときも見出しの組は横に動かさない（ほかの部品は動かした分だけ）
   // J17（DECISIONS #17）離した所が別のセクション（特集・品）の上なら、移せる部品はそのセクションへ移す（同じ ID のまま）。J16 の枠より先に見る（上のセクションへも移せる）。
   // 移せない部品は、自分のセクションの下端（下の余白の手前）までにとどめる＝元のセクションが勝手に伸びない・画面も動かない
-  { const xs = a2CrossSecDrop(dx, dy); if (xs === true) return; if (xs && xs.dy != null && Math.abs(xs.dy - dy) > 0.01) { dy = xs.dy; for (const id of drag.ids) { const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + dx}px,${drag.baseT[id].ty + dy}px)`; } } }
+  { const xs = a2CrossSecDrop(dx, dy); if (xs === true) return; if (xs && xs.dy != null && Math.abs(xs.dy - dy) > 0.01) { dy = xs.dy; for (const id of drag.ids) { const n = elNode(id); if (n) n.style.transform = `translate(${drag.baseT[id].tx + dxOf(id)}px,${drag.baseT[id].ty + dy}px)`; } } }
   // J16 ドラッグした部品を自分のセクションの中身の枠に収める（左右の外・ヘッダー〔上端より上〕へは出さない）。単体のみ
   if (drag.ids.length === 1) { const id = drag.ids[0]; const e0 = drag.origGeom[id];
     if (e0 && isDraggable(id)) { const cL = 0, cR = SPEC.DESIGN_W[state.device]; const nx = e0.x + dx, ny = e0.y + dy;   // E3：収めるのはページ（セクション）の左右の中。中身の幅の端で止めると、端にある見出しが少し動かせない
@@ -182,15 +216,17 @@ function endDrag(opts) {
   const decided = drag.ids.map((id) => ({ id, mode: classify(g, id) }));
   if (decided.some((d) => d.mode === "M2")) {
     const finalItems = decided.map((d) => {
-      if (d.mode === "M1") { const bt = drag.baseT[d.id], p0 = prior[d.id] || { dx: 0, dy: 0 }; return { id: d.id, mode: "M1", dx: Math.round((p0.dx || 0) + bt.tx + dx), dy: Math.round((p0.dy || 0) + bt.ty + dy) }; }
+      if (d.mode === "M1") { const bt = drag.baseT[d.id], p0 = prior[d.id] || { dx: 0, dy: 0 }; return { id: d.id, mode: "M1", dx: Math.round((p0.dx || 0) + bt.tx + dxOf(d.id)), dy: Math.round((p0.dy || 0) + bt.ty + dy) }; }
       const ov = (!insideNestedGroup(g, d.id, g[d.id].y + g[d.id].h / 2)) ? overlapAnchor(g, d.id) : null;   // §4.2.1 ③は落とした先の子に付く
       const pr = ov || reanchorX(g, d.id);   // g＝離した瞬間（詰める前）の実測
-      return { id: d.id, mode: "M2", anchor: pr.anchor, gapY: pr.gapY, x: pr.x };
+      return { id: d.id, mode: "M2", anchor: pr.anchor, gapY: pr.gapY, x: a2VertOnly(d.id) ? 0 : pr.x };   // PC-14 見出しの組はページの左端から幅いっぱい
     });
     drag = null; commit({ t: "move", device: state.device, items: finalItems });
     // J11：PowerPoint にそろえ、足した所に重なって出てよい＝動かしても下げない（旧：重ならない所まで自分が下がる pushDownClear を廃止）
   } else {
-    const items = decided.map((d) => { const bt = drag.baseT[d.id], p0 = prior[d.id] || { dx: 0, dy: 0 }; return { id: d.id, mode: "M1", dx: Math.round((p0.dx || 0) + bt.tx + dx), dy: Math.round((p0.dy || 0) + bt.ty + dy) }; });
+    const items = decided.map((d) => { const bt = drag.baseT[d.id], p0 = prior[d.id] || { dx: 0, dy: 0 }; return { id: d.id, mode: "M1", dx: Math.round((p0.dx || 0) + bt.tx + dxOf(d.id)), dy: Math.round((p0.dy || 0) + bt.ty + dy) }; });
+    // PC-14 移せない所で離して、結局どれも動かなかったときは記録しない（何もしない「戻す」を残さない）
+    const R0 = reduce(activeOps()); if (items.every((it) => { const p = prior[it.id] || { dx: 0, dy: 0 }; return !R0.m2[it.id] && Math.round(p.dx || 0) === it.dx && Math.round(p.dy || 0) === it.dy; })) { drag = null; clearGuides(); render(); return; }
     drag = null; commit({ t: "move", device: state.device, items });
   }
 }
@@ -220,11 +256,12 @@ function a2CrossSecDrop(dx, dy) {
     const grp = "xsec" + Date.now(); const items = [];
     for (const c of cross) {
       const tn = secNode(c.tgt.id); const tr = tn.getBoundingClientRect();
-      const x = (c.r.left - tr.left) / scale, y = (c.r.top - tr.top) / scale, w = c.r.width / scale, h = c.r.height / scale;
+      const x = (c.r.left - tr.left) / scale, y = Math.max(0, (c.r.top - tr.top) / scale), w = c.r.width / scale, h = c.r.height / scale;   // SP-6 移す先でもセクションの上端より上へは出さない（J16 と同じ）
       const g0 = geometry(); const g = {}; for (const k in g0) if (k !== c.id && secOf(k) === c.tgt.id) g[k] = g0[k];   // 移す先のセクションの部品だけ（座標はセクションごと）
       g[c.id] = { ...(g0[c.id] || {}), x, y, w, h };   // 移す先の座標で測った自分
-      const pr = reanchorX(g, c.id, c.tgt.id);
-      items.push({ id: c.id, from: secOf(c.id), to: c.tgt.id, anchor: pr.anchor, gapY: pr.gapY, x: +Math.min(Math.max(pr.x, 0), SPEC.DESIGN_W[state.device] - w).toFixed(2) });
+      const pr = reanchorX(g, c.id, c.tgt.id) || { anchor: "@section", gapY: +y.toFixed(2), x: +x.toFixed(2) };
+      const rel = a2FlowAnchor(g, c.id, c.tgt.id, pr);
+      items.push({ id: c.id, from: secOf(c.id), to: c.tgt.id, anchor: pr.anchor, gapY: pr.gapY, x: +Math.min(Math.max(pr.x, 0), SPEC.DESIGN_W[state.device] - w).toFixed(2), ...(rel !== pr.anchor ? { relAnchor: rel } : {}) });
     }
     const fixes = a2DependentsFix(items.map((it) => it.id));   // 元のセクションで、移した部品に付いていた部品は、その場に残す（付いていく先を取り直す）
     const ref = items[0]; const before = elNode(ref.id).getBoundingClientRect().top;
@@ -238,14 +275,34 @@ function a2CrossSecDrop(dx, dy) {
   }
   // 移せない（品の並び・見出しの組など）・移せない先（ヘッダー・フッター）・一部だけ移せる複数：自分のセクションの下端の余白の手前までにとどめる
   const stay = cross.length && cross.length === ids.length ? [] : [...held, ...cross.map((c) => ({ id: c.id, e0: og[c.id] }))];
-  let lim = null;
+  let lim = null, limUp = null;
   for (const { id, e0 } of stay) {
     const own = secOf(id); const host = document.getElementById("host_" + own); const sn = secNode(own); if (!sn) continue;
     const secH = sn.getBoundingClientRect().height / scale; const padB = (host && host._padBottom) || 0;
     const maxY = Math.max(0, secH - padB - e0.h);
     if (e0.y + dy > maxY) { const d = maxY - e0.y; lim = lim == null ? d : Math.min(lim, d); }
+    // PC-14 上のセクションの上で離したときも同じ：自分のセクションの上の余白の後までにとどめる（前はセクションの上端＝余白より上の隅に貼り付いた）
+    const st = sn.querySelector(".stack"); const padT = st ? parseFloat(getComputedStyle(st).paddingTop) || 0 : 0;
+    const minY = Math.min(padT, e0.y);
+    if (e0.y + dy < minY) { const d = minY - e0.y; limUp = limUp == null ? d : Math.max(limUp, d); }
   }
-  return lim != null ? { dy: Math.max(Math.min(dy, lim), Math.min(dy, 0)) } : null;
+  if (lim == null && limUp == null) return null;
+  let ndy = dy; if (lim != null) ndy = Math.max(Math.min(ndy, lim), Math.min(ndy, 0)); if (limUp != null) ndy = Math.min(Math.max(ndy, limUp), Math.max(ndy, 0));
+  return { dy: ndy };
+}
+// PC-5・PC-6・SP-6（DECISIONS #22）もう一方の端末での置き場所の「付いていく先」：離した所より上に丸ごとある部品（品の並び・表は1つの塊）。
+// 動かした端末の付いていく先（重なって付いた品の並び・セクションの先頭など）をそのまま使うと、もう一方の端末では品の並びの下や見出しより上に入り、見出しを隠した。
+// 上に何もなければ、そのセクションの見出しの組の下
+function a2FlowAnchor(g, id, sec, pr) {
+  if (pr && pr.anchor && pr.anchor !== "@section" && pr.gapY >= -1) return pr.anchor;
+  const geo = { ...g }; const me = geo[id]; if (!me) return pr ? pr.anchor : "@section";
+  for (let i = 0; i < 6; i++) {
+    const q = reanchorX(geo, id, sec); if (!q || !q.anchor || q.anchor === "@section") break;
+    if (q.gapY >= -1) return q.anchor;
+    for (const k of Object.keys(geo)) if (k !== id && (k === q.anchor || groupOf(k) === q.anchor)) delete geo[k];   // 重なっている先（と中の1件）を外して、もう一つ上を探す
+  }
+  const inst = state.secList.find((s) => s.id === sec); const pfx = isAnchorSec(sec) ? "" : sec + SEP;
+  return pfx + (inst && inst.type === "feature" ? "F_hg" : "I_hg");
 }
 // 元のセクションで、移す部品に付いていた部品（この端末の M2・足した部品）を、移した後もその場に残すための付け直し
 function a2DependentsFix(movedIds) {

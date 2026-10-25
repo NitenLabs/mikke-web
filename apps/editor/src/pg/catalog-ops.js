@@ -261,9 +261,10 @@ function shownItems() { const R = reduce(activeOps()); const m = new Map(); cons
     if (!rm.has(pfx + "I_table")) for (const row of (c.table || [])) if (row._itemId) m.set(inst.id + ":table:" + row._itemId, row.name || row._itemId);
     for (const g of (c.groups || [])) for (const ct of (g.cats || [])) for (const row of (ct.rows || [])) if (row._itemId && !row.hidden) m.set(inst.id + ":menu:" + (row._placementId || row._itemId), row.name || row._itemId); }   // J22 お品書き本体の行も数える
   return m; }
-function withDropNotice(fn) { const before = shownItems(); const r = fn(); const after = shownItems();
+function withDropNotice(fn, extra) { const before = shownItems(); const r = fn(); const after = shownItems();
   const names = [...new Set([...before.keys()].filter((k) => !after.has(k)).map((k) => before.get(k)))];
-  if (names.length) pgToastMsg(names.map((n) => "『" + n + "』").join("・") + "が並びに出なくなりました", true); pruneGoneSelection(); return r; }
+  const msg = [names.length ? names.map((n) => "『" + n + "』").join("・") + "が並びに出なくなりました" : "", extra || ""].filter(Boolean).join("。");   // PC-28 extra＝一緒に消えた部品の知らせ
+  if (msg) pgToastMsg(msg, true); pruneGoneSelection(); return r; }
 function setItemStatus(fullId, status) { const id = itemIdOfSel(fullId); if (!id) return false; return withDropNotice(() => { commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "status", value: status }] }); return true; }); }
 // 出す月＝品の season.months（空＝いつでも＝season を外す）
 function setItemMonths(fullId, months) { const id = itemIdOfSel(fullId); if (!id) return false; const ms = (months || []).slice().sort((a, b) => a - b); const value = ms.length ? { months: ms } : null; return withDropNotice(() => { commit({ t: "catAct", shops: [{ t: "shopField", itemId: id, field: "season", value }] }); return true; }); }

@@ -608,6 +608,136 @@ async def main():
         rec('S31 J17 移せない部品は移さず、元のセクションも伸びない', h_sec == 'feature' and await host_of(pg, 'F_hg') == 'feature' and f1 <= f0 + 5 and abs(i1 - i0) <= 1 and abs(sy1 - sy0) <= 1,
             f"F_hg 所属 {h_sec} 特集の高さ {f0:.0f}→{f1:.0f}（伸びないこと） 品の高さ {i0:.0f}→{i1:.0f} scrollY {sy0}→{sy1} 記録 {json.dumps(await ev(pg, f'{P}.ops()'), ensure_ascii=False)[:160]}")
 
+        # ---------- S32〜S41：J17 の続き（4回目の精査・線 R。2026-10-25 で足した。DECISIONS #21〜#23） ----------
+        async def abx(pg, part): return await ev(pg, f"(()=>{{const e=document.querySelector('[data-el=\"{part}\"]');if(!e)return null;const r=e.getBoundingClientRect();return {{x:Math.round(r.x),y:Math.round(r.y+scrollY),w:Math.round(r.width),h:Math.round(r.height)}}}})()")
+        async def move_fb1(pg):   # 精査の手順（PC-3 の手順1）：scrollTo 1000、F_b1 をつかみ真下へ 660（ITEMS の見出しの下）
+            await ev(pg, "scrollTo(0,1000)"); await pg.wait_for_timeout(250)
+            r = await vbx(pg, 'F_b1'); await pg.mouse.click(r['x'] + 100, r['y'] + 20); await pg.wait_for_timeout(350); await esc_if_editing(pg)
+            await ev(pg, "scrollTo(0,1000)"); await pg.wait_for_timeout(250); r = await vbx(pg, 'F_b1')
+            await mouse_drag(pg, (r['x'] + 100, r['y'] + 20), (r['x'] + 50, r['y'] + 680))
+        async def tops(pg, sec): return await ev(pg, f"(()=>{{const w=document.querySelector('.sec-wrap[data-sec={sec}]');return [...w.querySelectorAll('[data-el]')].map(e=>{{const r=e.getBoundingClientRect();return [e.dataset.el,Math.round(r.top+scrollY),Math.round(r.left)]}})}})()")
+        # S32 PC-26 移した部品を元のセクションへドラッグで戻す → 離したらドラッグが終わり（マウスに付いて回らない）、元のセクションへ戻る。例外なし
+        pg = await fresh(h=1000); await move_fb1(pg); await pg.mouse.click(1434, 600); await pg.wait_for_timeout(300)
+        s_a = await ev(pg, f"{P}.secOf('F_b1')"); n0 = len(await ev(pg, f"{P}.ops()"))
+        await ev(pg, "scrollTo(0,1272)"); await pg.wait_for_timeout(250); r = await vbx(pg, 'F_b1')
+        await mouse_drag(pg, (r['x'] + 50, r['y'] + 10), (r['x'] + 50, 200))
+        drg = await ev(pg, "PG.isDragging()"); s_b = await ev(pg, f"{P}.secOf('F_b1')"); hb = await host_of(pg, 'F_b1'); b0 = await abx(pg, 'F_b1')
+        await pg.mouse.move(400, 300); await pg.mouse.move(300, 700); await pg.mouse.move(1000, 800); await pg.wait_for_timeout(200); b1 = await abx(pg, 'F_b1')
+        nops = len(await ev(pg, f"{P}.ops()")) - n0; errs = list(pg._errs)
+        rec('S32 PC-26 移した部品を元のセクションへドラッグで戻せる', s_a == 'items' and not drg and s_b == 'feature' and hb == 'feature' and b0 == b1 and nops == 1 and not errs,
+            f"移した後 {s_a} → 戻した後 所属 {s_b}（描いた所 {hb}） ドラッグ中のまま={drg} 離した後に動かして {b0}→{b1}（同じが正） 記録 +{nops} 例外 {errs[:1]}")
+        # S33 PC-3 移した後で元のセクション（特集）を複製 → 複製の中に移した部品が出ない。品を複製 → 複製の中の同じ所に写しが出る。開き直しても同じ
+        pg = await fresh(h=1000); await move_fb1(pg)
+        await ev(pg, f"{P}.sectionDuplicate('feature')"); await pg.wait_for_timeout(400)
+        secs = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupF = next((s for s in secs if s.startswith('sec')), None)
+        inDupF = [t for t in (await tops(pg, dupF)) if t[0].endswith('F_b1')] if dupF else ['?']
+        await ev(pg, f"{P}.sectionDuplicate('items')"); await pg.wait_for_timeout(400)
+        secs2 = [s['id'] for s in await ev(pg, f"{P}.sectionList()")]; dupI = next((s for s in secs2 if s.startswith('sec') and s != dupF), None)
+        g = await ev(pg, f"{P}.geometry()"); ti = await tops(pg, dupI) if dupI else []
+        cp = [t for t in ti if t[0].startswith('add_')]; txt = (await ev(pg, f"document.querySelector('[data-el={cp[0][0]}]').innerText")) if cp else None
+        same = bool(cp) and abs(g[cp[0][0]]['y'] - g['F_b1']['y']) <= 1 and abs(g[cp[0][0]]['x'] - g['F_b1']['x']) <= 1
+        await pg.wait_for_timeout(1200); await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(1500)
+        inDupF2 = [t for t in (await tops(pg, dupF)) if t[0].endswith('F_b1')] if dupF else ['?']; r1 = await rt_ok(pg)
+        rec('S33 PC-3 移した部品は元のセクションの複製に戻らない', dupF and not inDupF and not inDupF2 and same and txt and txt.startswith('店の奥の') and r1,
+            f"特集の複製 {dupF} の中の F_b1={inDupF}（空が正）開き直し後={inDupF2} ／ 品の複製 {dupI} の写し {cp[:1]} 文字={txt and txt[:8]} 同じ所={same} roundTrip={'ok' if r1 else 'NG'}")
+        # S34 PC-5 特集2の写真を ITEMS の上の方へ移す → スマホでは見出しの組（英字・見出し）が品の写真に隠れない（重ならずに並ぶ）
+        pg = await fresh(h=1000); await ev(pg, "scrollTo(0,1100)"); await pg.wait_for_timeout(250)
+        r = await vbx(pg, 'F_p1'); a = (r['x'] + 200, max(r['y'], 100) + 150)
+        await pg.mouse.click(*a); await pg.wait_for_timeout(350); await mouse_drag(pg, a, (a[0] + 300, a[1] + 600))
+        s5 = await ev(pg, f"{P}.secOf('F_p1')"); await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(500)
+        gs = await ev(pg, f"{P}.geometry()")
+        def ovl(a, b): return min(a['x'] + a['w'], b['x'] + b['w']) - max(a['x'], b['x']) > 1 and min(a['y'] + a['h'], b['y'] + b['h']) - max(a['y'], b['y']) > 1
+        hid = [k for k in ('I_lbl', 'I_h') if any(ovl(gs[k], gs[c]) for c in gs if c.startswith('card_photo_') or c == 'F_p1')]
+        under = gs['F_p1']['y'] >= gs['I_hg']['y'] + gs['I_hg']['h'] - 1
+        rec('S34 PC-5 移した写真がスマホで見出しを隠さない', s5 == 'items' and not hid and under,
+            f"所属 {s5} スマホ：写真 y={gs['F_p1']['y']:.0f} 見出しの組 {gs['I_hg']['y']:.0f}〜{gs['I_hg']['y']+gs['I_hg']['h']:.0f} 英字 {gs['I_lbl']['y']:.0f} 見出し {gs['I_h']['y']:.0f} 品の写真の上 {gs.get('card_photo_c_jonama',{}).get('y')} 隠れた={hid}")
+        # S35 PC-6 スマホで本文を ITEMS の見出しの下へ移す → PC では見出しの組のすぐ下 16・中身の左端（ページの端・品の並びの下でない）
+        pg = await fresh(w=1440, h=1000)
+        await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(500)
+        fb = await abx(pg, 'F_b1'); hi = await abx(pg, 'I_hg'); await ev(pg, f"scrollTo(0,{fb['y'] - 300})"); await pg.wait_for_timeout(250)
+        r = await vbx(pg, 'F_b1'); a = (r['x'] + 60, r['y'] + 10); await pg.mouse.click(*a); await pg.wait_for_timeout(350); await esc_if_editing(pg)
+        r = await vbx(pg, 'F_b1'); a = (r['x'] + 60, r['y'] + 10)
+        await pg.mouse.move(*a); await pg.mouse.down()
+        ty = a[1] + (hi['y'] + hi['h'] + 10 - fb['y'])
+        for k in range(1, 41): await pg.mouse.move(a[0], a[1] + (ty - a[1]) * k / 40); await pg.wait_for_timeout(20)
+        await pg.mouse.up(); await pg.wait_for_timeout(600)
+        s6 = await ev(pg, f"{P}.secOf('F_b1')"); await ev(pg, f"{P}.setDevice('pc')"); await pg.wait_for_timeout(500)
+        gp = await ev(pg, f"{P}.geometry()"); ws6 = await ev(pg, f"{P}.warnings()")
+        hgB = gp['I_hg']['y'] + gp['I_hg']['h']
+        rec('S35 PC-6 スマホで移した本文は、PC では見出しの組の下・中身の左端', s6 == 'items' and abs(gp['F_b1']['y'] - (hgB + 16)) <= 1 and abs(gp['F_b1']['x'] - 57) <= 1 and gp['F_b1']['y'] < gp['I_cards']['y'] and not ws6.get('ownerOverlaps'),
+            f"所属 {s6} PC：本文 ({gp['F_b1']['x']:.0f},{gp['F_b1']['y']:.0f}) 見出しの組の下+16={hgB+16:.0f} 中身の左端 57 品の並び y={gp['I_cards']['y']:.0f} 重なり={ws6.get('ownerOverlaps')}")
+        # S36 PC-7 「このページを元に戻す」・「元の位置に戻す」で、移した部品が元のセクションの元の場所へ戻る（両端末）。戻す1回で移した形に戻る
+        res = []
+        for how in ('page', 'part'):
+            pg = await fresh(h=1000); o = await abx(pg, 'F_b1'); await move_fb1(pg)
+            if how == 'page': await ev(pg, f"{P}.resetScope('page',null,['pc','sp'])")
+            else: await ev(pg, f"{P}.resetScope('part','F_b1',['pc'])")
+            await pg.wait_for_timeout(400); a = await abx(pg, 'F_b1'); s7 = await ev(pg, f"{P}.secOf('F_b1')"); h7 = await host_of(pg, 'F_b1')
+            await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(300); h7s = await host_of(pg, 'F_b1'); await ev(pg, f"{P}.setDevice('pc')"); await pg.wait_for_timeout(300)
+            await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(400); u7 = await ev(pg, f"{P}.secOf('F_b1')")
+            res.append((how, o == a and s7 == 'feature' and h7 == 'feature' and h7s == 'feature' and u7 == 'items', f"{how}：元 {o and (o['x'],o['y'])} 戻した後 {a and (a['x'],a['y'])} 所属 {s7}/{h7} スマホ {h7s} 戻す→{u7}"))
+        rec('S36 PC-7 元に戻すで移した部品が元の場所へ', all(x[1] for x in res), ' ／ '.join(x[2] for x in res))
+        # S37 PC-24 「元の配置を見る」の間は、移した部品も元のセクションの元の場所に出る。離すと移した所に戻る（記録は変わらない）
+        pg = await fresh(h=1000); o = await abx(pg, 'F_b1'); await move_fb1(pg); n0 = len(await ev(pg, f"{P}.ops()")); m = await abx(pg, 'F_b1')
+        await ev(pg, f"{P}.peek(true)"); await pg.wait_for_timeout(400); pk = await abx(pg, 'F_b1'); ph = await host_of(pg, 'F_b1')
+        await ev(pg, f"{P}.peek(false)"); await pg.wait_for_timeout(400); po = await abx(pg, 'F_b1'); n1 = len(await ev(pg, f"{P}.ops()"))
+        rec('S37 PC-24 元の配置を見るで移した部品も元の場所に出る', pk == o and ph == 'feature' and po == m and n1 == n0 and await ev(pg, f"{P}.secOf('F_b1')") == 'items',
+            f"元 {o and (o['x'],o['y'])} 移した所 {m and (m['x'],m['y'])} 見ている間 {pk and (pk['x'],pk['y'])}（{ph}） 離した後 {po and (po['x'],po['y'])} 記録 {n0}→{n1}")
+        # S38 PC-12 写真を ITEMS へ移した後、特集2で「左右を入れ替える」→ 移した写真・ITEMS の見出しは動かない。公開の確認に内部名（I_lbl・I_h）が出ない。同じ名前を並べない
+        pg = await fresh(h=1000); await ev(pg, "scrollTo(0,1100)"); await pg.wait_for_timeout(250)
+        r = await vbx(pg, 'F_p1'); a = (r['x'] + 200, max(r['y'], 100) + 150); await pg.mouse.click(*a); await pg.wait_for_timeout(350); await mouse_drag(pg, a, (a[0] + 300, a[1] + 600))
+        p0 = await abx(pg, 'F_p1'); l0 = await abx(pg, 'I_lbl'); h0 = await abx(pg, 'I_h'); cs0 = await ev(pg, "PG.canSwap('F_p1')")
+        await ev(pg, f"{P}.swapHoriz('F_h1')"); await pg.wait_for_timeout(400)
+        p1 = await abx(pg, 'F_p1'); l1 = await abx(pg, 'I_lbl'); h1 = await abx(pg, 'I_h')
+        txts = [i['text'] for i in await ev(pg, f"{P}.publishCheck()")]
+        bad = [t for t in txts if 'I_lbl' in t or 'I_h' in t or '品と品' in t]
+        rec('S38 PC-12 移した後の左右の入れ替えで見出しが隠れない・確認の文', bool(p0 == p1 and l0 == l1 and h0 == h1 and not cs0 and not bad and txts),
+            f"写真 {p0 and (p0['x'],p0['y'])}→{p1 and (p1['x'],p1['y'])} 英字 {l0 and l0['y']}→{l1 and l1['y']} 見出し {h0 and h0['y']}→{h1 and h1['y']} 移した写真に入れ替えの入口={cs0} 確認 {txts[:3]}")
+        # S39 PC-13 別のセクションへドラッグしている間、移す先でも部品が一番上に見える
+        pg = await fresh(h=1000); await ev(pg, "scrollTo(0,1000)"); await pg.wait_for_timeout(250)
+        r = await vbx(pg, 'F_b1'); a = (r['x'] + 100, r['y'] + 20); await pg.mouse.click(*a); await pg.wait_for_timeout(350); await esc_if_editing(pg)
+        await ev(pg, "scrollTo(0,1000)"); await pg.wait_for_timeout(250); r = await vbx(pg, 'F_b1'); a = (r['x'] + 100, r['y'] + 20)
+        await pg.mouse.move(*a); await pg.mouse.down()
+        for k in range(1, 31): await pg.mouse.move(a[0] - 50 * k / 30, a[1] + 640 * k / 30); await pg.wait_for_timeout(15)
+        b = await vbx(pg, 'F_b1')
+        topEl = await ev(pg, f"(()=>{{const e=document.elementFromPoint({b['x'] + b['w'] / 2},{b['y'] + b['h'] / 2});const d=e&&e.closest('[data-el]');return d?d.dataset.el:(e?e.className:null)}})()")
+        inItems = await ev(pg, f"(()=>{{const s=document.querySelector('.sec-wrap[data-sec=items]').getBoundingClientRect();return {b['y'] + b['h'] / 2}>=s.top&&{b['y'] + b['h'] / 2}<s.bottom}})()")
+        await pg.mouse.up(); await pg.wait_for_timeout(500)
+        rec('S39 PC-13 ドラッグ中、移す先でも部品が見える', inItems and topEl == 'F_b1', f"ドラッグ中の本文の真ん中は品のセクションの中={inItems} その点の一番上={topEl}（F_b1 が正）")
+        # S40 PC-14 移せない見出しの組（ITEMS）を特集へドラッグ → ドラッグ中に「ここへは移せません」、離すと動かない（左上の隅に貼り付かない・中央寄せのまま）・記録しない。
+        #     同じセクションの品の並びの上で離しても、幅いっぱい・中央寄せのまま上下だけ動く
+        pg = await fresh(h=1000); await ev(pg, "scrollTo(0,1094)"); await pg.wait_for_timeout(250)
+        hg0 = await abx(pg, 'I_hg'); h0 = await abx(pg, 'I_h'); n0 = len(await ev(pg, f"{P}.ops()"))
+        r = await vbx(pg, 'I_h'); a = (r['x'] + r['w'] / 2, r['y'] + r['h'] / 2); await pg.mouse.click(*a); await pg.wait_for_timeout(350); await esc_if_editing(pg)
+        await ev(pg, "scrollTo(0,1094)"); await pg.wait_for_timeout(250); r = await vbx(pg, 'I_h'); a = (r['x'] + r['w'] / 2, r['y'] + r['h'] / 2)
+        await pg.mouse.move(*a); await pg.mouse.down()
+        for k in range(1, 31): await pg.mouse.move(a[0], a[1] + (200 - a[1]) * k / 30); await pg.wait_for_timeout(15)
+        mark = await ev(pg, "(()=>{const e=document.querySelector('[data-nodrop]');return !!(e&&getComputedStyle(e).display!=='none'&&/移せません/.test(e.textContent))})()")
+        await pg.mouse.up(); await pg.wait_for_timeout(500)
+        hg1 = await abx(pg, 'I_hg'); h1 = await abx(pg, 'I_h'); n1 = len(await ev(pg, f"{P}.ops()")); mark2 = await ev(pg, "(()=>{const e=document.querySelector('[data-nodrop]');return !!(e&&getComputedStyle(e).display!=='none')})()")
+        await ev(pg, "scrollTo(0,1094)"); await pg.wait_for_timeout(250); r = await vbx(pg, 'I_h'); a = (r['x'] + r['w'] / 2, r['y'] + r['h'] / 2)
+        await mouse_drag(pg, a, (a[0] - 400, a[1] + 330)); hg2 = await abx(pg, 'I_hg'); h2 = await abx(pg, 'I_h')
+        rec('S40 PC-14 移せない見出しの組は特集で離しても動かない・中央寄せのまま', mark and not mark2 and hg1 == hg0 and h1 == h0 and n1 == n0 and hg2 and hg2['w'] == hg0['w'] and h2['x'] == h0['x'] and h2['y'] != h0['y'],
+            f"ドラッグ中の知らせ={mark} 離した後も出たまま={mark2} 見出しの組 {hg0}→{hg1} 見出し x {h0['x']}→{h1['x']} 記録 +{n1-n0} ／ 品の並びの上で離す：組 {hg2} 見出し x={h2 and h2['x']}（{h0['x']} が正）")
+        # S41 PC-22 特集の本文＋ITEMS の見出しの組を一緒に選んで真下へ 100 → 両方とも 100 だけ下がる（見出しの組は中央寄せのまま・フッターに付かない）
+        pg = await fresh(h=1000); await ev(pg, "scrollTo(0,1000)"); await pg.wait_for_timeout(250)
+        await ev(pg, f"{P}.selectMany(['F_b1','I_hg'])"); await pg.wait_for_timeout(300)
+        fb0 = await abx(pg, 'F_b1'); hg0 = await abx(pg, 'I_hg'); r = await vbx(pg, 'F_b1'); a = (r['x'] + 60, r['y'] + 20)
+        await mouse_drag(pg, a, (a[0], a[1] + 100)); fb1 = await abx(pg, 'F_b1'); hg1 = await abx(pg, 'I_hg')
+        opsl = await ev(pg, f"{P}.ops()"); anc = [it.get('anchor') for o in opsl if o['t'] == 'move' for it in o['items'] if it['id'] == 'I_hg']
+        d1 = fb1['y'] - fb0['y']; d2 = hg1['y'] - hg0['y']
+        rec('S41 PC-22 またがる複数選択は全部同じだけ動く', abs(d1 - d2) <= 2 and 90 <= d1 <= 110 and hg1['x'] == hg0['x'] and hg1['w'] == hg0['w'] and not any(a and a.startswith('footer') for a in anc),
+            f"本文 {d1:+} 見出しの組 {d2:+} 組の x・幅 {hg0['x']},{hg0['w']}→{hg1['x']},{hg1['w']} 付いていく先 {anc}")
+        # S42 PC-23・PC-28 移した写真を外したときの確認の文は元の名前で。移した部品の入ったセクションを消すと、その部品も消えたと知らせる
+        pg = await fresh(h=1000); await ev(pg, "scrollTo(0,1100)"); await pg.wait_for_timeout(250)
+        r = await vbx(pg, 'F_p1'); a = (r['x'] + 200, max(r['y'], 100) + 150); await pg.mouse.click(*a); await pg.wait_for_timeout(350); await mouse_drag(pg, a, (a[0] + 300, a[1] + 600))
+        await apply(pg, (await ev(pg, f"{P}.ops()")) + [{'t': 'clear', 'id': 'F_p1'}])
+        t23 = [i['text'] for i in await ev(pg, f"{P}.publishCheck()") if i.get('kind') == 'emptyPhoto']
+        pg2 = await fresh(h=1000); await move_fb1(pg2); await ev(pg2, f"{P}.sectionDelete('items')"); await pg2.wait_for_timeout(500)
+        t28 = await ev(pg2, "(()=>{const t=document.getElementById('pgToast');return t?t.innerText:''})()")
+        rec('S42 PC-23・PC-28 移した部品の知らせの文', len(t23) == 1 and '特集2の写真' in t23[0] and '4つ目' not in t23[0] and '特集2の本文' in t28,
+            f"写真を外した確認 {t23} ／ セクションを消した知らせ {t28!r}")
+
         await br.close()
         npass = sum(1 for _, o, _ in R if o is True); nng = sum(1 for _, o, _ in R if o is False)
         print(f"\n合計 {npass} / {npass + nng}（-- は値のみ={sum(1 for _,o,_ in R if o is None)}）", flush=True)

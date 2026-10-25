@@ -75,6 +75,8 @@ function longTextLimits() {
 // セクションの名前は足すときの型（特集／品）。N はそのセクションの写真枠の中での並び順（同じ特集に枠が2つあれば 1つ目・2つ目）。
 const ORD_JP = ["", "1つ目", "2つ目", "3つ目", "4つ目", "5つ目", "6つ目", "7つ目", "8つ目", "9つ目"];
 function emptyPhotoName(part, phList) {
+  // PC-23 別のセクションへ移した写真は、元の名前と今の場所で言う（前は移った先の「『品』の4つ目の写真」になり、どれのことか分からなかった）
+  if (isCarried(part)) { const inst0 = reduce(activeOps()).secList.find((s) => s.id === secOf(part)); return `${M.friendly(bareOf(part))}（今は『${inst0 && inst0.type === "items" ? "品" : "特集"}』のセクションにあります）`; }
   const sec = secOf(part);
   const inst = reduce(activeOps()).secList.find((s) => s.id === sec);
   const secName = (inst && inst.type === "items") ? "品" : "特集";
@@ -96,7 +98,7 @@ function publishCheck() {
     const partners = {}; for (const [a, c] of pairs) { (partners[a] = partners[a] || new Set()).add(c); (partners[c] = partners[c] || new Set()).add(a); }
     const used = new Set(); const pk = (a, c) => [a, c].sort().join("|");
     const subjects = Object.keys(partners).filter(movedP).sort((a, c) => partners[c].size - partners[a].size);
-    for (const subj of subjects) { const ps = [...partners[subj]].filter((q) => !used.has(pk(subj, q))); if (!ps.length) continue; for (const q of ps) used.add(pk(subj, q)); items.push({ device: dev, kind: "overlap", parts: [subj, ...ps], text: `${DL}：${M.friendly(subj)}が、${ps.map((q) => M.friendly(q)).join("と")}に重なっています` }); }
+    for (const subj of subjects) { const ps = [...partners[subj]].filter((q) => !used.has(pk(subj, q))); if (!ps.length) continue; for (const q of ps) used.add(pk(subj, q)); items.push({ device: dev, kind: "overlap", parts: [subj, ...ps], text: `${DL}：${M.friendly(subj)}が、${[...new Set(ps.map((q) => M.friendly(q)))].join("と")}に重なっています` }); }   // PC-12 同じ名前（品と品と品）は1回
     for (const [a, c] of pairs) { if (used.has(pk(a, c))) continue; used.add(pk(a, c)); items.push({ device: dev, kind: "overlap", parts: [a, c], text: `${DL}：${M.friendly(a)}が、${M.friendly(c)}に重なっています` }); }
     // 長い文：今の行数が目安を越えた部品
     for (const p in limits) { const L = limits[p][dev]; if (L && L.lines > L.limit) items.push({ device: dev, kind: "long", parts: [p], text: `${DL}：${M.friendly(p)}が、目安の長さ（${L.limit}行）を越えています（${L.lines}行）` }); }
