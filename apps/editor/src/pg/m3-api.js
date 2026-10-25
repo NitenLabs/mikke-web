@@ -101,7 +101,8 @@ async function m3Publish() {
 // どちらも、選ばなかった方は履歴（公開の履歴の帯）の「戻す前の下書き」から戻せる。答え {ok:true} か {ok:false, message}
 let _m3Resolving = false;
 async function m3ResolveConflict(choice) {
-  if (!m3IsApi() || !_conflict || _m3Resolving) return { ok: false, message: "" };
+  if (!m3IsApi()) return s_resolveLocalConflict(choice);   // SP-3 LocalStore（別のタブ）でも同じ箱で選ぶ（pg/store-save.js）
+  if (!_conflict || _m3Resolving) return { ok: false, message: "" };
   if (choice !== "theirs" && choice !== "mine") return { ok: false, message: "" };
   _m3Resolving = true;
   try {

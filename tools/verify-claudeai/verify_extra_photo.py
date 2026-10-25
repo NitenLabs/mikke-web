@@ -327,6 +327,19 @@ async def main():
     rec('H2 dy=135',not w['overlaps'] and not w['ownerOverlaps'],f"F_b1 の付いていく先={[(x['mode'],x['anchor']) for x in ancb]} 下がった量={dys} 写真の高さ={gs1[a]['h']:.1f} overlaps={w['overlaps']} ownerOverlaps={w['ownerOverlaps']}")
     await pg.screenshot(path='H2b_9.png',full_page=True); await pg.context.close()
 
+    # H6 SP-4（4回目の精査・線 S）写真を差し替え → 戻す → やり直す（保存を挟む）→ 写真が出る・読み込み直しても出る・灰色の仮の箱にならない
+    pg=await fresh(); el=await pg.query_selector('[data-el="F_p0"]'); await el.scroll_into_view_if_needed(); r=await bb(pg,'F_p0')
+    await pg.mouse.click(r['x']+r['w']/2,r['y']+r['h']/2); await pg.wait_for_timeout(400); await pg.mouse.click(r['x']+r['w']/2,r['y']+r['h']/2,button='right'); await pg.wait_for_timeout(400)
+    async with pg.expect_file_chooser() as fc: await pg.evaluate("[...document.querySelectorAll('#fmenu button')].find(b=>b.offsetParent&&b.textContent.trim()==='写真を差し替える').click()")
+    await (await fc.value).set_files(os.path.join(IMG,'tall.jpg')); await pg.wait_for_timeout(1200)
+    async def p0(pg): return next((x for x in await pg.evaluate(f"{P}.photos()") if x['part']=='F_p0'),{})
+    async def grey(pg): return await pg.evaluate("(()=>{const e=document.querySelector('[data-el=F_p0]');return !!e&&(/img_/.test(e.textContent||'')||!getComputedStyle(e).backgroundImage.startsWith('url'))})()")
+    a1=await p0(pg); await pg.click('#tUndo'); await pg.wait_for_timeout(1200); await pg.click('#tRedo'); await pg.wait_for_timeout(1200)
+    a2=await p0(pg); g2=await grey(pg)
+    await pg.reload(); await pg.wait_for_timeout(1800); a3=await p0(pg); g3=await grey(pg)
+    ok=bool(a1.get('asset')) and a2.get('asset')==a1.get('asset') and a2.get('naturalW')==600 and not g2 and a3.get('asset')==a1.get('asset') and a3.get('naturalW')==600 and not g3
+    rec('H6 SP-4 差し替え→戻す→やり直す→読み込み直し',ok,f"差し替え={a1.get('asset')} やり直し後={a2.get('asset')} 幅={a2.get('naturalW')} 灰色={g2} 読み込み直し後={a3.get('asset')} 幅={a3.get('naturalW')} 灰色={g3} pageerror={pg._errs[:2]}")
+    await pg.context.close()
 
     await br.close()
     print('NG:',[k for k,o,_ in R if o is False])

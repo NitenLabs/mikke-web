@@ -118,6 +118,7 @@ const api = {
   setFixedSections,   // §22 §7 仮の一番上・一番下セクション
   boot, saveState, simulateSaveError, publish, versions,   // §22 §2 保存・§4.3 公開の記録
   hasPendingSave, flushPendingSave, setExternalConflictHandler,   // J25/J26/J28 保存待ち・閉じる直前の書き出し・別タブ衝突
+  bootNotice,   // PC-1 読み込みで描けなかった下書きを退けたときの知らせ
   publishCheck, longTextLimits,   // §22 §4.2 公開前チェック・長い文の目安
   previewMode, publishedGeometry,   // §22 §5 プレビュー
   buildPublishBundle,   // 線 C 公開の一式（pg/publish-bundle.js）
@@ -127,6 +128,8 @@ return {
   state, render, reset, setDevice, undo, redo, commit, api, reduce, activeOps,
   boot, saveState, simulateSaveError, publish, versions, setFixedSections,   // §22 §2 保存・§4.3 公開・§7（WIRING から使う）
   hasPendingSave, flushPendingSave, setExternalConflictHandler,   // J25/J26/J28 保存待ち・閉じる直前の書き出し・別タブ衝突（WIRING から使う）
+  bootNotice,   // PC-1（WIRING の起動から使う）
+  deadLinkCount,   // PC-25 セクションを消したときの知らせ（WIRING から使う）
   publishCheck, longTextLimits,   // §22 §4.2（WIRING の確認の箱から使う）
   enterPreview, exitPreview, previewMode, publishedGeometry,   // §22 §5 プレビュー（WIRING から使う）
   buildPublishBundle,   // 線 C 公開の一式（pg/publish-bundle.js）

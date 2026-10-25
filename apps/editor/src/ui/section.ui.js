@@ -122,7 +122,8 @@ function a3_secOp(kind,sec){
   if(PG.state.cursor===n0) return;   // 何も変わらなかった
   const after=PG.api.sectionList().map((s)=>s.id);
   const t1=document.getElementById("pgToast"); const told=t1&&t1.classList.contains("on")&&t1.textContent!==was;   // J22 品が消えた知らせが出たならそれを残す
-  const msg=kind==="dup"?label+"を複製しました":kind==="del"?label+"を消しました":label+"を"+(kind==="up"?"上":"下")+"へ動かしました";
+  const nDead=kind==="del"&&PG.deadLinkCount?PG.deadLinkCount(sec):0;   // PC-25 消したセクションへのリンクが残っていれば言う
+  const msg=(kind==="dup"?label+"を複製しました":kind==="del"?label+"を消しました":label+"を"+(kind==="up"?"上":"下")+"へ動かしました")+(nDead?"。このセクションへのリンクが "+nDead+" つ残っています（公開の前の確認に出ます）":"");
   if(!told&&typeof pgToast==="function") pgToast(msg,true);
   if(kind==="dup"){ const ns=after.find((s)=>!before.includes(s)); if(ns){ PG.selectSection(ns); requestAnimationFrame(()=>a3_scrollSecIntoView(ns)); a3_scrollSecIntoView(ns); } }
   else if(kind!=="del"){ PG.selectSection(sec); a3_scrollSecIntoView(sec); }

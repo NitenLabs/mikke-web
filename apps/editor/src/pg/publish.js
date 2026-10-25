@@ -11,6 +11,7 @@ function viewVersion(id) {
   if (state.editing) commitEdit();
   if (!id || id === "draft") { exitView(); return; }
   const v = versionById(id); if (!v) return;
+  if (!s_drawable(v.draft || null, v.shop || null)) { if (typeof pgToast === "function") pgToast("この版は一部が壊れていて開けません", false); return; }   // PC-1 描けない版は開かない（画面が真っ白にならないように）
   if (!state.viewing) state.viewBackup = { base: state.base, shopBase: state.shopBase, ops: clone(state.ops), cursor: state.cursor, undoBase: state.undoBase, secSeq: state.secSeq, addSeq: state.addSeq };
   state.viewing = id; state.selected = new Set(); state.selectedSection = null; state.editing = null;
   state.base = v.draft || null; state.shopBase = v.shop || null; state.ops = []; state.cursor = 0; const sq = seqOf(v.draft); state.secSeq = sq.sec; state.addSeq = sq.add;   // 試験台26：① も版の形で見る
@@ -26,6 +27,7 @@ function exitView() {
 // §6.3 「この版を下書きにする」：その版の今の形がまるごと新しい土台に（公開中の版は変えない）。
 function restoreVersion(id) {
   const vid = id || state.viewing; const v = versionById(vid); if (!v) { exitView(); return; }
+  if (!s_drawable(v.draft || null, v.shop || null)) { if (typeof pgToast === "function") pgToast("この版は一部が壊れていて下書きにできません", false); return; }   // PC-1
   const pre = state.viewBackup || { base: state.base, shopBase: state.shopBase, ops: clone(state.ops), cursor: state.cursor, undoBase: state.undoBase, secSeq: state.secSeq, addSeq: state.addSeq };
   const preDraft = foldToDraft(pre.base, pre.ops.slice(0, pre.cursor));
   const preShop = (function () { const sb = state.base, sh = state.shopBase, so = state.ops, sc = state.cursor; state.base = pre.base; state.shopBase = pre.shopBase; state.ops = pre.ops; state.cursor = pre.cursor; const eff = clone(reduce(pre.ops.slice(0, pre.cursor), "pc").effShop); state.base = sb; state.shopBase = sh; state.ops = so; state.cursor = sc; return eff; })();
@@ -122,9 +124,21 @@ function publishCheck() {
     for (const o of w.overflows || []) items.push({ device: dev, kind: "system", parts: [canonId(o.id)], text: o.dir ? `${DL}：${M.friendly(o.id)}が画面の${o.dir}へはみ出しています（${o.dir}の端が切れて見えます）` : `${DL}：${M.friendly(o.id)}がはみ出しています` });   // F68 どの部品が・どちらへ
   }
   state.device = curDev; render();
+  for (const it of s_deadLinkItems()) items.push(it);   // PC-25 行き先のセクションを消したリンク
   for (const it of shopInfoChecks()) items.push(it);   // F24 お店の情報（①）の電話・住所が空・電話でない値（pg/shopinfo-pages.js）
   return items;
 }
+// PC-25 「このページの『…』」のリンクで、行き先のセクションがそのページに無くなったもの（消した・ほかのページの物）。文の一部のリンクと部品まるごとのリンクの両方
+function s_anchorAlive(lk, part, R) { if (!lk || lk.kind !== "anchor") return true; if (!lk.sec) return false; const pg = R.secPageMap[secOf(part)]; const tp = R.secPageMap[lk.sec]; return !!tp && tp !== "@region" && (pg === "@region" || pg === tp); }
+function s_deadLinkItems() {
+  const R = reduce(activeOps(), "pc"); const out = []; const gone = new Set(R.removedAll || []);
+  const live = (id) => !gone.has(id) && !!R.secPageMap[secOf(id)];
+  const add = (id, lk) => out.push({ device: "pc", kind: "link", page: R.secPageMap[secOf(id)] === "@region" ? null : R.secPageMap[secOf(id)], parts: [id], text: `${M.friendly(id)}のリンクの行き先（『${friendlySec(lk.sec)}』のセクション）がありません。公開すると、押しても何も起きません。リンクを直すか外してください` });
+  for (const id in R.runsMap) { if (!live(id)) continue; const seen = new Set(); for (const r of R.runsMap[id] || []) if (r.link && !s_anchorAlive(r.link, id, R) && !seen.has(r.link.sec)) { seen.add(r.link.sec); add(id, r.link); } }
+  for (const id in R.linkMap) { if (!live(id)) continue; const lk = R.linkMap[id]; if (!s_anchorAlive(lk, id, R)) add(id, lk); }
+  return out;
+}
+function deadLinkCount(sec) { return s_deadLinkItems().filter((it) => { const R = reduce(activeOps(), "pc"); const id = it.parts[0]; const ls = [...((R.runsMap[id] || []).map((r) => r.link)), R.linkMap[id]]; return ls.some((l) => l && l.kind === "anchor" && l.sec === sec); }).length; }
 function setDevice(d) { if (state.editing) commitEdit(); state.device = d; render(); }
 
 // ===================== §22 §5 プレビュー（お客さんが見る形） =====================

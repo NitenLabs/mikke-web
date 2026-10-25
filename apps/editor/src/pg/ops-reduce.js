@@ -77,11 +77,17 @@ function seedFromBase(b, device, full) {
     const h = homeSec(id); if (!S.secContent[h]) S.secContent[h] = templateSectionContent(/^F_/.test(bareOf(id)) ? "feature" : "items"); }
   // 2. 足した部品＝added[]＋adjust から内部の adds エントリに戻す（§2.1：下書きの全部の ID → 内部の素の ID に戻す。section は anchor から求める）
   const addedById = {}; for (const a of (b.added || [])) addedById[a.id] = a;
-  const seedRef = (ref) => (ref && b.relocated && b.relocated[ref]) ? ref : bareOf(ref);   // J17 よそから移ってきた部品を指す所は、その ID のまま（素の ID に戻すと移った先の部品と取り違える）
-  const secOfRef = (ref) => { if (ref && b.relocated && b.relocated[ref] && b.relocated[ref].section) return b.relocated[ref].section; const t = instTag(ref); if (t) return t; if (isAdded(ref)) { const aa = addedById[ref]; return aa ? (aa.section || secOfRef(aa.anchor)) : "items"; } return (ref && ref.startsWith("F_")) ? "feature" : "items"; };
+  const seedRef = (ref) => (typeof ref !== "string" || !ref) ? "@section" : ((b.relocated && b.relocated[ref]) ? ref : bareOf(ref));   // PC-1 付いていく先の無い記録は「セクションの上」に   // J17 よそから移ってきた部品を指す所は、その ID のまま（素の ID に戻すと移った先の部品と取り違える）
+  const secOfRef = (ref, depth) => { if (typeof ref !== "string" || !ref || (depth || 0) > 20) return null; if (b.relocated && b.relocated[ref] && b.relocated[ref].section) return b.relocated[ref].section; const t = instTag(ref); if (t) return t; if (isAdded(ref)) { const aa = addedById[ref]; return aa ? (aa.section || secOfRef(aa.anchor, (depth || 0) + 1)) : "items"; } return (ref && ref.startsWith("F_")) ? "feature" : "items"; };
+  // PC-1 壊れた記録でも開けるように：付いていく先も所属も分からない足した部品・文字や写真を置けないセクション（帯・本体・ヘッダー/フッター）の足した部品は読まない（ほかの手直しはそのまま戻す）
+  const holdSecs = new Set(PAGE_IDS.flatMap((p) => secMap[p] || []).filter((s) => s.type === "feature" || s.type === "items").map((s) => s.id)); holdSecs.add("feature"); holdSecs.add("items");
   for (const a of (b.added || [])) {
+    if (!a || typeof a.id !== "string" || !isAdded(a.id)) continue;
+    const secA = (typeof a.section === "string" && a.section) || secOfRef(a.anchor);
+    if (!secA || !holdSecs.has(secA)) { S.dropped = (S.dropped || []).concat(a.id); continue; }
+    const anc = (typeof a.anchor === "string" && a.anchor) ? a.anchor : "@section";   // 記録（土台）は書き換えない
     const placedOn = a.placedOn || "pc", other = placedOn === "pc" ? "sp" : "pc", sz = a.size || {};
-    const section = a.section || secOfRef(a.anchor), anchorBare = seedRef(a.anchor);
+    const section = secA, anchorBare = seedRef(anc);
     const e = { id: a.id, kind: a.kind, section, anchor: anchorBare, from: a.from,
       styleName: a.style || (a.kind === "photo" ? undefined : "featBody"), placedDevice: placedOn,
       w: sz[placedOn] && sz[placedOn].w, h: sz[placedOn] && sz[placedOn].h, wOther: sz[other] && sz[other].w, hOther: sz[other] && sz[other].h,
@@ -298,9 +304,13 @@ function reduce(ops, device, peek) {
     // 幅はその端末でのコピー元の幅。置いた左端から中身の右端に収まらないなら、そこまで縮める（写真は縦横比保持。§2.3）
     let w = device === a.placedDevice ? a.w : (a.wOther != null ? a.wOther : a.w);
     let h = a.kind === "photo" ? (device === a.placedDevice ? a.h : (a.hOther != null ? a.hOther : a.h)) : a.h;
+    // PC-20 つまみで変えた大きさ（size op・土台の adjust[端末].size）をこの端末で当てる。左の辺から変えた分（dx）は、右の辺を動かさないよう置いた x を寄せる
+    const szA = sizes[a.id]; let padB;
+    if (szA) { if (szA.w != null) w = szA.w; if (a.kind === "photo" && szA.h != null) h = szA.h; if (szA.padB != null) padB = szA.padB;
+      if (m1[a.id] && m1[a.id].dx && typeof place.x === "number") place = { ...place, x: +(place.x + m1[a.id].dx).toFixed(2) }; }
     if (typeof place.x === "number" && place.x + w > contentRight) { const avail = contentRight - place.x; if (a.kind === "photo" && h && w) h = Math.round(h * avail / w * 100) / 100; w = avail; }
     const asset = a.kind === "photo" ? (replaceMap[a.id] != null ? replaceMap[a.id] : a.asset) : undefined;
-    added.push({ id: a.id, section: a.section, kind: a.kind, styleName: a.styleName || "featBody", w, h, text, anchor: place.anchor, gap: place.gap, x: place.x, asset, isAuto });
+    added.push({ id: a.id, section: a.section, kind: a.kind, styleName: a.styleName || "featBody", w, h, padB, text, anchor: place.anchor, gap: place.gap, x: place.x, asset, isAuto });
     delete m2[a.id];
   }
   // J17 別のセクションへ移したテンプレの部品：移った先で絶対配置（足した部品と同じ）。中身は生まれたセクションの content から。m2 は R.m2 にも残す（矢印・元に戻す・保存が m2 を見る）

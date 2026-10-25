@@ -30,7 +30,10 @@ function gcAssets(draftToSave, shopToSave) {
   const ref = new Set();
   const scan = (d) => { if (!d) return; const s = JSON.stringify(d); for (const id in ASSET) if (!(id in TEMPLATE_ASSETS) && s.indexOf('"' + id + '"') >= 0) ref.add(id); };
   scan(draftToSave); scan(shopToSave); for (const v of _versions) { scan(v.draft); scan(v.shop); } if (state.restoreUndo) { scan(state.restoreUndo.draft); scan(state.restoreUndo.shopDraft); }   // 試験台26：① の品の写真も「使われている」に数える（5.2）
-  for (const id in ASSET) if (!(id in TEMPLATE_ASSETS) && !ref.has(id)) { delete ASSET[id]; delete ASSET_NAT[id]; }
+  // SP-4 戻す・やり直すで戻ってくる写真（記録の列・見ている版の退避・やり直しの先）は、保存の入れ物には入れないがページの中からは消さない（消すと灰色の仮の箱になり、そのまま保存されて戻らなかった）
+  const keepMem = new Set(ref); const scanMem = (d) => { if (!d) return; const s = JSON.stringify(d); for (const id in ASSET) if (!(id in TEMPLATE_ASSETS) && s.indexOf('"' + id + '"') >= 0) keepMem.add(id); };
+  scanMem(state.ops); scanMem(state.restoreUndo && state.restoreUndo.ops); if (state.viewBackup) { scanMem(state.viewBackup.base); scanMem(state.viewBackup.ops); } if (state.restoreRedo && state.restoreRedo.fwd) { scanMem(state.restoreRedo.fwd.ops); scanMem(state.restoreRedo.fwd.base); }
+  for (const id in ASSET) if (!(id in TEMPLATE_ASSETS) && !keepMem.has(id)) { delete ASSET[id]; delete ASSET_NAT[id]; }
   const out = {}; for (const id of ref) if (ASSET[id]) out[id] = ASSET[id]; return out;
 }
 async function doSave() {
@@ -60,16 +63,66 @@ async function boot() {
     const d = await saveStore.get(_db, "draft"); if (d) applyDraftData(d);
     recomputeShopSeq(state.shopBase || SHOP_JSON);   // 連番は ① の中の ID の最大から続ける
   } catch (e) {}
+  s_bootSafety();
   // J25 この画面が知っている版番号を覚え、他タブが保存したら（storage イベント）知らせる
   _mySeq = readSeq();
   try { window.addEventListener("storage", (e) => { if (e.key !== SEQ_KEY) return; const n = +e.newValue || 0; if (n > _mySeq && hasPendingSave()) { _conflict = true; if (typeof _onExternalConflict === "function") _onExternalConflict(); if (typeof onRender === "function") onRender(); } }); } catch (_) {}
   render(); for (const id in collectAssets()) ensureNat(id);
 }
+// PC-1 読み込みで落ちない：下書きが描けない（例外）なら、その下書きを履歴の「戻す前の下書き」に残し、描ける一番新しい公開版（無ければ最初の形）から開く。
+// 店主には知らせ、その版は履歴から「見る」「この版を下書きにする」で取り戻せる（描けるところまで。描けない版は開かずに知らせる）
+let _bootNotice = null;
+function s_drawable(b, shopB) { const sb = state.base, sh = state.shopBase, so = state.ops, sc = state.cursor; state.base = b; state.shopBase = shopB; state.ops = []; state.cursor = 0;
+  try { reduce([], "pc"); reduce([], "sp"); foldToDraft(); return true; } catch (e) { return false; } finally { state.base = sb; state.shopBase = sh; state.ops = so; state.cursor = sc; } }
+function s_bootSafety() {
+  if (!state.base || s_drawable(state.base, state.shopBase)) return;
+  const broken = state.base, brokenShop = state.shopBase;
+  _versions.push({ id: "b" + (_verSeq++), kind: "beforeRestore", at: Date.now(), draft: broken, shop: brokenShop, broken: true });
+  const pubs = _versions.filter((v) => v.kind === "published" && v.draft).reverse(); const ok = pubs.find((v) => s_drawable(v.draft, v.shop || null));
+  applyDraftData(ok ? ok.draft : null); state.shopBase = ok ? (ok.shop || null) : brokenShop; recomputeShopSeq(state.shopBase || SHOP_JSON);
+  _bootNotice = "下書きの一部が読み込めなかったので、" + (ok ? "一番新しい公開版" : "最初の形") + "から開きました。それまでの下書きは履歴の「戻す前の下書き」に残しています";
+  scheduleSave();
+}
+// SP-3（J25 の続き）別のタブが先に保存した：知らせだけでは、その後の手直しが保存されずに消えていた。
+// M3b（ApiStore のぶつかったときの箱）と同じく、店主が「ほかのタブの変更を読み込む」か「自分の直しで上書きする」を選ぶ。
+// 選ばなかった方は履歴の「戻す前の下書き」に残す（あとから戻せる）。版の一覧は保存先にある新しい方を読み、そこへ足す
+let _resolvingLocal = false;
+async function s_resolveLocalConflict(choice) {
+  if (!_conflict || _resolvingLocal || (choice !== "theirs" && choice !== "mine")) return { ok: false, message: "" };
+  _resolvingLocal = true;
+  try {
+    if (state.editing) commitEdit();
+    if (state.viewing) exitView();
+    if (!_db) _db = await saveStore.open();
+    const mine = { draft: currentDraft(), shop: currentShop() };
+    const d = await saveStore.get(_db, "draft"), sh = await saveStore.get(_db, "shop"), vs = await saveStore.get(_db, "versions"), assets = await saveStore.get(_db, "assets");
+    if (assets) for (const id in assets) if (!ASSET[id]) ASSET[id] = assets[id];
+    if (Array.isArray(vs) && vs.length) { _versions = vs; _verSeq = Math.max(_verSeq, ...vs.map((v) => (+String(v.id).replace(/\D/g, "") || 0))) + 1; }
+    const same = canonJSON(mine.draft || null) === canonJSON(d || null) && canonJSON(mine.shop || null) === canonJSON(sh || null);
+    const keep = (draft, shop) => { if (same) return;   // 選ばなかった方を「戻す前の下書き」に（同じ中身なら残さない）
+      _versions.push({ id: "b" + (_verSeq++), kind: "beforeRestore", at: Date.now(), draft: draft || null, shop: shop || null });
+      const brs = _versions.filter((x) => x.kind === "beforeRestore"); if (brs.length > 10) { const drop = new Set(brs.slice(0, brs.length - 10)); _versions = _versions.filter((x) => !drop.has(x)); } };
+    if (_saveTimer) { clearTimeout(_saveTimer); _saveTimer = null; }
+    if (choice === "theirs") {
+      keep(mine.draft, mine.shop);
+      state.viewing = null; state.viewBackup = null; state.restoreUndo = null;
+      state.shopBase = sh || null; applyDraftData(d || null); recomputeShopSeq(state.shopBase || SHOP_JSON);
+      state.selected = new Set(); state.selectedSection = null; state.editing = null;
+    } else keep(d, sh);
+    _mySeq = readSeq(); _conflict = false;
+    render(); for (const id in collectAssets()) ensureNat(id);
+    await doSave();
+    if (typeof onRender === "function") onRender();
+    return { ok: !_conflict };
+  } catch (e) { return { ok: false, message: "うまくいきませんでした。もう一度お試しください" }; }
+  finally { _resolvingLocal = false; }
+}
+function bootNotice() { const n = _bootNotice; _bootNotice = null; return n; }
 function currentPublished() { const p = _versions.filter((v) => v.kind === "published"); return p.length ? p[p.length - 1] : null; }
 function draftSig() { return canonJSON(currentDraft()); }   // §6 今の形を、鍵をそろえた文字列で
 function publishedEqual() { const p = currentPublished(); if (!p || !p.draft) return false; return canonJSON(p.draft) === draftSig() && canonJSON(p.shop || null) === canonJSON(currentShop()); }   // §3.2 ①②の両方を比べる・一度も公開していなければ false・「直してから元どおり」で一致
 function statusLabel() {
-  if (_conflict) return saveStore.conflictLabel || "ほかのタブで変更が保存されました。読み込み直してください";   // J25（M3 API のときは「ほかで変更されました」）
+  if (_conflict) return saveStore.conflictLabel || "ほかのタブで変更されました。どちらを残すか選んでください";   // J25（M3 API のときは「ほかで変更されました」）
   if (_saveStatus === "saving") return "保存しています…";
   if (_saveStatus === "error") return "保存できませんでした。インターネットのつながりを確かめてください";
   const p = currentPublished(); if (!p) return "まだ公開していません";
