@@ -38,10 +38,30 @@ function priceNatMax(device) {
   for (const d of SPEC.textDecls(device === "pc" ? "tPriceR" : "tPriceL", device)) { const i = d.indexOf(":"); probe.style.setProperty(d.slice(0, i).trim(), d.slice(i + 1).trim()); }
   meas.appendChild(probe);
   let maxNat = 0; const R = reduce(activeOps(), device);
+  const sn = device === "pc" ? "tPriceR" : "tPriceL";
+  const base = { fontSize: probe.style.fontSize, fontWeight: probe.style.fontWeight, fontFamily: probe.style.fontFamily, fontStyle: probe.style.fontStyle };
   for (const inst of state.secList) {
     if (inst.type !== "items") continue;
+    const pfx = (inst.id === "feature" || inst.id === "items") ? "" : inst.id + SEP;
+    // K15 値段の箱まるごとの手直し（大きさ・太さ・書体・斜体）を当てて測る。描くとき（applyTextStyles）と同じ値。前は基本の大きさで測っていて、文字を大きくしても表が広がらず値段が折れていた
+    const ts = R.textStyles[pfx + "row_price"];
+    Object.assign(probe.style, base);
+    if (ts) {
+      if (ts.size && (ts.size.pc != null || ts.size.sp != null)) probe.style.fontSize = effSize(sn, device, ts).size + "px";
+      if (ts.weight != null) probe.style.fontWeight = ts.weight;
+      if (ts.font != null) probe.style.fontFamily = SPEC.FONT[ts.font] || ts.font;
+      if (ts.italic != null) probe.style.fontStyle = ts.italic ? "italic" : "normal";
+    }
+    const boxPx = parseFloat(getComputedStyle(probe).fontSize) || 16;
     const rows = (R.secContent[inst.id] && R.secContent[inst.id].table) || [];
-    for (const r of rows) { if (r.price == null) continue; probe.textContent = r.price; const w = probe.getBoundingClientRect().width; if (w > maxNat) maxNat = w; }
+    for (const r of rows) {
+      if (r.price == null) continue;
+      const rs = R.runsMap[pfx + "row_price_" + r.id];   // K15 文の一部の見た目（一部だけ大きく・太く）も同じく
+      if (rs && rs.length) {
+        probe.textContent = "";
+        for (const run of rs) { const sp = document.createElement("span"); sp.textContent = run.text; if (run.scale && run.scale !== 1) sp.style.fontSize = (boxPx * run.scale) + "px"; if (run.bold) sp.style.fontWeight = 700; if (run.italic) sp.style.fontStyle = "italic"; if (run.font) sp.style.fontFamily = SPEC.FONT[run.font] || run.font; probe.appendChild(sp); }
+      } else probe.textContent = r.price;
+      const w = probe.getBoundingClientRect().width; if (w > maxNat) maxNat = w;    }
   }
   probe.remove();
   return maxNat;
@@ -52,7 +72,7 @@ function tableFitW(device) {
   return device === "pc" ? nat * 968 / 249 : Math.max(200, nat);
 }
 // §20b §2.3 最小幅：品の並び＝1件120×列＋間、表＝どの行の値段も1行に入る幅（PC は値段欄=幅×249/968、SP は max(200, 値段1行)）
-function minWidthOf(id) { const c = canonId(id); if (c === "I_cards") { const n = colsOf(c); return 120 * n + 24 * (n - 1); } if (c === "I_table") return tableFitW(state.device); return 40; }
+function minWidthOf(id) { const c = canonId(id); if (c === "I_cards") { const n = colsOf(c); return 120 * n + 24 * (n - 1); } if (c === "I_table") { const ce = contentEdges(); return Math.min(tableFitW(state.device), ce.right - ce.left); } return 40; }   // K15 値段の文字が大きくても、下限は中身の幅まで
 function handlePoint(dir, e) { const xs = { w: e.x, e: e.x + e.w, n: e.x + e.w / 2, s: e.x + e.w / 2, nw: e.x, sw: e.x, ne: e.x + e.w, se: e.x + e.w, c: e.x + e.w / 2 }; const ys = { n: e.y, s: e.y + e.h, w: e.y + e.h / 2, e: e.y + e.h / 2, nw: e.y, ne: e.y, sw: e.y + e.h, se: e.y + e.h }; return { x: xs[dir], y: ys[dir] }; }
 function cursorFor(dir) { return ({ n: "ns-resize", s: "ns-resize", e: "ew-resize", w: "ew-resize", ne: "nesw-resize", sw: "nesw-resize", nw: "nwse-resize", se: "nwse-resize" })[dir] || "pointer"; }
 

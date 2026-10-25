@@ -108,7 +108,7 @@ function render() {
     if (!(host._rSig === sig && host._rSnap != null && host.innerHTML === host._rSnap)) host.innerHTML = html;
     host._rSig = sig;
     // §20b §2.4 広げるのは右へ（左端は動かさない）＝中央そろえ(margin:auto)を左端固定に上書き
-    if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tn = host.querySelector('#host_items [data-el="I_table"]') || host.querySelector('[data-el="I_table"]'); if (tn) { const dw = SPEC.DESIGN_W[state.device]; const recW = (R.sizes && R.sizes["I_table"] && R.sizes["I_table"].w != null) ? R.sizes["I_table"].w : 968; tn.style.marginLeft = ((dw - recW) / 2) + "px"; tn.style.marginRight = "0"; } }
+    if (inst.type === "items" && state._tableDispW && state.device === "pc") { const tn = host.querySelector('#host_items [data-el="I_table"]') || host.querySelector('[data-el="I_table"]'); if (tn) { const dw = SPEC.DESIGN_W[state.device]; const recW = (R.sizes && R.sizes["I_table"] && R.sizes["I_table"].w != null) ? R.sizes["I_table"].w : 968; tn.style.marginLeft = Math.min((dw - recW) / 2, contentEdges().right - state._tableDispW) + "px"; tn.style.marginRight = "0"; } }   // K15 右端に当たったら、残りは左へ広げる
     host._padBottom = out.padBottom;
     // §2.2 背景は並び順で（feature/items のみ）。試験台28：ヘッダー（見える並びの先頭）を除いたページ内の順で交互。新しいセクションは builder の背景を残す。
     if (inst.type === "feature" || inst.type === "items") { const s = host.querySelector("#sec"); if (s) s.style.background = SPEC.COLORS[secBgName(idx - 1)]; }
@@ -116,11 +116,12 @@ function render() {
   fillNav(R);           // 試験台28：ヘッダー・フッターのナビを今のページで組む（host の中身を作ったあと）
   applyTextStyles(R);   // §12：文字の箱まるごとの大きさ・太さ・色を当てる（実測・配置の前に）
   layoutScale();
-  // §20b §2.4 記録幅では値段が1行に入らない表を、表示だけ右へ広げて描き直す（記録は変えない・左端固定・中身の右端で頭打ち）
+  // §20b §2.4 記録幅では値段が1行に入らない表を、表示だけ広げて描き直す（記録は変えない）。まず右へ（左端固定）、中身の右端に当たったら残りは左へ。中身の幅いっぱいで頭打ち
+  // K15（2026-10-25）：前は右へだけで頭打ちにしていて、一番狭くした表で値段の文字を大きくすると、中身の幅には収まるのに値段が2行になっていた
   if (!clampGuard && state.device === "pc") {
     const Rt = reduce(activeOps(), state.device);
     const recW = (Rt.sizes && Rt.sizes["I_table"] && Rt.sizes["I_table"].w != null) ? Rt.sizes["I_table"].w : 968;
-    const dw = SPEC.DESIGN_W[state.device], leftD = (dw - recW) / 2, cap = contentEdges().right - leftD;
+    const ce = contentEdges(), cap = ce.right - ce.left;
     const dispW = +Math.min(Math.max(recW, tableFitW("pc")), cap).toFixed(2);
     const want = dispW > recW + 0.5 ? dispW : null;
     if (want !== (state._tableDispW || null)) { state._tableDispW = want; clampGuard = true; render(); clampGuard = false; return; }
