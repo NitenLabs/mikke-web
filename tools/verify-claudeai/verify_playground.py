@@ -1529,7 +1529,8 @@ async def main():
             m = await sec_rmenu('feature', None)
             # P26・F22 に合わせて手順を変えた（判定は同じ）：線 A3 からは出せない操作を灰色（disabled）で出す。「出ない、または disabled」＝押せるものに無い
             m_on = await pg.evaluate("(()=>{const m=document.getElementById('fmenu');return m&&m.classList.contains('on')?[...m.querySelectorAll('button')].filter(b=>!b.disabled&&b.getAttribute('aria-disabled')!=='true').map(b=>b.textContent):[]})()")
-            ok('C11 セクションが1つだけなら、上へ・下へ・削除が出ない（出ても押せない）', not any(x in m_on for x in ['上へ', '下へ', '削除']), f'{m} 押せる {m_on}')
+            # 一覧が開かなかったときに空振りで通らないよう、開いたこと（m が空でない）も条件にする（DECISIONS #10）
+            ok('C11 セクションが1つだけなら、上へ・下へ・削除が出ない（出ても押せない）', bool(m) and not any(x in m_on for x in ['上へ', '下へ', '削除']), f'{m} 押せる {m_on}')
             # E1（試験の外・26b 更新）品のセクションを複製し、複製側の品の名前の色と文字を変える。
             # 色は ② のデザイン＝複製側だけ変わる。文字は ① お品書きの事実＝元の方も同じに変わる（記録 11.5・12.5）
             await fresh(pg, 'pc'); await sec_rmenu('items', '複製')

@@ -667,11 +667,11 @@ async def t_F18(br, url):
                 seen += 1
                 # P26 に合わせて条件を変えた（まとめ役の決め：P26＝押せないものは消さずに灰色で出す。PowerPoint と同じ）：
                 # 前は「押せない（disabled）ボタンが見えていない」。今は「押せないボタンは disabled（または aria-disabled）で、灰色に見える」
-                # （灰色＝透明度が 0.95 未満か、押せるボタンと文字の色が違う）。文字が折れない条件はそのまま
-                on_cols = {b['col'] for b in bd['btns'] if not b['dis']}
+                # （灰色＝透明度が 0.95 未満。#fmenu の押せないボタンは透明度 .4／.55 で出す）。文字が折れない条件はそのまま
+                # 前は「押せるボタンと文字の色が違う」でも通していたが、灰色でなくても通るので外した（DECISIONS #10）
                 for b in bd['btns']:
                     if b['lines'] > 1: bad.append(f'{w}:{id[:6]}「{b["t"]}」{b["lines"]}行')
-                    if b['dis'] and not (b['op'] < 0.95 or (on_cols and b['col'] not in on_cols)): bad.append(f'{w}:{id[:6]}「{b["t"]}」押せないのに灰色でない')
+                    if b['dis'] and not (b['op'] < 0.95): bad.append(f'{w}:{id[:6]}「{b["t"]}」押せないのに灰色でない')
             finally: await pg.context.close()
     return not bad, f'帯 {seen} 個を見た・問題 {len(bad)}：' + '、'.join(bad[:8])
 

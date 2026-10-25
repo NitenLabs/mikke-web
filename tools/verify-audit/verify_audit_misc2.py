@@ -808,7 +808,7 @@ async def t_F38(new):
 
 POPS = """(()=>{const C='#sectypes,#moreMenu,#fmenu,[role=menu],[role=listbox],[id*=enu],[class*=menu],[class*=pop],[id*=types],[id*=Types]';
   return [...document.querySelectorAll(C)].filter(e=>{const r=e.getBoundingClientRect();const c=getComputedStyle(e);return r.width>0&&r.height>0&&c.visibility!=='hidden'&&c.display!=='none'&&parseFloat(c.opacity)>0.05&&!e.closest('#toolbar>button')&&e.querySelector('button,[role=menuitem],[role=option],a')}).map(e=>{e.dataset.auditPop=e.dataset.auditPop||Math.random().toString(36).slice(2);return e.dataset.auditPop})})()"""
-FOCUS_IN = """ks=>{const a=document.activeElement;for(const k of ks){const p=document.querySelector('[data-audit-pop=\"'+k+'\"]');if(p&&p.contains(a)){const items=[...p.querySelectorAll('button,[role=menuitem],[role=option],a')].filter(b=>{const r=b.getBoundingClientRect();return r.width>0&&r.height>0&&!b.disabled});return {inside:true,idx:items.indexOf(a),n:items.length,t:(a.textContent||'').trim().slice(0,14)}}}return {inside:false,t:a.tagName+' '+((a.textContent||'').trim().slice(0,14))}}"""
+FOCUS_IN = """ks=>{const a=document.activeElement;for(const k of ks){const p=document.querySelector('[data-audit-pop=\"'+k+'\"]');if(p&&p.contains(a)){const items=[...p.querySelectorAll('button,[role=menuitem],[role=option],a')].filter(b=>{const r=b.getBoundingClientRect();return r.width>0&&r.height>0&&!b.disabled});const all=[...p.querySelectorAll('button,[role=menuitem],[role=option],a')].filter(b=>{const r=b.getBoundingClientRect();return r.width>0&&r.height>0});return {inside:true,idx:items.indexOf(a),n:items.length,all:all.length,t:(a.textContent||'').trim().slice(0,14)}}}return {inside:false,t:a.tagName+' '+((a.textContent||'').trim().slice(0,14))}}"""
 
 # ---- F39
 # 作業票: 「＋」「その他 ▾」をキーで開いたら、一覧の最初にフォーカスが入り、上下キーで選べ、Esc で閉じる。
@@ -845,7 +845,8 @@ async def t_F39(new):
         arrows_ok = f1['inside'] and f2['inside'] and f1.get('idx') == 1 and f2.get('idx') == 0
         # F39 の手順の直し（まとめ役の指示・判定は甘くしない）：幅 1440 の「その他 ▾」は項目が1つ（お品書きを見る）しかなく、
         # 「↓ で2番目へ」がそもそもできない。項目が1つのときは「↓・↑ を押してもフォーカスが一覧の中（その1つ）に留まる」を上下キーの条件にする
-        if f0.get('inside') and f0.get('n') == 1:
+        # 押せない項目が混じっていても1つと数えないよう、見えている項目が全部で1つのときだけ（all＝押せないものも入れた数）
+        if f0.get('inside') and f0.get('n') == 1 and f0.get('all') == 1:
             arrows_ok = f1['inside'] and f2['inside'] and f1.get('idx') == 0 and f2.get('idx') == 0
         msg.append(f'{target}: 開いた後のフォーカス {f0}・↓ {f1.get("idx", f1["t"])}・↑ {f2.get("idx", f2["t"])}・Esc 後 {"開いたまま" if still else "閉じた"}・スクロールの動き最大 {r1(dmax)}px')
         if not first_ok: bad.append(f'{target}: 一覧の最初にフォーカスが入らない')
