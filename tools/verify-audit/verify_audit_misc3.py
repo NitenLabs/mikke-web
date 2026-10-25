@@ -756,6 +756,11 @@ async def t_F68(br, url):
         await pg.wait_for_timeout(700)
         g = (await ev(pg, f"{P}.geometry()")).get('F_h0')
         devw = await ev(pg, "(()=>{const s=document.querySelector('#sectionwrap');return s?s.getBoundingClientRect().width:390})()")
+        # 2026-10-26 手順の直し（DECISIONS #14・#33。判定は同じ）：矢印キーはページの左右で止まるようになり（#33）、Shift+→ では幅を越えなくなった。
+        # はみ出しは前の版の記録（外へ出した M1）を開いたときなどに今も起きるので、矢印で越えなければ、その記録と同じ手直し（M1 の dx 200）を入れてはみ出しを作る
+        if g and g['x'] + g['w'] <= min(390, devw) + 1:
+            await ev(pg, "PG.commit({t:'move',device:'sp',items:[{id:'F_h0',mode:'M1',dx:200,dy:0}]})"); await pg.wait_for_timeout(700)
+            g = (await ev(pg, f"{P}.geometry()")).get('F_h0')
         if not g or g['x'] + g['w'] <= min(390, devw) + 1: return False, f'準備失敗：見出しがスマホの幅を越えない（geometry {g}）'
         sw1 = await ev(pg, SW)
         chk = await ev(pg, f"{P}.publishCheck()")
