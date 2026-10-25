@@ -608,6 +608,63 @@ async def main():
         rec('S31 J17 移せない部品は移さず、元のセクションも伸びない', h_sec == 'feature' and await host_of(pg, 'F_hg') == 'feature' and f1 <= f0 + 5 and abs(i1 - i0) <= 1 and abs(sy1 - sy0) <= 1,
             f"F_hg 所属 {h_sec} 特集の高さ {f0:.0f}→{f1:.0f}（伸びないこと） 品の高さ {i0:.0f}→{i1:.0f} scrollY {sy0}→{sy1} 記録 {json.dumps(await ev(pg, f'{P}.ops()'), ensure_ascii=False)[:160]}")
 
+        # ---------- S50〜S55：4回目の精査（線 S。2026-10-25 で足した。S32〜S49 は線 R が使う）----------
+        async def nav_menu(pg):
+            await ev(pg, f"{P}.setPage('pg_menu')"); await pg.wait_for_timeout(500)
+        async def toast(pg): return await ev(pg, "(()=>{const t=document.getElementById('pgToast');return t&&t.classList.contains('on')?t.textContent:''})()")
+        async def reopen_check(pg):
+            errs = pg._errs; n0 = len(errs); await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(1500)
+            secs = await ev(pg, "document.querySelectorAll('#sectionwrap .sec-wrap, #sectionwrap .host').length"); return errs[n0:], secs
+        # S50 PC-1 お品書きのページで「お品書きの帯」を選んで Cmd+V → 貼らずに知らせる・記録しない → 読み込み直しても描ける（例外なし）
+        pg = await fresh(1440, 1000)
+        await ev(pg, "document.querySelector('[data-el=F_b1]').scrollIntoView({block:'center'})"); await pg.wait_for_timeout(300); await pick(pg, 'F_b1'); await pg.keyboard.press(f'{MOD}+c'); cb = await ev(pg, "!!PG.state.clipboard"); await nav_menu(pg)
+        await pg.mouse.click(1300, 400); await pg.wait_for_timeout(300); ss = await ev(pg, "PG.state.selectedSection")
+        n0 = len(await ev(pg, f"{P}.ops()")); await pg.keyboard.press(f'{MOD}+v'); await pg.wait_for_timeout(600)
+        n1 = len(await ev(pg, f"{P}.ops()")); t1 = await toast(pg); await pg.wait_for_timeout(900)
+        e1, secs = await reopen_check(pg)
+        rec('S50 PC-1 お品書きの帯に貼る→貼らずに知らせ・読み込み直しで壊れない', cb and ss == 'menuhdr' and n1 == n0 and '貼り付けられません' in t1 and not e1 and secs > 0, f"コピー={cb} 選んだセクション={ss} 記録 {n0}→{n1} 知らせ={t1!r} 読み込み直しの例外={e1[:2]} セクション数={secs}")
+        # S51 PC-1 壊れた記録（お品書きの帯に入った足した部品・付いていく先なし。直す前の版が作った形）が保存されていても開ける。ほかの手直しは残る（その足した部品だけ読まない）
+        pg = await fresh(1440, 1000)
+        bad = {'template': {'name': 'wa-01', 'version': 1}, 'seq': {'sec': 0, 'add': 1}, 'content': {'F_h0': '（新作）季節の上生菓子', 'add_1': '貼った文'}, 'added': [{'id': 'add_1', 'kind': 'text', 'placedOn': 'pc', 'section': 'menuhdr', 'size': {'pc': {'w': 501}, 'sp': {'w': 333}}}]}
+        await ev(pg, f"(async()=>{{const db=await new Promise((r,j)=>{{const q=indexedDB.open('{DBNAME}',1);q.onupgradeneeded=()=>{{if(!q.result.objectStoreNames.contains('state'))q.result.createObjectStore('state')}};q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)}}); const tx=db.transaction('state','readwrite'); tx.objectStore('state').put({json.dumps(bad, ensure_ascii=False)},'draft'); await new Promise((r)=>tx.oncomplete=r); db.close(); return 1}})()")
+        e2, secs2 = await reopen_check(pg); h0 = await ev(pg, "(document.querySelector('[data-el=F_h0]')||{}).innerText")
+        vs = [v['kind'] for v in await ev(pg, f"{P}.versions()")]; t2 = await toast(pg)
+        rec('S51 PC-1 壊れた記録が残っていても開ける・手直しが残る', not e2 and secs2 > 0 and h0 == '（新作）季節の上生菓子', f"例外={e2[:2]} セクション数={secs2} 見出し={h0!r}（足した部品だけ読まない） 履歴={vs} 知らせ={t2!r}")
+        # S55 PC-1 どこかが壊れて描けない下書き（付いていく先が null・ページの並びが数）でも開ける：最初の形（か描ける公開版）から開き、知らせが残り、壊れた下書きは履歴の「戻す前の下書き」に（見ようとしても落ちない）
+        pg = await fresh(1440, 1000)
+        bad2 = {'template': {'name': 'wa-01', 'version': 1}, 'content': {'F_h0': 'X'}, 'adjust': {'pc': {'F_b0': {'place': {'after': None, 'gap': 3, 'x': None}}}}, 'sections': {'pg_home': [{'id': 'feature', 'type': 'feature'}, {'id': 'items', 'type': 'items'}], 'pg_menu': 5}}
+        await ev(pg, f"(async()=>{{const db=await new Promise((r,j)=>{{const q=indexedDB.open('{DBNAME}',1);q.onupgradeneeded=()=>{{if(!q.result.objectStoreNames.contains('state'))q.result.createObjectStore('state')}};q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)}}); const tx=db.transaction('state','readwrite'); tx.objectStore('state').put({json.dumps(bad2, ensure_ascii=False)},'draft'); await new Promise((r)=>tx.oncomplete=r); db.close(); return 1}})()")
+        e5, secs5 = await reopen_check(pg); await pg.wait_for_timeout(3500); t55 = await toast(pg); vs5 = await ev(pg, f"{P}.versions()")
+        br5 = next((v['id'] for v in vs5 if v['kind'] == 'beforeRestore'), None)
+        if br5: await ev(pg, f"{P}.viewVersion('{br5}')"); await pg.wait_for_timeout(400)
+        e6 = pg._errs[:]; secs6 = await ev(pg, "document.querySelectorAll('#sectionwrap .host').length")
+        rec('S55 PC-1 描けない下書きでも開け、知らせが残り、壊れた下書きは履歴に', not e5 and secs5 > 0 and '戻す前の下書き' in t55 and br5 and not e6 and secs6 > 0, f"例外={e5[:2]} セクション数={secs5} 3.5秒後の知らせ={t55!r} 履歴={[v['kind'] for v in vs5]} 見ようとした後の例外={e6[:2]} セクション数={secs6}")
+        # S52 PC-21 お品書きのページで何も選ばずに貼る → TOP の特集に知らせなく入らない（貼らずに知らせる）
+        pg = await fresh(1440, 1000)
+        await ev(pg, "document.querySelector('[data-el=F_b1]').scrollIntoView({block:'center'})"); await pg.wait_for_timeout(300); await pick(pg, 'F_b1'); await pg.keyboard.press(f'{MOD}+c'); cb = await ev(pg, "!!PG.state.clipboard"); await nav_menu(pg)
+        await pg.mouse.click(1434, 600); await pg.wait_for_timeout(300)
+        n0 = len(await ev(pg, f"{P}.ops()")); await pg.keyboard.press(f'{MOD}+v'); await pg.wait_for_timeout(600)
+        n1 = len(await ev(pg, f"{P}.ops()")); t3 = await toast(pg)
+        rec('S52 PC-21 お品書きのページで貼る→TOP に知らせなく入らない', cb and n1 == n0 and 'お品書きのページには貼り付けられません' in t3, f"コピー={cb} 記録 {n0}→{n1} 知らせ={t3!r}")
+        # S53 SP-3 2つのタブ：あとから直した側に選ぶ箱が出て残る（3秒で消えない）→「自分の直しで上書きする」→ 読み込み直しても B の直しが残る。A の直しは履歴の「戻す前の下書き」に
+        pg = await fresh(1440, 1000); ctx = pg.context; pa = pg
+        pb = await ctx.new_page(); pb._errs = []; await pb.goto(URL); await pb.wait_for_function(P); await pb.wait_for_timeout(1200)
+        await pa.bring_to_front(); await ev(pa, "PG.commit({t:'edit',id:'F_h0',text:'Aの見出し'})"); await pa.wait_for_timeout(1200)
+        await pb.bring_to_front(); await ev(pb, "PG.commit({t:'edit',id:'F_b0',text:'Bの本文'})"); await pb.wait_for_timeout(5000)
+        box = await ev(pb, "(()=>{const b=document.getElementById('m3Conflict');return !!b&&b.classList.contains('on')})()"); lbl = (await ev(pb, f"{P}.saveState()"))['label']
+        if box: await pb.click('[data-m3-conflict-mine]'); await pb.wait_for_timeout(1500)
+        st = await ev(pb, f"{P}.saveState()"); vk = [v['kind'] for v in await ev(pb, f"{P}.versions()")]
+        await pb.reload(); await pb.wait_for_function(P); await pb.wait_for_timeout(1500)
+        b0 = await ev(pb, "document.querySelector('[data-el=F_b0]').innerText")
+        rec('S53 SP-3 2つのタブ：箱が残り、選べば後の直しも保存される', box and not st['conflict'] and st['status'] == 'saved' and b0 == 'Bの本文' and 'beforeRestore' in vk, f"5秒後の箱={box} 状態の文={lbl!r} 選んだ後={st['status']}/{st['conflict']} 履歴={vk} 読み込み直し後の本文={b0!r}")
+        await ctx.close()
+        # S54 PC-25 リンク先のセクションを消す → リンクが行き先なしと分かる・公開の確認に出る・消したときの知らせで言う
+        pg = await fresh(1440, 1000)
+        await ev(pg, "PG.commit({t:'elink',id:'I_time',link:{kind:'anchor',sec:'feature'}})")
+        await ev(pg, "a3_secOp('del','feature')"); await pg.wait_for_timeout(400); t5 = await toast(pg)
+        pc = [i for i in await ev(pg, f"{P}.publishCheck()") if i.get('kind') == 'link']; lab = (await ev(pg, f"{P}.elementLink('I_time')") or {}).get('label')
+        rec('S54 PC-25 行き先のセクションを消したリンクは公開の確認に出る', len(pc) == 1 and 'I_time' in pc[0]['parts'] and 'リンク' in t5 and '芦屋堂の味' in (pc[0]['text']) and 'ありません' in (lab or ''), f"確認={[i['text'] for i in pc]} 知らせ={t5!r} リンクの名前={lab!r}")
+
         await br.close()
         npass = sum(1 for _, o, _ in R if o is True); nng = sum(1 for _, o, _ in R if o is False)
         print(f"\n合計 {npass} / {npass + nng}（-- は値のみ={sum(1 for _,o,_ in R if o is None)}）", flush=True)

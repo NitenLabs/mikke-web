@@ -174,7 +174,7 @@ function textRunsApi(part) { if (state.editing && state.editing.id === part) { r
 function a1InsertNewline() {
   if (!state.editing) return false; const n = elNode(state.editing.id); if (!n) return false;
   reconcileEdit(); const o = caretOffsets(n) || state.editing.lastSel; if (!o) return false;
-  if (state.editing.mode) flushCheckpoint();
+  flushCheckpoint();   // PC-16 改行の前までを1区切り（打っていた分）
   const runs = state.editing.runs || domToRuns(n); const L = plainLen(runs); const s = Math.min(o.s, L), e = Math.min(o.e, L);
   const st = stAtChar(runs, s > 0 ? s - 1 : 0);
   const nl = { text: "\n", ...(st.bold ? { bold: true } : {}), ...(st.italic ? { italic: true } : {}), ...(st.underline ? { underline: true } : {}), ...(st.color != null ? { color: st.color } : {}), ...(st.scale && st.scale !== 1 ? { scale: st.scale } : {}), ...(st.font ? { font: st.font } : {}) };
@@ -182,6 +182,6 @@ function a1InsertNewline() {
   state.editing.runs = newRuns; const plain = newRuns.map((r) => r.text).join("");
   n.innerHTML = runsToEditHtml(newRuns) + (/\n$/.test(plain) ? "<br>" : "");
   setCaretOffsets(n, s + 1, s + 1); state.editing.lastSel = { s: s + 1, e: s + 1 };
-  liveReflow(); flushCheckpoint();   // §23b 改行を打ったら区切る
+  liveReflow(); state.editing.mode = "type"; resetBreakTimer();   // PC-16 改行とその後に打つ文字を1つの戻す単位に（PowerPoint と同じ。改行だけ残る戻し方を作らない）。止まれば1秒で区切る
   return true;
 }

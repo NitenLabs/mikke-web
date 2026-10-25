@@ -314,6 +314,37 @@ async def main():
     pg=await fresh(); await sel_table(pg); s0=await scale(pg,'I_table'); await handle_drag(pg,-248*s0); g=await G(pg)
     rec('K20 pc 表を 720 に',abs(g['I_table']['w']-720)<=0.6 and abs(g['row_name_t_warabi']['w']-416.5)<=0.6,f"表 {g['I_table']['w']:.1f} 名前 {g['row_name_t_warabi']['w']:.1f} 値段 {g['row_price_t_warabi']['w']:.1f}")
     await pg.context.close()
+    # K21 PC-20（4回目の精査・線 Z）足した部品・複製・貼り付けた部品も、つまみで大きさが変わる（離しても戻らない・読み込み直しても同じ・戻す1回で戻る）
+    async def grab_handle(pg, part, d, ddx, ddy):
+        hs = await pg.evaluate(f"[...document.querySelectorAll('.rz-handle[data-handle-for=\"{part}\"][data-handle=\"{d}\"]')].map(h=>{{const r=h.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]}})")
+        if not hs: return False
+        x, y = hs[0]; k = await nosnap_key(pg); await pg.keyboard.down(k); await pg.mouse.move(x, y); await pg.mouse.down()
+        for i in range(1, 11): await pg.mouse.move(x + ddx * i / 10, y + ddy * i / 10); await pg.wait_for_timeout(15)
+        await pg.mouse.up(); await pg.keyboard.up(k); await pg.wait_for_timeout(450); return True
+    async def sel_click(pg, part):
+        el = await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(150)
+        r = await bb(pg, part); await pg.mouse.click(r['x'] + min(30, r['w'] / 2), r['y'] + min(12, r['h'] / 2)); await pg.wait_for_timeout(350); await esc_if_editing(pg)
+        el = await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(200)
+    k21 = []
+    for case in ('dup_photo', 'add_text', 'paste_text'):
+        pg = await fresh()
+        if case == 'dup_photo':
+            await sel_click(pg, 'F_p0'); await pg.keyboard.press(f'{MOD}+d'); await pg.wait_for_timeout(500); d, ddx, ddy = 'se', -150, -50
+        elif case == 'add_text':
+            await pg.click('#tText'); await pg.wait_for_timeout(400); await pg.keyboard.type('足した文字の箱'); await pg.mouse.click(1434, 600); await pg.wait_for_timeout(400); d, ddx, ddy = 'e', -200, 0
+        else:
+            await sel_click(pg, 'F_b1'); await pg.keyboard.press(f'{MOD}+c'); await pg.keyboard.press(f'{MOD}+v'); await pg.wait_for_timeout(500); d, ddx, ddy = 'e', -200, 0
+        nid = [o['id'] for o in await ops(pg) if o.get('t') == 'add'][-1:]
+        if not nid: k21.append((case, False, '足せなかった')); await pg.context.close(); continue
+        nid = nid[0]; await sel_click(pg, nid)
+        w0 = (await G(pg))[nid]['w']; s = await scale(pg, nid)
+        ok_h = await grab_handle(pg, nid, d, ddx * s, ddy * s)
+        w1 = (await G(pg)).get(nid, {}).get('w'); await pg.wait_for_timeout(900)
+        await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(1500); w2 = (await G(pg)).get(nid, {}).get('w')
+        await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(400); w3 = (await G(pg)).get(nid, {}).get('w')
+        k21.append((case, bool(ok_h and w1 is not None and w1 < w0 - 50 and w2 is not None and abs(w2 - w1) <= 0.5), f'{nid} 幅 {w0:.0f}→離した後 {w1}→読み込み直し {w2}（戻す {w3} は値だけ。読み込み直しで記録の列は空）'))
+        await pg.context.close()
+    rec('K21 PC-20 足した・複製・貼り付けた部品もつまみで大きさが変わる', all(x[1] for x in k21), json.dumps(k21, ensure_ascii=False))
     print(f"\n合計 {sum(1 for r in R if r[1] is True)} / {sum(1 for r in R if r[1] is not None)}（-- は値だけ）")
     await br.close()
 asyncio.run(main())

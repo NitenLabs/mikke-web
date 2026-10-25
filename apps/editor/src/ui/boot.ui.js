@@ -4,5 +4,5 @@ document.body.classList.toggle("pg-phone", isPhone());
 if(isPhone()){ PG.setDevice("sp"); document.getElementById("dSP").classList.add("on"); document.getElementById("dPC").classList.remove("on"); }
 
 // §22 §2 保存：IndexedDB から下書きを復元してから描く（無ければテンプレ）。復元後の「戻す」は空から
-if(PG.boot) PG.boot(); else PG.render();
+if(PG.boot) Promise.resolve(PG.boot()).then(()=>{ const n=PG.bootNotice&&PG.bootNotice(); if(n&&window.pgToast) window.pgToast(n,false,{stay:true}); }); else PG.render();   // PC-1 描けなかった下書きを退けたら、消えない知らせで言う
 

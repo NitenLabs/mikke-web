@@ -27,7 +27,7 @@ function linkLabel(lk) {
     case "map": return "地図で見る";
     case "order": return "注文する";
     case "page": { const p = PAGES.find((x) => x.id === lk.page); return p ? p.label : "ページ"; }
-    case "anchor": return "このページの『" + friendlySec(lk.sec) + "』";
+    case "anchor": return (state.secPageMap && lk.sec && !state.secPageMap[lk.sec]) ? "行き先のセクションがありません（消した『" + friendlySec(lk.sec) + "』）" : "このページの『" + friendlySec(lk.sec) + "』";   // PC-25 消したセクションを指すリンクはそう言う
     case "url": return (lk.href || "").replace(/^https?:\/\//i, "");
     case "mailto": return lk.addr || "";
   }

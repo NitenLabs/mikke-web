@@ -31,14 +31,18 @@ function paste() {
   const base = cb.parts[0];
   const cutAt = cb.cutAt; cb.cutAt = null;
   if (cutAt && cutAt.page === state.page && cutAt.device === state.device && !state.selectedSection && a3_pasteBack(cb)) return;
-  const targetSec = state.selectedSection || secOf(base.id);
+  // PC-1・PC-21 貼る先は今のページの、文字・写真を足せるセクション（特集・品）だけ。お品書き・アクセスの帯や本体・ヘッダー・フッターを選んでいたら貼らずに知らせる。
+  // 何も選んでいなければコピー元のセクション、それが今のページに無ければ今のページの最初の特集・品（PowerPoint は今のスライドに貼る）
+  const pick = a3_pasteTarget(state.selectedSection, secOf(base.id));
+  if (!pick.sec) { a3_toast(pick.msg); return; }
+  const targetSec = pick.sec;
   const moveToOtherSec = targetSec !== secOf(base.id);
   const newIds = [];
   for (let i = 0; i < cb.parts.length; i++) {
     const p = cb.parts[i]; const id = (p.kind === "photo" ? "addp_" : "add_") + (++state.addSeq);
     let anchor, gap, x;
     if (moveToOtherSec) {                             // 別セクション：そのセクションの中身の一番下（間隔16）
-      const g = geometry(); let bottomId = HG[targetSec], by = g[HG[targetSec]] ? g[HG[targetSec]].y + g[HG[targetSec]].h : 0;
+      const g = geometry(); const hg0 = provAnchorOf(targetSec); let bottomId = hg0, by = g[hg0] ? g[hg0].y + g[hg0].h : 0;   // PC-1 見出しの組は複製・足したセクションでは sec*__F_hg（HG は特集・品だけ）
       for (const [eid, e] of Object.entries(g)) { if (secOf(eid) !== targetSec || !isDraggable(canonId(eid)) || REPEAT.test(eid)) continue; if (e.y + e.h > by) { by = e.y + e.h; bottomId = eid; } }
       anchor = bottomId; gap = 16; x = g[bottomId] ? g[bottomId].x : (state.device === "pc" ? 56 : 20);
     } else if (i === 0) {                             // コピー元のすぐ下（間隔16）、左端そろえ
@@ -56,6 +60,22 @@ function paste() {
   selectMany(newIds);
   a3_revealPart(newIds[0]);                             // F16 別のセクションに貼ったら、貼ったものが見える所までスクロール
 }
+// PC-1・PC-21 貼る先のセクションを決める。{sec} か、貼れないときは {sec:null, msg}
+const a3_canHoldParts = (inst) => !!inst && (inst.type === "feature" || inst.type === "items");
+function a3_pasteTarget(selSec, srcSec) {
+  const R = reduce(activeOps()); const here = (R.secMap[state.page] || []);
+  const instOf = (id) => here.find((s) => s.id === id);
+  if (selSec) {
+    const inst = instOf(selSec);
+    if (a3_canHoldParts(inst)) return { sec: selSec };
+    return { sec: null, msg: "「" + (secLabelText(inst || { id: selSec, type: (R.allSecs.find((s) => s.id === selSec) || {}).type }).replace(/（.*$/, "")) + "」には貼り付けられません。文字・写真を貼れるのは TOP の特集・品のセクションです" };
+  }
+  if (a3_canHoldParts(instOf(srcSec))) return { sec: srcSec };
+  const first = here.find(a3_canHoldParts);
+  if (first) return { sec: first.id };
+  return { sec: null, msg: pageLabelOf(state.page) + "のページには貼り付けられません。文字・写真を貼れるのは TOP の特集・品のセクションです" };
+}
+const a3_toast = (msg) => { if (typeof pgToast === "function") pgToast(msg, false); };
 // F16 部品が画面（上の並びの下〜窓の下）に半分も見えていなければ、真ん中あたりまでスクロールする
 function a3_revealPart(id) {
   const n = id && elNode(id); if (!n || typeof window === "undefined") return; const r = n.getBoundingClientRect(); if (!r.height) return;

@@ -43,22 +43,25 @@ const M3_CSS=`
 function m3EnsureCss(){ if(document.getElementById("m3Css")) return; const st=document.createElement("style"); st.id="m3Css"; st.textContent=M3_CSS; document.head.appendChild(st); }
 
 // ---- ぶつかったとき（409）：「ほかの変更を読み込む」か「自分の直しで上書きする」 ----
+// SP-3 保存先が LocalStore（別のタブが先に保存した）でも同じ箱を出す（言葉だけ「ほかのタブ」に）
 function m3OpenConflictBox(){
-  if(!_m3On||!PG.saveState().conflict) return;
+  if(!PG.saveState().conflict) return;
+  const where=_m3On?"端末":"タブ";
   m3EnsureCss();
   let box=document.getElementById("m3Conflict");
   if(!box){
     box=document.createElement("div"); box.id="m3Conflict"; box.setAttribute("role","dialog"); box.setAttribute("aria-modal","true"); box.setAttribute("aria-labelledby","m3ConflictTitle");
-    box.innerHTML='<div class="m3c-card"><h2 id="m3ConflictTitle">ほかの端末で変更されました</h2>'
-      +'<p>このお店のサイトが、ほかの端末（スマホや別のパソコン、制作側の人など）で先に直されて保存されました。どちらを残すか選んでください。選ばなかった方も、履歴の「戻す前の下書き」に残るので、あとから戻せます。</p>'
-      +'<button type="button" data-m3-conflict-theirs>ほかの変更を読み込む（自分の直しは消える）<small>ほかの端末で直した今の内容にします</small></button>'
-      +'<button type="button" data-m3-conflict-mine>自分の直しで上書きする<small>この画面の内容で、ほかの端末の変更を置き換えます</small></button>'
+    box.innerHTML='<div class="m3c-card"><h2 id="m3ConflictTitle">ほかの'+where+'で変更されました</h2>'
+      +(_m3On?'<p>このお店のサイトが、ほかの端末（スマホや別のパソコン、制作側の人など）で先に直されて保存されました。どちらを残すか選んでください。選ばなかった方も、履歴の「戻す前の下書き」に残るので、あとから戻せます。</p>'
+        :'<p>このお店のサイトが、同じブラウザのほかのタブで先に直されて保存されました。このタブの直しはまだ保存していません。どちらを残すか選んでください。選ばなかった方も、履歴の「戻す前の下書き」に残るので、あとから戻せます。</p>')
+      +'<button type="button" data-m3-conflict-theirs>ほかの変更を読み込む'+(_m3On?'（自分の直しは消える）':'（このタブの直しは履歴へ）')+'<small>ほかの'+where+'で直した今の内容にします</small></button>'
+      +'<button type="button" data-m3-conflict-mine>自分の直しで上書きする<small>この画面の内容で、ほかの'+where+'の変更を置き換えます</small></button>'
       +'<div class="m3c-msg" data-m3-conflict-msg aria-live="polite"></div></div>';
     document.body.appendChild(box);
     const run=async(choice)=>{ const bs=box.querySelectorAll("button"); bs.forEach(b=>b.disabled=true); const msg=box.querySelector("[data-m3-conflict-msg]"); msg.textContent="";
       const r=await PG.m3.resolveConflict(choice);
       bs.forEach(b=>b.disabled=false);
-      if(r&&r.ok){ box.classList.remove("on"); window.pgToast(choice==="theirs"?"ほかの端末の変更を読み込みました（自分の直しは履歴の「戻す前の下書き」にあります）":"自分の直しで上書きしています（ほかの端末の変更は履歴の「戻す前の下書き」にあります）"); try{updateSaveUI();}catch(_){} }
+      if(r&&r.ok){ box.classList.remove("on"); window.pgToast(choice==="theirs"?"ほかの"+where+"の変更を読み込みました（自分の直しは履歴の「戻す前の下書き」にあります）":"自分の直しで上書きしています（ほかの"+where+"の変更は履歴の「戻す前の下書き」にあります）"); try{updateSaveUI();}catch(_){} }
       else msg.textContent=(r&&r.message)||"うまくいきませんでした。少し待ってからもう一度お試しください"; };
     box.querySelector("[data-m3-conflict-theirs]").onclick=()=>run("theirs");
     box.querySelector("[data-m3-conflict-mine]").onclick=()=>run("mine");
@@ -66,8 +69,8 @@ function m3OpenConflictBox(){
   box.querySelector("[data-m3-conflict-msg]").textContent="";
   box.classList.add("on");
 }
-if(_m3On){
-  // 保存でぶつかったら（store-save.js の 409）、知らせの代わりに選ぶ箱を出す
+{
+  // 保存でぶつかったら（store-save.js の 409・SP-3 別のタブの保存）、消える知らせの代わりに選ぶ箱を出す（選ぶまで残る）
   if(PG.setExternalConflictHandler) PG.setExternalConflictHandler(()=>{ try{updateSaveUI();}catch(_){} m3OpenConflictBox(); });
   // ぶつかったまま「公開」を押したときも箱を出す（公開は止まったまま）
   document.getElementById("tPublish").addEventListener("click",()=>{ if(PG.saveState().conflict) setTimeout(m3OpenConflictBox,0); });

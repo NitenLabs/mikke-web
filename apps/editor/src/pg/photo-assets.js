@@ -35,7 +35,7 @@ async function loadImageFile(file) {
     url = isPng && !needScale ? cv.toDataURL("image/png") : cv.toDataURL("image/jpeg", 0.85);
   }
   bmp.close && bmp.close();
-  const id = "img_" + (++assetSeq) + "_" + nw + "x" + nh;
+  let id; do { id = "img_" + (++assetSeq) + "_" + nw + "x" + nh; } while (ASSET[id]);   // SP-4 読み込み直した後も、保存してある写真と同じ ID にしない（連番は0から）
   ASSET[id] = url; ASSET_NAT[id] = { w: nw, h: nh };
   return { asset: id, w: nw, h: nh };
 }

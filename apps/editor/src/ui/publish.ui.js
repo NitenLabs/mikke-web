@@ -13,7 +13,7 @@ function afterPublish(){ updateSaveUI(); if(isPhone()) refreshPhoneUI(); }
 // §22 §4.1 公開を押したとき：PC/SP の確認（publishCheck）。何もなければすぐ公開しトースト、あれば確認の箱
 // J26 保存できていない（失敗中・別タブ衝突）ときは公開しない＝「公開しました」と言わず、知らせる
 function doPublishFlow(){ if(PG.state.editing) PG.commitEdit();   // J49 書き換え中なら先にふつうに終える（打った文字を公開に含める・捨てない）
-  const st=PG.saveState(); if(st.status==="error"||st.conflict){ PG.flushPendingSave&&PG.flushPendingSave(); window.pgToast(st.conflict?(saveStore.kind==="api"?"ほかの端末で変更されました。出てきた箱で、どちらの直しを使うか選んでから公開してください":"ほかのタブの変更が保存されています。読み込み直してから公開してください"):"保存できていないので公開できません。つながりを確かめてもう一度お試しください"); afterPublish(); return; }
+  const st=PG.saveState(); if(st.status==="error"||st.conflict){ PG.flushPendingSave&&PG.flushPendingSave(); window.pgToast(st.conflict?(saveStore.kind==="api"?"ほかの端末で変更されました。出てきた箱で、どちらの直しを使うか選んでから公開してください":"ほかのタブで変更されました。出てきた箱で、どちらの直しを使うか選んでから公開してください"):"保存できていないので公開できません。つながりを確かめてもう一度お試しください"); afterPublish(); return; }
   const items=PG.publishCheck(); if(!items.length){ m3RunPublish(); } else showPublishBox(items); }
 document.getElementById("tPublish").onclick=()=>{ if(document.getElementById("tPublish").disabled) return; doPublishFlow(); };
 // J25 別タブが先に保存したときの知らせ（保存の道からも storage イベントからも呼ばれる）
@@ -29,9 +29,9 @@ function seeItem(it){ closePublishBox(); if(it.page&&PG.setPage) PG.setPage(it.p
 function showPublishBox(items){ const box=document.getElementById("publishBox"); box.innerHTML="";
   const inner=document.createElement("div"); inner.className="pbox-inner";
   const title=document.createElement("div"); title.className="pbox-title"; title.setAttribute("data-pbox-title",String(items.length)); title.textContent="公開する前に、見てほしい所が "+items.length+" つあります"; inner.appendChild(title);
-  const KIND={overlap:"重なっている所",long:"長い文",emptyPhoto:"写真のない枠",system:"仕組みの重なり・はみ出し",shop:"お店の情報"};
+  const KIND={overlap:"重なっている所",long:"長い文",emptyPhoto:"写真のない枠",link:"行き先のないリンク",system:"仕組みの重なり・はみ出し",shop:"お店の情報"};
   const list=document.createElement("div"); list.className="pbox-list";
-  for(const kind of ["shop","overlap","long","emptyPhoto","system"]){ const grp=items.filter(i=>i.kind===kind); if(!grp.length) continue;
+  for(const kind of ["shop","overlap","long","emptyPhoto","link","system"]){ const grp=items.filter(i=>i.kind===kind); if(!grp.length) continue;
     const h=document.createElement("div"); h.className="pbox-kind"; h.textContent=KIND[kind]; list.appendChild(h);
     for(const it of grp){ const row=document.createElement("div"); row.className="pbox-row"; row.setAttribute("data-pbox-kind",kind); row.setAttribute("data-pbox-dev",it.device);
       const t=document.createElement("span"); t.className="pbox-rowtext"; t.textContent=it.text; row.appendChild(t);
