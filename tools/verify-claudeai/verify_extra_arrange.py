@@ -15,6 +15,18 @@ async def esc_if_editing(pg):
     # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
     if await pg.evaluate("!!(window.__playground.editingId&&window.__playground.editingId())"):
         await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+async def keep_off_edges(pg, y0, y1):
+    """P19 に合わせて手順を変えた（判定は同じ）：線 A2（P19）からは、ドラッグで窓の上下の端（上は道具の並びの下）から 28px に入ると自動でスクロールする。
+    つかむ点 y0 と離す点 y1 が両方とも端から 80px より内側に入るように、押す前にページをスクロールしておく（入りきらなければ何もしない）。
+    戻り値＝画面の上での y のずれ（つかむ点・離す点をこの分ずらして使う）"""
+    top, H = await pg.evaluate("[(()=>{const t=document.getElementById('toolbar');return t?Math.max(0,t.getBoundingClientRect().bottom):0})(), innerHeight]")
+    lo, hi = top + 80, H - 80
+    a, b = min(y0, y1), max(y0, y1)
+    if a >= lo and b <= hi: return 0
+    if b - a > hi - lo: return 0
+    want = (lo + hi) / 2 - (a + b) / 2
+    s0 = await pg.evaluate('scrollY'); await pg.evaluate(f'window.scrollBy(0,{-want})'); await pg.wait_for_timeout(120)
+    return -(await pg.evaluate('scrollY') - s0)
 R=[]
 def rec(k,ok,msg): R.append((k,ok,msg)); print(('OK ' if ok is True else ('NG ' if ok is False else '-- '))+k+' | '+msg, flush=True)
 async def main():
@@ -33,6 +45,7 @@ async def main():
         el=await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(100)
         r=await bb(pg,part); s=await scale(pg,part)
         x=r['x']+min(20,r['w']/2); y=r['y']+r['h']/2
+        y+=await keep_off_edges(pg,y,y+dy*s)   # P19
         if pre: await pg.mouse.click(x,y); await esc_if_editing(pg); await pg.wait_for_timeout(350)   # P2 に合わせて手順を変えた（判定は同じ）
         k=await nosnap_key(pg)   # P16 に合わせて手順を変えた（判定は同じ）
         if alt: await pg.keyboard.down(k)

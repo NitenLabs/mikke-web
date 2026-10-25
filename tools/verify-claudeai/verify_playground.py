@@ -172,6 +172,19 @@ async def caret_end(pg):
     await pg.evaluate("(()=>{const a=document.activeElement;if(!a||!a.isContentEditable)return;const r=document.createRange();r.selectNodeContents(a);r.collapse(false);const s=getSelection();s.removeAllRanges();s.addRange(r);document.dispatchEvent(new Event('selectionchange'))})()")
     await pg.wait_for_timeout(80)
 
+async def keep_off_edges(pg, y0, y1):
+    """P19 に合わせて手順を変えた（判定は同じ）：線 A2（P19）からは、ドラッグで窓の上下の端（上は道具の並びの下）から 28px に入ると自動でスクロールする。
+    つかむ点 y0 と離す点 y1 が両方とも端から 80px より内側に入るように、押す前にページをスクロールしておく（入りきらなければ何もしない）。
+    戻り値＝画面の上での y のずれ（つかむ点・離す点をこの分ずらして使う）"""
+    top, H = await pg.evaluate("[(()=>{const t=document.getElementById('toolbar');return t?Math.max(0,t.getBoundingClientRect().bottom):0})(), innerHeight]")
+    lo, hi = top + 80, H - 80
+    a, b = min(y0, y1), max(y0, y1)
+    if a >= lo and b <= hi: return 0
+    if b - a > hi - lo: return 0
+    want = (lo + hi) / 2 - (a + b) / 2
+    s0 = await pg.evaluate('scrollY'); await pg.evaluate(f'window.scrollBy(0,{-want})'); await pg.wait_for_timeout(120)
+    return -(await pg.evaluate('scrollY') - s0)
+
 async def drag(pg, part, dx, dy, grab_offset_y=None, pre_click=True):
     """本物のマウスで、部品を設計上の px で dx,dy 動かす（画面の縮小率を考えて換算）。
     grab_offset_y を渡すと、部品の上端からその px の所（負なら上端より上）をつかむ"""
@@ -182,6 +195,7 @@ async def drag(pg, part, dx, dy, grab_offset_y=None, pre_click=True):
     s = bb['width'] / G[part]['w']
     x = bb['x'] + min(20, bb['width'] / 2)
     y = bb['y'] + (bb['height'] / 2 if grab_offset_y is None else grab_offset_y * s)
+    y += await keep_off_edges(pg, y, y + dy * s)   # P19
     if pre_click:
         await click_sel(pg, x, y); await pg.wait_for_timeout(80)   # P2 に合わせて手順を変えた（判定は同じ）
     k = await nosnap_key(pg)   # P16 に合わせて手順を変えた（判定は同じ）
