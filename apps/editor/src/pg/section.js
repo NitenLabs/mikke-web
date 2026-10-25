@@ -18,7 +18,7 @@ function sectionDuplicate(id) {
   const content = clone(Rpc.secContent[id]);
   const remap = (k) => pfx + (srcPfx && k.startsWith(srcPfx) ? k.slice(srcPfx.length) : k);
   const osec = (k) => (/^F/.test(bareOf(k)) ? "feature" : "items");
-  const ownPart = (k) => !isAdded(k) && (srcPfx ? k.startsWith(srcPfx) : (!k.includes(SEP) && secOf(k) === id));
+  const ownPart = (k) => !isAdded(k) && (srcPfx ? k.startsWith(srcPfx) : (!k.includes(SEP) && homeSec(k) === id));   // J17 生まれたセクションで見る（よそから移ってきた部品は複製しない）
   const ownOrder = (k) => srcPfx ? k.startsWith(srcPfx) : (!k.includes(SEP) && osec(k) === id);
   // P29 足した部品も複製先に同じ所に出す：足した部品の新しい ID と、付いていく先（元のセクションの部品・足した部品）を複製先のものに付け替える
   const addMap = {}; for (const a of Rpc.adds) if (a.section === id) addMap[a.id] = (a.kind === "photo" ? "addp_" : "add_") + (++state.addSeq);
@@ -42,7 +42,7 @@ function sectionDuplicate(id) {
   for (const k in Rpc.brightMap) { const nk = mapKey(k); if (nk) shared.bright[nk] = Rpc.brightMap[k]; }
   for (const cid of Rpc.clear) { const nk = mapKey(cid); if (nk) shared.clear.push(nk); }
   const added = Rpc.adds.filter((a) => a.section === id).map((a) => { const n = { ...clone(a), id: addMap[a.id], section: newId, anchor: mapAnchor(a.anchor) }; if (n.placed && n.placed.anchor) n.placed.anchor = mapAnchor(n.placed.anchor); return n; });
-  const removed = (Rpc.removedAll || []).filter((k) => ownPart(k)).map(remap);   // J46 消した部品は複製先にも「消した」で持ち越す（元に戻らない）
+  const removed = [...(Rpc.removedAll || []).filter((k) => ownPart(k)), ...(Rpc.carriedIds || []).filter((k) => !isAdded(k) && homeSec(k) === id)].map(remap);   // J17 よそへ移した部品も、複製先では出さない（今の見た目のとおり）   // J46 消した部品は複製先にも「消した」で持ち越す（元に戻らない）
   commit({ t: "secDup", srcId: id, afterId: id, newId, type, content, edits: { pc: perDev(Rpc), sp: perDev(Rsp), ...shared }, added, removed, page: pg });
 }
 // §2 入口の補助（操作ボタンの出し分け）：上下の端・唯一のセクションか

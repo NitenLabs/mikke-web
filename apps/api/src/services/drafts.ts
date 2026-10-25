@@ -44,6 +44,14 @@ export function validateDraft(kind: DraftKind, shopId: string, data: unknown): v
   if (!isPlainObject(d)) throw bad("invalid_draft", "draft（DATA_SPEC 4.9 の下書き）がありません");
   if (!isPlainObject(d.template) || typeof d.template.name !== "string") throw bad("invalid_draft", "draft.template.name がありません");
   if (!Object.hasOwn(d, "sections") || (typeof d.sections !== "object" || d.sections === null)) throw bad("invalid_draft", "draft.sections がありません");
+  // J17（DATA_SPEC 4.9.3）別のセクションへ移した部品：部品 ID → {section, anchor?}
+  if (Object.hasOwn(d, "relocated")) {
+    if (!isPlainObject(d.relocated)) throw bad("invalid_draft", "draft.relocated は JSON の入れ物にしてください");
+    for (const [id, v] of Object.entries(d.relocated)) {
+      if (!isPlainObject(v) || typeof v.section !== "string" || !v.section) throw bad("invalid_draft", `draft.relocated.${id} に section がありません`);
+      if (Object.hasOwn(v, "anchor") && typeof v.anchor !== "string") throw bad("invalid_draft", `draft.relocated.${id}.anchor は文字にしてください`);
+    }
+  }
   if (Object.hasOwn(data, "theme") && !isPlainObject(data.theme)) throw bad("invalid_draft", "theme は JSON の入れ物にしてください");
 }
 

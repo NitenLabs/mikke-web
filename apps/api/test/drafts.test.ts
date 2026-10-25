@@ -33,6 +33,16 @@ describe("B3 下書きはサーバーに保存され、別の端末でも同じ"
     expect((await getDraft(owner.cookie, shop.id, "site")).version).toBe(1);
   });
 
+  it("J17 別のセクションへ移した部品（relocated）を持つ下書きは、そのまま保存して開ける。形がおかしければ 400", async () => {
+    const { owner, shop } = await world();
+    const data = siteData({ relocated: { F_b1: { section: "items", anchor: "I_hg" } }, adjust: { pc: { F_b1: { place: { after: "I_hg", gap: 48, x: 779 } } } } });
+    expect((await putDraft(owner.cookie, shop.id, "site", 1, data)).status).toBe(200);
+    expect((await getDraft(owner.cookie, shop.id, "site")).data).toEqual(data);
+    for (const rl of [[], { F_b1: "items" }, { F_b1: {} }, { F_b1: { section: "items", anchor: 3 } }])
+      expect((await putDraft(owner.cookie, shop.id, "site", 2, siteData({ relocated: rl }))).status).toBe(400);
+    expect((await getDraft(owner.cookie, shop.id, "site")).version).toBe(2);
+  });
+
   it("B3-4 大きすぎる下書きは 413", async () => {
     const { owner, shop } = await world();
     const big = siteData({ content: { x: "あ".repeat(800_000) } }); // UTF-8 で 2.4MB

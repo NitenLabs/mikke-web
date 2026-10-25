@@ -15,7 +15,7 @@ export const C3 = {
   collectTextBoxes: C.collectTextBoxes, buildFeature: C.buildFeature, buildItems: C.buildItems, buildHeader: C.buildHeader, buildFooter: C.buildFooter,
   buildMenu: C.buildMenu, buildContact: C.buildContact, buildMenuHdr: C.buildMenuHdr, buildContactHdr: C.buildContactHdr, reanchor: C.reanchor,
   placeAnchored: C.placeAnchored, classifyDrop: C.classifyDrop, reorderWithin: C.reorderWithin, sectionMinHeight: C.sectionMinHeight,
-  friendly: C.friendly, FRIENDLY: C.FRIENDLY, CLUSTER: C.CLUSTER, REPEAT_GROUP: C.REPEAT_GROUP,
+  friendly: C.friendly, FRIENDLY: C.FRIENDLY, CLUSTER: C.CLUSTER, REPEAT_GROUP: C.REPEAT_GROUP, floatDefaults: C.floatDefaults,
 };
 // ① お店の情報から品の並び・表・お品書きを作る（pg/catalog-derive.js が CATALOG として使う）
 export * as CATALOG from "../../../../packages/core/catalog.js";

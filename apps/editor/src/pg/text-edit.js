@@ -3,7 +3,7 @@
 // ---- その場書き換え ----
 function rawText(id, R) {
   R = R || reduce(activeOps());
-  const c = R.secContent[secOf(id)]; const b = bareOf(id);
+  const c = R.secContent[homeSec(id)]; const b = bareOf(id);   // J17 中身は生まれたセクションの content
   if (c) {
     const mB = { F_h0: [0, "heading"], F_b0: [0, "body"], F_h1: [1, "heading"], F_b1: [1, "body"] };
     if (mB[b] && c.blocks) return c.blocks[mB[b][0]][mB[b][1]];

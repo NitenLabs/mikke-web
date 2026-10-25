@@ -16,6 +16,8 @@ function placeAbsolute(R) {
     const ancOf = (k) => (k && !flow[k] && !isAdded(k) && flow[sec + SEP + k]) ? sec + SEP + k : k;
     for (const [id, ov] of Object.entries(R.m2)) if (secOf(id) === sec) { const an = ancOf(ov.anchor); overrides[id] = an === ov.anchor ? ov : { ...ov, anchor: an }; }
     for (const a of R.added) if (a.section === sec) { const an = ancOf(a.anchor); overrides[a.id] = { anchor: an, gapY: a.gap, x: a.x === "@left" ? (flow[an]?.x ?? 0) : a.x }; }
+    const floats = [...R.added, ...(R.carried || [])].filter((a) => a.section === sec);   // J17 移ってきた部品も足した部品と同じ（付いていく先・自動の位置・押し下げ）
+    for (const a of (R.carried || [])) if (a.section === sec) { const an = ancOf(a.anchor); overrides[a.id] = { anchor: an, gapY: a.gap, x: a.x === "@left" ? (flow[an]?.x ?? 0) : a.x }; }
     const placed = M.placeAnchored(flow, overrides);
     const bottoms = {};
     for (const [id, pos] of Object.entries(placed)) {
@@ -27,8 +29,8 @@ function placeAbsolute(R) {
     }
     // §2.4（X13）自動の位置に入れた足した部品は、その下で左右が重なる流れの部品を「足した部品の高さ＋16」だけ押し下げる（記録しない）
     const pushMap = {};
-    for (const a of R.added) {
-      if (a.section !== sec || !a.isAuto) continue;
+    for (const a of floats) {
+      if (!a.isAuto) continue;
       const ap = placed[a.id]; if (!ap) continue;
       const aH = (bottoms[a.id] != null ? bottoms[a.id] - ap.top : 0); if (aH <= 0) continue;
       const aLeft = ap.left, aRight = ap.left + (a.w || 0);
@@ -44,6 +46,7 @@ function placeAbsolute(R) {
       }
     }
     for (const [fid, dy] of Object.entries(pushMap)) {
+      const gp = groupOf(fid); if (gp && pushMap[gp]) continue;   // J17 品の並び・表ごと押し下げたら、中の1件は重ねて押さない（前は2倍下がり、下のボタンに重なることがあった）
       const el = s.querySelector('[data-el="' + fid + '"]'); if (!el) continue;
       el.style.transform = (el.style.transform ? el.style.transform + " " : "") + "translateY(" + dy + "px)";
       el.classList.add("autopush");

@@ -14,7 +14,7 @@ function foldToDraft(baseOverride, opsOverride) {
   const content = {};
   const ensureObj = (id) => { if (!content[id] || Array.isArray(content[id]) || typeof content[id] !== "object") content[id] = {}; return content[id]; };
   // §24b/c 部品 ID を指す所は、複製・足したセクションでは全部の ID（sec*__…）で書く（4.9.3 の ID の決まり）。@印・足した部品はそのまま。
-  const pfxRef = (ref, secId) => (!ref || !secId || secId === "feature" || secId === "items" || ref[0] === "@" || isAdded(ref) || ref.indexOf(SEP) >= 0) ? ref : (secId + SEP + ref);
+  const pfxRef = (ref, secId) => (!ref || !secId || secId === "feature" || secId === "items" || ref[0] === "@" || isAdded(ref) || ref.indexOf(SEP) >= 0 || (R.relocated && R.relocated[ref])) ? ref : (secId + SEP + ref);   // J17 よそから移ってきた部品はその ID のまま
   const putText = (pid, cur, tmpl) => { if (R.runsMap[pid] && runStyledRuns(R.runsMap[pid])) content[pid] = clone(R.runsMap[pid]); else if (cur != null && cur !== tmpl) content[pid] = cur; };
   // 1. テンプレの初めの中身と比べて、違う文字・写真だけ content[] に（特集はブロック、品は甘味処の見出し・時間）
   for (const inst of R.allSecs) {   // 試験台28：全ページ＋ヘッダー・フッターの文字の差分を拾う（今のページだけでない）
@@ -45,6 +45,14 @@ function foldToDraft(baseOverride, opsOverride) {
       });
     }
   }
+  // J17 別のセクションへ移した部品の生まれたセクションを消していたら、その部品の文字・写真は上で拾えない＝ここで拾う
+  { const secIds = new Set(R.allSecs.map((s) => s.id));
+    for (const id in (R.relocated || {})) { const h = homeSec(id); if (secIds.has(h)) continue; const slice = R.secContent[h]; if (!slice) continue;
+      const tmpl = templateSectionContent(/^F_/.test(bareOf(id)) ? "feature" : "items"); const full0 = (h === "feature" || h === "items") ? full[h] : tmpl; const b = bareOf(id); let m;
+      if ((m = b.match(/^F_([hbp])(\d)$/)) && slice.blocks && slice.blocks[+m[2]]) { const bl = slice.blocks[+m[2]], tb = full0.blocks && full0.blocks[+m[2]];
+        if (m[1] === "p") { const curA = bl.photo ? bl.photo.asset : undefined, tA = tb && tb.photo ? tb.photo.asset : undefined; if (curA && curA !== tA) ensureObj(id).asset = curA; }
+        else putText(id, m[1] === "h" ? bl.heading : bl.body, tb ? (m[1] === "h" ? tb.heading : tb.body) : undefined); }
+      else if (b === "I_kanmi") putText(id, slice.kanmiLabel, full0.kanmiLabel); else if (b === "I_time") putText(id, slice.kanmiTime, full0.kanmiTime); } }
   // 2. 足した部品の文字・写真（4.9.3「焼き込んだ文字・写真は content[id]」）
   for (const a of R.adds) {
     if (a.kind === "photo") { const asset = R.replaceMap[a.id] != null ? R.replaceMap[a.id] : a.asset; if (asset) ensureObj(a.id).asset = asset; }
@@ -93,6 +101,8 @@ function foldToDraft(baseOverride, opsOverride) {
   if (Object.keys(content).length) draft.content = content;
   if (added.length) draft.added = added;
   if (R.removedAll.length) draft.removed = clone(R.removedAll);
+  // J17（4.9.3）別のセクションへ移したテンプレの部品：部品 ID → {section, anchor}（端末共通。消した部品は書かない）
+  { const rl = {}; for (const id in (R.relocated || {})) if (!R.removedAll.includes(id)) rl[id] = { section: R.relocated[id].section, anchor: pfxRef(R.relocated[id].anchor, R.relocated[id].section) }; if (Object.keys(rl).length) draft.relocated = rl; }
   if (Object.keys(R.textStyles).length) draft.textStyle = clone(R.textStyles);
   const apc = mkAdjust(R, "pc"), asp = mkAdjust(Rsp, "sp"), adj = {};
   if (Object.keys(apc).length) adj.pc = apc; if (Object.keys(asp).length) adj.sp = asp;

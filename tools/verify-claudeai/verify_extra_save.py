@@ -537,6 +537,77 @@ async def main():
         d = await draft_obj(pg); w2 = 'I_kanmi' in (d.get('textStyle') or {}); r1 = await rt_ok(pg)
         rec('S28 甘味処の見た目を元に戻す', w1 == 700 and not w2 and r1, f"太字後 weight={w1}・戻した後 textStyle に I_kanmi={w2}（無いのが正）")
 
+        # ---------- S29〜S31：J17 別のセクションへ移す（DECISIONS #17・#18。2026-10-25 線 J17 で足した） ----------
+        async def vbx(pg, part): return await ev(pg, f"(()=>{{const e=document.querySelector('[data-el=\"{part}\"]');if(!e)return null;const r=e.getBoundingClientRect();return {{x:r.x,y:r.y,w:r.width,h:r.height}}}})()")
+        async def host_of(pg, part): return await ev(pg, f"(()=>{{const e=document.querySelector('[data-el=\"{part}\"]');const w=e&&e.closest('.sec-wrap');return w?w.getAttribute('data-sec'):null}})()")
+        async def sech(pg, s): return await ev(pg, f"document.querySelector('.sec-wrap[data-sec={s}]').getBoundingClientRect().height")
+        async def mouse_drag(pg, a, t):
+            await pg.mouse.move(*a); await pg.mouse.down()
+            for k in range(1, 21): await pg.mouse.move(a[0] + (t[0] - a[0]) * k / 20, a[1] + (t[1] - a[1]) * k / 20); await pg.wait_for_timeout(20)
+            await pg.mouse.up(); await pg.wait_for_timeout(600)
+        async def pick(pg, part, dx=60, dy=12):
+            r = await vbx(pg, part); await pg.mouse.click(r['x'] + dx, r['y'] + dy); await pg.wait_for_timeout(350); await esc_if_editing(pg)
+            return await vbx(pg, part)
+        # S29 特集2の本文（F_b1）を太字・赤の一部にしてから、品の見出しの下へドラッグ → 品へ移る（同じ ID・中身・見た目）。戻す1回・やり直し1回・開き直し・スマホ・プレビュー・公開
+        pg = await fresh()
+        await apply(pg, [{'t': 'edit', 'id': 'F_b1', 'runs': [{'text': '移す本文の'}, {'text': '赤い所', 'color': '#c00000', 'bold': True}]}, {'t': 'tstyle', 'keys': ['F_b1'], 'device': 'pc', 'italic': True}])
+        await ev(pg, "scrollTo(0,900)"); await pg.wait_for_timeout(300)
+        await pick(pg, 'F_b1'); await ev(pg, "scrollTo(0,900)"); await pg.wait_for_timeout(300)
+        r = await vbx(pg, 'F_b1'); hi = await vbx(pg, 'I_hg')
+        f0 = await sech(pg, 'feature'); sy0 = await ev(pg, 'scrollY'); n0 = len(await ev(pg, f"{P}.ops()"))
+        await mouse_drag(pg, (r['x'] + 60, r['y'] + 12), (r['x'] + 60, hi['y'] + hi['h'] + 60))
+        sec1 = await ev(pg, f"{P}.secOf('F_b1')"); h1 = await host_of(pg, 'F_b1'); f1 = await sech(pg, 'feature'); sy1 = await ev(pg, 'scrollY')
+        e1 = await vbx(pg, 'F_b1'); hi1 = await vbx(pg, 'I_hg'); txt1 = await ev(pg, "document.querySelector('[data-el=F_b1]').innerText")
+        it1 = await ev(pg, "getComputedStyle(document.querySelector('[data-el=F_b1]')).fontStyle"); red1 = await ev(pg, "!!document.querySelector('[data-el=F_b1] [style*=\"color\"]')")
+        nops = len(await ev(pg, f"{P}.ops()")) - n0
+        d = await draft_obj(pg); rl = (d.get('relocated') or {}).get('F_b1')
+        moved = sec1 == 'items' and h1 == 'items' and f1 <= f0 + 1 and abs(sy1 - sy0) <= 1 and e1 and hi1 and e1['y'] > hi1['y'] + hi1['h'] and txt1 == '移す本文の赤い所' and it1 == 'italic' and red1 and nops == 1 and rl and rl.get('section') == 'items'
+        await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(400)
+        u_sec = await ev(pg, f"{P}.secOf('F_b1')"); u_h = await host_of(pg, 'F_b1'); u_f = await sech(pg, 'feature')
+        await pg.keyboard.press(f'{MOD}+Shift+z'); await pg.wait_for_timeout(400)
+        r_sec = await ev(pg, f"{P}.secOf('F_b1')"); r_h = await host_of(pg, 'F_b1')
+        undo_ok = u_sec == 'feature' and u_h == 'feature' and abs(u_f - f0) <= 1 and r_sec == 'items' and r_h == 'items'
+        await pg.wait_for_timeout(1200); gpc = (await ev(pg, f"{P}.geometry()")).get('F_b1')
+        await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(1500)
+        o_sec = await ev(pg, f"{P}.secOf('F_b1')"); o_h = await host_of(pg, 'F_b1'); gpc2 = (await ev(pg, f"{P}.geometry()")).get('F_b1')
+        o_txt = await ev(pg, "document.querySelector('[data-el=F_b1]').innerText"); r1 = await rt_ok(pg)
+        reopen_ok = o_sec == 'items' and o_h == 'items' and gpc and gpc2 and abs(gpc['y'] - gpc2['y']) <= 0.5 and abs(gpc['x'] - gpc2['x']) <= 0.5 and o_txt == '移す本文の赤い所' and r1
+        await ev(pg, f"{P}.setDevice('sp')"); await pg.wait_for_timeout(400)
+        gs = await ev(pg, f"{P}.geometry()"); s_h = await host_of(pg, 'F_b1'); ws = await ev(pg, f"{P}.warnings()")
+        sp_ok = s_h == 'items' and gs.get('F_b1') and gs.get('I_hg') and abs(gs['F_b1']['y'] - (gs['I_hg']['y'] + gs['I_hg']['h'] + 16)) <= 1 and not ws.get('overlaps')
+        await ev(pg, f"{P}.setDevice('pc')"); await ev(pg, "PG.enterPreview()"); await pg.wait_for_timeout(400)
+        p_h = await host_of(pg, 'F_b1'); await ev(pg, "PG.exitPreview()"); await pg.wait_for_timeout(300)
+        pub = await ev(pg, f"(async()=>{{const b=await {P}.buildPublishBundle();const h=b.pages['/'];const d=new DOMParser().parseFromString(typeof h==='string'?h:JSON.stringify(h),'text/html');return [...d.querySelectorAll('[data-el=F_b1]')].map(e=>(e.closest('[id^=mk-]')||{{}}).id)}})()")
+        pub_ok = p_h == 'items' and sorted(pub) == ['mk-pc-items', 'mk-sp-items']
+        rec('S29 J17 特集の本文を品のセクションへ移す', bool(moved and undo_ok and reopen_ok and sp_ok and pub_ok),
+            f"所属 {sec1}（描いた所 {h1}） 特集の高さ {f0:.0f}→{f1:.0f} scrollY {sy0}→{sy1} 記録 {nops} 件 relocated={rl} 文字={txt1!r} 斜体={it1} 赤={red1} ／ 戻す {u_sec}/{u_h} 高さ {u_f:.0f} やり直し {r_sec}/{r_h} ／ 開き直し {o_sec}/{o_h} 位置 {gpc and (round(gpc['x']),round(gpc['y']))}→{gpc2 and (round(gpc2['x']),round(gpc2['y']))} roundTrip={'ok' if r1 else 'NG'} ／ スマホ {s_h} {gs.get('F_b1') and round(gs['F_b1']['y'])}（見出しの下 {gs.get('I_hg') and round(gs['I_hg']['y']+gs['I_hg']['h']+16)}） 重なり={ws.get('overlaps')} ／ プレビュー {p_h} 公開 {pub}")
+        # S30 足した文字（品のセクション）を特集の本文の下へドラッグ → 特集へ移る。開き直しても特集
+        pg = await fresh()
+        await ev(pg, f"{P}.addTextAtPoint('items', 700, 400)"); await pg.wait_for_timeout(300); await pg.keyboard.type('足した文'); await pg.mouse.click(5, 600); await pg.wait_for_timeout(400)
+        nid = [o['id'] for o in await ev(pg, f"{P}.ops()") if o.get('t') == 'add'][-1]
+        await ev(pg, "window.scrollTo(0, document.querySelector('.sec-wrap[data-sec=items]').getBoundingClientRect().top+scrollY-500)"); await pg.wait_for_timeout(300)
+        r = await pick(pg, nid, 20, 8); fb = await vbx(pg, 'F_b1'); i0 = await sech(pg, 'items')
+        await mouse_drag(pg, (r['x'] + 20, r['y'] + 8), (r['x'] + 20, fb['y'] + fb['h'] + 40))
+        a_sec = await ev(pg, f"{P}.secOf('{nid}')"); a_h = await host_of(pg, nid); a_t = await ev(pg, f"document.querySelector('[data-el={nid}]').innerText")
+        await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(400); au = await host_of(pg, nid)
+        await pg.keyboard.press(f'{MOD}+Shift+z'); await pg.wait_for_timeout(1400)
+        await pg.reload(); await pg.wait_for_function(P); await pg.wait_for_timeout(1500)
+        a_o = await host_of(pg, nid); r1 = await rt_ok(pg)
+        rec('S30 J17 足した文字を特集のセクションへ移す', a_sec == 'feature' and a_h == 'feature' and a_t == '足した文' and au == 'items' and a_o == 'feature' and r1,
+            f"{nid} 所属 {a_sec}（描いた所 {a_h}） 文字={a_t!r} 戻す→{au} 開き直し→{a_o} roundTrip={'ok' if r1 else 'NG'}")
+        # S31 移せない部品（特集の見出しの組 F_hg）を品のセクションの上で離す → 移らない・特集が伸びない・画面が動かない。
+        #     ドラッグの途中で画面を動かすと離す点がずれるので、両方が窓に入る高い窓（2400）で動かす
+        pg = await fresh(h=2400)
+        await ev(pg, "scrollTo(0,0)"); await pg.wait_for_timeout(200)
+        r = await vbx(pg, 'F_hg'); await pg.mouse.click(r['x'] + r['w'] / 2, r['y'] + r['h'] / 2); await pg.wait_for_timeout(350); await esc_if_editing(pg)
+        f0 = await sech(pg, 'feature'); i0 = await sech(pg, 'items')
+        r = await vbx(pg, 'F_hg'); hi = await vbx(pg, 'I_hg'); a = (r['x'] + r['w'] / 2, r['y'] + r['h'] / 2)
+        sy0 = await ev(pg, 'scrollY')
+        await mouse_drag(pg, a, (a[0], hi['y'] + hi['h'] + 60))
+        h_sec = await ev(pg, f"{P}.secOf('F_hg')"); f1 = await sech(pg, 'feature'); i1 = await sech(pg, 'items'); sy1 = await ev(pg, 'scrollY')
+        rec('S31 J17 移せない部品は移さず、元のセクションも伸びない', h_sec == 'feature' and await host_of(pg, 'F_hg') == 'feature' and f1 <= f0 + 5 and abs(i1 - i0) <= 1 and abs(sy1 - sy0) <= 1,
+            f"F_hg 所属 {h_sec} 特集の高さ {f0:.0f}→{f1:.0f}（伸びないこと） 品の高さ {i0:.0f}→{i1:.0f} scrollY {sy0}→{sy1} 記録 {json.dumps(await ev(pg, f'{P}.ops()'), ensure_ascii=False)[:160]}")
+
         await br.close()
         npass = sum(1 for _, o, _ in R if o is True); nng = sum(1 for _, o, _ in R if o is False)
         print(f"\n合計 {npass} / {npass + nng}（-- は値のみ={sum(1 for _,o,_ in R if o is None)}）", flush=True)

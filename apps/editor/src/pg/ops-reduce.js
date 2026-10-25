@@ -3,7 +3,7 @@
 // ---- content への文字の反映（パーツの属するインスタンスの content へ振り分ける）----
 // secContent[インスタンスID] は、feature なら {label,blocks,...}、items なら {label,cards,table,...} の「スライス」。
 function routeSetContent(secContent, id, text) {
-  const c = secContent[secOf(id)]; if (!c) return false; const b = bareOf(id);
+  const c = secContent[homeSec(id)]; if (!c) return false; const b = bareOf(id);   // J17 中身は生まれたセクションの content にある（別のセクションへ移しても）
   const mB = { F_h0: [0, "heading"], F_b0: [0, "body"], F_h1: [1, "heading"], F_b1: [1, "body"] };
   if (mB[b] && c.blocks) { c.blocks[mB[b][0]][mB[b][1]] = text; return true; }
   let m;
@@ -29,7 +29,7 @@ function routeSetContent(secContent, id, text) {
   return false;
 }
 function routeReplaceAsset(secContent, pid, asset) {
-  const c = secContent[secOf(pid)]; if (!c) return; const b = bareOf(pid); let m;
+  const c = secContent[homeSec(pid)]; if (!c) return; const b = bareOf(pid); let m;
   if ((m = b.match(/^F_p(\d)$/)) && c.blocks) { if (c.blocks[+m[1]]) c.blocks[+m[1]].photo.asset = asset; }
   else if ((m = b.match(/^card_photo_(.+)$/)) && c.cards) { const card = c.cards.find((x) => x.id === m[1]); if (card) card.photo.asset = asset; }
 }
@@ -59,7 +59,7 @@ function seedFromBase(b, device, full) {
     secContent: {}, editMap: {}, replaceMap: {}, adds: [], removed: new Set(),
     m1: {}, m2: {}, order: {}, zmap: {}, sizes: {}, colsMap: {}, swapMap: {}, viewAll: {},
     brightMap: {}, textStyles: {}, runsMap: {}, linkMap: {}, clearL: [], placedFollow: {}, placedCleared: new Set(),
-    baseSource: {},
+    baseSource: {}, relocated: {},
   };
   // 1. secContent＝全セクション（ヘッダー・フッター＋全ページ）のテンプレの初めの中身に、_pg.rows を差し込む。
   // feature/items は、セクションから消されていても必ず持つ（reduce/描画が content.feature/items を前提にするため）。
@@ -72,18 +72,22 @@ function seedFromBase(b, device, full) {
     S.secContent[inst.id] = sc;
   }
   if (!b) return S;
+  // J17 別のセクションへ移した部品（4.9.3 relocated）。生まれたセクションを消していても中身を戻せるよう、入れ物を用意する
+  for (const id in (b.relocated || {})) { const r = b.relocated[id]; if (!r || !r.section) continue; S.relocated[id] = { section: r.section, anchor: r.anchor ? ((b.relocated[r.anchor] || isAdded(r.anchor)) ? r.anchor : bareOf(r.anchor)) : "@section" };
+    const h = homeSec(id); if (!S.secContent[h]) S.secContent[h] = templateSectionContent(/^F_/.test(bareOf(id)) ? "feature" : "items"); }
   // 2. 足した部品＝added[]＋adjust から内部の adds エントリに戻す（§2.1：下書きの全部の ID → 内部の素の ID に戻す。section は anchor から求める）
   const addedById = {}; for (const a of (b.added || [])) addedById[a.id] = a;
-  const secOfRef = (ref) => { const t = instTag(ref); if (t) return t; if (isAdded(ref)) { const aa = addedById[ref]; return aa ? (aa.section || secOfRef(aa.anchor)) : "items"; } return (ref && ref.startsWith("F_")) ? "feature" : "items"; };
+  const seedRef = (ref) => (ref && b.relocated && b.relocated[ref]) ? ref : bareOf(ref);   // J17 よそから移ってきた部品を指す所は、その ID のまま（素の ID に戻すと移った先の部品と取り違える）
+  const secOfRef = (ref) => { if (ref && b.relocated && b.relocated[ref] && b.relocated[ref].section) return b.relocated[ref].section; const t = instTag(ref); if (t) return t; if (isAdded(ref)) { const aa = addedById[ref]; return aa ? (aa.section || secOfRef(aa.anchor)) : "items"; } return (ref && ref.startsWith("F_")) ? "feature" : "items"; };
   for (const a of (b.added || [])) {
     const placedOn = a.placedOn || "pc", other = placedOn === "pc" ? "sp" : "pc", sz = a.size || {};
-    const section = a.section || secOfRef(a.anchor), anchorBare = bareOf(a.anchor);
+    const section = a.section || secOfRef(a.anchor), anchorBare = seedRef(a.anchor);
     const e = { id: a.id, kind: a.kind, section, anchor: anchorBare, from: a.from,
       styleName: a.style || (a.kind === "photo" ? undefined : "featBody"), placedDevice: placedOn,
       w: sz[placedOn] && sz[placedOn].w, h: sz[placedOn] && sz[placedOn].h, wOther: sz[other] && sz[other].w, hOther: sz[other] && sz[other].h,
       gap: 16, gapOther: 16, x: "@left" };
     const pl = b.adjust && b.adjust[placedOn] && b.adjust[placedOn][a.id] && b.adjust[placedOn][a.id].place;
-    if (pl) { const ab = bareOf(pl.after); e.placed = { device: placedOn, anchor: ab, gapY: pl.gap, x: pl.x }; S.placedFollow[a.id] = { anchor: ab, device: placedOn }; }   // 付いていく先は place.after から（§2.3・保存しない）
+    if (pl) { const ab = seedRef(pl.after); e.placed = { device: placedOn, anchor: ab, gapY: pl.gap, x: pl.x }; S.placedFollow[a.id] = { anchor: ab, device: placedOn }; }   // 付いていく先は place.after から（§2.3・保存しない）
     else { e.placed = { device: placedOn, anchor: anchorBare, gapY: 16, x: "@left" }; S.placedCleared.add(a.id); }   // §X36/§2.3 place が無い＝「元の位置に戻した（自動）」。placedCleared で自動の位置に（開き直しでも保つ）
     S.adds.push(e);
   }
@@ -110,7 +114,7 @@ function seedFromBase(b, device, full) {
       if (d === device) {
         if (e.order) S.order[key] = clone(e.order);
         if (e.move) S.m1[key] = clone(e.move);
-        if (e.place) S.m2[key] = { anchor: bareOf(e.place.after), gapY: e.place.gap, x: e.place.x };   // §2.1 全部の ID → 内部の素の ID
+        if (e.place) S.m2[key] = { anchor: seedRef(e.place.after), gapY: e.place.gap, x: e.place.x };   // §2.1 全部の ID → 内部の素の ID
         if (e.size) S.sizes[key] = clone(e.size);
         if (e.z != null) S.zmap[key] = e.z;
       }
@@ -142,6 +146,7 @@ function reduce(ops, device, peek) {
   const baseSource = S.baseSource || {};  // 試験台26：② の並びの設定（土台）
   const shopOps = [];                     // 試験台26：① に効く op（順序どおり畳む）
   const sourceSess = {};                  // 試験台26：この画面で変えた並びの設定（並びID→spec）
+  const relocated = S.relocated || {};    // J17 テンプレの部品 → {section, anchor}（端末共通の所属。位置は m2＝端末ごと）
   const orderSec = (k) => (/^F/.test(bareOf(k)) ? "feature" : "items");
   const scopeIds = (scope, id) => {
     if (scope === "part") return [canonId(id)];
@@ -187,6 +192,14 @@ function reduce(ops, device, peek) {
     }
     else if (op.t === "move") { if (op.device === device) for (const it of op.items) { if (it.mode === "M1") { delete m2[it.id]; m1[it.id] = { dx: it.dx, dy: it.dy }; } else { delete m1[it.id]; m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x }; if (sizes[it.id] && sizes[it.id].dy != null) delete sizes[it.id].dy; } }   // P1 塊の外へ出したら流れの中の縦のずれは要らない
       for (const it of op.items) if (it.mode === "M2" && isAdded(it.id)) placedFollow[it.id] = { anchor: it.anchor, device: op.device }; }   // §X13 置いた端末での今の付いていく先
+    // J17（DECISIONS #17）別のセクションへ移す：所属は端末共通、位置は動かした端末だけ M2（もう一方の端末は移った先の既定の場所）。1操作=1undo
+    else if (op.t === "xsec") { for (const it of op.items) {
+      delete m1[it.id]; delete m2[it.id]; if (sizes[it.id] && sizes[it.id].dy != null) delete sizes[it.id].dy;
+      if (op.device === device) m2[it.id] = { anchor: it.anchor, gapY: it.gapY, x: it.x };
+      if (isAdded(it.id)) { const i = adds.findIndex((a) => a.id === it.id); if (i >= 0) { adds[i] = { ...adds[i], section: it.to, anchor: it.anchor, placed: { device: op.device, anchor: it.anchor, gapY: it.gapY, x: it.x } }; placedCleared.delete(it.id); placedFollow[it.id] = { anchor: it.anchor, device: op.device }; } }   // 記録の列の add op を書き換えない（写して差し替える）
+      else if (it.to === homeSec(it.id)) delete relocated[it.id];   // 生まれたセクションへ戻した＝ふつうの M2
+      else relocated[it.id] = { section: it.to, anchor: it.anchor };
+    } }
     else if (op.t === "reorder") { if (op.device === device) { order[op.key] = op.order.slice(); delete m1[op.id]; delete m2[op.id]; } }
     else if (op.t === "zorder") { if (op.device === device) { if (op.zs) Object.assign(zmap, op.zs); else zmap[op.id] = op.z; } }   // §4/§22 重なり順（単体 z か、cluster まとめの zs）
     // §4（大きさ）：部品→端末ごと。w/h/padB は絶対値（最後が勝つ）。dx は「左から変えた分」の位置ずれ＝m1 に足す（右端を動かさない）。
@@ -287,12 +300,26 @@ function reduce(ops, device, peek) {
     added.push({ id: a.id, section: a.section, kind: a.kind, styleName: a.styleName || "featBody", w, h, text, anchor: place.anchor, gap: place.gap, x: place.x, asset, isAuto });
     delete m2[a.id];
   }
+  // J17 別のセクションへ移したテンプレの部品：移った先で絶対配置（足した部品と同じ）。中身は生まれたセクションの content から。m2 は R.m2 にも残す（矢印・元に戻す・保存が m2 を見る）
+  const carried = [];
+  for (const id in relocated) {
+    if (removed.has(id)) continue;
+    const rl = relocated[id]; const bare = bareOf(id); const df = M.floatDefaults(bare, device); if (!df) continue;
+    const c = secContent[homeSec(id)] || {}; let m; let text = "", asset;
+    if ((m = bare.match(/^F_([hbp])(\d)$/)) && c.blocks && c.blocks[+m[2]]) { const bl = c.blocks[+m[2]]; if (m[1] === "p") asset = bl.photo ? bl.photo.asset : ""; else text = (m[1] === "h" ? bl.heading : bl.body) || ""; }
+    else if (bare === "I_kanmi") text = c.kanmiLabel || ""; else if (bare === "I_time") text = c.kanmiTime || "";
+    let place, isAuto = false;
+    if (m2[id]) place = { anchor: m2[id].anchor, gap: m2[id].gapY, x: m2[id].x };
+    else { place = { anchor: rl.anchor, gap: 16, x: "@left" }; isAuto = true; }   // もう一方の端末・元の位置に戻した後＝付いていく先のすぐ下16・左端そろえ（足した部品と同じ。4.10）
+    const sz = sizes[id] || {};
+    carried.push({ id, section: rl.section, home: homeSec(id), kind: df.kind, styleName: df.styleName, w: sz.w != null ? sz.w : df.w, h: df.kind === "photo" ? (sz.h != null ? sz.h : df.h) : undefined, padB: sz.padB, text, asset, anchor: place.anchor, gap: place.gap, x: place.x, isAuto, relAnchor: rl.anchor });
+  }
   // template 部品の m2/remove（added でないもの）
   const remove = [...removed].filter((id) => !isAdded(id));
   // 「元の配置を見る」：手で動かした部品・並び替えを元（今の中身からのテンプレ）に戻して見せる（記録は変えない）。試験台28：今のページのセクションの部品だけ（§2.2）。
   if (peek) { const onPage = (k) => secPageMap[secOf(k)] === curPage; for (const k in m1) if (onPage(k)) delete m1[k]; for (const k in m2) if (onPage(k)) delete m2[k]; for (const k in order) if (onPage(k)) delete order[k]; for (const k in sizes) if (onPage(k)) delete sizes[k]; }
   // content は従来どおり anchor（特集・品）のスライスを束ねたもの。インスタンス全体は secContent/secList で持つ。
   const content = { feature: secContent.feature, items: secContent.items };
-  return { content, secContent, secList, secMap, allSecs, secPageMap, curPage, m1, m2, added, remove, clear: clearL, tpl, adds, editMap, order, zmap, sizes, colsMap, swapMap, replaceMap, viewAll, brightMap, textStyles, runsMap, linkMap, placedFollow, removedAll: [...removed], effShop, sourceResolved };
+  return { content, secContent, secList, secMap, allSecs, secPageMap, curPage, m1, m2, added, carried, carriedIds: carried.map((c) => c.id), relocated, remove, clear: clearL, tpl, adds, editMap, order, zmap, sizes, colsMap, swapMap, replaceMap, viewAll, brightMap, textStyles, runsMap, linkMap, placedFollow, removedAll: [...removed], effShop, sourceResolved };
 }
 

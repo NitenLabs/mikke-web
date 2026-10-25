@@ -336,6 +336,16 @@ function buildPageHdr(dataSec, enKey, titleKey, content, device, H) {
 export function buildMenuHdr(content, device, H, edits = {}) { return buildPageHdr("menuhdr", "men", "mtitle", content.menuHdr ? content : { menuHdr: {} }, device, H); }
 export function buildContactHdr(content, device, H, edits = {}) { return buildPageHdr("contacthdr", "cen", "ctitle", content, device, H); }
 
+// J17 別のセクションへ移した部品（特集の写真・見出し・本文、甘味処の見出し・時間）の既定の形（その端末のテンプレの大きさ・文字の種類）。
+// 移った先では足した部品と同じ絶対配置の層に出す（編集画面が added に混ぜて渡す。cleared・padB も持つ）
+export function floatDefaults(bare, device) {
+  const f = G.feature[device], it = G.items[device]; let m;
+  if ((m = /^F_([phb])\d$/.exec(bare))) return m[1] === "p" ? { kind: "photo", w: f.pW, h: f.pH } : { kind: "text", styleName: m[1] === "h" ? "featHead" : "featBody", w: f.tW };
+  if (bare === "I_kanmi") return { kind: "text", styleName: "kanmiLbl", w: it.kanmiW };
+  if (bare === "I_time") return { kind: "text", styleName: "kanmiTime", w: it.kanmiW };
+  return null;
+}
+
 // M2 の部品と足した部品を絶対配置の層に出す（top は app が入れる）。
 function absLayer(m2, added, innerMap, device) {
   let out = "";
@@ -344,9 +354,10 @@ function absLayer(m2, added, innerMap, device) {
     out += absWrap(id, innerMap[id], ov.anchor, ov.gapY, ov.x);
   }
   for (const a of added) {
+    const pb = a.padB ? `padding-bottom:${px(a.padB)}` : "";
     const inner = a.kind === "photo"
-      ? PHOTO(a.id, a.w, a.h || Math.round(a.w * 0.66), a.asset || "", "")
-      : T(a.id, a.styleName || "featBody", device, a.w, a.html != null ? a.html : a.text);
+      ? (a.cleared ? EMPTYFRAME(a.id, a.w, a.h || Math.round(a.w * 0.66)) : PHOTO(a.id, a.w, a.h || Math.round(a.w * 0.66), a.asset || "", ""))
+      : T(a.id, a.styleName || "featBody", device, a.w, a.html != null ? a.html : a.text, pb);
     out += absWrap(a.id, inner, a.anchor, a.gap, a.x);
   }
   return out;

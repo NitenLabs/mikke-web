@@ -3,9 +3,12 @@
 // §2 複製・追加したセクションの HTML の ID を「セクションID__素のID」に付け替える（builder は素の ID を出すので出力を書き換える）。
 // 足した部品（add_/addp_）はもともと一意なので付け替えない。付いていく先の @section/@abs も付け替えない。
 function prefixIds(html, pfx) {
-  html = html.replace(/data-(el|absid)="([^"]+)"/g, (mm, attr, v) => isAdded(v) ? mm : `data-${attr}="${pfx}${v}"`);
+  html = html.replace(/data-(el|absid)="([^"]+)"/g, (mm, attr, v) => (isAdded(v) || v[0] === "~") ? mm : `data-${attr}="${pfx}${v}"`);   // J17「~ID」は移ってきた部品（付け替えない）
   html = html.replace(/data-anchor="([^"]+)"/g, (mm, v) => (v[0] === "@" || isAdded(v)) ? mm : `data-anchor="${pfx}${v}"`);
   return html;
+}
+// J17 別のセクションへ移した部品は、描くとき「~ID」の仮の名前で出す（移った先の素の ID とぶつからない・付け替えない）。描いた後に本当の ID に戻す
+function unTildeIds(html) { return html.indexOf('"~') < 0 ? html : html.replace(/data-(el|absid)="~([^"]+)"/g, 'data-$1="$2"');
 }
 // §2 セクションを並び（state.secList）として DOM に用意する（土台）。host の id は host_<セクションID>。並び順に合わせて作る・移す・消す。
 function ensureHosts() {
@@ -72,8 +75,10 @@ function render() {
     content[inst.type] = R.secContent[sec];
     const boxes = M.collectTextBoxes(content, state.device);
     for (const a of R.added) if (a.section === sec && a.kind !== "photo") boxes.push({ key: a.id, styleName: a.styleName, device: state.device, widthPx: a.w, text: a.text });
-    // 箱の鍵（bare）→ グローバルの手直しの鍵（非 anchor は pfx を付ける。足した部品 add_ は素のまま）
-    const lk = (k) => (pfx && !isAdded(k)) ? pfx + k : k;
+    const carriedHere = R.carried.filter((c) => c.section === sec);   // J17 ほかのセクションから移ってきた部品
+    for (const c of carriedHere) if (c.kind !== "photo") boxes.push({ key: "~" + c.id, styleName: c.styleName, device: state.device, widthPx: c.w, text: c.text });
+    // 箱の鍵（bare）→ グローバルの手直しの鍵（非 anchor は pfx を付ける。足した部品 add_ は素のまま。移ってきた部品「~ID」は ID そのもの）
+    const lk = (k) => (k[0] === "~") ? k.slice(1) : ((pfx && !isAdded(k)) ? pfx + k : k);
     // §4：大きさを変えた文字は、その幅で改行を測り直す（表示幅と改行幅をそろえる）
     for (const b of boxes) { const s = R.sizes[lk(b.key)]; if (s && s.w != null) b.widthPx = s.w; }
     // §12：文字の見た目の手直しがあれば、改行の測りも手直し後の大きさ・太さで行う
@@ -82,17 +87,23 @@ function render() {
     for (const b of boxes) { const rs = R.runsMap[lk(partIdOfBox(b.key))]; if (rs) b.runs = rs; }
     const H = buildHCached(sec, boxes, meas);   // F31 改行の測りは、箱（文字・幅・見た目）が変わったセクションだけやり直す
     let edits;
+    // J17 移ってきた部品は足した部品と同じ絶対配置の層に「~ID」で出す。移っていった部品は元のセクションの流れから外す（消したときと同じ詰め方）
+    const carriedSet = new Set(R.carriedIds);
+    const pubMode = !!(state.preview || state._pubGeo);
+    const carriedLocal = carriedHere.filter((c) => !(pubMode && c.kind === "photo" && (R.clear.includes(c.id) || !c.asset))).map((c) => ({ id: "~" + c.id, section: inst.type, kind: c.kind, styleName: c.styleName, w: c.w, h: c.h, anchor: c.anchor, gap: c.gap, x: c.x, asset: c.asset || "", cleared: c.kind === "photo" && (R.clear.includes(c.id) || !c.asset), padB: c.padB, html: c.kind !== "photo" ? (H.get("~" + c.id)?.html ?? c.text) : undefined }));
+    const leftHere = R.carried.filter((c) => c.home === sec).map((c) => c.id);
     if (anchor) {   // anchor は従来どおり（素の ID・グローバルの手直しをそのまま渡す＝第1回までと1pxも変わらない）
-      edits = { m1: R.m1, m2: R.m2, added: R.added.map((a) => ({ ...a, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined })), remove: R.remove, clear: R.clear, template: R.tpl, order: R.order, sizes: R.sizes };
+      const m2x = carriedSet.size ? Object.fromEntries(Object.entries(R.m2).filter(([k]) => !carriedSet.has(k))) : R.m2;
+      edits = { m1: R.m1, m2: m2x, added: [...R.added.map((a) => ({ ...a, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined })), ...carriedLocal], remove: leftHere.length ? [...R.remove, ...leftHere] : R.remove, clear: R.clear, template: R.tpl, order: R.order, sizes: R.sizes };
     } else {        // 非 anchor：このインスタンスの手直しだけを素の鍵に戻して渡す。写真が無い枠は「まだない写真」＝薄い枠で描く。
       const strip = (k) => (k.startsWith(pfx) ? k.slice(pfx.length) : k);
-      const pick = (map) => { const o = {}; for (const k of Object.keys(map)) if (secOf(k) === sec) o[strip(k)] = map[k]; return o; };
+      const pick = (map) => { const o = {}; for (const k of Object.keys(map)) if (secOf(k) === sec && !carriedSet.has(k)) o[strip(k)] = map[k]; return o; };
       const missingPhotos = [];
       if (inst.type === "feature") (R.secContent[sec].blocks || []).forEach((bl, i) => { if (!bl.photo || !bl.photo.asset) missingPhotos.push("F_p" + i); });
       else (R.secContent[sec].cards || []).forEach((cd) => { if (!cd.photo || !cd.photo.asset) missingPhotos.push("card_photo_" + cd.id); });
-      const clearLocal = [...R.clear.filter((id) => secOf(id) === sec).map(strip), ...missingPhotos];
-      const addedLocal = R.added.filter((a) => a.section === sec).map((a) => ({ ...a, section: inst.type, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined }));
-      edits = { m1: pick(R.m1), m2: pick(R.m2), added: addedLocal, remove: R.remove.filter((id) => secOf(id) === sec).map(strip), clear: clearLocal, template: R.tpl, order: pick(R.order), sizes: pick(R.sizes) };
+      const clearLocal = [...R.clear.filter((id) => secOf(id) === sec && !carriedSet.has(id)).map(strip), ...missingPhotos];
+      const addedLocal = [...R.added.filter((a) => a.section === sec).map((a) => ({ ...a, section: inst.type, html: a.kind !== "photo" ? (H.get(a.id)?.html ?? a.text) : undefined })), ...carriedLocal];
+      edits = { m1: pick(R.m1), m2: pick(R.m2), added: addedLocal, remove: [...R.remove.filter((id) => homeSec(id) === sec && !carriedSet.has(id)), ...leftHere].map(strip), clear: clearLocal, template: R.tpl, order: pick(R.order), sizes: pick(R.sizes) };
     }
     if (state.preview || state._pubGeo) { edits.keepX = [...(edits.clear || [])]; edits.remove = [...(edits.remove || []), ...(edits.clear || [])]; edits.clear = []; }   // F65 詰めた写真の横の場所は空けたまま（文の左右をずらさない）   // §22 §5 プレビュー/公開：写真のない枠は詰める（EMPTYFRAME を出さず流れから外す）
     if (inst.type === "items") { const cardsId = anchor ? "I_cards" : (pfx + "I_cards"); let cv = R.colsMap[cardsId] && R.colsMap[cardsId][state.device]; if (state.colsPreview && state.colsPreview.id === cardsId && state.colsPreview.device === state.device) cv = state.colsPreview.n; if (cv != null) edits.geom = { [state.device]: { cols: cv } }; }   // §20 列（仮表示を優先）
@@ -102,7 +113,7 @@ function render() {
     edits.editMode = !(state.preview || state._pubGeo);   // 試験台28 §2.4：編集中だけ出ていない品を薄く出す（プレビュー/公開は詰める）
     const builder = { feature: M.buildFeature, items: M.buildItems, header: M.buildHeader, footer: M.buildFooter, menu: M.buildMenu, contact: M.buildContact, menuHdr: M.buildMenuHdr, contactHdr: M.buildContactHdr }[inst.type] || M.buildFeature;
     const out = builder(content, state.device, H, edits);
-    const html = pfx ? prefixIds(out.bodyHtml, pfx) : out.bodyHtml;
+    const html = unTildeIds(pfx ? prefixIds(out.bodyHtml, pfx) : out.bodyHtml);
     // F31 中身が前と同じで、前の描き直しの後に誰も DOM を触っていなければ、作り直さない（変わったセクションだけ作り直す）
     const sig = html + "\u0001" + tsSig + "\u0001" + idx;
     if (!(host._rSig === sig && host._rSnap != null && host.innerHTML === host._rSnap)) host.innerHTML = html;

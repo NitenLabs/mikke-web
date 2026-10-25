@@ -3,7 +3,7 @@
 // ---- 写真の描画・入口（§1-3）----
 // 枠の中身（素材 ID）を reduce 済み content から引く（差し替えを反映）。
 function assetOfPart(part, R) {
-  const c = R.secContent[secOf(part)]; const b = bareOf(part); let m;
+  const c = R.secContent[homeSec(part)]; const b = bareOf(part); let m;   // J17 中身は生まれたセクションの content
   if (c && (m = b.match(/^F_p(\d)$/))) return c.blocks?.[+m[1]]?.photo?.asset || null;
   if (c && (m = b.match(/^card_photo_(.+)$/))) return c.cards?.find((x) => x.id === m[1])?.photo?.asset || null;
   const a = R.added.find((a) => a.id === part); if (a) return a.asset || null;
