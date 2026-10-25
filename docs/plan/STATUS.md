@@ -2,6 +2,18 @@
 
 最終更新：2026-10-25 12:40（Claude.ai）
 
+## 新しいチャットで最初にやること
+- `add_repo NitenLabs/mikke-web`（push）→ clone → このファイル・RELEASE.md・DECISIONS.md を読む。bundle は要らない
+- `npm ci` → `npm run build:editor`。`gh run list -R NitenLabs/mikke-web -b main -w ci -L 1` で CI が緑か確かめる
+- 進み具合：作る作業の 6〜7 割は済。リリースまで全体で半分を少し過ぎた所。一番の待ちはユーザーが用意するもの（Cloudflare・公開ページ用のドメイン・メール送信）
+
+## Claude.ai の環境のくせ
+- 確認は1つずつ（2コア。同時に走らせると判定が揺れる）。目安：run_audit 全部 約17分、verify-claudeai 全部 約25分
+- GitHub Actions のログ・成果物は読めない。CI の落ちた中身は注記で見る：`gh api repos/NitenLabs/mikke-web/check-runs/<job id>/annotations`
+- リモートのブランチを消す push は止められる
+- git worktree を作ったら node_modules を本体から ln -s する（無いと catalog M20 が落ちる）
+- 手元の `npm test` は webkit が無く metacheck が落ちる（CI では通る）。残った `samples/_meta/` は消す
+
 ## 今日やったこと（10/25）
 - GitHub の連携ができた。bundle から戻した main・track/tests を push。CI が回る
 - CI を直した：走らせる所を ubuntu-24.04 に固定（ubuntu-latest が 10/19 から Ubuntu 26 になり playwright 1.56 の準備が通らない）、単体試験の前に numpy・pillow、落ちたときの要所を注記に出す（このチャットの環境からは GitHub のログの保管場所が読めないため）。**main の CI はすべて緑**
