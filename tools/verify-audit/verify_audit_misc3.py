@@ -102,10 +102,18 @@ async def click(pg, id, dx=None, dy=None, n=1, button='left', scroll=True, esc=T
 
 async def sel(pg): return await ev(pg, f"{P}.selected()")
 
+async def open_menu_if_closed(pg, id):
+    """P23・P26 に合わせて手順を変えた（判定は同じ）：PC で品の中を左クリックで選んでも、右クリックの一覧は出さなくなった（PowerPoint と同じ）。
+    一覧の項目を押す試験のために、出ていなければ選んだ部品を右クリックして開く（前は左クリックの後に出ていたのと同じ状態）"""
+    if await pg.evaluate("(()=>{const m=document.getElementById('fmenu');return !!m&&m.classList.contains('on')})()"): return
+    r = await pg.evaluate("s=>{const e=document.querySelector('[data-el=\"'+s+'\"]');if(!e)return null;const q=e.getBoundingClientRect();return {x:q.x,y:q.y,w:q.width,h:q.height}}", id)
+    if r: await pg.mouse.click(r['x'] + min(20, r['w'] / 2), r['y'] + min(8, r['h'] / 2), button='right'); await pg.wait_for_timeout(300)
+
 async def selitem(pg, id):
     """品（カード・行）を選ぶ。カードは1回目で並び、2回目で品になる"""
     await click(pg, id, dx=20, dy=8)
     if id not in await sel(pg): await click(pg, id, dx=20, dy=8, scroll=False)
+    if id in await sel(pg): await open_menu_if_closed(pg, id)
     return id in await sel(pg)
 
 async def cssbb(pg, css):

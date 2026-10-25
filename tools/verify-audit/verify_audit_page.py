@@ -116,11 +116,19 @@ async def clicktext(pg, root_css, text, exact=True, wait=450):
     await pg.mouse.click(r[0], r[1]); await pg.wait_for_timeout(wait)
     return r
 
+async def open_menu_if_closed(pg, id):
+    """P23・P26 に合わせて手順を変えた（判定は同じ）：PC で品の中を左クリックで選んでも、右クリックの一覧は出さなくなった（PowerPoint と同じ）。
+    一覧の項目を押す試験のために、出ていなければ選んだ部品を右クリックして開く（前は左クリックの後に出ていたのと同じ状態）"""
+    if await pg.evaluate("(()=>{const m=document.getElementById('fmenu');return !!m&&m.classList.contains('on')})()"): return
+    r = await pg.evaluate("s=>{const e=document.querySelector('[data-el=\"'+s+'\"]');if(!e)return null;const q=e.getBoundingClientRect();return {x:q.x,y:q.y,w:q.width,h:q.height}}", id)
+    if r: await pg.mouse.click(r['x'] + min(20, r['w'] / 2), r['y'] + min(8, r['h'] / 2), button='right'); await pg.wait_for_timeout(300)
+
 async def selitem(pg, id):
     """品（カード・行）を選ぶ。カードは1回目で並び、2回目で品になる"""
     await click(pg, id)
     if id not in await ev(pg, f"{P}.selected()"): await click(pg, id, scroll=False)
     if id not in await ev(pg, f"{P}.selected()"): raise RuntimeError('選べない: ' + id + ' sel=' + str(await ev(pg, f"{P}.selected()")))
+    await open_menu_if_closed(pg, id)
 
 async def esc2(pg):
     await pg.keyboard.press('Escape'); await pg.keyboard.press('Escape'); await pg.wait_for_timeout(250)
