@@ -858,9 +858,12 @@ async def main():
                 G1 = await geo(pg); Wn = await api(pg, f"{P}.warnings()")
                 ok(f'Y12 {dev} M2 の見出しを広げても表は押されない・ownerOverlaps のまま', abs(G1['I_table']['y'] - Gm['I_table']['y']) <= TOL and not Wn.get('overlaps') and any('I_kanmi' in (o.get('a'), o.get('b')) for o in Wn.get('ownerOverlaps') or []), f"表 {Gm['I_table']['y']:.1f}→{G1['I_table']['y']:.1f} {json.dumps(Wn, ensure_ascii=False)[:160]}")
                 # Y14
+                # P19 に合わせて手順を変えた（判定は同じ）：スマホでは区切り線から品の並びの上まで約 1510px あり、高さ 1100 の窓に入らず、
+                # 端の自動スクロールで落とす所がずれる。verify_extra_arrange の K0 と同じく、この試験だけ高い窓（2400）で動かす
+                vp0 = pg.viewport_size; await pg.set_viewport_size({'width': vp0['width'], 'height': 2400})
                 await fresh(pg, dev); G = await geo(pg)
                 await drag_center_to(pg, 'I_divider', G['I_cards']['y'] - 20)
-                G1 = await geo(pg)
+                G1 = await geo(pg); await pg.set_viewport_size(vp0)
                 hg_c = G['I_cards']['y'] - G['I_hg']['y'] - G['I_hg']['h']
                 d_above = G['I_divider']['y'] - G['I_cards']['y'] - G['I_cards']['h']
                 d_below = G['I_kanmi']['y'] - G['I_divider']['y'] - G['I_divider']['h']
