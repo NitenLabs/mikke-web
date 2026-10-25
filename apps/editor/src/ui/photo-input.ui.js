@@ -45,7 +45,18 @@ function imgClickDone(id,x,y,isButton){
   if(isButton){ if(pcClickTimer)clearTimeout(pcClickTimer); pcClickTimer=setTimeout(()=>{ pcClickTimer=null; lastImgClick=null; startReplace(id); },DBL_MS); }  // ボタンの1回目が最終なら差し替え
 }
 // 押して離す＝写真を選ぶ／押したまま動かす＝写真を動かす（既存のドラッグ pending に乗せる）。左ボタンのみ・右/Ctrl はドラッグ/メニューへ。
-photoChangeBtn.addEventListener("pointerdown",(e)=>{ if(isPhone())return; if(e.button!==0||e.ctrlKey) return; const id=photoChangeBtn._for; if(!id)return; e.preventDefault(); PG.selectOnly(id); pending={sx:e.clientX,sy:e.clientY,photoChange:id}; });
+// SP-9（線 U）指（iPad など、スマホの幅でない画面）：帯をタップ＝写真を選ぶ（2回タップ＝見せる範囲）・長押し＝写真の一覧・なぞる＝そのまま写真を動かす。
+//   前は指の pointerup を受ける所がなく、帯の上の長押し・タップが何もしなかった（写真の真ん中＝帯の上を長押しすると一覧が出なかった）
+let pcbTouch=null;
+photoChangeBtn.addEventListener("pointerdown",(e)=>{ if(e.pointerType!=="touch"||isPhone()) return; const id=photoChangeBtn._for; if(!id) return; e.preventDefault(); e.stopPropagation();
+  pcbTouch={id,x:e.clientX,y:e.clientY,pid:e.pointerId,lp:setTimeout(()=>{ if(!pcbTouch) return; pcbTouch.long=true; PG.selectOnly(id); showFmenu(); },LP_MS)}; },true);
+photoChangeBtn.addEventListener("pointermove",(e)=>{ const t=pcbTouch; if(!t||e.pointerId!==t.pid||t.long||t.drag) return; if(Math.hypot(e.clientX-t.x,e.clientY-t.y)<=TAP_MOVE) return;
+  clearTimeout(t.lp); t.drag=true; if(PG.beginDrag(t.x,t.y)){ photoChangeBtn.style.display="none"; PG.dragMove(e.clientX,e.clientY,false); } },true);
+window.addEventListener("pointermove",(e)=>{ const t=pcbTouch; if(t&&t.drag&&e.pointerId===t.pid&&PG.isDragging()){ e.preventDefault(); PG.dragMove(e.clientX,e.clientY,false); } },{capture:true,passive:false});
+window.addEventListener("pointerup",(e)=>{ const t=pcbTouch; if(!t||e.pointerId!==t.pid) return; pcbTouch=null; clearTimeout(t.lp); e.stopPropagation();
+  if(t.drag){ if(PG.isDragging()) PG.endDrag(); return; } if(t.long) return; imgClickDone(t.id,e.clientX,e.clientY,true); },true);
+window.addEventListener("pointercancel",(e)=>{ const t=pcbTouch; if(!t||e.pointerId!==t.pid) return; pcbTouch=null; clearTimeout(t.lp); if(t.drag&&PG.isDragging()) PG.endDrag(); },true);
+photoChangeBtn.addEventListener("pointerdown",(e)=>{ if(isPhone()||e.pointerType==="touch")return; if(e.button!==0||e.ctrlKey) return; const id=photoChangeBtn._for; if(!id)return; e.preventDefault(); PG.selectOnly(id); pending={sx:e.clientX,sy:e.clientY,photoChange:id}; });
 // 右クリックはボタンを素通しして写真のメニューを出す（写真の右クリックと同じ）
 photoChangeBtn.addEventListener("contextmenu",(e)=>{ e.preventDefault(); e.stopPropagation(); const id=photoChangeBtn._for; if(id){ PG.selectOnly(id); showFmenu(); } });
 function refreshPhotoBtns(){

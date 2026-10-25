@@ -157,6 +157,7 @@ return {
   paintPhotos, photosApi, replacePhotoFile, loadImageFile, assetUrl, assetNat,
   setBrightness, brightnessOf, addPhotoAtPoint, addTextAtPoint,   // §3/§4/§5（試験台17）
   beginCrop, cropState, cropPanStart, cropPanBy, cropCornerStart, cropCornerBy, cropZoomTo, cropWheel, cropCommit, cropCancel, isCropping, partChangedFromTemplate,
+  cropUndo, cropRedo, cropFrameStart, cropFrameBy, cropFrameEnd,   // 線 C：PC-19 見せる範囲の中の戻す・やり直す、SP-11 枠のつまみ
   quadFile, textFile,
   textSetSize, textStep, textToggleBold, textSetColor, resetTextStyle, textStylesApi, hasTextStyle,
   tsKeyOf, styleNameOf, primaryTextSel, SIZE_LIST,

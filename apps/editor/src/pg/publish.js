@@ -126,7 +126,16 @@ function publishCheck() {
   state.device = curDev; render();
   for (const it of s_deadLinkItems()) items.push(it);   // PC-25 行き先のセクションを消したリンク
   for (const it of shopInfoChecks()) items.push(it);   // F24 お店の情報（①）の電話・住所が空・電話でない値（pg/shopinfo-pages.js）
-  return items;
+  return u_mergeSame(items);
+}
+// SP-7（線 U）同じ端末・同じ種類・同じ文の行は1つにまとめる（前は「PC：I_lblが、品に重なっています」が3つ並び、どれがどれか分からなかった）。
+//   部品はまとめた行の「見る」で最初の部品を選ぶ（parts は並びを保って重ねない）
+function u_mergeSame(items) {
+  const out = [], at = new Map();
+  for (const it of items) { const k = it.device + "|" + it.kind + "|" + (it.page || "") + "|" + it.text; const j = at.get(k);
+    if (j == null) { at.set(k, out.length); out.push({ ...it, parts: [...(it.parts || [])] }); continue; }
+    for (const p of it.parts || []) if (!out[j].parts.includes(p)) out[j].parts.push(p); }
+  return out;
 }
 // PC-25 「このページの『…』」のリンクで、行き先のセクションがそのページに無くなったもの（消した・ほかのページの物）。文の一部のリンクと部品まるごとのリンクの両方
 function s_anchorAlive(lk, part, R) { if (!lk || lk.kind !== "anchor") return true; if (!lk.sec) return false; const pg = R.secPageMap[secOf(part)]; const tp = R.secPageMap[lk.sec]; return !!tp && tp !== "@region" && (pg === "@region" || pg === tp); }

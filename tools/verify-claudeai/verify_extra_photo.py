@@ -341,6 +341,66 @@ async def main():
     rec('H6 SP-4 差し替え→戻す→やり直す→読み込み直し',ok,f"差し替え={a1.get('asset')} やり直し後={a2.get('asset')} 幅={a2.get('naturalW')} 灰色={g2} 読み込み直し後={a3.get('asset')} 幅={a3.get('naturalW')} 灰色={g3} pageerror={pg._errs[:2]}")
     await pg.context.close()
 
+    # ---- 4回目の精査・線 C（見せる範囲）----
+    async def crop_in(pg,part='F_p0'):
+        el=await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(200); r=await bb(pg,part)
+        await pg.mouse.dblclick(r['x']+r['w']/2,r['y']+r['h']/2); await pg.wait_for_timeout(400); return r
+    async def cst(pg): return await pg.evaluate(f"{P}.cropState()")
+    async def pview(pg,part='F_p0'): return next((x['view'] for x in await pg.evaluate(f"{P}.photos()") if x['part']==part),None)
+    async def plus(pg,n):
+        for i in range(n): await pg.click('[data-crop-step="1"]'); await pg.wait_for_timeout(700)   # 1回ずつ別の手（続けて押すと1手にまとまる）
+    # H7 PC-17 1440 で決めた見せる範囲が、1024 の窓でも同じ所が見える（写真の中の見える範囲を割合で比べる。1% 以内）
+    #   直す前の版（f70748a）でも OK：見せる範囲はもともと割合（DATA_SPEC の view）で持ち、ページは倍率で縮めるので、設計 px の背景の値が変わらないのが正しい（精査の読み違い。DECISIONS #44）。崩さないための見張り
+    pg=await fresh(1440,1000); r=await crop_in(pg)
+    for i in range(3): await pg.click('[data-crop-step="1"]'); await pg.wait_for_timeout(100)
+    cx,cy=r['x']+r['w']/2,r['y']+r['h']/2; await pg.mouse.move(cx,cy); await pg.mouse.down(); await pg.mouse.move(cx+100,cy+80,steps=8); await pg.mouse.up(); await pg.keyboard.press('Enter'); await pg.wait_for_timeout(400)
+    VIS="(()=>{const e=document.querySelector('[data-el=F_p0]');const r=e.getBoundingClientRect();const p=window.__playground.photos().find(x=>x.part==='F_p0');const sz=e.style.backgroundSize.split(' ').map(parseFloat),ps=e.style.backgroundPosition.split(' ').map(parseFloat);const fw=e.offsetWidth,fh=e.offsetHeight;return [-ps[0]/sz[0],-ps[1]/sz[1],(fw-ps[0])/sz[0],(fh-ps[1])/sz[1],r.width/fw]})()"
+    a=await pg.evaluate(VIS); await pg.set_viewport_size({'width':1024,'height':900}); await pg.wait_for_timeout(800); b_=await pg.evaluate(VIS)
+    d=max(abs(x-y) for x,y in zip(a[:4],b_[:4]))
+    rec('H7 PC-17 窓の幅を変えても見せる範囲（写真の中の割合）は同じ',d<=0.01 and abs(b_[4]/a[4]-1024/1440)<0.05,f"1440 {[round(x,3) for x in a]} 1024 {[round(x,3) for x in b_]} 差 {d:.4f}")
+    await pg.context.close()
+    # H8 PC-18 見せる範囲の中でホイールを回すとページがスクロールし、拡大は変わらない（PowerPoint と同じ）
+    pg=await fresh(1440,1000); r=await crop_in(pg); z0=(await cst(pg))['view']['zoom']; y0=await pg.evaluate('scrollY')
+    await pg.mouse.move(r['x']+r['w']/2,r['y']+r['h']/2); await pg.mouse.wheel(0,200); await pg.wait_for_timeout(500)
+    c=await cst(pg); y1=await pg.evaluate('scrollY')
+    rec('H8 PC-18 見せる範囲の中のホイールはスクロール',abs(y1-y0)>=100 and (c is None or abs(c['view']['zoom']-z0)<1e-6),f"scrollY {y0}→{y1} 拡大 {z0}→{c and c['view']['zoom']}")
+    await pg.context.close()
+    # H9 PC-19 見せる範囲の中の Cmd+Z：拡大を1手ずつ戻す・やり直す。戻すものが無くなったら見せる範囲を終えて、その前の手直し（F_h0 の移動）を戻す
+    pg=await fresh(1440,1000); await pg.evaluate(f"{P}.nudge('F_h0',0,10)"); await pg.wait_for_timeout(300); n0=len(await pg.evaluate(f"{P}.ops()"))
+    await crop_in(pg); await plus(pg,3); z3=(await cst(pg))['view']['zoom']
+    await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(200); z2=(await cst(pg) or {}).get('view',{}).get('zoom')
+    await pg.keyboard.press(f'{MOD}+Shift+z'); await pg.wait_for_timeout(200); z3b=(await cst(pg) or {}).get('view',{}).get('zoom')
+    for i in range(3): await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(200)
+    z0=(await cst(pg) or {}).get('view',{}).get('zoom')
+    await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(300); c=await cst(pg); n1=await pg.evaluate("(typeof PG!=='undefined'&&PG.state)?PG.state.cursor:window.__playground.ops().length")
+    ok=z3 and abs(z3-1.6)<0.01 and z2 and abs(z2-1.4)<0.01 and z3b and abs(z3b-1.6)<0.01 and z0 and abs(z0-1)<0.01 and c is None and n1==n0-1
+    rec('H9 PC-19 見せる範囲の中の Cmd+Z は1手ずつ',ok,f"＋3回 {z3} → 戻す {z2} → やり直す {z3b} → 戻す3回 {z0} → もう1回で終わる={c is None}・その前の手直しも戻る 記録 {n0}→{n1}")
+    await pg.context.close()
+    # H10 SP-10 見せる範囲に「完了」「取り消す」がある。取り消す＝入る前のまま、完了＝決まる
+    pg=await fresh(1440,1000); await crop_in(pg); await plus(pg,2)
+    has=await pg.evaluate("[...document.querySelectorAll('#cropzoom button')].filter(b=>b.offsetParent).map(b=>b.textContent.trim())")
+    v1=None; v2=None
+    if '取り消す' in has and '完了' in has:
+        await pg.click('[data-crop-cancel]'); await pg.wait_for_timeout(300); c1=await cst(pg); v1=await pview(pg)
+        await crop_in(pg); await plus(pg,2); await pg.click('[data-crop-done]'); await pg.wait_for_timeout(300); c2=await cst(pg); v2=await pview(pg)
+    rec('H10 SP-10 完了・取り消す',bool(v1) and v1['zoom']==1 and bool(v2) and abs(v2['zoom']-1.4)<0.01 and c1 is None and c2 is None,f"棒のボタン {has} 取り消した後 {v1} 完了の後 {v2}")
+    await pg.context.close()
+    # H11 SP-11 枠のつまみ（黒）で見せる枠が狭まり、写真はその場のまま。戻す1回で枠も見せる範囲も元どおり
+    pg=await fresh(1440,1000); r=await crop_in(pg); await plus(pg,2); c0=await cst(pg); sc=await pg.evaluate(f"{P}.getScale()")
+    img0=(r['x']+c0['display']['ox']*sc,r['y']+c0['display']['oy']*sc,c0['display']['dw'])
+    h=await pg.evaluate("(()=>{const h=document.querySelector('[data-crop-frame=e]');if(!h)return null;const r=h.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})()")
+    res='枠のつまみが無い'; ok=False
+    if h:
+        await pg.mouse.move(*h); await pg.mouse.down(); await pg.mouse.move(h[0]-120,h[1],steps=8); await pg.mouse.up(); await pg.wait_for_timeout(300)
+        await pg.keyboard.press('Enter'); await pg.wait_for_timeout(300)
+        r1=await bb(pg,'F_p0'); bs=await pg.evaluate("(()=>{const e=document.querySelector('[data-el=F_p0]');return [e.style.backgroundSize,e.style.backgroundPosition]})()")
+        ox,oy=[float(x[:-2]) for x in bs[1].split()]; dw=float(bs[0].split()[0][:-2]); img1=(r1['x']+ox*sc,r1['y']+oy*sc,dw)
+        await pg.keyboard.press(f'{MOD}+z'); await pg.wait_for_timeout(400); r2=await bb(pg,'F_p0'); v2=await pview(pg)
+        ok=abs(r1['w']-(r['w']-120))<=3 and abs(r1['x']-r['x'])<=1 and max(abs(img1[0]-img0[0]),abs(img1[1]-img0[1]))<=1 and abs(img1[2]-img0[2])<=0.5 and abs(r2['w']-r['w'])<=1 and abs(v2['zoom']-1.4)<0.01
+        res=f"枠の幅 {r['w']:.0f}→{r1['w']:.0f}（期待 {r['w']-120:.0f}） 写真の左上 ({img0[0]:.1f},{img0[1]:.1f})→({img1[0]:.1f},{img1[1]:.1f}) 写真の幅 {img0[2]:.1f}→{img1[2]:.1f} 戻す1回で枠 {r2['w']:.0f}・見せる範囲 {v2}"
+    rec('H11 SP-11 枠のつまみで見せる枠を狭める',ok,res)
+    await pg.context.close()
+
     await br.close()
     print('NG:',[k for k,o,_ in R if o is False])
 asyncio.run(main())

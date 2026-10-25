@@ -220,6 +220,29 @@ body.a2-nodrop,body.a2-nodrop *{cursor:no-drop!important}
 #cropzoom{position:fixed;z-index:75;display:none;align-items:center;gap:6px;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.15);padding:4px 8px}
 #cropzoom .zm,#cropzoom .zp{font:15px system-ui;color:#333;min-width:24px;height:24px;padding:0;text-align:center;border:1px solid #ccc;border-radius:6px;background:#fff;cursor:pointer}
 #cropzoom input[type=range]{width:140px}
+/* SP-10 取り消す・完了。SP-11 枠のつまみ（黒いL字・棒）。SP-12 指では押す所を 44px 前後に */
+#cropzoom .zdiv{width:1px;align-self:stretch;background:#ddd;margin:0 2px}
+#cropzoom .zc,#cropzoom .zd{font:13px system-ui;height:24px;padding:0 10px;border:1px solid #ccc;border-radius:6px;background:#fff;color:#333;cursor:pointer;white-space:nowrap}
+#cropzoom .zd{background:#06c;border-color:#06c;color:#fff}
+#cropwrap .cf{position:absolute;pointer-events:auto;z-index:3;box-sizing:border-box;border:0 solid #111}
+#cropwrap .cf-nw,#cropwrap .cf-ne,#cropwrap .cf-sw,#cropwrap .cf-se{width:18px;height:18px}
+#cropwrap .cf-nw{border-top-width:4px;border-left-width:4px;cursor:nwse-resize}
+#cropwrap .cf-ne{border-top-width:4px;border-right-width:4px;cursor:nesw-resize}
+#cropwrap .cf-sw{border-bottom-width:4px;border-left-width:4px;cursor:nesw-resize}
+#cropwrap .cf-se{border-bottom-width:4px;border-right-width:4px;cursor:nwse-resize}
+#cropwrap .cf-n,#cropwrap .cf-s{width:22px;height:6px;background:#111;cursor:ns-resize}
+#cropwrap .cf-e,#cropwrap .cf-w{width:6px;height:22px;background:#111;cursor:ew-resize}
+#cropwrap .cf::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px}
+.pg-phone #cropzoom,.a5-touch #cropzoom{padding:4px 6px;gap:4px}
+.pg-phone #cropzoom .zm,.pg-phone #cropzoom .zp,.a5-touch #cropzoom .zm,.a5-touch #cropzoom .zp{min-width:44px;height:44px;font-size:20px}
+.pg-phone #cropzoom .zc,.pg-phone #cropzoom .zd,.a5-touch #cropzoom .zc,.a5-touch #cropzoom .zd{height:44px;font-size:15px;padding:0 8px}
+.pg-phone #cropzoom input[type=range],.a5-touch #cropzoom input[type=range]{height:44px;width:90px;margin:0}
+.pg-phone #cropwrap .ch,.a5-touch #cropwrap .ch{width:28px;height:28px;margin:-14px 0 0 -14px}
+.pg-phone #cropwrap .ch::after,.a5-touch #cropwrap .ch::after{content:"";position:absolute;left:50%;top:50%;width:44px;height:44px;margin:-22px 0 0 -22px}
+.pg-phone #cropwrap .cf-nw,.pg-phone #cropwrap .cf-ne,.pg-phone #cropwrap .cf-sw,.pg-phone #cropwrap .cf-se{width:26px;height:26px}
+.pg-phone #cropwrap .cf-n,.pg-phone #cropwrap .cf-s{width:32px;height:8px}
+.pg-phone #cropwrap .cf-e,.pg-phone #cropwrap .cf-w{width:8px;height:32px}
+.pg-phone #cropwrap .cf,.pg-phone #cropwrap .ch{touch-action:none}
 /* §12 文字の見た目の道具（文字の部品を選んでいる間だけ出る・PowerPoint のリボン） */
 #tstools{display:none;align-items:center;gap:4px}
 #tstools .div{width:1px;height:20px;background:#ddd}
@@ -351,8 +374,11 @@ body.a2-nodrop,body.a2-nodrop *{cursor:no-drop!important}
 #menuPanel .mp-name .mp-new{display:inline-block;font-size:10px;color:#fff;background:#e08a00;border-radius:4px;padding:0 5px;margin-left:6px;vertical-align:middle;text-decoration:none}
 #menuPanel .mp-sub{color:#999;font-size:11px;margin-top:2px}
 #menuPanel .mp-badge{display:inline-block;font-size:10px;color:#06c;border:1px solid #cfe0ff;border-radius:4px;padding:0 5px;margin-left:5px}
-#pSize{width:84px}
+/* SP-16 12 の大きさを 4 列に並べて全部見えるように（前は縦1列で 28・32 が下の並びに隠れた） */
+#pSize{width:auto;max-height:none}
+#pSize.on{display:grid;grid-template-columns:repeat(4,56px);gap:2px}
 #pSize button{display:block;width:100%;min-height:44px;font-size:15px;border:none;background:#fff;border-radius:6px;text-align:center}
+#pSize button.cur{background:#e6efff;font-weight:700}
 #pSize button:active{background:#eef}
 #pColor{width:auto}
 #pColor .cell{display:inline-block;width:44px;height:44px;border:1px solid #bbb;border-radius:8px;margin:3px;padding:0}

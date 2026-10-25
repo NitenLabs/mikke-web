@@ -33,11 +33,11 @@ moOshinaga.onclick=(e)=>{ e.stopPropagation(); moreMenu.classList.remove("on"); 
 moreMenu.appendChild(moOshinaga);
 let movedToMore=[];
 // §20（X23.②）しまったボタンは名前で出す（アイコンだけの物に名前・色は見本を名前の左に）
-const MORE_NAMES={tStudio:"制作用",tPeek:"元の配置を見る",tResetPage:"このページを元に戻す",dPC:"PC",dSP:"スマホ",tPhoto:"写真",tText:"テキスト",tBright:"明るさ",tCols:"列",tSell:"販売",tMonth:"出す月",tLabels:"ラベル",tMenus:"メニュー",tElemLink:"リンク",tAlign:"配置"};
+const MORE_NAMES={tStudio:"制作用",tPeek:"元の配置を見る",tResetPage:"このページを元に戻す",dPC:"PC",dSP:"スマホ",tPhoto:"写真",tText:"テキスト",tBright:"明るさ",tCrop:"見せる範囲",tCols:"列",tSell:"販売",tMonth:"出す月",tLabels:"ラベル",tMenus:"メニュー",tElemLink:"リンク",tAlign:"配置"};
 const TS_NAMES={font:"書体",shrink:"小さく","size":"大きさ","size-list":"よく使う大きさ",grow:"大きく",bold:"太字",italic:"斜体",underline:"下線",color:"文字の色",link:"リンク",align:"文字の揃え"};
 function moreNameOf(el){ if(el.id&&MORE_NAMES[el.id]) return MORE_NAMES[el.id]; const ts=el.getAttribute&&el.getAttribute("data-ts"); if(ts&&TS_NAMES[ts]) return TS_NAMES[ts]; return (el.textContent||"").trim(); }
 // §20（X23.④）並びと同じ順（PC→スマホ）。左→右＝上→下
-const TB_ORDER=["tText","tPhoto","dPC","dSP","tPeek","tResetPage","ts:font","ts:shrink","ts:size","ts:grow","ts:size-list","ts:bold","ts:italic","ts:underline","ts:color","ts:link","ts:align","tBright","tCols","tSell","tMonth","tLabels","tMenus","tElemLink","tStudio"];
+const TB_ORDER=["tText","tPhoto","dPC","dSP","tPeek","tResetPage","ts:font","ts:shrink","ts:size","ts:grow","ts:size-list","ts:bold","ts:italic","ts:underline","ts:color","ts:link","ts:align","tCrop","tBright","tCols","tSell","tMonth","tLabels","tMenus","tElemLink","tStudio"];
 function orderKey(el){ if(el.id){ const i=TB_ORDER.indexOf(el.id); if(i>=0) return i; } const ts=el.getAttribute&&el.getAttribute("data-ts"); if(ts){ const i=TB_ORDER.indexOf("ts:"+ts); if(i>=0) return i; } return 999; }
 function restoreFromMore(){ for(let i=movedToMore.length-1;i>=0;i--){ const m=movedToMore[i]; m.el.removeAttribute("data-more-name"); try{ m.parent.insertBefore(m.el, m.next&&m.next.parentNode===m.parent?m.next:null); }catch(_){ m.parent.appendChild(m.el); } } movedToMore=[]; }
 function moveToMore(el){ movedToMore.push({el, parent:el.parentNode, next:el.nextSibling}); el.setAttribute("data-more-name", moreNameOf(el)); moreMenu.appendChild(el); }
@@ -55,8 +55,11 @@ function cleanupDividers(){ for(const host of [toolbarEl, document.getElementByI
     const prevIsDiv=i>0 && visChildren[i-1].classList&&visChildren[i-1].classList.contains("div");
     if(!prevBtn||!nextBtn||prevIsDiv) c.style.display="none"; } } }
 function overflowCandidates(){ const out=[]; const push=(sel)=>{ const el=typeof sel==="string"?document.querySelector(sel):sel; if(el) out.push(el); };
-  push("#tStudio"); push("#tHistory"); push("#tPreview"); push("#tPeek"); push("#tResetPage"); push("#dSP"); push("#dPC"); push("#tPhoto"); push("#tText");   // §22 §3.3 しまう順：制作用→履歴→プレビュー→元の配置→このページ→PC/スマホ→テキスト/写真（公開・戻す・やり直すはしまわない）
-  for(const sel of ['#tAlign','#tstools [data-ts="align"]','#tstools [data-ts="link"]','#tstools [data-ts="color"]','#tstools [data-ts="underline"]','#tstools [data-ts="italic"]','#tstools [data-ts="bold"]','#tstools [data-ts="size-list"]','#tstools [data-ts="grow"]','#tstools [data-ts="size"]','#tstools [data-ts="shrink"]','#tstools [data-ts="font"]','#tBright','#tMenus','#tLabels','#tMonth','#tSell','#tCols','#tElemLink']) push(sel);   // それでも入らなければ道具の右から（配置を先に＝記録 13.2）
+  // PC-27（線 U）しまう順：制作用→状態の文字→元の配置を見る→このページを元に戻す→道具（右から。配置を先に＝記録 13.2）→履歴→プレビュー→PC/スマホ→テキスト/写真。
+  //   →画面の切り替え（PC/スマホ・プレビュー・履歴）は、何を選んでも道具より後までしまわない（PowerPoint のリボンでも表示の切り替えはいつも同じ所。前は値段・見出しを選ぶと「その他」へ移った）
+  push("#tStudio"); out.push("@status"); push("#tPeek"); push("#tResetPage");   // 状態の文字も道具より先に（「その他」の一番上に出る。updateMoreStatus）
+  for(const sel of ['#tAlign','#tstools [data-ts="align"]','#tstools [data-ts="link"]','#tstools [data-ts="color"]','#tstools [data-ts="underline"]','#tstools [data-ts="italic"]','#tstools [data-ts="bold"]','#tstools [data-ts="size-list"]','#tstools [data-ts="grow"]','#tstools [data-ts="size"]','#tstools [data-ts="shrink"]','#tstools [data-ts="font"]','#tBright','#tCrop','#tMenus','#tLabels','#tMonth','#tSell','#tCols','#tElemLink']) push(sel);
+  push("#tHistory"); push("#tPreview"); push("#dSP"); push("#dPC"); push("#tPhoto"); push("#tText");   // 公開・戻す・やり直すはしまわない
   return out; }   // 「戻す」「やり直す」は最後までしまわない
 let laying=false;
 function layoutToolbar(){ if(laying) return; laying=true;
@@ -66,7 +69,7 @@ function layoutToolbar(){ if(laying) return; laying=true;
   if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1){ reorderMore(); cleanupDividers(); laying=false; return; }
   // §22 X28：PC とスマホ、テキストと写真は組＝片方だけ並びに残さない（しまうときは相方も一緒にしまう）
   const PAIR={dSP:"dPC",dPC:"dSP",tPhoto:"tText",tText:"tPhoto"};
-  for(const el of overflowCandidates()){ if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1) break; if(el && el.offsetParent!==null && el!==tMore){ moveToMore(el); const pid=PAIR[el.id]; if(pid){ const pe=document.getElementById(pid); if(pe && pe.offsetParent!==null) moveToMore(pe); } } }
+  for(const el of overflowCandidates()){ if(toolbarEl.scrollWidth<=toolbarEl.clientWidth+1) break; if(el==="@status"){ if(stat) stat.style.display="none"; continue; } if(el && el.offsetParent!==null && el!==tMore){ moveToMore(el); const pid=PAIR[el.id]; if(pid){ const pe=document.getElementById(pid); if(pe && pe.offsetParent!==null) moveToMore(pe); } } }
   if(stat && toolbarEl.scrollWidth>toolbarEl.clientWidth+1) stat.style.display="none";   // §22 §3.3 それでも入らなければ状態の文字をしまう（→その他の一番上へ。updateMoreStatus）
   reorderMore(); cleanupDividers();
   laying=false; }
@@ -90,10 +93,10 @@ document.getElementById("dSP").onclick=()=>{ PG.setDevice("sp"); document.getEle
 // §23b 変換の境目を document でも監視（要素の oncomposition* が届かない経路の保険・CDP でも効く）
 document.addEventListener("compositionstart",()=>{ if(PG.state.editing) PG.imeBoundary("start"); },true);
 document.addEventListener("compositionend",()=>{ if(PG.state.editing) PG.imeBoundary("end"); },true);
-document.getElementById("tUndo").onclick=()=>PG.undo();
-document.getElementById("tRedo").onclick=()=>PG.redo();
+document.getElementById("tUndo").onclick=()=>{ if(typeof cropUndoUI==="function"&&cropUndoUI()) return; PG.undo(); };   // PC-19 見せる範囲の中は1手ずつ
+document.getElementById("tRedo").onclick=()=>{ if(typeof cropRedoUI==="function"&&cropRedoUI()) return; PG.redo(); };
 // P28（線 A3）戻す・やり直すのボタンは、戻せない・やり直せないときは灰色で押せない（書き換え中は細かく戻せるので押せるまま）
-function a3_syncUndoBtns(){ const u=document.getElementById("tUndo"), r=document.getElementById("tRedo"); if(!u||!r) return; const ed=!!PG.state.editing;
+function a3_syncUndoBtns(){ const u=document.getElementById("tUndo"), r=document.getElementById("tRedo"); if(!u||!r) return; const ed=!!PG.state.editing||PG.isCropping();   // PC-19 見せる範囲の中も押せる
   const cu=ed||PG.canUndo(), cr=ed||PG.canRedo(); u.disabled=!cu; r.disabled=!cr; u.setAttribute("aria-disabled",String(!cu)); r.setAttribute("aria-disabled",String(!cr)); }
 a3_syncUndoBtns();
 document.getElementById("tResetPage").onclick=()=>PG.resetScope("page",null,["pc","sp"]);

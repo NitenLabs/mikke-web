@@ -389,14 +389,36 @@ export const FRIENDLY = {
   I_cards: "品の並び", I_table: "甘味処の表", I_pillbg: "ボタン", "@section": "セクションの先頭",
   // PC-12・SP-6 見出しの組の中の部品も店主の言葉で（前は公開の確認に I_lbl・I_h と出た）
   F_lbl: "特集の見出しの英字", F_h: "特集の見出し", F_rule: "特集の見出しの線", I_lbl: "おすすめの見出しの英字", I_h: "おすすめの見出し", I_rule: "おすすめの見出しの線", I_pilltext: "ボタン",
+  // SP-7（線 U）ヘッダー・フッター・お品書き・アクセスの部品も（前は複製したセクション・ほかのページで logo・sec3__F_h0 などが出た）
+  logo: "お店の名前（ヘッダー）", nav: "ページの案内（ヘッダー）", hline: "ヘッダーの線",
+  fname: "お店の名前（フッター）", faddr: "住所（フッター）", fdiv: "フッターの線", fnav: "ページの案内（フッター）", fcopy: "著作権の表示",
+  men: "お品書きの英字", mtitle: "お品書きの見出し", cen: "アクセスの英字", ctitle: "アクセスの見出し", clead: "アクセスの説明",
 };
+const CONTACT_ROW = { addr: "住所", access: "行き方", parking: "駐車場", hours: "営業時間", closed: "定休日", tel: "電話", pay: "お支払い" };
+// 店主に見せる部品の名前。内部の ID（I_lbl・sec3__F_h0・header__logo など）は出さない（F21・SP-7）
 export function friendly(id) {
+  id = String(id == null ? "" : id);
   if (FRIENDLY[id]) return FRIENDLY[id];
+  const i = id.lastIndexOf("__"); if (i >= 0) return friendly(id.slice(i + 2));   // 複製・足したセクション、ヘッダー・フッターなどの前置きは外す
+  if (/^~/.test(id)) return friendly(id.slice(1));
   if (/^addp_/.test(id)) return "足した写真";
   if (/^add_/.test(id)) return "足した文字";
+  if (/^card_photo_/.test(id)) return "品の写真";
+  if (/^card_name_/.test(id)) return "品の名前";
+  if (/^card_desc_/.test(id)) return "品の説明";
+  if (/^card_price_/.test(id)) return "品の値段";
   if (/^card_/.test(id)) return "品";
+  if (/^row_name_/.test(id)) return "表の品の名前";
+  if (/^row_desc_/.test(id)) return "表の品の説明";
+  if (/^row_price_/.test(id)) return "表の値段";
+  if (/^row_vline_/.test(id)) return "表の縦の線";
   if (/^row_/.test(id)) return "表の行";
-  return id;
+  if (/^mg_/.test(id)) return "お品書きの見出し";
+  if (/^mt_/.test(id)) return "お品書きの時間";
+  if (/^mc_/.test(id)) return "お品書きの括り";
+  let m; if ((m = id.match(/^(cl|ci)_(.+)$/))) return `アクセスの「${CONTACT_ROW[m[2]] || "項目"}」${m[1] === "cl" ? "の見出し" : ""}`;
+  if (/^I_/.test(id) || /^F_/.test(id)) return "セクションの部品";
+  return /^[\x20-\x7e]+$/.test(id) ? "部品" : id;   // 知らない内部名は出さない
 }
 
 // 塊（cluster）：その部品が属する塊の共同メンバー（自分を含む）。M1/M2 の判定に使う。
