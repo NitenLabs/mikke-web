@@ -7,6 +7,16 @@ import asyncio, json, sys, os
 from playwright.async_api import async_playwright
 URL='file://'+sys.argv[1]; P='window.__playground'
 R=[]
+MOD='Meta' if sys.platform=='darwin' else 'Control'
+async def nosnap_key(pg):
+    # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
+    # 版の見分け：a2AutoScroll（線 A2 で足した関数。試験用 API か、ページの PG にある）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof (window.__playground.a2AutoScroll||(typeof PG!=='undefined'&&PG.a2AutoScroll))==='function'") else 'Alt'
+    return pg._nosnap
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
+    if await pg.evaluate("!!(window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
 def rec(k,ok,msg): R.append((k,ok,msg)); print(('OK ' if ok is True else ('NG ' if ok is False else '-- '))+k+' | '+msg, flush=True)
 SEL="""(word)=>{const el=(document.activeElement&&document.activeElement.isContentEditable)?document.activeElement:document.querySelector('[data-el="F_b0"]');
  const w=document.createTreeWalker(el,NodeFilter.SHOW_TEXT);let n;while(n=w.nextNode()){const i=n.nodeValue.indexOf(word);if(i>=0){const r=document.createRange();r.setStart(n,i);r.setEnd(n,i+word.length);const s=getSelection();s.removeAllRanges();s.addRange(r);document.dispatchEvent(new Event('selectionchange'));return r.getBoundingClientRect().toJSON();}}return null}"""
@@ -63,7 +73,7 @@ async def main():
         pg=await fresh(); await pg.mouse.move(720,600); await pg.mouse.wheel(0,500); await pg.wait_for_timeout(400); y0=await pg.evaluate('scrollY')
         if what=='link': await edit(pg); await link_word(pg,'小さな菓子'); await stop_edit(pg)
         else:
-            r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await pg.wait_for_timeout(400)
+            r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await esc_if_editing(pg); await pg.wait_for_timeout(400)   # P2 に合わせて手順を変えた（判定は同じ）：箱を選んだだけにする
             await pg.click('[data-text-tool="font"]'); await pg.wait_for_timeout(300); await pg.locator('[data-font-panel], [data-font-list]').get_by_text('ゴシック').first.click() if await pg.locator('[data-font-panel], [data-font-list]').count() else await pg.get_by_text('本文の書体').first.click()
             await pg.wait_for_timeout(400)
         rec(f'A5 スクロールした後の{"リンク" if what=="link" else "書体"}',abs(await pg.evaluate('scrollY')-y0)<=1,f"scrollY {y0}→{await pg.evaluate('scrollY')}"); await pg.context.close()
@@ -78,7 +88,7 @@ async def main():
         rec(f'A6 幅 {W}',None,json.dumps(info,ensure_ascii=False)); await pg.screenshot(path=f'./A6_{W}.png',clip={'x':0,'y':0,'width':W,'height':110}); await pg.context.close()
 
     # A7 書体の見本に乗せてから Esc → 仮の見え方が残らない
-    pg=await fresh(); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await pg.wait_for_timeout(400)
+    pg=await fresh(); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await esc_if_editing(pg); await pg.wait_for_timeout(400)   # P2 に合わせて手順を変えた（判定は同じ）：箱を選んだだけにする
     await pg.click('[data-text-tool="font"]'); await pg.wait_for_timeout(300)
     t=pg.get_by_text('本文の書体').first; await t.hover(); await pg.wait_for_timeout(300)
     f1=await pg.evaluate(f"{P}.curFont('F_h0')"); s1=await pg.screenshot(clip={'x':r['x'],'y':r['y'],'width':r['w'],'height':r['h']})
@@ -99,7 +109,7 @@ async def main():
     rr=await runs(pg); rec('A9 文の中のアドレス',len(rr)==1 and rr[0].get('text')=='https://example.com',json.dumps(rr,ensure_ascii=False)[:200]); await pg.context.close()
 
     # A10 書き換え中でない文字の箱で Cmd+K
-    pg=await fresh(); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await pg.wait_for_timeout(400)
+    pg=await fresh(); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await esc_if_editing(pg); await pg.wait_for_timeout(400)   # P2 に合わせて手順を変えた（判定は同じ）：箱を選んだだけにする
     await pg.keyboard.press('Control+k'); await pg.wait_for_timeout(400)
     rec('A10 箱を選んで Cmd+K',not pg._e,f"一覧={await pg.locator('[data-link-panel]').count()} エラー={pg._e[:1]}"); await pg.context.close()
     async def fresh2(w,h=900): return await fresh(w,h)
@@ -138,7 +148,7 @@ async def main():
         await pg.context.close()
     # B3 幅 500 で書体（並びか その他から）
     for W in [500,400]:
-        pg=await fresh(W,900); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await pg.wait_for_timeout(500)
+        pg=await fresh(W,900); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await esc_if_editing(pg); await pg.wait_for_timeout(500)   # P2 に合わせて手順を変えた（判定は同じ）：箱を選んだだけにする
         vis=await pg.evaluate("(()=>{const b=document.querySelector('[data-text-tool=\"font\"]');return b&&b.offsetParent&&b.getBoundingClientRect().right<=innerWidth?1:0})()")
         if not vis:
             mb=await find_more(pg); await pg.mouse.click(*mb); await pg.wait_for_timeout(300)

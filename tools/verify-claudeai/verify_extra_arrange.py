@@ -5,6 +5,28 @@
 import asyncio, json, sys
 from playwright.async_api import async_playwright
 URL='file://'+sys.argv[1]; P='window.__playground'
+MOD='Meta' if sys.platform=='darwin' else 'Control'
+async def nosnap_key(pg):
+    # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
+    # 版の見分け：a2AutoScroll（線 A2 で足した関数。試験用 API か、ページの PG にある）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof (window.__playground.a2AutoScroll||(typeof PG!=='undefined'&&PG.a2AutoScroll))==='function'") else 'Alt'
+    return pg._nosnap
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
+    if await pg.evaluate("!!(window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+async def keep_off_edges(pg, y0, y1):
+    """P19 に合わせて手順を変えた（判定は同じ）：線 A2（P19）からは、ドラッグで窓の上下の端（上は道具の並びの下）から 28px に入ると自動でスクロールする。
+    つかむ点 y0 と離す点 y1 が両方とも端から 80px より内側に入るように、押す前にページをスクロールしておく（入りきらなければ何もしない）。
+    戻り値＝画面の上での y のずれ（つかむ点・離す点をこの分ずらして使う）"""
+    top, H = await pg.evaluate("[(()=>{const t=document.getElementById('toolbar');return t?Math.max(0,t.getBoundingClientRect().bottom):0})(), innerHeight]")
+    lo, hi = top + 80, H - 80
+    a, b = min(y0, y1), max(y0, y1)
+    if a >= lo and b <= hi: return 0
+    if b - a > hi - lo: return 0
+    want = (lo + hi) / 2 - (a + b) / 2
+    s0 = await pg.evaluate('scrollY'); await pg.evaluate(f'window.scrollBy(0,{-want})'); await pg.wait_for_timeout(120)
+    return -(await pg.evaluate('scrollY') - s0)
 R=[]
 def rec(k,ok,msg): R.append((k,ok,msg)); print(('OK ' if ok is True else ('NG ' if ok is False else '-- '))+k+' | '+msg, flush=True)
 async def main():
@@ -23,14 +45,16 @@ async def main():
         el=await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(100)
         r=await bb(pg,part); s=await scale(pg,part)
         x=r['x']+min(20,r['w']/2); y=r['y']+r['h']/2
-        if pre: await pg.mouse.click(x,y); await pg.wait_for_timeout(350)
-        if alt: await pg.keyboard.down('Alt')
+        y+=await keep_off_edges(pg,y,y+dy*s)   # P19
+        if pre: await pg.mouse.click(x,y); await esc_if_editing(pg); await pg.wait_for_timeout(350)   # P2 に合わせて手順を変えた（判定は同じ）
+        k=await nosnap_key(pg)   # P16 に合わせて手順を変えた（判定は同じ）
+        if alt: await pg.keyboard.down(k)
         await pg.mouse.move(x,y); await pg.mouse.down()
         for i in range(1,11): await pg.mouse.move(x+dx*s*i/10,y+dy*s*i/10); await pg.wait_for_timeout(10)
         await pg.wait_for_timeout(150)
         if hold: return
         await pg.mouse.up(); await pg.wait_for_timeout(350)
-        if alt: await pg.keyboard.up('Alt')
+        if alt: await pg.keyboard.up(k)
     async def drag_cy(pg,part,target_cy,hold=False):
         g=(await G(pg))[part]; await drag(pg,part,0,target_cy-(g['y']+g['h']/2),hold=hold)
     async def ops(pg): return await pg.evaluate(f"{P}.ops()")
@@ -47,10 +71,12 @@ async def main():
 
     # K0 Y14 の再現：区切り線の中心を品の並びの上端 −20 へ（見出しの組と品の並びの間＝並び替えの帯）
     for dev in ('pc','sp'):
-        pg=await fresh(dev=dev); g=await G(pg)
+        # P19 に合わせて手順を変えた（判定は同じ）：落とす所が窓の上の外にあり、線 A2（P19）からはドラッグで窓の端に来ると自動でスクロールするため、
+        # 止めている間にページが動いて落とす所がずれる。区切り線と品の並びが両方とも窓に入る高い窓（2400）で動かす
+        pg=await fresh(h=2400,dev=dev); g=await G(pg)
         await drag_cy(pg,'I_divider',g['I_cards']['y']-20,hold=True)
         dt=await pg.evaluate(f"{P}.dropTarget()"); line=await pg.evaluate("[...document.querySelectorAll('[data-drop-line]')].filter(e=>e.getBoundingClientRect().width>0).length")
-        await pg.mouse.up(); await pg.wait_for_timeout(350); await pg.keyboard.up('Alt')
+        await pg.mouse.up(); await pg.wait_for_timeout(350); await pg.keyboard.up(await nosnap_key(pg))   # P16
         o=await ops(pg); g1=await G(pg)
         hg_b=g['I_hg']['y']+g['I_hg']['h']
         rec(f'K0 {dev} 見出しの組と品の並びの間に落とす（Y14）',o and o[-1].get('t')=='reorder',
@@ -149,9 +175,9 @@ async def main():
     hs=await pg.evaluate("[...document.querySelectorAll('.rz-handle')].map(h=>{const r=h.getBoundingClientRect();return [h.dataset.dir||h.className,r.x+r.width/2,r.y+r.height/2]})")
     e=[h for h in hs if 'e' == str(h[0])[-1:] or 'e'==h[0]]
     if hs:
-        h=max(hs,key=lambda q:q[1]); await pg.keyboard.down('Alt'); await pg.mouse.move(h[1],h[2]); await pg.mouse.down()
+        h=max(hs,key=lambda q:q[1]); await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(h[1],h[2]); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
         for i in range(1,11): await pg.mouse.move(h[1]-800*i/10,h[2])
-        await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(400)
+        await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(400)   # P16 に合わせて手順を変えた（判定は同じ）
     ll=await pg.evaluate(f"{P}.listLayout()")
     rec('K10 sp 表の最小 200',abs(ll['I_table']['w']-200)<=0.5,f'つまみ={hs} 後={ll}')
     await pg.context.close()
@@ -160,9 +186,9 @@ async def main():
     pg=await fresh(); el=await pg.query_selector('[data-el="row_name_t_warabi"]'); await el.scroll_into_view_if_needed()
     r=await bb(pg,'row_name_t_warabi'); await pg.mouse.click(r['x']+20,r['y']+5); await pg.wait_for_timeout(400)
     hs=await pg.evaluate("[...document.querySelectorAll('.rz-handle')].map(h=>{const r=h.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})")
-    h=max(hs,key=lambda q:q[0]); await pg.keyboard.down('Alt'); await pg.mouse.move(h[0],h[1]); await pg.mouse.down()
+    h=max(hs,key=lambda q:q[0]); await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(h[0],h[1]); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,11): await pg.mouse.move(h[0]-2000*i/10,h[1])
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(400)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(400)   # P16 に合わせて手順を変えた（判定は同じ）
     r=await bb(pg,'row_name_t_matcha'); await pg.mouse.dblclick(r['x']+10,r['y']+r['h']/2); await pg.wait_for_timeout(400)
     await pg.keyboard.press('End'); await pg.keyboard.type('と季節の和菓子の盛り合わせ'); await pg.wait_for_timeout(200)
     await pg.keyboard.press('Escape'); await pg.mouse.click(5,1050); await pg.wait_for_timeout(400)
@@ -179,9 +205,9 @@ async def main():
         r=await bb(pg,'row_name_t_warabi'); await pg.mouse.click(r['x']+20,r['y']+5); await pg.wait_for_timeout(400)
     async def handle_drag(pg,dx):
         hs=await pg.evaluate("[...document.querySelectorAll('.rz-handle')].filter(h=>h.getBoundingClientRect().width>0).map(h=>{const r=h.getBoundingClientRect();return [r.x+r.width/2,r.y+r.height/2]})")
-        h=max(hs,key=lambda q:q[0]); await pg.keyboard.down('Alt'); await pg.mouse.move(h[0],h[1]); await pg.mouse.down()
+        h=max(hs,key=lambda q:q[0]); await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(h[0],h[1]); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
         for i in range(1,11): await pg.mouse.move(h[0]+dx*i/10,h[1]); await pg.wait_for_timeout(10)
-        await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(400)
+        await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(400)   # P16 に合わせて手順を変えた（判定は同じ）
         return h
     async def handles(pg):
         return await pg.evaluate("[...document.querySelectorAll('.rz-handle')].filter(h=>h.getBoundingClientRect().width>0).map(h=>{const r=h.getBoundingClientRect();return Math.round(r.x+r.width/2)})")
@@ -225,7 +251,10 @@ async def main():
         await pg.wait_for_timeout(150)
     await pg.mouse.click(5,1050); await pg.wait_for_timeout(400)
     g=await G(pg); l=await price_lines(pg,'row_price_t_warabi'); st=await pg.evaluate(f"JSON.stringify({P}.textStyles())")
-    rec('K15 pc 狭めた表で値段の文字を大きく',l==1,f"表 {w0:.1f}→{g['I_table']['w']:.1f} 値段の行数 {l} 文字の決まり {st[:160]}")
+    # 空振りで通らないよう、値段の文字が本当に大きくなったこと（16 より大きい）も見る。試験台29 では2回目のクリックで表が選ばれ、大きくなったのは表だった（DECISIONS #10）
+    ps=[x for x in json.loads(st) if x.get('part')=='row_price_t_warabi']; psz=ps[0].get('size') if ps else None
+    if not (psz and psz>16): rec('K15 pc 狭めた表で値段の文字を大きく',False,f"準備失敗：値段の文字が大きくならない（size={psz}）")
+    else: rec('K15 pc 狭めた表で値段の文字を大きく',l==1,f"表 {w0:.1f}→{g['I_table']['w']:.1f} 値段の大きさ {psz} 値段の行数 {l}")
     await pg.context.close()
 
     # K16 スマホの表を一番狭く→値段を長く（表示で広げない＝折れる？値だけ）
@@ -260,10 +289,10 @@ async def main():
 
     # K18 X26・帯：品の並び・表（②の子）の縁の 12 の内側も「間」（並び替え）。深い所は重なる
     async def probe(dev,part,target,off):
-        pg=await fresh(dev=dev); g=await G(pg)
+        pg=await fresh(h=2400,dev=dev); g=await G(pg)   # P19 に合わせて手順を変えた（判定は同じ）：K0 と同じく、端の自動スクロールで落とす所がずれないよう高い窓で
         ty=(g[target]['y']+off) if off>=0 else (g[target]['y']+g[target]['h']+off)
         await drag_cy(pg,part,ty,hold=True); dt=await pg.evaluate(f"{P}.dropTarget()")
-        await pg.mouse.up(); await pg.wait_for_timeout(300); await pg.keyboard.up('Alt'); await pg.context.close(); return dt
+        await pg.mouse.up(); await pg.wait_for_timeout(300); await pg.keyboard.up(await nosnap_key(pg)); await pg.context.close(); return dt   # P16
     for dev in ('pc','sp'):
         for part,target,off,want in (('I_divider','I_cards',8,'reorder'),('I_time','I_cards',-8,'reorder'),('I_divider','I_table',8,'reorder'),('I_divider','I_table',-8,'reorder'),('I_divider','I_cards',60,'overlap')):
             dt=await probe(dev,part,target,off)

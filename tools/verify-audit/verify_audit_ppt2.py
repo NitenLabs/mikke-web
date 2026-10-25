@@ -333,8 +333,8 @@ async def t_P18(br, url):
 # 作業票: ドラッグ・つまみで窓の上下の端に近づいたら自動でスクロール。
 # 再現: (a) F_b0 を画面の真ん中から窓の下の端（下から 4px）へドラッグして 1.5 秒止める。
 #       (b) F_h1 が画面の y=750 に来るまで下へスクロールしてから F_h1 を窓の上の端（上から 3px）へドラッグして 1.5 秒止める。
-#       (c) F_p1 を選び、右下のつまみを窓の下の端へ引いて 1.5 秒止める。
-# 合格: 止めている間に (a)(c) は下へ、(b) は上へ 40px 以上スクロールし、部品（(c) は写真の下の辺）がスクロールに付いてくること
+#       (c) F_b0 を選び、下の辺のつまみを窓の下の端へ引いて 1.5 秒止める（前は F_p1 の右下。下の (c) のコメント）。
+# 合格: 止めている間に (a)(c) は下へ、(b) は上へ 40px 以上スクロールし、部品（(c) は箱の下の辺）がスクロールに付いてくること
 #       （止めている間のページ上の動きがスクロールの 7 割以上）。
 #       ※試験台28 ではブラウザ自身の「文字を選びながらの自動スクロール」で画面だけが流れ、部品は置き去りになる。
 #         これはブラウザの既定の動きなので合格にしない（部品が付いてくることを条件に入れたのはそのため）。
@@ -373,25 +373,30 @@ async def t_P19(br, url):
         good = ym - y1 >= 40 and -c >= 0.7 * (ym - y1); ok &= good
         msg.append(f'上の端で止める scrollY {y0}→{ym}→{y1} 部品が付いてきた {r1(-c)}px')
     finally: await pg.context.close()
+    # (c) P19 の確かめたいこと（端で自動スクロールし、つまみが付いてくる）に合わせて、写真から文字の箱の下の辺のつまみに変えた（判定は同じ）：
+    #     写真は縦横比を保つので、中身の幅で大きさが頭打ちになり、窓の端まで引いても下の辺が付いてこない（自動スクロールと関係なく止まる）。
+    #     文字の箱（F_b0）の下の辺（s）のつまみは高さだけを伸ばすので、頭打ちにならずにスクロールに付いてこられる
     pg = await fresh(br, url)
     try:
-        await ev(pg, "(()=>{const e=document.querySelector('[data-el=F_p1]');e.scrollIntoView({block:'start'});scrollBy(0,-80)})()"); await pg.wait_for_timeout(300)
-        r = await vb(pg, 'F_p1'); await pg.mouse.click(r['x'] + 120, r['y'] + 120); await pg.wait_for_timeout(400)
-        if await sel(pg) != ['F_p1']: raise PrepFail(f'F_p1 を選べない {await sel(pg)}')
-        hd = await ev(pg, """(()=>{const hs=[...document.querySelectorAll('[data-handle-for=F_p1],.rz-handle,[data-handle]')].filter(e=>{const q=e.getBoundingClientRect();return q.width>0});
-          const p=document.querySelector('[data-el=F_p1]').getBoundingClientRect();let best=null,bd=1e9;
-          for(const h of hs){const q=h.getBoundingClientRect();const d=Math.hypot(q.x+q.width/2-p.right,q.y+q.height/2-p.bottom);if(d<bd){bd=d;best=[q.x+q.width/2,q.y+q.height/2]}}
+        await ev(pg, "(()=>{const e=document.querySelector('[data-el=F_b0]');e.scrollIntoView({block:'center'})})()"); await pg.wait_for_timeout(300)
+        room = await ev(pg, 'document.documentElement.scrollHeight-innerHeight-scrollY')
+        if room < 200: raise PrepFail(f'下へスクロールの余地がない {room}')
+        r = await select_part(pg, 'F_b0')   # P2：クリックで書き換えに入ったら Esc で箱を選んだだけにする
+        r = await vb(pg, 'F_b0')
+        hd = await ev(pg, """(()=>{const hs=[...document.querySelectorAll('[data-handle="s"]')].filter(e=>{const q=e.getBoundingClientRect();return q.width>0});
+          const p=document.querySelector('[data-el=F_b0]').getBoundingClientRect();let best=null,bd=1e9;
+          for(const h of hs){const q=h.getBoundingClientRect();const d=Math.hypot(q.x+q.width/2-(p.left+p.width/2),q.y+q.height/2-p.bottom);if(d<bd){bd=d;best=[q.x+q.width/2,q.y+q.height/2]}}
           return bd<16?best:null})()""")
-        if not hd: raise PrepFail('F_p1 の右下のつまみが見つからない')
+        if not hd: raise PrepFail('F_b0 の下の辺のつまみが見つからない')
         y0 = await ev(pg, 'scrollY'); h0 = r['h']
-        await pg.mouse.move(*hd); await pg.mouse.down(); await pg.mouse.move(hd[0] + 20, VH - 4, steps=20)
-        mid = await vb(pg, 'F_p1'); ym = await ev(pg, 'scrollY')
-        await pg.wait_for_timeout(1500); y1 = await ev(pg, 'scrollY'); aft = await vb(pg, 'F_p1')
+        await pg.mouse.move(*hd); await pg.mouse.down(); await pg.mouse.move(hd[0], VH - 4, steps=20)
+        mid = await vb(pg, 'F_b0'); ym = await ev(pg, 'scrollY')
+        await pg.wait_for_timeout(1500); y1 = await ev(pg, 'scrollY'); aft = await vb(pg, 'F_b0')
         await pg.mouse.up(); await pg.wait_for_timeout(400)
         c = (aft['py'] + aft['h']) - (mid['py'] + mid['h']) if (aft and mid) else 0
         if not mid or abs(mid['h'] - h0) < 10: raise PrepFail(f'つまみを引いても大きさが変わらない（つまみの操作が始まらない） h {r1(h0)}→{r1(mid["h"]) if mid else None}')
         good = y1 - ym >= 40 and c >= 0.7 * (y1 - ym); ok &= good
-        msg.append(f'つまみを下の端で止める scrollY {y0}→{ym}→{y1} 下の辺が付いてきた {r1(c)}px')
+        msg.append(f'つまみ（文字の箱の下の辺）を下の端で止める scrollY {y0}→{ym}→{y1} 下の辺が付いてきた {r1(c)}px')
     finally: await pg.context.close()
     return ok, ' / '.join(msg)
 

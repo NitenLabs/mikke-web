@@ -99,12 +99,20 @@ async def scrollto(pg, id):
     await pg.evaluate("s=>{const e=document.querySelector('[data-el=\"'+s+'\"]');if(e)e.scrollIntoView({block:'center'})}", id)
     await pg.wait_for_timeout(250)
 
-async def click(pg, id, dx=None, dy=None, n=1, button='left', scroll=True):
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る（押した所にカーソル）。
+    # 部品を「選ぶ」クリックの後、書き換えに入っていたら（editingId() が null でない）Esc を1回＝箱を選んだだけ（Esc の後も選ばれたまま）。
+    # P2 の無い版（試験台28・29）では書き換えに入らないので Esc を押さない（押すと選択が外れるため）
+    if await pg.evaluate("!!(window.__playground&&window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+
+async def click(pg, id, dx=None, dy=None, n=1, button='left', scroll=True, esc=True):
     if scroll: await scrollto(pg, id)
     r = await bb(pg, id)
     if not r: raise PrepFail('準備失敗：部品が無い ' + id)
     x = r['x'] + (dx if dx is not None else min(40, r['w'] / 2)); y = r['y'] + (dy if dy is not None else min(12, r['h'] / 2))
     await pg.mouse.click(x, y, click_count=n, button=button); await pg.wait_for_timeout(350)
+    if esc and n == 1 and button == 'left': await esc_if_editing(pg)   # P2 に合わせて手順を変えた（判定は同じ）
     return r
 
 async def clickcss(pg, css, wait=350):
@@ -800,7 +808,7 @@ async def t_F38(new):
 
 POPS = """(()=>{const C='#sectypes,#moreMenu,#fmenu,[role=menu],[role=listbox],[id*=enu],[class*=menu],[class*=pop],[id*=types],[id*=Types]';
   return [...document.querySelectorAll(C)].filter(e=>{const r=e.getBoundingClientRect();const c=getComputedStyle(e);return r.width>0&&r.height>0&&c.visibility!=='hidden'&&c.display!=='none'&&parseFloat(c.opacity)>0.05&&!e.closest('#toolbar>button')&&e.querySelector('button,[role=menuitem],[role=option],a')}).map(e=>{e.dataset.auditPop=e.dataset.auditPop||Math.random().toString(36).slice(2);return e.dataset.auditPop})})()"""
-FOCUS_IN = """ks=>{const a=document.activeElement;for(const k of ks){const p=document.querySelector('[data-audit-pop=\"'+k+'\"]');if(p&&p.contains(a)){const items=[...p.querySelectorAll('button,[role=menuitem],[role=option],a')].filter(b=>{const r=b.getBoundingClientRect();return r.width>0&&r.height>0&&!b.disabled});return {inside:true,idx:items.indexOf(a),n:items.length,t:(a.textContent||'').trim().slice(0,14)}}}return {inside:false,t:a.tagName+' '+((a.textContent||'').trim().slice(0,14))}}"""
+FOCUS_IN = """ks=>{const a=document.activeElement;for(const k of ks){const p=document.querySelector('[data-audit-pop=\"'+k+'\"]');if(p&&p.contains(a)){const items=[...p.querySelectorAll('button,[role=menuitem],[role=option],a')].filter(b=>{const r=b.getBoundingClientRect();return r.width>0&&r.height>0&&!b.disabled});const all=[...p.querySelectorAll('button,[role=menuitem],[role=option],a')].filter(b=>{const r=b.getBoundingClientRect();return r.width>0&&r.height>0});return {inside:true,idx:items.indexOf(a),n:items.length,all:all.length,t:(a.textContent||'').trim().slice(0,14)}}}return {inside:false,t:a.tagName+' '+((a.textContent||'').trim().slice(0,14))}}"""
 
 # ---- F39
 # 作業票: 「＋」「その他 ▾」をキーで開いたら、一覧の最初にフォーカスが入り、上下キーで選べ、Esc で閉じる。
@@ -809,7 +817,7 @@ FOCUS_IN = """ks=>{const a=document.activeElement;for(const k of ks){const p=doc
 #       28 では一覧は出るがフォーカスはボタンのまま、↓↑ でページがスクロールし、「＋」の一覧は Esc でも閉じない。
 #       一覧の中へは Tab を何回も押すしかなく、そのとき画面が一番下へ飛ぶ。
 # 合格: 「＋」「その他 ▾」のそれぞれで、(1) Enter の後、フォーカスが開いた一覧の最初の項目にある、(2) ↓ で一覧の中の
-#       次の項目へ、↑ で前の項目へフォーカスが動く、(3) Esc で一覧が閉じる、(4) Enter から Esc までの間、ページの
+#       次の項目へ、↑ で前の項目へフォーカスが動く（項目が1つの一覧では ↓↑ でフォーカスが一覧の中に留まる）、(3) Esc で一覧が閉じる、(4) Enter から Esc までの間、ページの
 #       スクロール（scrollY）が 30px より動かない。
 # 準備の確かめ: Tab で本当にそのボタンにフォーカスが入ったこと（40 回までに）、Enter で一覧が本当に開いたこと
 #       （Enter の前に無かった一覧の要素が見えるようになる）。
@@ -835,6 +843,11 @@ async def t_F39(new):
         dmax = max(abs(s - sy0) for s in sys_)
         first_ok = f0['inside'] and f0.get('idx') == 0
         arrows_ok = f1['inside'] and f2['inside'] and f1.get('idx') == 1 and f2.get('idx') == 0
+        # F39 の手順の直し（まとめ役の指示・判定は甘くしない）：幅 1440 の「その他 ▾」は項目が1つ（お品書きを見る）しかなく、
+        # 「↓ で2番目へ」がそもそもできない。項目が1つのときは「↓・↑ を押してもフォーカスが一覧の中（その1つ）に留まる」を上下キーの条件にする
+        # 押せない項目が混じっていても1つと数えないよう、見えている項目が全部で1つのときだけ（all＝押せないものも入れた数）
+        if f0.get('inside') and f0.get('n') == 1 and f0.get('all') == 1:
+            arrows_ok = f1['inside'] and f2['inside'] and f1.get('idx') == 0 and f2.get('idx') == 0
         msg.append(f'{target}: 開いた後のフォーカス {f0}・↓ {f1.get("idx", f1["t"])}・↑ {f2.get("idx", f2["t"])}・Esc 後 {"開いたまま" if still else "閉じた"}・スクロールの動き最大 {r1(dmax)}px')
         if not first_ok: bad.append(f'{target}: 一覧の最初にフォーカスが入らない')
         if not arrows_ok: bad.append(f'{target}: 上下キーで選べない')

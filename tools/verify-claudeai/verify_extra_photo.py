@@ -1,12 +1,22 @@
 # verify_extra_photo.py v1.1（Claude.ai・2026-10-05。v1.1＝2026-10-07：確認用の写真を、走らせた場所に書き出すようにした）
 # 試験台17〜19b の「作業票の試験の外」の確認：写真を変える・足す・明るさ・もう一方の端末での位置・押し下げ・ページが飛ばないか
 # 使い方：python3 verify_extra_photo.py /path/to/playgroundNN_single.html
-# F1 の横の期待はページの中身の真ん中（12+720*0.9972）。F13・F16 は幅 1024 の確認
+# F1 の横の期待はページの中身の真ん中（ページの左端＋720×その時の倍率。前は 12+720*0.9972 の決め打ち）。F13・F16 は幅 1024 の確認
 # 試験台17：作業票の試験の外の確認（F1〜）
 import asyncio, json, os, sys, base64
 from playwright.async_api import async_playwright
 PATH=sys.argv[1]; URL='file://'+PATH; P='window.__playground'; IMG=os.path.join(os.path.dirname(os.path.abspath(__file__)),'img17')
 R=[]
+MOD='Meta' if sys.platform=='darwin' else 'Control'
+async def nosnap_key(pg):
+    # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
+    # 版の見分け：a2AutoScroll（線 A2 で足した関数。試験用 API か、ページの PG にある）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof (window.__playground.a2AutoScroll||(typeof PG!=='undefined'&&PG.a2AutoScroll))==='function'") else 'Alt'
+    return pg._nosnap
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
+    if await pg.evaluate("!!(window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
 
 # 試験用の写真（img17/wide.jpg 1600x600・tall.jpg 600x1600）を作る
 import os
@@ -46,7 +56,11 @@ async def main():
         await insert(pg); a=await added(pg)
         if not a: rec(f'F1 scroll{sc}',False,'足されない'); continue
         r=await bb(pg,a[0]['part']); t=await tbh(pg)
-        cx,cy=r['x']+r['w']/2, r['y']+r['h']/2; ex,ey=12+720*0.9972,(t+1100)/2
+        cx,cy=r['x']+r['w']/2, r['y']+r['h']/2
+        # F19 に合わせて期待の出し方を変えた（判定は同じ）：前は倍率 0.9972（ページが横に 9px はみ出していた頃）を決め打ちして 12+720*0.9972。
+        # そのときのページの左端（.host）と倍率（getScale）から、ページの中身の真ん中（設計の 720）を画面の座標にする
+        hl=await pg.evaluate("document.querySelector('#sectionwrap .host').getBoundingClientRect().left"); sc_=await pg.evaluate(f"{P}.getScale()")
+        ex,ey=hl+720*sc_,(t+1100)/2
         sel=await pg.evaluate("[...document.querySelectorAll('.sel,[data-selected]')].length")
         w=await pg.evaluate(f"{P}.warnings()")
         rec(f'F1 scroll{sc}',abs(cx-ex)<=3 and abs(cy-ey)<=3,f'真ん中 ({cx:.0f},{cy:.0f}) 期待 ({ex:.0f},{ey:.0f})  ownerOverlaps={len(w["ownerOverlaps"])} overlaps={len(w["overlaps"])} errs={pg._errs[:1]}')
@@ -173,7 +187,7 @@ async def main():
 
     # F16 上の並びの幅：何も選ばない／文字を選ぶ／写真を選ぶ で、1440 と 1024 ではみ出さないか
     for W in [1440,1024]:
-        pg=await fresh(W,800); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await pg.wait_for_timeout(300)
+        pg=await fresh(W,800); r=await bb(pg,'F_h0'); await pg.mouse.click(r['x']+20,r['y']+10); await esc_if_editing(pg); await pg.wait_for_timeout(300)   # P2 に合わせて手順を変えた（判定は同じ）：「文字を選んだとき」
         ov=await pg.evaluate("(()=>{const t=document.getElementById('toolbar');return [t.scrollWidth,t.clientWidth,[...t.querySelectorAll('button')].filter(b=>b.offsetParent).map(b=>Math.round(b.getBoundingClientRect().right)).reduce((a,b)=>Math.max(a,b),0)]})()")
         rec(f'F16 上の並び（幅 {W}・文字を選んだとき）',ov[2]<=W,f'scrollWidth={ov[0]} clientWidth={ov[1]} 一番右のボタンの右端={ov[2]}')
         await pg.screenshot(path=f'F16_{W}.png',clip={'x':0,'y':0,'width':W,'height':60}); await pg.context.close()
@@ -187,9 +201,9 @@ async def main():
     # 足した写真を F_b0 のすぐ下へ（左端そろえ）
     r=await bb(pg,'F_b0'); ra=await bb(pg,a); gx,gy=ra['x']+10,ra['y']+10; tx,ty=r['x']+10,r['y']+r['h']+24+10
     await pg.mouse.click(gx,gy); await pg.wait_for_timeout(500)
-    await pg.keyboard.down('Alt'); await pg.mouse.move(gx,gy); await pg.mouse.down()
+    await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(gx,gy); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,16): await pg.mouse.move(gx+(tx-gx)*i/15, gy+(ty-gy)*i/15)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(500)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     anc=[x for x in await pg.evaluate(f"{P}.anchors()") if x.get('part')==a]
     await pg.click('#dSP'); await pg.wait_for_timeout(700)
     el=await pg.query_selector('[data-el="F_p1"]'); await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(300)
@@ -197,11 +211,14 @@ async def main():
     await pg.mouse.click(rp['x']+rp['w']/2, rp['y']+rp['h']-30); await pg.wait_for_timeout(500)
     selp=await pg.evaluate("[...document.querySelectorAll('.mark-sel')].map(e=>e.getAttribute('data-el'))")
     x0,y0=rp['x']+40, rp['y']+rp['h']-30
-    await pg.keyboard.down('Alt'); await pg.mouse.move(x0,y0); await pg.mouse.down()
-    for i in range(1,11): await pg.mouse.move(x0+4*i,y0)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(500)
+    await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(x0,y0); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
+    # J16（E3 sp）に合わせて手順を変えた（判定は同じ）：線 A2 からはドラッグで部品をページの左右の中に収める。スマホの配置の写真は
+    # ページの端まで約 20px しかなく、右へ 40px は端で止まる。端に届かない 15px（画面）動かし、設計の px に直した量を同じく ±1px で確かめる
+    for i in range(1,11): await pg.mouse.move(x0+1.5*i,y0)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     g1=(await pg.evaluate(f"{P}.geometry()"))['F_p1']; rp2=await bb(pg,'F_p1'); w=await pg.evaluate(f"{P}.warnings()")
-    rec('H1 押し下げられた写真を選んで動かす',selp==['F_p1'] and abs(g1['x']-g0['x']-40)<=1 and abs(rp2['y']-rp['y'])<=1 and not w['overlaps'],
+    want_dx=15*g0['w']/rp['w']
+    rec('H1 押し下げられた写真を選んで動かす',selp==['F_p1'] and abs(g1['x']-g0['x']-want_dx)<=1 and abs(rp2['y']-rp['y'])<=1 and not w['overlaps'],
         f"PC の付いていく先={anc[0]['anchor'] if anc else None} 選んだ={selp} dx={g1['x']-g0['x']:.1f} 画面 y {rp['y']:.0f}→{rp2['y']:.0f} overlaps={w['overlaps']}")
     await pg.screenshot(path='H1.png'); await pg.context.close()
 
@@ -209,10 +226,10 @@ async def main():
     pg=await fresh(); await pg.click('#dSP'); await pg.wait_for_timeout(500)
     el=await pg.query_selector('[data-el="F_b1"]'); await el.scroll_into_view_if_needed(); r=await bb(pg,'F_b1')
     x0,y0=r['x']+20,r['y']+10
-    await pg.mouse.click(x0,y0); await pg.wait_for_timeout(500)
-    await pg.keyboard.down('Alt'); await pg.mouse.move(x0,y0); await pg.mouse.down()
+    await pg.mouse.click(x0,y0); await esc_if_editing(pg); await pg.wait_for_timeout(500)   # P2 に合わせて手順を変えた（判定は同じ）
+    await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(x0,y0); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,16): await pg.mouse.move(x0+3*i,y0+12*i)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(500)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     ancb=[x for x in await pg.evaluate(f"{P}.anchors()") if x.get('part')=='F_b1']
     gs0=await pg.evaluate(f"{P}.geometry()")
     await pg.click('#dPC'); await pg.wait_for_timeout(500)
@@ -222,9 +239,9 @@ async def main():
     await pg.mouse.click(5,1000); await pg.wait_for_timeout(300)
     r=await bb(pg,'F_b0'); ra=await bb(pg,a); gx,gy=ra['x']+10,ra['y']+10; tx,ty=r['x']+10,r['y']+r['h']+24+10
     await pg.mouse.click(gx,gy); await pg.wait_for_timeout(500)
-    await pg.keyboard.down('Alt'); await pg.mouse.move(gx,gy); await pg.mouse.down()
+    await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(gx,gy); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,16): await pg.mouse.move(gx+(tx-gx)*i/15, gy+(ty-gy)*i/15)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(500)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     await pg.click('#dSP'); await pg.wait_for_timeout(700)
     gs1=await pg.evaluate(f"{P}.geometry()"); w=await pg.evaluate(f"{P}.warnings()")
     dys={k:round(gs1[k]['y']-gs0[k]['y'],1) for k in ['F_b0','F_p1','F_h1','F_b1'] if k in gs0}
@@ -262,10 +279,10 @@ async def main():
     pg=await fresh(); await pg.click('#dSP'); await pg.wait_for_timeout(500)
     el=await pg.query_selector('[data-el="F_b1"]'); await el.scroll_into_view_if_needed(); r=await bb(pg,'F_b1')
     x0,y0=r['x']+20,r['y']+10
-    await pg.mouse.click(x0,y0); await pg.wait_for_timeout(500)
-    await pg.keyboard.down('Alt'); await pg.mouse.move(x0,y0); await pg.mouse.down()
+    await pg.mouse.click(x0,y0); await esc_if_editing(pg); await pg.wait_for_timeout(500)   # P2 に合わせて手順を変えた（判定は同じ）
+    await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(x0,y0); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,16): await pg.mouse.move(x0+3*i,y0+6*i)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(500)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     ancb=[x for x in await pg.evaluate(f"{P}.anchors()") if x.get('part')=='F_b1']
     gs0=await pg.evaluate(f"{P}.geometry()")
     await pg.click('#dPC'); await pg.wait_for_timeout(500)
@@ -275,9 +292,9 @@ async def main():
     await pg.mouse.click(5,1000); await pg.wait_for_timeout(300)
     r=await bb(pg,'F_b0'); ra=await bb(pg,a); gx,gy=ra['x']+10,ra['y']+10; tx,ty=r['x']+10,r['y']+r['h']+24+10
     await pg.mouse.click(gx,gy); await pg.wait_for_timeout(500)
-    await pg.keyboard.down('Alt'); await pg.mouse.move(gx,gy); await pg.mouse.down()
+    await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(gx,gy); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,16): await pg.mouse.move(gx+(tx-gx)*i/15, gy+(ty-gy)*i/15)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(500)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     await pg.click('#dSP'); await pg.wait_for_timeout(700)
     gs1=await pg.evaluate(f"{P}.geometry()"); w=await pg.evaluate(f"{P}.warnings()")
     dys={k:round(gs1[k]['y']-gs0[k]['y'],1) for k in ['F_b0','F_p1','F_h1','F_b1'] if k in gs0}
@@ -288,10 +305,10 @@ async def main():
     pg=await fresh(); await pg.click('#dSP'); await pg.wait_for_timeout(500)
     el=await pg.query_selector('[data-el="F_b1"]'); await el.scroll_into_view_if_needed(); r=await bb(pg,'F_b1')
     x0,y0=r['x']+20,r['y']+10
-    await pg.mouse.click(x0,y0); await pg.wait_for_timeout(500)
-    await pg.keyboard.down('Alt'); await pg.mouse.move(x0,y0); await pg.mouse.down()
+    await pg.mouse.click(x0,y0); await esc_if_editing(pg); await pg.wait_for_timeout(500)   # P2 に合わせて手順を変えた（判定は同じ）
+    await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(x0,y0); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,16): await pg.mouse.move(x0+3*i,y0+9*i)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(500)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     ancb=[x for x in await pg.evaluate(f"{P}.anchors()") if x.get('part')=='F_b1']
     gs0=await pg.evaluate(f"{P}.geometry()")
     await pg.click('#dPC'); await pg.wait_for_timeout(500)
@@ -301,9 +318,9 @@ async def main():
     await pg.mouse.click(5,1000); await pg.wait_for_timeout(300)
     r=await bb(pg,'F_b0'); ra=await bb(pg,a); gx,gy=ra['x']+10,ra['y']+10; tx,ty=r['x']+10,r['y']+r['h']+24+10
     await pg.mouse.click(gx,gy); await pg.wait_for_timeout(500)
-    await pg.keyboard.down('Alt'); await pg.mouse.move(gx,gy); await pg.mouse.down()
+    await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(gx,gy); await pg.mouse.down()   # P16 に合わせて手順を変えた（判定は同じ）
     for i in range(1,16): await pg.mouse.move(gx+(tx-gx)*i/15, gy+(ty-gy)*i/15)
-    await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(500)
+    await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(500)   # P16 に合わせて手順を変えた（判定は同じ）
     await pg.click('#dSP'); await pg.wait_for_timeout(700)
     gs1=await pg.evaluate(f"{P}.geometry()"); w=await pg.evaluate(f"{P}.warnings()")
     dys={k:round(gs1[k]['y']-gs0[k]['y'],1) for k in ['F_b0','F_p1','F_h1','F_b1'] if k in gs0}

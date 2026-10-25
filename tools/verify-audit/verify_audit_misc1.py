@@ -62,7 +62,7 @@ BAND = r"""(()=>{const f=document.getElementById('fmenu'); if(!f) return null; c
   const lines=b=>{const rg=document.createRange();rg.selectNodeContents(b);return new Set([...rg.getClientRects()].filter(q=>q.width>0.5).map(q=>Math.round(q.top))).size};
   const bs=[...f.querySelectorAll('button,[role=button],[role=menuitem]')].filter(b=>{const q=b.getBoundingClientRect();const c=getComputedStyle(b);return q.width>0&&q.height>0&&c.visibility!=='hidden'&&c.display!=='none'});
   return {vis, x:R.left, y:R.top, r:R.right, b:R.bottom,
-    btns: bs.map(b=>{const q=b.getBoundingClientRect(); return {t:(b.textContent||'').trim().replace(/\s+/g,' '), dis:!!(b.disabled||b.getAttribute('aria-disabled')==='true'), lines:lines(b), x:q.left,y:q.top,r:q.right,b:q.bottom}})}})()"""
+    btns: bs.map(b=>{const q=b.getBoundingClientRect(); return {t:(b.textContent||'').trim().replace(/\s+/g,' '), dis:!!(b.disabled||b.getAttribute('aria-disabled')==='true'), lines:lines(b), op:parseFloat(getComputedStyle(b).opacity), col:getComputedStyle(b).color, x:q.left,y:q.top,r:q.right,b:q.bottom}})}})()"""
 
 # ---------------------------------------------------------------- 共通の小道具
 def hook(pg):
@@ -89,12 +89,21 @@ async def vb(pg, id):
     """画面上の位置（なければ None）"""
     return await pg.evaluate("s=>{const e=document.querySelector('[data-el=\"'+s+'\"]');if(!e)return null;const r=e.getBoundingClientRect();if(r.width==0&&r.height==0)return null;return {x:r.x,y:r.y,w:r.width,h:r.height,r:r.right,b:r.bottom,py:r.y+scrollY}}", id)
 
-async def click(pg, id, dx=40, dy=12, button='left', n=1, scroll=True):
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る（押した所にカーソル）。
+    # 部品を「選ぶ」クリックの後、書き換えに入っていたら（editingId() が null でない）Esc を1回＝箱を選んだだけ（Esc の後も選ばれたまま）。
+    # P2 の無い版（試験台28・29）では書き換えに入らないので Esc を押さない（押すと選択が外れるため）
+    if await pg.evaluate("!!(window.__playground&&window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
+
+async def click(pg, id, dx=40, dy=12, button='left', n=1, scroll=True, esc=True):
     if scroll: await scrollto(pg, id)
     r = await vb(pg, id)
     if not r: raise RuntimeError('部品が無い: ' + id)
     await pg.mouse.click(r['x'] + min(dx, r['w'] / 2), r['y'] + min(dy, r['h'] / 2), button=button, click_count=n)
-    await pg.wait_for_timeout(400); return r
+    await pg.wait_for_timeout(400)
+    if esc and n == 1 and button == 'left': await esc_if_editing(pg)   # P2 に合わせて手順を変えた（判定は同じ）
+    return r
 
 async def dbl(pg, id, dx=40, dy=12):
     await scrollto(pg, id); r = await vb(pg, id)
@@ -635,10 +644,10 @@ async def t_F63(br, url):
     finally: await pg.context.close()
 
 # ---- F18
-# 作業票: 帯のボタンの文字は折らない（入らない分は「その他」にまとめる）。押せないボタンは出さない
+# 作業票: 帯のボタンの文字は折らない（入らない分は「その他」にまとめる）。押せないボタンは出さない（→ P26 を優先：灰色で出す）
 # 再現: 窓の幅 1440・1024・800 で、F_p0・F_h0 を右クリックして帯を出す。品の名前（card_name_c_jonama）は選んで帯を出す
 #       （選ぶだけで出なければ右クリック）。
-# 合格: どの帯でも、見えているボタンの文字が1行（Range の行の数＝1）で、押せない（disabled）ボタンが見えていない。
+# 合格: どの帯でも、見えているボタンの文字が1行（Range の行の数＝1）で、押せないボタンは disabled（または aria-disabled）で灰色に見える（P26）。
 # 準備の確かめ: それぞれで帯が出たこと。
 async def t_F18(br, url):
     bad = []; seen = 0
@@ -656,9 +665,13 @@ async def t_F18(br, url):
                     await pg.mouse.click(r['x'] + dx, r['y'] + dy, button='right'); await pg.wait_for_timeout(400); bd = await band(pg)
                 if not (bd and bd['vis']): return False, f'準備失敗：幅 {w} の {id} で帯が出ない'
                 seen += 1
+                # P26 に合わせて条件を変えた（まとめ役の決め：P26＝押せないものは消さずに灰色で出す。PowerPoint と同じ）：
+                # 前は「押せない（disabled）ボタンが見えていない」。今は「押せないボタンは disabled（または aria-disabled）で、灰色に見える」
+                # （灰色＝透明度が 0.95 未満。#fmenu の押せないボタンは透明度 .4／.55 で出す）。文字が折れない条件はそのまま
+                # 前は「押せるボタンと文字の色が違う」でも通していたが、灰色でなくても通るので外した（DECISIONS #10）
                 for b in bd['btns']:
                     if b['lines'] > 1: bad.append(f'{w}:{id[:6]}「{b["t"]}」{b["lines"]}行')
-                    if b['dis']: bad.append(f'{w}:{id[:6]}「{b["t"]}」押せない')
+                    if b['dis'] and not (b['op'] < 0.95): bad.append(f'{w}:{id[:6]}「{b["t"]}」押せないのに灰色でない')
             finally: await pg.context.close()
     return not bad, f'帯 {seen} 個を見た・問題 {len(bad)}：' + '、'.join(bad[:8])
 

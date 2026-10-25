@@ -13,6 +13,16 @@ P = 'window.__playground'
 IMG = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', 'refs', 'compare', 'layout', 'playground24_testimg'))
 if not os.path.isdir(IMG): IMG = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'img17')   # 後方互換
 R = []
+MOD='Meta' if sys.platform=='darwin' else 'Control'
+async def nosnap_key(pg):
+    # P16 に合わせて手順を変えた（判定は同じ）：線 A2（P16）からは Option(Alt)+ドラッグ＝複製、吸い付かない＝Cmd（MOD）。
+    # 版の見分け：a2AutoScroll（線 A2 で足した関数。試験用 API か、ページの PG にある）があれば MOD、無ければ（試験台28・29 以前）Alt
+    if not hasattr(pg,'_nosnap'): pg._nosnap=MOD if await pg.evaluate("typeof (window.__playground.a2AutoScroll||(typeof PG!=='undefined'&&PG.a2AutoScroll))==='function'") else 'Alt'
+    return pg._nosnap
+async def esc_if_editing(pg):
+    # P2 に合わせて手順を変えた（判定は同じ）：線 A2（P2）からは文字の箱を押して離すと書き換えに入る。入っていたら Esc 1回＝選んだだけ（P2 の無い版では押さない）
+    if await pg.evaluate("!!(window.__playground.editingId&&window.__playground.editingId())"):
+        await pg.keyboard.press('Escape'); await pg.wait_for_timeout(150)
 def rec(k, ok, msg=''): R.append((k, ok, msg)); print(('OK ' if ok is True else ('NG ' if ok is False else '-- ')) + k + (' | ' + msg if msg else ''), flush=True)
 
 def rt_bad(r):
@@ -138,9 +148,9 @@ async def main():
             await el.scroll_into_view_if_needed(); await pg.wait_for_timeout(100)
             bx = await el.bounding_box(); sc = bx['width'] / before['w'] if before and before['w'] else 1
             x = bx['x'] + min(20, bx['width'] / 2); y = bx['y'] + bx['height'] / 2
-            await pg.mouse.click(x, y); await pg.wait_for_timeout(300); await pg.keyboard.down('Alt'); await pg.mouse.move(x, y); await pg.mouse.down()
+            await pg.mouse.click(x, y); await esc_if_editing(pg); await pg.wait_for_timeout(300); await pg.keyboard.down(await nosnap_key(pg)); await pg.mouse.move(x, y); await pg.mouse.down()   # P2・P16 に合わせて手順を変えた（判定は同じ）
             for i in range(1, 11): await pg.mouse.move(x, y + 40 * sc * i / 10); await pg.wait_for_timeout(10)
-            await pg.mouse.up(); await pg.keyboard.up('Alt'); await pg.wait_for_timeout(300)
+            await pg.mouse.up(); await pg.keyboard.up(await nosnap_key(pg)); await pg.wait_for_timeout(300)   # P16 に合わせて手順を変えた（判定は同じ）
             after = (await ev(pg, f"{P}.geometry()")).get('addp_91'); moved = bool(before and after and abs(after['y'] - before['y']) >= 10)
         r = await rt(pg); bad1 = rt_bad(r)
         # (b) 土台にある足した文字 add_90 を書き換える（§2.7：ふつうの書き換えとして記録してよい）
