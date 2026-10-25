@@ -251,7 +251,10 @@ async def main():
         await pg.wait_for_timeout(150)
     await pg.mouse.click(5,1050); await pg.wait_for_timeout(400)
     g=await G(pg); l=await price_lines(pg,'row_price_t_warabi'); st=await pg.evaluate(f"JSON.stringify({P}.textStyles())")
-    rec('K15 pc 狭めた表で値段の文字を大きく',l==1,f"表 {w0:.1f}→{g['I_table']['w']:.1f} 値段の行数 {l} 文字の決まり {st[:160]}")
+    # 空振りで通らないよう、値段の文字が本当に大きくなったこと（16 より大きい）も見る。試験台29 では2回目のクリックで表が選ばれ、大きくなったのは表だった（DECISIONS #10）
+    ps=[x for x in json.loads(st) if x.get('part')=='row_price_t_warabi']; psz=ps[0].get('size') if ps else None
+    if not (psz and psz>16): rec('K15 pc 狭めた表で値段の文字を大きく',False,f"準備失敗：値段の文字が大きくならない（size={psz}）")
+    else: rec('K15 pc 狭めた表で値段の文字を大きく',l==1,f"表 {w0:.1f}→{g['I_table']['w']:.1f} 値段の大きさ {psz} 値段の行数 {l}")
     await pg.context.close()
 
     # K16 スマホの表を一番狭く→値段を長く（表示で広げない＝折れる？値だけ）
