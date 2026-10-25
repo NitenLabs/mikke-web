@@ -539,7 +539,7 @@ OVL = """(()=>{const ph=document.querySelector('[data-el=F_p0]').getBoundingClie
     if(c.position!='fixed'&&c.position!='absolute')continue;if(c.display=='none'||c.visibility=='hidden')continue;const r=e.getBoundingClientRect();if(r.width<60||r.height<10)continue;
     if(!e.dataset.__ovl){e.dataset.__ovl='o'+(n++)+'_'+Date.now()%100000}
     out.push({k:e.dataset.__ovl,n:(e.id||e.className||e.tagName).toString().slice(0,20),x:r.x,y:r.y,w:r.width,h:r.height,b:r.bottom,hit:r.left<ph.right&&r.right>ph.left&&r.top<ph.bottom+60&&r.bottom>ph.top})}
-  return {ph:{x:ph.x,y:ph.y,b:ph.bottom},o:out}})()"""
+  return {ph:{x:ph.x,y:ph.y,b:ph.bottom,w:ph.width},o:out}})()"""
 async def t_J32(br, url, imgs):
     pg = await fresh(br, url)
     try:
@@ -554,14 +554,17 @@ async def t_J32(br, url, imgs):
         await pg.set_viewport_size({'width': 800, 'height': 800}); await pg.wait_for_timeout(800)
         b = await pg.evaluate(OVL); now = {o['k']: o for o in b['o']}; vw, vh = 800, 800
         bad = []
+        # 窓を狭めると画面の倍率が変わり、写真も層も同じ割合で縮む。写真からのずれは写真の縮んだ割合 k を掛けて比べる（許す幅は同じ 8px）。
+        # 2026-10-25 J32：前は倍率が変わらない前提で、写真の外へはみ出す拡大した写真（dim・bright）が、正しく付いてきていても置き去りに見えていた。直す前の main（c3915d3）はこの判定でも NG（DECISIONS #10）
+        k = b['ph']['w'] / a['ph']['w'] if a['ph'].get('w') else 1
         for o in layers:
             n = now.get(o['k'])
             if not n: continue   # 消えた
             if n['x'] <= 1 and n['y'] <= 1 and n['w'] >= vw - 2 and n['h'] >= vh - 2: continue   # 画面全体を覆う暗幕は写真に付いてこなくてよい
-            dx_ok = abs((n['x'] - b['ph']['x']) - (o['x'] - a['ph']['x'])) <= 8
-            dy_ok = abs((n['y'] - b['ph']['y']) - (o['y'] - a['ph']['y'])) <= 8 or abs((n['y'] - b['ph']['b']) - (o['y'] - a['ph']['b'])) <= 8
+            dx_ok = abs((n['x'] - b['ph']['x']) - k * (o['x'] - a['ph']['x'])) <= 8
+            dy_ok = abs((n['y'] - b['ph']['y']) - k * (o['y'] - a['ph']['y'])) <= 8 or abs((n['y'] - b['ph']['b']) - k * (o['y'] - a['ph']['b'])) <= 8
             if not (dx_ok and dy_ok): bad.append(f"{o['n']}({r1(n['x'])},{r1(n['y'])})")
-        return not bad, f'写真 ({r1(a["ph"]["x"])},{r1(a["ph"]["y"])})→({r1(b["ph"]["x"])},{r1(b["ph"]["y"])}) 置き去りの層={bad}'
+        return not bad, f'写真 ({r1(a["ph"]["x"])},{r1(a["ph"]["y"])})→({r1(b["ph"]["x"])},{r1(b["ph"]["y"])}) 倍率 {k:.3f} 置き去りの層={bad}'
     finally: await pg.context.close()
 
 # ---- J46

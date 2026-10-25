@@ -38,20 +38,30 @@ function ensureZoomBar(){ if(zoomBar)return zoomBar; const w=document.createElem
 function enterCrop(id){ if(PG.isCropping())return; if(PG.state.editing)PG.commitEdit(); fmenu.classList.remove("on"); if(!PG.beginCrop(id)) return; ensureZoomBar()._place=null; drawCropOverlay(); }
 window.onCrop=function(){ drawCropOverlay(); };   // app.js がドラッグ中に呼ぶ
 function drawCropOverlay(){
-  const st=PG.cropState(); if(!st||!st.display){ cropwrap.style.display="none"; cropwrap.innerHTML=""; return; }
+  const st=PG.cropState(); if(!st||!st.display){ cropwrap.style.display="none"; cropwrap.innerHTML=""; cropwrap._url=null; return; }
   const n=PG.elNode(st.id); if(!n){ cropwrap.style.display="none"; return; }
   const r=n.getBoundingClientRect(); const sc=PG.getScale();   // 枠の画面上の矩形と倍率（設計px→画面px）
   const d=st.display; const DW=d.dw*sc, DH=d.dh*sc, OX=d.ox*sc, OY=d.oy*sc;
   const url=PG.assetUrl((PG.photosApi().find(p=>p.part===st.id)||{}).asset)||"";
   cropwrap.style.display="block"; cropwrap.style.left="0"; cropwrap.style.top="0"; cropwrap.style.width="0"; cropwrap.style.height="0";
-  cropwrap.innerHTML=
-    '<div class="dim" style="left:'+(r.left+OX)+'px;top:'+(r.top+OY)+'px;width:'+DW+'px;height:'+DH+'px;background-image:url('+url+');background-size:'+DW+'px '+DH+'px"></div>'
-   +'<div class="clip" style="left:'+r.left+'px;top:'+r.top+'px;width:'+r.width+'px;height:'+r.height+'px"><div class="bright" style="left:'+OX+'px;top:'+OY+'px;width:'+DW+'px;height:'+DH+'px;background-image:url('+url+');background-size:'+DW+'px '+DH+'px"></div></div>';
+  // J31 重ね描きは作り直さず、位置と大きさだけ書き換える。前は動かすたびに innerHTML で作り直していて、指が触っている要素が消え、
+  // 2歩目からの touchmove が cropwrap に届かず（外れた要素には伝わらない）、スマホで写真が指に付いてこなかった
+  let dim=cropwrap.querySelector(":scope>.dim"), clip=cropwrap.querySelector(":scope>.clip"), bright=clip&&clip.querySelector(".bright");
+  if(!dim||!clip||!bright||cropwrap.querySelectorAll(":scope>.ch").length!==4){
+    cropwrap.innerHTML='<div class="dim"></div><div class="clip"><div class="bright"></div></div>';
+    for(const dir of ["nw","ne","sw","se"]){ const h=document.createElement("div"); h.className="ch"; h.setAttribute("data-crop-handle",dir); cropwrap.appendChild(h); }
+    dim=cropwrap.querySelector(":scope>.dim"); clip=cropwrap.querySelector(":scope>.clip"); bright=clip.querySelector(".bright");
+  }
+  const bg="url("+url+")";
+  Object.assign(dim.style,{left:(r.left+OX)+"px",top:(r.top+OY)+"px",width:DW+"px",height:DH+"px",backgroundSize:DW+"px "+DH+"px"});
+  Object.assign(clip.style,{left:r.left+"px",top:r.top+"px",width:r.width+"px",height:r.height+"px"});
+  Object.assign(bright.style,{left:OX+"px",top:OY+"px",width:DW+"px",height:DH+"px",backgroundSize:DW+"px "+DH+"px"});
+  if(cropwrap._url!==bg){ dim.style.backgroundImage=bg; bright.style.backgroundImage=bg; cropwrap._url=bg; }
   // §5 明るさは見せる範囲の中でも掛かったまま
-  const bv=((PG.photosApi().find(p=>p.part===st.id)||{}).brightness)||0; const bf=bv?("brightness("+(1+bv/100)+")"):""; cropwrap.querySelectorAll(".dim,.bright").forEach(x=>x.style.filter=bf);
+  const bv=((PG.photosApi().find(p=>p.part===st.id)||{}).brightness)||0; const bf=bv?("brightness("+(1+bv/100)+")"):""; dim.style.filter=bf; bright.style.filter=bf;
   // 四隅のつまみ（表示画像の角）
-  const corners=[["nw",OX,OY],["ne",OX+DW,OY],["sw",OX,OY+DH],["se",OX+DW,OY+DH]];
-  for(const [dir,cx,cy] of corners){ const h=document.createElement("div"); h.className="ch"; h.setAttribute("data-crop-handle",dir); h.style.left=(r.left+cx)+"px"; h.style.top=(r.top+cy)+"px"; cropwrap.appendChild(h); }
+  const corners={nw:[OX,OY],ne:[OX+DW,OY],sw:[OX,OY+DH],se:[OX+DW,OY+DH]};
+  for(const h of cropwrap.querySelectorAll(":scope>.ch")){ const p=corners[h.getAttribute("data-crop-handle")]; h.style.left=(r.left+p[0])+"px"; h.style.top=(r.top+p[1])+"px"; }
   cropwrap._frame={left:r.left,top:r.top,sc};
   // N3 横棒：いつも画面の中に。枠の下（入らなければ上）に置き、左右も画面内に収める。ドラッグ中は値を書き換えない
   if(zoomBar){ zoomBar.style.display="flex"; const bw=zoomBar.offsetWidth||200, bh=zoomBar.offsetHeight||28;
@@ -64,7 +74,9 @@ function drawCropOverlay(){
 }
 // F12 ページをスクロールしても重ね描きを写真に付けたままにする（PC）
 window.addEventListener("scroll",()=>{ if(!isPhone()&&PG.isCropping()) drawCropOverlay(); },{passive:true});
-function exitCropOverlay(){ cropwrap.style.display="none"; cropwrap.innerHTML=""; if(zoomBar){ zoomBar.style.display="none"; zoomBar._place=null; } }
+// J32 窓の大きさが変わったら、重ね描きと拡大の棒を写真に付け直す（棒の置き場所も選び直す）。ページの描き直しの後に測るよう1コマ待つ
+window.addEventListener("resize",()=>{ requestAnimationFrame(()=>{ if(!PG.isCropping())return; if(zoomBar) zoomBar._place=null; drawCropOverlay(); }); });
+function exitCropOverlay(){ cropwrap.style.display="none"; cropwrap.innerHTML=""; cropwrap._url=null; if(zoomBar){ zoomBar.style.display="none"; zoomBar._place=null; } }
 function a3_zoomTop(place,r,bh){ return place==="inside"?(r.bottom-bh-8):place==="above"?(r.top-bh-8):(r.bottom+8); }
 function a3_pickZoomPlace(id,r,left,bw,bh){
   const rects=[]; for(const e of document.querySelectorAll("#sectionwrap [data-el]")){ if(e.getAttribute("data-el")===id||e.querySelector("[data-el]")) continue;
