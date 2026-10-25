@@ -26,3 +26,6 @@ refs/compare/layout/playground*/verify-audit/
 refs/compare/layout/playground*/shop_after.json
 refs/compare/layout/editor/
 apps/editor/dist/
+
+# Python の一時ファイル
+__pycache__/
