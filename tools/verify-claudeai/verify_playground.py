@@ -711,7 +711,9 @@ async def main():
                     el = await pg.query_selector(f'[data-el="{part}"]'); await el.scroll_into_view_if_needed(); bb = await el.bounding_box()
                     await click_sel(pg, bb['x'] + min(20, bb['width'] / 2), bb['y'] + bb['height'] / 2); await pg.wait_for_timeout(150)   # P2 に合わせて手順を変えた（判定は同じ）
                     await pg.mouse.click(bb['x'] + min(20, bb['width'] / 2), bb['y'] + bb['height'] / 2, button='right'); await pg.wait_for_timeout(250)
-                    bb = await el.bounding_box(); m = await menu_box()
+                    # 手順の直し（判定は同じ）：右クリックで部品が描き直されると、前に取った el が外れて bounding_box() が None になる。選び直して測る
+                    el = await pg.query_selector(f'[data-el="{part}"]'); bb = (await el.bounding_box()) if el else None; m = await menu_box()
+                    if bb is None: ok(f'W11 {dev} {part} を選んだとき操作ボタンが部品に重ならない', False, f'準備失敗：右クリックの後に {part} が見えない'); continue
                     over = m is not None and not (m['y'] + m['h'] <= bb['y'] + 0.5 or m['y'] >= bb['y'] + bb['height'] - 0.5 or m['x'] + m['w'] <= bb['x'] or m['x'] >= bb['x'] + bb['width'])
                     ok(f'W11 {dev} {part} を選んだとき操作ボタンが部品に重ならない', m is not None and not over, f'メニュー {m} 部品 {bb}')
 
