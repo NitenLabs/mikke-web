@@ -23,6 +23,9 @@ jobs:
       - uses: actions/setup-node@v4
         with: { node-version: 22, cache: npm }
       - run: npm ci
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install numpy pillow   # 書き出しが使う tools/crop_media.py・compose_sections.py
       - run: npx playwright install --with-deps   # 古い書き出しの試験（metacheck）が chromium・webkit・firefox を使う
       - name: npm test（落ちたら要所を注記に出す。ログの保管場所が読めない所からも見られるように）
         run: |
