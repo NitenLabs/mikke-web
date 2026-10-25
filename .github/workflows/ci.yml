@@ -1,6 +1,7 @@
 name: ci
 
 # push と PR のたびに：単体試験 → 編集画面を組み立てる → 本物の操作の確認（8 area を同時に）→ ラチェット
+# 走らせる所は ubuntu-24.04 に固定（ubuntu-latest は 2026-10-19 から Ubuntu 26 に移り、playwright 1.56 の --with-deps が通らない）
 on:
   push:
     branches: [main, 'track/**']
@@ -16,7 +17,7 @@ env:
 
 jobs:
   unit:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -33,7 +34,7 @@ jobs:
 
   e2e-api:
     # 編集画面 ⇄ API の通しの試験（ログイン・保存・写真・公開・ぶつかり）。wrangler dev をローカルで立てる
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -47,7 +48,7 @@ jobs:
       - run: node --test apps/editor/test/e2e-api.test.mjs
 
   build-editor:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -63,7 +64,7 @@ jobs:
 
   audit:
     needs: build-editor
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
       matrix:
@@ -87,7 +88,7 @@ jobs:
 
   ratchet:
     needs: audit
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
