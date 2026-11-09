@@ -8,5 +8,5 @@ c3 K4B6C8zoGxc https://images.unsplash.com/photo-1762398948309-efc21c1f3764?rect
 fire A1oEyeLb2oE https://images.unsplash.com/photo-1597353811858-fbb7ce0a9ca6?w=2000&q=80&fm=webp
 mn1 tKJ1T1Vvvnw https://images.unsplash.com/photo-1783788357923-649e29b7b006?rect=173,1425,5528,3144&w=800&q=80&fm=webp
 mn2 FjCb_EIPf_Y https://images.unsplash.com/photo-1735353783227-80b22ef618d9?rect=1983,992,3636,2066&w=800&q=80&fm=webp
-se1 Eg2Dr6oebd0 https://images.unsplash.com/photo-1768203632832-7053822ea4a5?rect=2598,2200,2762,1726&w=1616&q=80&fm=webp
+se1 Eg2Dr6oebd0 https://images.unsplash.com/photo-1768203632832-7053822ea4a5?rect=2598,2508,2269,1418&w=1616&q=80&fm=webp
 se2 I5-j8AflLGA https://images.unsplash.com/photo-1759753876668-a5e7a7e41a59?rect=687,2536,2483,1479&w=808&q=80&fm=webp
