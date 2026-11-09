@@ -1,0 +1,74 @@
+{
+  "name": "炭火焼肉 くろ炭",
+  "nameKana": "すみびやきにく くろずみ",
+  "genreDetail": "焼肉・七輪の炭火",
+  "town": "大桝町",
+  "phone": { "display": "0797-00-0000", "digits": "0797000000" },
+  "closedDay": "wed",
+  "periods": [{ "start": "17:00", "end": "23:00", "lastOrder": "22:30" }],
+  "heroLabel": "CHARCOAL YAKINIKU",
+  "catchCopyLines": ["炭の火で、", "肉の旨みを", "引き出す。"],
+  "labels": { "about": "About", "charcoal": "Charcoal", "cut": "Cut", "menu": "Menu", "menuBig": "MENU", "seats": "Seats", "info": "Information", "menuButton": "Menu", "reserveButton": "ご予約" },
+  "about": {
+    "heading": "一頭買いの黒毛和牛を、七輪の炭で。",
+    "headingSp": ["一頭買いの", "黒毛和牛を、", "七輪の炭で。"],
+    "body": "黒毛和牛を一頭買いし、部位ごとに切り分けています。七輪の備長炭で、表面をさっと焼いて脂を落とす。〆の冷麺まで、ゆっくりどうぞ。"
+  },
+  "charcoal": {
+    "heading": ["七輪の", "備長炭で。"],
+    "body": "七輪に備長炭をおこしてお席へお持ちします。強い火で表面をさっと焼くと、余分な脂が落ちて肉の旨みが残ります。"
+  },
+  "cut": {
+    "heading": ["部位ごとに、", "切り分ける。"],
+    "body": "一頭買いした黒毛和牛を、部位ごとに切り分けています。タンやハラミのほか、その日の希少部位もお品書きからお選びいただけます。"
+  },
+  "menu": {
+    "heading": "お品書き",
+    "note": "価格はすべて税込です。",
+    "groups": [
+      { "id": "yakiniku", "name": "焼肉", "rows": [
+        { "id": "tanshio", "name": "特選タン塩", "price": 1980 },
+        { "id": "harami", "name": "上ハラミ", "price": 1680 },
+        { "id": "karubi", "name": "黒毛和牛カルビ", "price": 1580 },
+        { "id": "rare", "name": "本日の希少部位", "price": 2480, "from": true },
+        { "id": "horumon", "name": "ホルモン盛り合わせ", "price": 1280 }
+      ] },
+      { "id": "shime", "name": "〆", "rows": [
+        { "id": "reimen", "name": "冷麺", "price": 980 },
+        { "id": "bibimbap", "name": "石焼ビビンバ", "price": 1100 }
+      ] },
+      { "id": "course", "name": "コース", "rows": [
+        { "id": "course1", "name": "炭火コース", "price": 6600 },
+        { "id": "course2", "name": "特選炭火コース", "price": 9900 }
+      ] }
+    ]
+  },
+  "seats": {
+    "heading": "テーブル6卓、個室1室。",
+    "body": "七輪を囲むテーブル席のほか、個室もご用意しています。"
+  },
+  "info": {
+    "heading": "ご案内",
+    "rows": [
+      ["所在地", "$address"],
+      ["営業時間", "17:00〜23:00（L.O. 22:30）"],
+      ["定休日", "水曜日"],
+      ["お席", "テーブル6卓・個室1室"],
+      ["お電話", "$phone"]
+    ]
+  },
+  "reserve": {
+    "heading": "ご予約は、お電話で。",
+    "button": "お電話でご予約"
+  },
+  "footerHours": ["営業時間 17:00〜23:00（L.O. 22:30）", "定休日 水曜日"],
+  "photos": {
+    "fv": ["signature", "赤く燃える炭"],
+    "sb1": ["interior", "火の粉が舞う炭火"],
+    "sb2": ["signature", "霜降りの黒毛和牛"],
+    "mn1": ["signature", "網の上で焼ける肉"],
+    "mn2": ["interior", "トングで肉を返す手元"],
+    "mn3": ["signature", "冷麺"],
+    "se1": ["signature", "網の上で焼ける肉と立ちのぼる煙"]
+  }
+}

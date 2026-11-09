@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_phfv": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfv.webp",
+        "mime": "image/webp",
+        "width": 1440,
+        "height": 1646,
+        "bytes": 955472,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/FR24wE03tz8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "赤く燃える炭"
+    },
+    "ast_phsb1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phsb1.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 978082,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/QDJkDebZBsQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "火の粉が舞う炭火"
+    },
+    "ast_phsb2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phsb2.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 607372,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/SckH8spaAtk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "霜降りの黒毛和牛"
+    },
+    "ast_phmn1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmn1.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 112982,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/LQeavijwPBA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "網の上で焼ける肉"
+    },
+    "ast_phmn2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmn2.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 168920,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/K6Pz7chOo94"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "トングで肉を返す手元"
+    },
+    "ast_phmn3": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmn3.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 166606,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/pjUAvCR07UM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "冷麺"
+    },
+    "ast_phse1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phse1.webp",
+        "mime": "image/webp",
+        "width": 2400,
+        "height": 1800,
+        "bytes": 752428,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/PlkexG0nqQQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "網の上で焼ける肉と立ちのぼる煙"
+    }
+  }
+}

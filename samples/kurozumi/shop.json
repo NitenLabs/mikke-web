@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_kurozumi",
+  "updatedAt": "2026-11-10T12:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "炭火焼肉 くろ炭",
+    "nameKana": "すみびやきにく くろずみ",
+    "genre": {
+      "template": "restaurant",
+      "detail": "焼肉・七輪の炭火"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "大桝町"
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00",
+            "lastOrder": "22:30"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00",
+            "lastOrder": "22:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "closed"
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00",
+            "lastOrder": "22:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00",
+            "lastOrder": "22:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00",
+            "lastOrder": "22:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00",
+            "lastOrder": "22:30"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "お品書き"
+      }
+    },
+    "categories": {
+      "cat_yakiniku": {
+        "menuId": "mnu_main",
+        "name": "焼肉",
+        "order": 1
+      },
+      "cat_shime": {
+        "menuId": "mnu_main",
+        "name": "〆",
+        "order": 2
+      },
+      "cat_course": {
+        "menuId": "mnu_main",
+        "name": "コース",
+        "order": 3
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_tanshio": {
+        "name": "特選タン塩",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_tanshio",
+            "type": "fixed",
+            "amount": 1980
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_harami": {
+        "name": "上ハラミ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_harami",
+            "type": "fixed",
+            "amount": 1680
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_karubi": {
+        "name": "黒毛和牛カルビ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_karubi",
+            "type": "fixed",
+            "amount": 1580
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_rare": {
+        "name": "本日の希少部位",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_rare",
+            "type": "from",
+            "amount": 2480
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_horumon": {
+        "name": "ホルモン盛り合わせ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_horumon",
+            "type": "fixed",
+            "amount": 1280
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_reimen": {
+        "name": "冷麺",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_reimen",
+            "type": "fixed",
+            "amount": 980
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_bibimbap": {
+        "name": "石焼ビビンバ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_bibimbap",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_course1": {
+        "name": "炭火コース",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_course1",
+            "type": "fixed",
+            "amount": 6600
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_course2": {
+        "name": "特選炭火コース",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_course2",
+            "type": "fixed",
+            "amount": 9900
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      }
+    },
+    "placements": {
+      "plc_tanshio": {
+        "itemId": "itm_tanshio",
+        "categoryId": "cat_yakiniku",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_harami": {
+        "itemId": "itm_harami",
+        "categoryId": "cat_yakiniku",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_karubi": {
+        "itemId": "itm_karubi",
+        "categoryId": "cat_yakiniku",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_rare": {
+        "itemId": "itm_rare",
+        "categoryId": "cat_yakiniku",
+        "order": 4,
+        "menuId": "mnu_main"
+      },
+      "plc_horumon": {
+        "itemId": "itm_horumon",
+        "categoryId": "cat_yakiniku",
+        "order": 5,
+        "menuId": "mnu_main"
+      },
+      "plc_reimen": {
+        "itemId": "itm_reimen",
+        "categoryId": "cat_shime",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_bibimbap": {
+        "itemId": "itm_bibimbap",
+        "categoryId": "cat_shime",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_course1": {
+        "itemId": "itm_course1",
+        "categoryId": "cat_course",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_course2": {
+        "itemId": "itm_course2",
+        "categoryId": "cat_course",
+        "order": 2,
+        "menuId": "mnu_main"
+      }
+    }
+  }
+}
