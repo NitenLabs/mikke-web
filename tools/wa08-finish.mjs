@@ -20,6 +20,7 @@ html{scroll-padding-top:8rem}
 .el-nav .nav-menu{background:${INK}}
 .nav-sp summary{color:${INK}}
 [data-cel=c_nm],[data-cel=r_nm]{word-break:keep-all}
+a.el-text{text-decoration:none}
 [data-el=fv_tide]{font-weight:800}
 @media (min-width:1025px){[data-el=fv_tide]{font-size:28rem;line-height:28rem}}
 @media (max-width:767.98px){[data-el=fv_tide]{font-size:16rem;line-height:16rem}}
@@ -76,6 +77,17 @@ if (!re.test(h)) throw new Error("in_mapbox が見つかりません");
 // 大きな欧文は CSS で拡大しているので、組み上がりの伸びの基準（data-mh）も実寸に合わせ、下の要素を押し下げないようにする
 const mh = /(<h1 data-el="fv_tide"[^>]*?)data-mh-pc="\d+" data-mh-sp="\d+"/;
 if (!mh.test(h)) throw new Error("fv_tide の data-mh が見つかりません");
+// 文字の箱のリンク（style.link）は描画エンジンが出力しないので、ここで <a> にする（ボタンの文字・電話番号・フッターのナビ）
+const site = JSON.parse(fs.readFileSync(`samples/${ID}/site.json`, "utf8"));
+const hrefOf = (l) => (l.kind === "shopPhone" ? `tel:${shop.contact.phone.digits}` : l.kind === "anchor" ? `#${l.value.split("#")[1]}` : l.kind === "page" ? "./" : l.value);
+for (const [id, el] of Object.entries(site.elements)) {
+  const l = el.type === "text" && el.style?.link;
+  if (!l) continue;
+  const tag = new RegExp(`<p data-el="${id}"([^>]*)>([\\s\\S]*?)</p>`);
+  if (!tag.test(h)) throw new Error(`${id} の文字の箱が見つかりません`);
+  const attr = l.newTab ? ' target="_blank" rel="noopener"' : "";
+  h = h.replace(tag, (_, a, body) => `<a data-el="${id}"${a} href="${hrefOf(l).replace(/&/g, "&amp;")}"${attr}>${body}</a>`);
+}
 h = h.replace(mh, `$1data-mh-pc="331" data-mh-sp="190"`).replace(re, `$1${map}`).replace("</head>", css + "</head>");
 const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
 fs.writeFileSync(f, bp(h).replace("</head>", tablet + "</head>"));
