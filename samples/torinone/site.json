@@ -1,0 +1,4162 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_torinone",
+  "templateId": "tpl_wa_13",
+  "canvas": {
+    "pcContentWidth": 1440,
+    "spDesignWidth": 390
+  },
+  "pages": {
+    "pg_home": {
+      "kind": "home",
+      "slug": "/",
+      "navLabel": "TOP",
+      "navOrder": 1,
+      "showInNav": false,
+      "published": true,
+      "sections": [
+        "sec_firstv",
+        "sec_about",
+        "sec_kushi",
+        "sec_fire",
+        "sec_menu",
+        "sec_seats",
+        "sec_info",
+        "sec_reserve"
+      ]
+    },
+    "pg_404": {
+      "kind": "notFound",
+      "slug": "/404",
+      "navLabel": "404",
+      "navOrder": 9,
+      "showInNav": false,
+      "published": true,
+      "sections": []
+    }
+  },
+  "regions": {
+    "header": "sec_header",
+    "footer": "sec_footer",
+    "headerBehavior": "sticky"
+  },
+  "sections": {
+    "sec_header": {
+      "name": "ヘッダー",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 80,
+        "sp": 64
+      }
+    },
+    "sec_firstv": {
+      "name": "最初の画面",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 820,
+        "sp": 780
+      },
+      "anchor": "top"
+    },
+    "sec_about": {
+      "name": "お店について",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 746,
+        "sp": 800
+      },
+      "anchor": "about",
+      "nav": {
+        "label": "串と酒",
+        "order": 1
+      }
+    },
+    "sec_kushi": {
+      "name": "串・酒・〆",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 824,
+        "sp": 1636
+      }
+    },
+    "sec_fire": {
+      "name": "備長炭",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 720,
+        "sp": 560
+      }
+    },
+    "sec_menu": {
+      "name": "お品書き",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 1616,
+        "sp": 1660
+      },
+      "anchor": "menu",
+      "nav": {
+        "label": "お品書き",
+        "order": 2
+      }
+    },
+    "sec_seats": {
+      "name": "お席",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 936,
+        "sp": 840
+      },
+      "anchor": "seats",
+      "nav": {
+        "label": "お席",
+        "order": 3
+      }
+    },
+    "sec_info": {
+      "name": "ご案内",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 816,
+        "sp": 952
+      },
+      "anchor": "info",
+      "nav": {
+        "label": "ご案内",
+        "order": 4
+      }
+    },
+    "sec_reserve": {
+      "name": "ご予約",
+      "background": {
+        "color": "#B5372A"
+      },
+      "minHeight": {
+        "pc": 360,
+        "sp": 400
+      },
+      "anchor": "reserve"
+    },
+    "sec_footer": {
+      "name": "フッター",
+      "background": {
+        "color": "#222222"
+      },
+      "minHeight": {
+        "pc": 380,
+        "sp": 480
+      }
+    }
+  },
+  "elements": {
+    "hd_nav": {
+      "type": "nav",
+      "z": 5,
+      "section": "sec_header",
+      "style": {
+        "color": "#222222",
+        "font": "font:body",
+        "spMenuBackground": "#EFE3CF"
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 0,
+          "w": 44.4444,
+          "h": 80,
+          "size": 15
+        },
+        "sp": {
+          "x": 74.359,
+          "y": 0,
+          "w": 21.5385,
+          "h": 64
+        }
+      }
+    },
+    "hd_name": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "焼鳥 とりの音"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.3846,
+        "letterSpacing": 0,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#top"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 2.7778,
+          "y": 22,
+          "w": 27.7778,
+          "h": 36,
+          "size": 26
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 14,
+          "w": 66.6667,
+          "h": 36,
+          "size": 26
+        }
+      }
+    },
+    "hd_btn": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_header",
+      "layout": {
+        "pc": {
+          "x": 86.1111,
+          "y": 18,
+          "w": 11.1111,
+          "h": 44
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 2.5641,
+          "h": 10
+        }
+      },
+      "link": {
+        "kind": "anchor",
+        "value": "pg_home#reserve"
+      },
+      "radius": 50,
+      "hidden": {
+        "sp": true
+      }
+    },
+    "hd_btn_t": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご予約"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#FFFFFF",
+        "lineHeight": 1.4667,
+        "letterSpacing": 0,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 86.1111,
+          "y": 29,
+          "w": 11.1111,
+          "h": 22,
+          "size": 15
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 2.5641,
+          "h": 10,
+          "size": 15
+        }
+      },
+      "hidden": {
+        "sp": true
+      }
+    },
+    "fv_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_firstv",
+      "asset": "ast_phfv",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 820,
+          "fullBleed": true,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 780,
+          "fullBleed": true,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 70,
+        "zoom": 1
+      }
+    },
+    "nr_top": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 240
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 184
+        }
+      }
+    },
+    "nr1": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 240,
+          "w": 19.8611,
+          "h": 120
+        },
+        "sp": {
+          "x": 0,
+          "y": 184,
+          "w": 32.8205,
+          "h": 64
+        }
+      }
+    },
+    "nr2": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 20.1389,
+          "y": 240,
+          "w": 19.7222,
+          "h": 120
+        },
+        "sp": {
+          "x": 33.8462,
+          "y": 184,
+          "w": 32.3077,
+          "h": 64
+        }
+      }
+    },
+    "nr3": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 40.1389,
+          "y": 240,
+          "w": 19.7222,
+          "h": 120
+        },
+        "sp": {
+          "x": 67.1795,
+          "y": 184,
+          "w": 32.8205,
+          "h": 64
+        }
+      }
+    },
+    "nr4": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 60.1389,
+          "y": 240,
+          "w": 19.7222,
+          "h": 120
+        },
+        "sp": {
+          "x": 0,
+          "y": 184,
+          "w": 2.5641,
+          "h": 64
+        }
+      },
+      "hidden": {
+        "sp": true
+      }
+    },
+    "nr5": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 80.1389,
+          "y": 240,
+          "w": 19.8611,
+          "h": 120
+        },
+        "sp": {
+          "x": 0,
+          "y": 184,
+          "w": 2.5641,
+          "h": 64
+        }
+      },
+      "hidden": {
+        "sp": true
+      }
+    },
+    "fv_cp": {
+      "type": "text",
+      "z": 5,
+      "role": "pageTitle",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "炭の音、串の香り。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.2727,
+        "letterSpacing": 0,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 64,
+          "w": 82.7778,
+          "h": 112,
+          "size": 88
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 24,
+          "w": 89.7436,
+          "h": 68,
+          "size": 52
+        }
+      },
+      "hidden": {
+        "sp": true
+      }
+    },
+    "fv_cp2": {
+      "type": "text",
+      "z": 5,
+      "role": "pageTitle",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "炭の音、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "串の香り。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.2727,
+        "letterSpacing": 0,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 64,
+          "w": 82.7778,
+          "h": 224,
+          "size": 88
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 24,
+          "w": 89.7436,
+          "h": 136,
+          "size": 52
+        }
+      },
+      "hidden": {
+        "pc": true
+      }
+    },
+    "fv_c_o": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 636,
+          "w": 26.1111,
+          "h": 136
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 660,
+          "w": 89.7436,
+          "h": 104
+        }
+      }
+    },
+    "fv_c_l": {
+      "type": "shape",
+      "z": 3,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 9.3056,
+          "y": 646,
+          "w": 24.7222,
+          "h": 116
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 670,
+          "w": 84.6154,
+          "h": 84
+        }
+      }
+    },
+    "fv_c_i": {
+      "type": "shape",
+      "z": 4,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 9.4444,
+          "y": 648,
+          "w": 24.4444,
+          "h": 112
+        },
+        "sp": {
+          "x": 8.2051,
+          "y": 672,
+          "w": 83.5897,
+          "h": 80
+        }
+      }
+    },
+    "fv_f1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "紀州備長炭の焼き鳥と地酒"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 10.1389,
+          "y": 674,
+          "w": 23.0556,
+          "h": 28,
+          "size": 16
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 682,
+          "w": 78.4615,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "fv_f2": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "17:00〜23:30（L.O. 23:00）・日曜定休"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 10.1389,
+          "y": 710,
+          "w": 23.0556,
+          "h": 24,
+          "size": 14
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 714,
+          "w": 78.4615,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "ab_h": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "朝びきの地鶏を、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "その日に串打ち。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.3571,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 160,
+          "w": 43.0556,
+          "h": 152,
+          "size": 56
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 96,
+          "w": 89.7436,
+          "h": 112,
+          "size": 40
+        }
+      }
+    },
+    "ab_p": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "朝びきの地鶏を、その日のうちに串打ちしています。備長炭の強い火で、皮はぱりっと、身はふっくら。店主おすすめの地酒と合わせて。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 2,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 352,
+          "w": 38.8889,
+          "h": 144,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 232,
+          "w": 89.7436,
+          "h": 192,
+          "size": 16
+        }
+      }
+    },
+    "ab_ph": {
+      "type": "photo",
+      "z": 2,
+      "section": "sec_about",
+      "asset": "ast_phab1",
+      "layout": {
+        "pc": {
+          "x": 54.4444,
+          "y": 160,
+          "w": 36.9444,
+          "h": 426,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 456,
+          "w": 100,
+          "h": 312,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "ks_h": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_kushi",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "串と酒と、〆まで"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.4,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 0,
+          "w": 82.7778,
+          "h": 56,
+          "size": 40
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 4,
+          "w": 89.7436,
+          "h": 56,
+          "size": 40
+        }
+      }
+    },
+    "k0_o": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 120,
+          "w": 26.1111,
+          "h": 480
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 88,
+          "w": 89.7436,
+          "h": 460
+        }
+      }
+    },
+    "k0_l": {
+      "type": "shape",
+      "z": 3,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 9.3056,
+          "y": 130,
+          "w": 24.7222,
+          "h": 460
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 98,
+          "w": 84.6154,
+          "h": 440
+        }
+      }
+    },
+    "k0_i": {
+      "type": "shape",
+      "z": 4,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 9.4444,
+          "y": 132,
+          "w": 24.4444,
+          "h": 456
+        },
+        "sp": {
+          "x": 8.2051,
+          "y": 100,
+          "w": 83.5897,
+          "h": 436
+        }
+      }
+    },
+    "k0_ph": {
+      "type": "photo",
+      "z": 5,
+      "section": "sec_kushi",
+      "asset": "ast_phc1",
+      "layout": {
+        "pc": {
+          "x": 10.1389,
+          "y": 142,
+          "w": 23.0556,
+          "h": 211,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 110,
+          "w": 78.4615,
+          "h": 194,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "k0_w": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_kushi",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "串"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.2,
+        "letterSpacing": 0,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 10.1389,
+          "y": 385,
+          "w": 23.0556,
+          "h": 48,
+          "size": 40
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 336,
+          "w": 78.4615,
+          "h": 48,
+          "size": 40
+        }
+      }
+    },
+    "k0_p": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_kushi",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "朝びきの地鶏を、部位ごとに串打ちしています。もも葱にせせり、月見のつくねも。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 11.6667,
+          "y": 449,
+          "w": 20,
+          "h": 112,
+          "size": 16
+        },
+        "sp": {
+          "x": 15.3846,
+          "y": 400,
+          "w": 69.2308,
+          "h": 112,
+          "size": 16
+        }
+      }
+    },
+    "k1_o": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 36.9444,
+          "y": 184,
+          "w": 26.1111,
+          "h": 480
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 580,
+          "w": 89.7436,
+          "h": 460
+        }
+      }
+    },
+    "k1_l": {
+      "type": "shape",
+      "z": 3,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 37.6389,
+          "y": 194,
+          "w": 24.7222,
+          "h": 460
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 590,
+          "w": 84.6154,
+          "h": 440
+        }
+      }
+    },
+    "k1_i": {
+      "type": "shape",
+      "z": 4,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 37.7778,
+          "y": 196,
+          "w": 24.4444,
+          "h": 456
+        },
+        "sp": {
+          "x": 8.2051,
+          "y": 592,
+          "w": 83.5897,
+          "h": 436
+        }
+      }
+    },
+    "k1_ph": {
+      "type": "photo",
+      "z": 5,
+      "section": "sec_kushi",
+      "asset": "ast_phc2",
+      "layout": {
+        "pc": {
+          "x": 38.4722,
+          "y": 206,
+          "w": 23.0556,
+          "h": 211,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 602,
+          "w": 78.4615,
+          "h": 194,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "k1_w": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_kushi",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "地酒"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.2,
+        "letterSpacing": 0,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 38.4722,
+          "y": 449,
+          "w": 23.0556,
+          "h": 48,
+          "size": 40
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 828,
+          "w": 78.4615,
+          "h": 48,
+          "size": 40
+        }
+      }
+    },
+    "k1_p": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_kushi",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "店主おすすめの地酒をご用意しています。串に合わせてお選びください。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 40,
+          "y": 513,
+          "w": 20,
+          "h": 112,
+          "size": 16
+        },
+        "sp": {
+          "x": 15.3846,
+          "y": 892,
+          "w": 69.2308,
+          "h": 112,
+          "size": 16
+        }
+      }
+    },
+    "k2_o": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 65.2778,
+          "y": 120,
+          "w": 26.1111,
+          "h": 480
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 1072,
+          "w": 89.7436,
+          "h": 460
+        }
+      }
+    },
+    "k2_l": {
+      "type": "shape",
+      "z": 3,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 65.9722,
+          "y": 130,
+          "w": 24.7222,
+          "h": 460
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 1082,
+          "w": 84.6154,
+          "h": 440
+        }
+      }
+    },
+    "k2_i": {
+      "type": "shape",
+      "z": 4,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_kushi",
+      "layout": {
+        "pc": {
+          "x": 66.1111,
+          "y": 132,
+          "w": 24.4444,
+          "h": 456
+        },
+        "sp": {
+          "x": 8.2051,
+          "y": 1084,
+          "w": 83.5897,
+          "h": 436
+        }
+      }
+    },
+    "k2_ph": {
+      "type": "photo",
+      "z": 5,
+      "section": "sec_kushi",
+      "asset": "ast_phc3",
+      "layout": {
+        "pc": {
+          "x": 66.8056,
+          "y": 142,
+          "w": 23.0556,
+          "h": 211,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 1094,
+          "w": 78.4615,
+          "h": 194,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "k2_w": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_kushi",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "〆"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.2,
+        "letterSpacing": 0,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 66.8056,
+          "y": 385,
+          "w": 23.0556,
+          "h": 48,
+          "size": 40
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 1320,
+          "w": 78.4615,
+          "h": 48,
+          "size": 40
+        }
+      }
+    },
+    "k2_p": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_kushi",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "〆には親子丼を。鶏白湯のスープもございます。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 68.3333,
+          "y": 449,
+          "w": 20,
+          "h": 112,
+          "size": 16
+        },
+        "sp": {
+          "x": 15.3846,
+          "y": 1384,
+          "w": 69.2308,
+          "h": 112,
+          "size": 16
+        }
+      }
+    },
+    "fr_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_fire",
+      "asset": "ast_phfire",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 720,
+          "fullBleed": true,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 560,
+          "fullBleed": true,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      },
+      "darken": 45
+    },
+    "fr_h": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_fire",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "備長炭の、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "強い火で。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.3571,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 360,
+          "w": 55.5556,
+          "h": 152,
+          "size": 56
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 308,
+          "w": 89.7436,
+          "h": 104,
+          "size": 36
+        }
+      }
+    },
+    "fr_p": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_fire",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "紀州備長炭の強い火で、手早く焼き上げます。皮はぱりっと、身はふっくらと仕上げます。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.7778,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 536,
+          "w": 38.8889,
+          "h": 64,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 428,
+          "w": 89.7436,
+          "h": 84,
+          "size": 16
+        }
+      }
+    },
+    "mf_t": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 1.1806,
+          "y": 80,
+          "w": 97.6389,
+          "h": 2
+        },
+        "sp": {
+          "x": 2.0513,
+          "y": 32,
+          "w": 95.8974,
+          "h": 2
+        }
+      }
+    },
+    "mf_b": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 1.1806,
+          "y": 1534,
+          "w": 97.6389,
+          "h": 2
+        },
+        "sp": {
+          "x": 2.0513,
+          "y": 1626,
+          "w": 95.8974,
+          "h": 2
+        }
+      }
+    },
+    "mf_l": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 1.1806,
+          "y": 80,
+          "w": 0.1389,
+          "h": 1456
+        },
+        "sp": {
+          "x": 2.0513,
+          "y": 32,
+          "w": 0.5128,
+          "h": 1596
+        }
+      }
+    },
+    "mf_r": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 98.6806,
+          "y": 80,
+          "w": 0.1389,
+          "h": 1456
+        },
+        "sp": {
+          "x": 97.4359,
+          "y": 32,
+          "w": 0.5128,
+          "h": 1596
+        }
+      }
+    },
+    "mn_h": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お品書き"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.3571,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 12.3611,
+          "y": 160,
+          "w": 18.0556,
+          "h": 76,
+          "size": 56
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 72,
+          "w": 89.7436,
+          "h": 56,
+          "size": 40
+        }
+      }
+    },
+    "mn_n": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "価格はすべて税込です。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 12.3611,
+          "y": 252,
+          "w": 16.6667,
+          "h": 24,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 132,
+          "w": 89.7436,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "mg_0": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "コース"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#B5372A",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 174,
+          "w": 56.1111,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 190,
+          "w": 89.7436,
+          "h": 28,
+          "size": 18
+        }
+      }
+    },
+    "ml_0_top": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 215,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 231,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_0_0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "おまかせ串コース（8本）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 234,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 250,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_0_0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "3,800円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 234,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 250,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_0_0": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 279,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 295,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mg_1": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "串"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#B5372A",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 326,
+          "w": 56.1111,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 342,
+          "w": 89.7436,
+          "h": 28,
+          "size": 18
+        }
+      }
+    },
+    "ml_1_top": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 367,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 383,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_1_0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "もも葱"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 386,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 402,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_1_0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "280円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 386,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 402,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_1_0": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 431,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 447,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_1_1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "つくね（月見）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 450,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 466,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_1_1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "380円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 450,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 466,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_1_1": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 495,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 511,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_1_2": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "せせり"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 514,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 530,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_1_2": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "260円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 514,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 530,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_1_2": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 559,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 575,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_1_3": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "皮"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 578,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 594,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_1_3": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "220円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 578,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 594,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_1_3": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 623,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 639,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_1_4": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ぼんじり"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 642,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 658,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_1_4": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "260円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 642,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 658,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_1_4": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 687,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 703,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_1_5": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "手羽先"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 706,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 722,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_1_5": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "300円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 706,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 722,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_1_5": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 751,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 767,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mg_2": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "一品・〆"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#B5372A",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 798,
+          "w": 56.1111,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 814,
+          "w": 89.7436,
+          "h": 28,
+          "size": 18
+        }
+      }
+    },
+    "ml_2_top": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 839,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 855,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_2_0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "鶏白湯スープ"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 858,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 874,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_2_0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "500円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 858,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 874,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_2_0": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 903,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 919,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_2_1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "〆の親子丼"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 922,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 938,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_2_1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "900円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 922,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 938,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_2_1": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 967,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 983,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mg_3": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お飲みもの"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#B5372A",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 1014,
+          "w": 56.1111,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 1030,
+          "w": 89.7436,
+          "h": 28,
+          "size": 18
+        }
+      }
+    },
+    "ml_3_top": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 1055,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 1071,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_3_0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "生ビール"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 1074,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 1090,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_3_0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "650円"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 1074,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 1090,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_3_0": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 1119,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 1135,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mt_3_1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "地酒"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 1138,
+          "w": 38.8889,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 1154,
+          "w": 61.5385,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "mp_3_1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "700円〜"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "right"
+      },
+      "layout": {
+        "pc": {
+          "x": 70.4167,
+          "y": 1138,
+          "w": 17.2222,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 66.6667,
+          "y": 1154,
+          "w": 28.2051,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "ml_3_1": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 1183,
+          "w": 56.1111,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 1199,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "mn_ph1": {
+      "type": "photo",
+      "z": 3,
+      "section": "sec_menu",
+      "asset": "ast_phmn1",
+      "layout": {
+        "pc": {
+          "x": 31.5278,
+          "y": 1232,
+          "w": 27.3611,
+          "h": 224,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 10.2564,
+          "y": 1232,
+          "w": 79.4872,
+          "h": 176,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "mn_ph2": {
+      "type": "photo",
+      "z": 3,
+      "section": "sec_menu",
+      "asset": "ast_phmn2",
+      "layout": {
+        "pc": {
+          "x": 60.2778,
+          "y": 1232,
+          "w": 27.3611,
+          "h": 224,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 10.2564,
+          "y": 1420,
+          "w": 79.4872,
+          "h": 176,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "se_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_seats",
+      "asset": "ast_phse1",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 160,
+          "w": 56.1111,
+          "h": 505,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 64,
+          "w": 100,
+          "h": 244,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "se_c_o": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_seats",
+      "layout": {
+        "pc": {
+          "x": 60.2778,
+          "y": 256,
+          "w": 31.1111,
+          "h": 520
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 276,
+          "w": 89.7436,
+          "h": 468
+        }
+      }
+    },
+    "se_c_l": {
+      "type": "shape",
+      "z": 3,
+      "kind": "rect",
+      "fill": "#B5372A",
+      "section": "sec_seats",
+      "layout": {
+        "pc": {
+          "x": 60.9722,
+          "y": 266,
+          "w": 29.7222,
+          "h": 500
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 286,
+          "w": 84.6154,
+          "h": 448
+        }
+      }
+    },
+    "se_c_i": {
+      "type": "shape",
+      "z": 4,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_seats",
+      "layout": {
+        "pc": {
+          "x": 61.1111,
+          "y": 268,
+          "w": 29.4444,
+          "h": 496
+        },
+        "sp": {
+          "x": 8.2051,
+          "y": 288,
+          "w": 83.5897,
+          "h": 444
+        }
+      }
+    },
+    "se_ph2": {
+      "type": "photo",
+      "z": 5,
+      "section": "sec_seats",
+      "asset": "ast_phse2",
+      "layout": {
+        "pc": {
+          "x": 61.8056,
+          "y": 278,
+          "w": 28.0556,
+          "h": 240,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 10.7692,
+          "y": 298,
+          "w": 78.4615,
+          "h": 182,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "se_h": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_seats",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お席"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.4,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 63.3333,
+          "y": 542,
+          "w": 25,
+          "h": 56,
+          "size": 40
+        },
+        "sp": {
+          "x": 15.3846,
+          "y": 504,
+          "w": 69.2308,
+          "h": 56,
+          "size": 40
+        }
+      }
+    },
+    "se_s": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_seats",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "カウンター10席・小上がり2卓"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 63.3333,
+          "y": 614,
+          "w": 25,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 15.3846,
+          "y": 576,
+          "w": 69.2308,
+          "h": 28,
+          "size": 18
+        }
+      }
+    },
+    "se_p": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_seats",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "白木のカウンターは、焼き台のすぐそば。小上がりでは、お仲間とゆっくりお過ごしいただけます。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 63.3333,
+          "y": 658,
+          "w": 25,
+          "h": 84,
+          "size": 16
+        },
+        "sp": {
+          "x": 15.3846,
+          "y": 620,
+          "w": 69.2308,
+          "h": 112,
+          "size": 16
+        }
+      }
+    },
+    "in_h": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご案内"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.3571,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 160,
+          "w": 37.2222,
+          "h": 76,
+          "size": 56
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 96,
+          "w": 89.7436,
+          "h": 56,
+          "size": 40
+        }
+      }
+    },
+    "in_l0": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 296,
+          "w": 37.2222,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 176,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "in_k0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "所在地"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 2,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 318,
+          "w": 7.2222,
+          "h": 28,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 198,
+          "w": 20.5128,
+          "h": 28,
+          "size": 14
+        }
+      }
+    },
+    "in_v0": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 15.8333,
+          "y": 318,
+          "w": 30,
+          "h": 28,
+          "size": 16
+        },
+        "sp": {
+          "x": 25.641,
+          "y": 198,
+          "w": 69.2308,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "in_l1": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 367,
+          "w": 37.2222,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 247,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "in_k1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 2,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 390,
+          "w": 7.2222,
+          "h": 28,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 270,
+          "w": 20.5128,
+          "h": 28,
+          "size": 14
+        }
+      }
+    },
+    "in_v1": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "17:00〜23:30（L.O. 23:00）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 15.8333,
+          "y": 390,
+          "w": 30,
+          "h": 28,
+          "size": 16
+        },
+        "sp": {
+          "x": 25.641,
+          "y": 270,
+          "w": 69.2308,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "in_l2": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 439,
+          "w": 37.2222,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 319,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "in_k2": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "定休日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 2,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 462,
+          "w": 7.2222,
+          "h": 28,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 342,
+          "w": 20.5128,
+          "h": 28,
+          "size": 14
+        }
+      }
+    },
+    "in_v2": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "日曜日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 15.8333,
+          "y": 462,
+          "w": 30,
+          "h": 28,
+          "size": 16
+        },
+        "sp": {
+          "x": 25.641,
+          "y": 342,
+          "w": 69.2308,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "in_l3": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 511,
+          "w": 37.2222,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 391,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "in_k3": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お席"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 2,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 534,
+          "w": 7.2222,
+          "h": 28,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 414,
+          "w": 20.5128,
+          "h": 28,
+          "size": 14
+        }
+      }
+    },
+    "in_v3": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "カウンター10席・小上がり2卓"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 15.8333,
+          "y": 534,
+          "w": 30,
+          "h": 28,
+          "size": 16
+        },
+        "sp": {
+          "x": 25.641,
+          "y": 414,
+          "w": 69.2308,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "in_l4": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 583,
+          "w": 37.2222,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 463,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "in_k4": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お電話"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 2,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 606,
+          "w": 7.2222,
+          "h": 28,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 486,
+          "w": 20.5128,
+          "h": 28,
+          "size": 14
+        }
+      }
+    },
+    "in_v4": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#222222",
+        "lineHeight": 1.75,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 15.8333,
+          "y": 606,
+          "w": 30,
+          "h": 28,
+          "size": 16
+        },
+        "sp": {
+          "x": 25.641,
+          "y": 486,
+          "w": 69.2308,
+          "h": 28,
+          "size": 16
+        }
+      }
+    },
+    "in_l5": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#222222",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 655,
+          "w": 37.2222,
+          "h": 1
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 535,
+          "w": 89.7436,
+          "h": 1
+        }
+      },
+      "opacity": 25
+    },
+    "in_map": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#F8F1E4",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 49.7222,
+          "y": 296,
+          "w": 41.6667,
+          "h": 360
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 576,
+          "w": 89.7436,
+          "h": 280
+        }
+      }
+    },
+    "rs_h": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_reserve",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご予約は、お電話で。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.3571,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 104,
+          "w": 61.1111,
+          "h": 76,
+          "size": 56
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 88,
+          "w": 89.7436,
+          "h": 52,
+          "size": 34
+        }
+      }
+    },
+    "rs_t": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_reserve",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#FFFFFF",
+        "lineHeight": 1.4,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 188,
+          "w": 61.1111,
+          "h": 56,
+          "size": 40
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 156,
+          "w": 89.7436,
+          "h": 44,
+          "size": 32
+        }
+      }
+    },
+    "rs_btn": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#EFE3CF",
+      "section": "sec_reserve",
+      "layout": {
+        "pc": {
+          "x": 71.9444,
+          "y": 148,
+          "w": 19.4444,
+          "h": 64
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 240,
+          "w": 89.7436,
+          "h": 56
+        }
+      },
+      "link": {
+        "kind": "shopPhone"
+      },
+      "radius": 50
+    },
+    "rs_btn_t": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_reserve",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お電話でご予約"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 700,
+        "color": "#222222",
+        "lineHeight": 1.5556,
+        "letterSpacing": 0,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 71.9444,
+          "y": 166,
+          "w": 19.4444,
+          "h": 28,
+          "size": 18
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 256,
+          "w": 89.7436,
+          "h": 24,
+          "size": 16
+        }
+      }
+    },
+    "ft_n": {
+      "type": "text",
+      "z": 5,
+      "role": "heading",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "焼鳥 とりの音"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#EFE3CF",
+        "lineHeight": 1.4,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 80,
+          "w": 55.5556,
+          "h": 56,
+          "size": 40
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 56,
+          "w": 89.7436,
+          "h": 56,
+          "size": 40
+        }
+      }
+    },
+    "ft_a": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#EFE3CF",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 168,
+          "w": 26.3889,
+          "h": 24,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 144,
+          "w": 89.7436,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "ft_h": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間 17:00〜23:30（L.O. 23:00）"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "定休日 日曜日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#EFE3CF",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 37.5,
+          "y": 168,
+          "w": 26.3889,
+          "h": 48,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 184,
+          "w": 89.7436,
+          "h": 48,
+          "size": 14
+        }
+      }
+    },
+    "ft_t": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#EFE3CF",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 66.3889,
+          "y": 168,
+          "w": 25,
+          "h": 24,
+          "size": 14
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 248,
+          "w": 89.7436,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "ft_c": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "© 焼鳥 とりの音"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#A9A095",
+        "lineHeight": 1.5,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 8.6111,
+          "y": 300,
+          "w": 55.5556,
+          "h": 18,
+          "size": 12
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 400,
+          "w": 89.7436,
+          "h": 18,
+          "size": 12
+        }
+      }
+    }
+  }
+}

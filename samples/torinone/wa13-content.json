@@ -1,0 +1,86 @@
+{
+  "name": "焼鳥 とりの音",
+  "nameKana": "やきとり とりのね",
+  "genreDetail": "焼き鳥・地酒",
+  "town": "公光町",
+  "phone": { "display": "0797-00-0000", "digits": "0797000000" },
+  "closedDay": "sun",
+  "periods": [{ "start": "17:00", "end": "23:30", "lastOrder": "23:00" }],
+  "catchCopy": "炭の音、串の香り。",
+  "catchCopyLines": ["炭の音、", "串の香り。"],
+  "facts": ["紀州備長炭の焼き鳥と地酒", "17:00〜23:30（L.O. 23:00）・日曜定休"],
+  "labels": { "about": "串と酒", "menu": "お品書き", "seats": "お席", "info": "ご案内", "menuButton": "メニュー", "reserveButton": "ご予約" },
+  "about": {
+    "heading": ["朝びきの地鶏を、", "その日に串打ち。"],
+    "body": "朝びきの地鶏を、その日のうちに串打ちしています。備長炭の強い火で、皮はぱりっと、身はふっくら。店主おすすめの地酒と合わせて。"
+  },
+  "kushi": {
+    "heading": "串と酒と、〆まで",
+    "cards": [
+      { "word": "串", "body": "朝びきの地鶏を、部位ごとに串打ちしています。もも葱にせせり、月見のつくねも。" },
+      { "word": "地酒", "body": "店主おすすめの地酒をご用意しています。串に合わせてお選びください。" },
+      { "word": "〆", "body": "〆には親子丼を。鶏白湯のスープもございます。" }
+    ]
+  },
+  "fire": {
+    "heading": ["備長炭の、", "強い火で。"],
+    "body": "紀州備長炭の強い火で、手早く焼き上げます。皮はぱりっと、身はふっくらと仕上げます。"
+  },
+  "menu": {
+    "heading": "お品書き",
+    "note": "価格はすべて税込です。",
+    "groups": [
+      { "id": "course", "name": "コース", "rows": [
+        { "id": "omakase", "name": "おまかせ串コース（8本）", "price": 3800 }
+      ] },
+      { "id": "kushi", "name": "串", "rows": [
+        { "id": "momonegi", "name": "もも葱", "price": 280 },
+        { "id": "tsukune", "name": "つくね（月見）", "price": 380 },
+        { "id": "seseri", "name": "せせり", "price": 260 },
+        { "id": "kawa", "name": "皮", "price": 220 },
+        { "id": "bonjiri", "name": "ぼんじり", "price": 260 },
+        { "id": "tebasaki", "name": "手羽先", "price": 300 }
+      ] },
+      { "id": "ippin", "name": "一品・〆", "rows": [
+        { "id": "paitan", "name": "鶏白湯スープ", "price": 500 },
+        { "id": "oyakodon", "name": "〆の親子丼", "price": 900 }
+      ] },
+      { "id": "drink", "name": "お飲みもの", "rows": [
+        { "id": "beer", "name": "生ビール", "price": 650 },
+        { "id": "jizake", "name": "地酒", "price": 700, "from": true }
+      ] }
+    ]
+  },
+  "seats": {
+    "heading": "お席",
+    "summary": "カウンター10席・小上がり2卓",
+    "body": "白木のカウンターは、焼き台のすぐそば。小上がりでは、お仲間とゆっくりお過ごしいただけます。"
+  },
+  "info": {
+    "heading": "ご案内",
+    "rows": [
+      ["所在地", "$address"],
+      ["営業時間", "17:00〜23:30（L.O. 23:00）"],
+      ["定休日", "日曜日"],
+      ["お席", "カウンター10席・小上がり2卓"],
+      ["お電話", "$phone"]
+    ]
+  },
+  "reserve": {
+    "heading": "ご予約は、お電話で。",
+    "button": "お電話でご予約"
+  },
+  "footerHours": ["営業時間 17:00〜23:30（L.O. 23:00）", "定休日 日曜日"],
+  "photos": {
+    "fv": ["signature", "炭火の上に並ぶ鶏の串"],
+    "ab1": ["signature", "焼き台で串を返す手元"],
+    "c1": ["signature", "刻み葱をのせた焼き上がりの串"],
+    "c2": ["interior", "片口と酒器"],
+    "c3": ["signature", "卵でとじた親子丼"],
+    "fire": ["interior", "火の粉が舞う炭"],
+    "mn1": ["signature", "卵黄を添えたつくね"],
+    "mn2": ["signature", "焼き色のついた手羽先"],
+    "se1": ["interior", "木のカウンターに置かれたたれの瓶と器"],
+    "se2": ["interior", "木の卓に並ぶ酒器"]
+  }
+}

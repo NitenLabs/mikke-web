@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_phfv": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfv.webp",
+        "mime": "image/webp",
+        "width": 2000,
+        "height": 1139,
+        "bytes": 633918,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/BSbYTzAzjbQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "炭火の上に並ぶ鶏の串"
+    },
+    "ast_phab1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab1.webp",
+        "mime": "image/webp",
+        "width": 1064,
+        "height": 850,
+        "bytes": 103174,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/TURS5_0Lq4k"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "焼き台で串を返す手元"
+    },
+    "ast_phc1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phc1.webp",
+        "mime": "image/webp",
+        "width": 700,
+        "height": 445,
+        "bytes": 60536,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/KDpX7xReiTA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "刻み葱をのせた焼き上がりの串"
+    },
+    "ast_phc2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phc2.webp",
+        "mime": "image/webp",
+        "width": 700,
+        "height": 445,
+        "bytes": 26596,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/r6Ya6N7c6N4"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "片口と酒器"
+    },
+    "ast_phc3": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phc3.webp",
+        "mime": "image/webp",
+        "width": 700,
+        "height": 446,
+        "bytes": 65348,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/K4B6C8zoGxc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "卵でとじた親子丼"
+    },
+    "ast_phfire": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfire.webp",
+        "mime": "image/webp",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 501258,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/A1oEyeLb2oE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "火の粉が舞う炭"
+    },
+    "ast_phmn1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmn1.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 455,
+        "bytes": 90120,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/tKJ1T1Vvvnw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "卵黄を添えたつくね"
+    },
+    "ast_phmn2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmn2.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 455,
+        "bytes": 108460,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/FjCb_EIPf_Y"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "焼き色のついた手羽先"
+    },
+    "ast_phse1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phse1.webp",
+        "mime": "image/webp",
+        "width": 1616,
+        "height": 1010,
+        "bytes": 234538,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Eg2Dr6oebd0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "木のカウンターに置かれたたれの瓶と器"
+    },
+    "ast_phse2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phse2.webp",
+        "mime": "image/webp",
+        "width": 808,
+        "height": 481,
+        "bytes": 30112,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/I5-j8AflLGA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "木の卓に並ぶ酒器"
+    }
+  }
+}

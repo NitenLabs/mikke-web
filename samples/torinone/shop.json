@@ -1,0 +1,343 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_torinone",
+  "updatedAt": "2026-11-10T12:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "焼鳥 とりの音",
+    "nameKana": "やきとり とりのね",
+    "genre": {
+      "template": "restaurant",
+      "detail": "焼き鳥・地酒"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "公光町"
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:30",
+            "lastOrder": "23:00"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:30",
+            "lastOrder": "23:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:30",
+            "lastOrder": "23:00"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:30",
+            "lastOrder": "23:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:30",
+            "lastOrder": "23:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:30",
+            "lastOrder": "23:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "closed"
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "お品書き"
+      }
+    },
+    "categories": {
+      "cat_course": {
+        "menuId": "mnu_main",
+        "name": "コース",
+        "order": 1
+      },
+      "cat_kushi": {
+        "menuId": "mnu_main",
+        "name": "串",
+        "order": 2
+      },
+      "cat_ippin": {
+        "menuId": "mnu_main",
+        "name": "一品・〆",
+        "order": 3
+      },
+      "cat_drink": {
+        "menuId": "mnu_main",
+        "name": "お飲みもの",
+        "order": 4
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_omakase": {
+        "name": "おまかせ串コース（8本）",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_omakase",
+            "type": "fixed",
+            "amount": 3800
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_momonegi": {
+        "name": "もも葱",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_momonegi",
+            "type": "fixed",
+            "amount": 280
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_tsukune": {
+        "name": "つくね（月見）",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_tsukune",
+            "type": "fixed",
+            "amount": 380
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_seseri": {
+        "name": "せせり",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_seseri",
+            "type": "fixed",
+            "amount": 260
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_kawa": {
+        "name": "皮",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_kawa",
+            "type": "fixed",
+            "amount": 220
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_bonjiri": {
+        "name": "ぼんじり",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_bonjiri",
+            "type": "fixed",
+            "amount": 260
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_tebasaki": {
+        "name": "手羽先",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_tebasaki",
+            "type": "fixed",
+            "amount": 300
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_paitan": {
+        "name": "鶏白湯スープ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_paitan",
+            "type": "fixed",
+            "amount": 500
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_oyakodon": {
+        "name": "〆の親子丼",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_oyakodon",
+            "type": "fixed",
+            "amount": 900
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_beer": {
+        "name": "生ビール",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_beer",
+            "type": "fixed",
+            "amount": 650
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_jizake": {
+        "name": "地酒",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_jizake",
+            "type": "from",
+            "amount": 700
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      }
+    },
+    "placements": {
+      "plc_omakase": {
+        "itemId": "itm_omakase",
+        "categoryId": "cat_course",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_momonegi": {
+        "itemId": "itm_momonegi",
+        "categoryId": "cat_kushi",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_tsukune": {
+        "itemId": "itm_tsukune",
+        "categoryId": "cat_kushi",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_seseri": {
+        "itemId": "itm_seseri",
+        "categoryId": "cat_kushi",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_kawa": {
+        "itemId": "itm_kawa",
+        "categoryId": "cat_kushi",
+        "order": 4,
+        "menuId": "mnu_main"
+      },
+      "plc_bonjiri": {
+        "itemId": "itm_bonjiri",
+        "categoryId": "cat_kushi",
+        "order": 5,
+        "menuId": "mnu_main"
+      },
+      "plc_tebasaki": {
+        "itemId": "itm_tebasaki",
+        "categoryId": "cat_kushi",
+        "order": 6,
+        "menuId": "mnu_main"
+      },
+      "plc_paitan": {
+        "itemId": "itm_paitan",
+        "categoryId": "cat_ippin",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_oyakodon": {
+        "itemId": "itm_oyakodon",
+        "categoryId": "cat_ippin",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_beer": {
+        "itemId": "itm_beer",
+        "categoryId": "cat_drink",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_jizake": {
+        "itemId": "itm_jizake",
+        "categoryId": "cat_drink",
+        "order": 2,
+        "menuId": "mnu_main"
+      }
+    }
+  }
+}
