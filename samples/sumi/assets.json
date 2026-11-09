@@ -162,9 +162,9 @@
       "file": {
         "key": "ast_sn01.jpg",
         "mime": "image/jpeg",
-        "width": 1200,
-        "height": 1200,
-        "bytes": 1,
+        "height": 2400,
+        "width": 2400,
+        "bytes": 859108,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -172,7 +172,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://images.unsplash.com/"
+        "pageUrl": "https://unsplash.com/photos/WosJwI5F23Q"
       },
       "rights": {
         "basis": "licensed",
@@ -181,16 +181,16 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "signature",
-      "alt": "甘鯛の松笠焼き"
+      "alt": "白身魚の西京焼きと甘酢の生姜"
     },
     "ast_sn02": {
       "kind": "photo",
       "file": {
         "key": "ast_sn02.jpg",
         "mime": "image/jpeg",
-        "width": 1200,
-        "height": 1200,
-        "bytes": 1,
+        "height": 1600,
+        "width": 2400,
+        "bytes": 412834,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -198,7 +198,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://images.unsplash.com/"
+        "pageUrl": "https://unsplash.com/photos/Mk3NKQboQkA"
       },
       "rights": {
         "basis": "licensed",
@@ -207,16 +207,16 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "signature",
-      "alt": "蟹真丈の椀"
+      "alt": "若布と豆腐の椀（朱の木椀）"
     },
     "ast_sn03": {
       "kind": "photo",
       "file": {
         "key": "ast_sn03.jpg",
         "mime": "image/jpeg",
-        "width": 1200,
-        "height": 1200,
-        "bytes": 1,
+        "height": 3600,
+        "width": 2400,
+        "bytes": 991394,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -224,7 +224,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://images.unsplash.com/"
+        "pageUrl": "https://unsplash.com/photos/d5bdtWUbFkM"
       },
       "rights": {
         "basis": "licensed",
@@ -233,7 +233,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "signature",
-      "alt": "丹波の黒豆"
+      "alt": "揚げ出し豆腐 舞茸の餡（黒い鉢）"
     },
     "ast_sn04": {
       "kind": "photo",
@@ -266,9 +266,9 @@
       "file": {
         "key": "ast_se01.jpg",
         "mime": "image/jpeg",
-        "width": 1200,
-        "height": 1200,
-        "bytes": 1,
+        "height": 1600,
+        "width": 2400,
+        "bytes": 710109,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -276,7 +276,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://images.unsplash.com/"
+        "pageUrl": "https://unsplash.com/photos/wCrSi4mSsxM"
       },
       "rights": {
         "basis": "licensed",
@@ -285,16 +285,16 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "interior",
-      "alt": "白木のカウンター"
+      "alt": "白木のカウンターと奥の棚の器"
     },
     "ast_se02": {
       "kind": "photo",
       "file": {
         "key": "ast_se02.jpg",
         "mime": "image/jpeg",
-        "width": 1200,
-        "height": 1200,
-        "bytes": 1,
+        "height": 1600,
+        "width": 2400,
+        "bytes": 436544,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -302,7 +302,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://images.unsplash.com/"
+        "pageUrl": "https://unsplash.com/photos/ITx82kndvm0"
       },
       "rights": {
         "basis": "licensed",
@@ -311,7 +311,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "interior",
-      "alt": "畳の個室"
+      "alt": "障子から光の入る畳の個室"
     }
   }
 }

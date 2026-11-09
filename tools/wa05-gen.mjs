@@ -12,8 +12,13 @@ const SLOTS = {
   fv: ["signature", "黒い椀によそった白いご飯と、奥の朱塗りの汁椀"],
   st1: ["signature", "箸で持ち上げた握り"], st2: ["signature", "黒い長皿に並べた握りと箸"], st3: ["signature", "炙りを入れた握り二貫"],
   st4: ["product", "土ものの小さな器の取り合わせ"], st5: ["product", "木の棚に重ねた皿と鉢"],
-  sn1: ["signature", "甘鯛の松笠焼き"], sn2: ["signature", "蟹真丈の椀"], sn3: ["signature", "丹波の黒豆"], sn4: ["signature", "九条葱の温うどん（土ものの鉢）"],
-  se1: ["interior", "白木のカウンター"], se2: ["interior", "畳の個室"],
+  sn1: ["signature", "白身魚の西京焼きと甘酢の生姜"], sn2: ["signature", "若布と豆腐の椀（朱の木椀）"], sn3: ["signature", "揚げ出し豆腐 舞茸の餡（黒い鉢）"], sn4: ["signature", "九条葱の温うどん（土ものの鉢）"],
+  se1: ["interior", "白木のカウンターと奥の棚の器"], se2: ["interior", "障子から光の入る畳の個室"],
+};
+// 検索で確かめた枠は、紹介ページの URL を台帳に書く
+const PAGES = {
+  sn1: "https://unsplash.com/photos/WosJwI5F23Q", sn2: "https://unsplash.com/photos/Mk3NKQboQkA", sn3: "https://unsplash.com/photos/d5bdtWUbFkM",
+  se1: "https://unsplash.com/photos/wCrSi4mSsxM", se2: "https://unsplash.com/photos/ITx82kndvm0",
 };
 const astId = (k) => (k === "fv" ? "fv01" : `${k.slice(0, 2)}0${k[2]}`); // 台帳の ID は4文字以上
 // JPEG の大きさを読む
@@ -39,7 +44,7 @@ for (const [k, [slot, alt]] of Object.entries(SLOTS)) {
   const buf = fs.existsSync(f) ? fs.readFileSync(f) : null;
   const size = buf ? jpegSize(buf) : { width: 1200, height: 1200 };
   assets[id] = { kind: "photo", file: { key, mime: "image/jpeg", ...size, bytes: buf ? buf.length : 1, exifStripped: true }, uploadedAt: NOW, uploadedBy: "producer",
-    origin: { kind: "stock", provider: "unsplash", pageUrl: url ? url.split("?")[0] : "https://images.unsplash.com/" },
+    origin: { kind: "stock", provider: "unsplash", pageUrl: PAGES[k] ?? (url ? url.split("?")[0] : "https://images.unsplash.com/") },
     rights: { basis: "licensed", confirmedAt: NOW, confirmedBy: "producer", note: "Unsplash License（架空のお店のデザイン見本）" }, slot, alt };
 }
 fs.writeFileSync(`${DIR}/assets.json`, JSON.stringify({ schemaVersion: 1, assets }, null, 2) + "\n");
