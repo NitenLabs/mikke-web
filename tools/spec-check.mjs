@@ -9,7 +9,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
-import { execSync } from "node:child_process";
+import { execSync, execFileSync } from "node:child_process";
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { textStyle } from "./lib/theme.mjs";
 import { FONT_REGISTRY } from "./lib/fonts.mjs";
@@ -250,8 +250,8 @@ for (const c of A.SCREENSHOT) {
   const p = await ctx.newPage(); await p.goto(urlOf("pg_home"), { waitUntil: "load" });
   const el = await p.$(`[data-sec="${c.sec}"]`); await el.scrollIntoViewIfNeeded(); await p.waitForTimeout(400);
   const shot = path.join(here, "..", "refs", "compare", `_speccheck_${c.sec}.jpg`); await el.screenshot({ path: shot }); await ctx.close();
-  const py = `import numpy as np\nfrom PIL import Image\na=np.asarray(Image.open('${shot}').convert('RGB'),dtype=np.float64);H,Wd=a.shape[:2]\nl=0.2126*a[...,0]+0.7152*a[...,1]+0.0722*a[...,2];m=np.ones((H,Wd),bool)\nm[int(.3*H):int(.8*H),int(.3*Wd):int(.7*Wd)]=False\nbg=l[m].mean()\ndef lin(x):\n c=x/255\n return ((c+0.055)/1.055)**2.4 if c>0.03928 else c/12.92\nct=(lin(255)+0.05)/(lin(bg)+0.05)\nprint(round(bg,1),round(ct,2))`;
-  let bg = 0, ct = 0; try { const o = execSync(`python3 -c "${py.replace(/"/g, '\\"')}"`).toString().trim().split(/\s+/); bg = +o[0]; ct = +o[1]; } catch (e) { rec(c.id, "notfound", `${c.id}: 画素測定に失敗（${e.message.slice(0, 40)}）`); continue; }
+  const py = `import numpy as np\nfrom PIL import Image\na=np.asarray(Image.open('${shot.replace(/\\/g, "/")}').convert('RGB'),dtype=np.float64);H,Wd=a.shape[:2]\nl=0.2126*a[...,0]+0.7152*a[...,1]+0.0722*a[...,2];m=np.ones((H,Wd),bool)\nm[int(.3*H):int(.8*H),int(.3*Wd):int(.7*Wd)]=False\nbg=l[m].mean()\ndef lin(x):\n c=x/255\n return ((c+0.055)/1.055)**2.4 if c>0.03928 else c/12.92\nct=(lin(255)+0.05)/(lin(bg)+0.05)\nprint(round(bg,1),round(ct,2))`;
+  let bg = 0, ct = 0; try { const o = execFileSync("python3", ["-c", py]).toString().trim().split(/\s+/); bg = +o[0]; ct = +o[1]; } catch (e) { rec(c.id, "notfound", `${c.id}: 画素測定に失敗（${e.message.slice(0, 40)}）`); continue; }
   if (c.kind === "screenshotlum") { Math.abs(bg - c.refLum) <= c.tol ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: 背景の明るさ ${bg}（参照元${c.refLum}±${c.tol}）`); }
   else { ct >= c.min ? rec(c.id, "pass") : rec(c.id, "fail", `${c.id}: コントラスト ${ct}（≥${c.min}）`); }
 }

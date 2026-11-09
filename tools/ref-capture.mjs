@@ -35,6 +35,8 @@ const MEASURE = () => {
   const hex = c => { const m = c.match(/[\d.]+/g); if (!m) return c; const [r, g, b, a = 1] = m.map(Number); if (a < 0.05) return 'transparent'; const h = '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('').toUpperCase(); return a < 1 ? `${h}/${r2(a)}` : h; };
   const firstFont = f => f.split(',')[0].replace(/["']/g, '').trim();
   const all = [...document.querySelectorAll('body *')].filter(visible);
+  // 背景画像の写真（要素自身と ::before / ::after。Studio は疑似要素に置く）。繰り返し敷きの地紋は写真に数えない
+  const hasBgPhoto = el => [null, '::before', '::after'].some(p => { const s = getComputedStyle(el, p); return /url\(/.test(s.backgroundImage) && (!p || s.content !== 'none') && !(s.backgroundSize === 'auto' && /repeat(?!-)|round|space/.test(s.backgroundRepeat) && !/no-repeat/.test(s.backgroundRepeat)); });
 
   // 文字：直接テキストを持つ要素を、大きさ・太さ・書体でまとめる
   const typo = new Map(), textColors = new Map();
@@ -90,20 +92,33 @@ const MEASURE = () => {
       node = kids.sort((a, b) => b.getBoundingClientRect().height - a.getBoundingClientRect().height)[0];
     }
   }
-  const sections = best.map(el => {
+  // 判定した層の外にある全幅のブロック（main の隣の footer など）も、どのセクションにも入らないまま落とさず足す
+  const inFixed = el => { for (let n = el; n && n !== document.body; n = n.parentElement) if (/fixed|sticky/.test(cs(n).position)) return true; return false; };
+  const overlapsBest = r => best.some(b => { const q = b.getBoundingClientRect(); return Math.min(r.bottom, q.bottom) - Math.max(r.top, q.top) > r.height * 0.5; });
+  const outer = all.filter(el => { const r = el.getBoundingClientRect(); return r.width >= vw * 0.9 && r.height >= 60 && !inFixed(el) && !best.some(b => b === el || b.contains(el) || el.contains(b)) && !overlapsBest(r); });
+  const added = outer.filter(el => !outer.some(o => o !== el && o.contains(el))).flatMap(el => {
+    const kids = [...el.children].filter(k => { const r = k.getBoundingClientRect(); return visible(k) && r.width >= vw * 0.9 && r.height >= 60; });
+    const covered = kids.reduce((a, k) => a + k.getBoundingClientRect().height, 0);
+    return kids.length >= 2 && covered >= el.getBoundingClientRect().height * 0.9 ? kids : [el];   // 帯＋フッターのように中で分かれていれば分けて数える
+  });
+  const addedSet = new Set(added);
+  const sections = [...best, ...added].map(el => {
     const s = cs(el), r = rect(el);
-    const imgs = [...el.querySelectorAll('img,video,picture,svg')].filter(i => { const b = i.getBoundingClientRect(); return b.width > 150 && b.height > 100; });
+    const imgs = [...el.querySelectorAll('*')].concat(hasBgPhoto(el) ? [el] : []).filter(i => { if (!(/^(IMG|VIDEO|PICTURE|svg)$/.test(i.tagName) || hasBgPhoto(i))) return false; const b = i.getBoundingClientRect(); return b.width > 150 && b.height > 100; });
     const bigImg = imgs.some(i => i.getBoundingClientRect().width >= vw * 0.9) || (s.backgroundImage.startsWith('url') && r.w >= vw * 0.9);
     const heading = el.querySelector('h1,h2,h3');
     const chars = (el.innerText || '').replace(/\s/g, '').length;
     return { y: Math.round(r.y), h: Math.round(r.h), bg: hex(s.backgroundColor), bgImage: s.backgroundImage.startsWith('url'), fullBleedImage: bigImg, images: imgs.length,
-      pt: r0(s.paddingTop), pb: r0(s.paddingBottom), chars, heading: heading ? heading.innerText.trim().slice(0, 24) : '', tag: el.tagName.toLowerCase() };
+      pt: r0(s.paddingTop), pb: r0(s.paddingBottom), chars, heading: heading ? heading.innerText.trim().slice(0, 24) : '', tag: el.tagName.toLowerCase(), added: addedSet.has(el) };
   }).sort((a, b) => a.y - b.y);
+
+  // 地図の枠：埋め込みの中身は撮れなくても、位置と大きさだけ取る
+  const mapFrames = all.filter(el => el.tagName === 'IFRAME' && /maps?[./]|\/maps|map\b/i.test(`${el.src} ${el.dataset.src || ''} ${el.title}`)).map(el => { const r = rect(el); const y = Math.round(r.y); const sec = sections.findIndex(q => y >= q.y && y < q.y + q.h); return { x: Math.round(r.x), y, w: Math.round(r.w), h: Math.round(r.h), section: sec + 1 }; });
 
   // 写真：比率・角丸・トリミングを集計
   const ratios = new Map(), radii = new Map();
   let fullBleed = 0;
-  for (const el of all.filter(e => /^(IMG|VIDEO|PICTURE)$/.test(e.tagName) || cs(e).backgroundImage.startsWith('url'))) {
+  for (const el of all.filter(e => /^(IMG|VIDEO|PICTURE)$/.test(e.tagName) || hasBgPhoto(e))) {
     const r = el.getBoundingClientRect(); if (r.width < 80 || r.height < 60) continue;
     const q = r.width / r.height;
     const near = [[1, '1:1'], [4 / 3, '4:3'], [3 / 4, '3:4'], [3 / 2, '3:2'], [2 / 3, '2:3'], [16 / 9, '16:9'], [9 / 16, '9:16'], [2.35, '2.35:1'], [5 / 4, '5:4'], [4 / 5, '4:5']].reduce((b, c) => Math.abs(c[0] - q) < Math.abs(b[0] - q) ? c : b);
@@ -153,7 +168,7 @@ const MEASURE = () => {
 
   return { vw, docH, title: document.title.slice(0, 40), lang: document.documentElement.lang,
     typeScale, bodyText: bodyRow || null, textColors: top(textColors, 6), bgs: top(bgs, 8), containerW,
-    grids: top(grids, 8), sections, photoRatios: top(ratios, 8), photoRadius: top(radii, 5), fullBleedPhotos: fullBleed,
+    grids: top(grids, 8), sections, mapFrames, photoRatios: top(ratios, 8), photoRadius: top(radii, 5), fullBleedPhotos: fullBleed,
     buttons: top(btns, 5), header, rhythm: top(gaps, 10),
     extras: { shadows: top(extras.shadows, 3), gradients: extras.gradients, vertical: extras.vertical, animations: extras.animations, fixedSmall: extras.fixedSmall }, flags };
 };
@@ -240,11 +255,12 @@ for (const [name, m] of Object.entries(results)) {
   L.push(`- 余白のリズム（縦の間隔px）: ${kv(m.rhythm)}`);
   L.push(`- グリッド: ${kv(m.grids)}`);
   L.push(`- ボタン: ${kv(m.buttons)}`);
+  L.push(`- 地図の枠: ${m.mapFrames.map(f => `左${f.x} 上${f.y} 幅${f.w} 高さ${f.h}（セクション${f.section || '外'}）`).join('、') || 'なし'}`);
   const x = m.extras; L.push(`- 目視候補: 影 ${kv(x.shadows)} ／ グラデーション${x.gradients} ／ 縦書き${x.vertical} ／ アニメーション${x.animations} ／ 固定の小要素 ${x.fixedSmall.join('、') || 'なし'}`, '');
   L.push(`### 文字の階層（本文 = ${m.bodyText ? `${m.bodyText.size}px ${m.bodyText.font} 行間${m.bodyText.lh}` : '不明'}）`, '', '| 大きさ | 本文比 | 太さ | 書体 | 行間 | 字間(em) | 量 | 要素 |', '|---|---|---|---|---|---|---|---|');
   m.typeScale.forEach(t => L.push(`| ${t.size}px${t.vert ? '（縦）' : ''} | ${t.ratio} | ${t.weight} | ${t.font} | ${t.lh} | ${t.ls} | ${t.chars}字 | ${t.tags} |`));
   L.push('', '### セクション', '', '| # | 上端 | 高さ | 背景 | 写真 | 全面 | 上/下余白 | 文字量 | 見出し | 画像 |', '|---|---|---|---|---|---|---|---|---|---|');
-  m.sections.forEach((s, i) => L.push(`| ${i + 1} | ${s.y} | ${s.h} | ${s.bg}${s.bgImage ? '+画像' : ''} | ${s.images} | ${s.fullBleedImage ? '○' : ''} | ${s.pt}/${s.pb} | ${s.chars} | ${s.heading.replace(/\|/g, '')} | ${s.crop || ''} |`));
+  m.sections.forEach((s, i) => L.push(`| ${i + 1}${s.added ? `（層の外・${s.tag}）` : ''} | ${s.y} | ${s.h} | ${s.bg}${s.bgImage ? '+画像' : ''} | ${s.images} | ${s.fullBleedImage ? '○' : ''} | ${s.pt}/${s.pb} | ${s.chars} | ${s.heading.replace(/\|/g, '')} | ${s.crop || ''} |`));
   L.push('');
 }
 fs.writeFileSync(path.join(out, 'report.md'), L.join('\n'));

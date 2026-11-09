@@ -9,7 +9,7 @@
     "shots": "node tools/shots.mjs",
     "check": "node tools/check-layout.mjs",
     "test": "node --test tools/reflow.test.mjs tools/format.test.mjs tools/metacheck.test.mjs",
-    "setup:browser": "npx playwright install chromium",
+    "setup:browser": "npx playwright install chromium webkit",
     "spec-check": "node tools/spec-check.mjs samples/ashiyado dist/ashiyado",
     "metacheck": "node tools/metacheck.mjs",
     "build:editor": "node apps/editor/build.mjs",
