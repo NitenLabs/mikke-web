@@ -23,6 +23,7 @@ export const FONT_REGISTRY = {
   "zen-maru-gothic": { family: "Zen Maru Gothic", generic: "sans-serif", param: "Zen+Maru+Gothic:wght@400;500;700" },
   "hina-mincho": { family: "Hina Mincho", generic: "serif", param: "Hina+Mincho" },
   "cinzel": { family: "Cinzel", generic: "serif", param: "Cinzel:wght@400;500" },
+  "cormorant-infant": { family: "Cormorant Infant", generic: "serif", param: "Cormorant+Infant:ital,wght@0,400;0,500;1,400" },
 };
 
 // フォントID → CSS の font-family スタック
