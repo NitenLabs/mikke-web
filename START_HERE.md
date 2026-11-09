@@ -39,6 +39,11 @@
 - 芦屋みっけ「Web制作」紹介ページ：**中止**（ユーザーが質が低いと判断）。このとき参考を選んだのは Claude だった（手順では「参考を見つけるのは人」）。燃費・質の文書に教訓として入れる。作業用の worktree `C:\Users\sea_p\GitHub\mikke-web-page` は片付けてよい
 - 代わりに既存の芦屋みっけ（`NitenLabs/ashiya-mikke`）を使う。トップの表紙とコラージュを外す変更をブランチ `remove-covers` に用意（ビルド・確認・本番はローカルで）
 
+### 李杏の営業（2026-11-09）
+- 価格：**月 2,490 円・初期 0 円**（ユーザー決定。1店目の特別価格の位置づけ。正価は後で決める）。メニュー・値段・営業時間の変更はこちらで行う
+- 見本の URL：`https://nitenlabs-preview.pages.dev/rian/`（NitenLabs の見本専用の置き場。noindex。お店のドメインは契約が決まってから。`rian13.com` は空いている＝取り直せば食べログのリンクが直る）
+- 連絡：店主は知り合い。LINE で丁寧な文面＋見本の URL＋芦屋みっけの URL。写真は仮（素材）と明記
+
 ### 1本目の中身（2026-11-09 にユーザーが決めた）
 - お店：**炭火焼肉 李杏（りあん）**（芦屋市東山町2-6。食べログ https://tabelog.com/hyogo/A2803/A280302/28022584/ ）。「炭火焼肉RIAN」と同じ店で、**既にお店のサイトがある**（http://www.rian13.com/ 。https でない古いサイト）。なので営業は「新しく作る」でなく「作り直す」の話になる
 - 参考：Studio テンプレート https://preview.studio.site/templates/b91aP9Wlw2 （和食居酒屋向け。セクションは news・about・menu・infomation・access、PC の高さ約 8,070px。書体は黎ミンY10 M・中ゴシックBBB（どちらも Studio 専用の有料書体）・Lora・Noto Sans JP。写真は Unsplash）
