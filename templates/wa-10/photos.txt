@@ -1,0 +1,10 @@
+# wa-10 麦と灯（架空のお店）の使用写真
+fv https://images.unsplash.com/photo-1597604391235-a7429b4b350c?w=1240&h=1066&fit=crop&q=62&fm=webp
+ab1 https://images.unsplash.com/photo-1649675602217-416a4fafcecb?w=1300&h=1090&fit=crop&q=75&fm=webp
+mn1 https://images.unsplash.com/photo-1774043213144-c74be4fd335b?w=1000&h=700&fit=crop&crop=bottom&q=75&fm=webp
+mn2 https://images.unsplash.com/photo-1623334044303-241021148842?w=1000&h=700&fit=crop&q=75&fm=webp
+mn3 https://images.unsplash.com/photo-1786806568394-e9bb9389cf79?w=1000&h=700&fit=crop&q=75&fm=webp
+mn4 https://images.unsplash.com/photo-1598373182308-3270495d2f58?w=1000&h=700&fit=crop&q=75&fm=webp
+cf1 https://images.unsplash.com/photo-1693762894461-8305cd26ba9f?w=1000&h=916&fit=crop&crop=bottom&q=75&fm=webp
+cf2 https://images.unsplash.com/photo-1679458219939-4f6347c55460?w=1320&h=1400&fit=crop&crop=bottom&q=72&fm=webp
+bn https://images.unsplash.com/photo-1586765501019-cbe3973ef8fa?w=1800&h=648&fit=crop&crop=bottom&q=62&fm=webp

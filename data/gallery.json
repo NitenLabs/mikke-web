@@ -62,6 +62,13 @@
       "genre": "鮨店",
       "mood": "明石・淡路の魚で組み立てる、白木のカウンター8席のおまかせ",
       "path": "ichinoshio"
+    },
+    {
+      "id": "mugitoakari",
+      "name": "麦と灯",
+      "genre": "ベーカリーカフェ",
+      "mood": "生成りと小麦色に、大きな写真。朝の焼きたてと2階の小さなカフェ",
+      "path": "mugitoakari"
     }
   ]
 }

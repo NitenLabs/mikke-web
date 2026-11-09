@@ -1,0 +1,144 @@
+{
+  "nameEn": "Mugi to Akari",
+  "shortName": "麦と灯",
+  "copyright": "© Mugi to Akari",
+  "fvCopy": [
+    "朝いちばんの、",
+    "焼きたてを。"
+  ],
+  "facts": [
+    [
+      "ご住所",
+      [
+        "/location",
+        "address"
+      ]
+    ],
+    [
+      "営業時間",
+      "8:00〜17:00（パンが売り切れ次第終了）"
+    ],
+    [
+      "定休日",
+      "火曜日・水曜日"
+    ]
+  ],
+  "aboutJa": "麦と灯のこと",
+  "aboutHead": [
+    "小麦と、酵母と、",
+    "ひと晩の時間。"
+  ],
+  "aboutBody": [
+    "北海道の小麦と、自家製の天然酵母。",
+    "ひと晩ゆっくり発酵させた生地を、毎朝焼き上げています。",
+    "2階のカフェでは、焼きたてのパンとスープでひと休みを。"
+  ],
+  "breadJa": "毎朝のパン",
+  "breadNote": "表示の値段はすべて税込みです。パンは売り切れ次第終了となります。",
+  "cafeJa": "2階のカフェ",
+  "cafeBody": [
+    "階段を上がると、窓の明るい12席の小さなカフェです。",
+    "焼きたてのパンとスープで、朝のひとときをどうぞ。"
+  ],
+  "cafeNote": "表示の値段はすべて税込みです。",
+  "infoJa": "ご案内",
+  "infoRows": [
+    [
+      "ご住所",
+      [
+        "/location",
+        "address"
+      ]
+    ],
+    [
+      "営業時間",
+      "8:00〜17:00（パンが売り切れ次第終了）"
+    ],
+    [
+      "定休日",
+      "火曜日・水曜日"
+    ],
+    [
+      "カフェ",
+      "2階（12席）"
+    ],
+    [
+      "お電話",
+      [
+        "/contact/phone",
+        "phone"
+      ]
+    ]
+  ],
+  "telLabel": "お電話する",
+  "mapLabel": "地図で開く",
+  "footHours": [
+    "8:00〜17:00（売り切れ次第終了）",
+    "火曜日・水曜日 定休"
+  ],
+  "nav": [
+    [
+      "麦と灯のこと",
+      "about"
+    ],
+    [
+      "パン",
+      "bread"
+    ],
+    [
+      "カフェ",
+      "cafe"
+    ],
+    [
+      "ご案内",
+      "information"
+    ]
+  ],
+  "photos": {
+    "fv": {
+      "slot": "signature",
+      "alt": "木のまな板の上で切り分けた天然酵母のカンパーニュと、生成りの布",
+      "page": "https://unsplash.com/photos/H_PXix_4Bwc"
+    },
+    "ab1": {
+      "slot": "product",
+      "alt": "粉をふった作業台で生地を成形する手元",
+      "page": "https://unsplash.com/photos/5CRzqqWzEKQ"
+    },
+    "mn1": {
+      "slot": "signature",
+      "alt": "天然酵母のカンパーニュ（ハーフ）。冷ましの網にのった丸いパン",
+      "page": "https://unsplash.com/photos/p9h7jrVuJDY"
+    },
+    "mn2": {
+      "slot": "signature",
+      "alt": "クロワッサン。焼き上がりを天板に並べて",
+      "page": "https://unsplash.com/photos/sqkXyyj4WdE"
+    },
+    "mn3": {
+      "slot": "signature",
+      "alt": "季節のフルーツデニッシュ。果物をのせた焼きたて",
+      "page": "https://unsplash.com/photos/oPBKD1bLCwM"
+    },
+    "mn4": {
+      "slot": "signature",
+      "alt": "角食パン（1斤）。厚めに切り分けた断面",
+      "page": "https://unsplash.com/photos/e83dQJ-BMog"
+    },
+    "cf1": {
+      "slot": "product",
+      "alt": "季節のスープと、切り分けたパン",
+      "page": "https://unsplash.com/photos/n2Au_tj8I_s"
+    },
+    "cf2": {
+      "slot": "interior",
+      "alt": "窓辺の光を受ける、木の台のパン",
+      "page": "https://unsplash.com/photos/GUTO5wSTe6M"
+    },
+    "bn": {
+      "slot": "signature",
+      "alt": "木の台に並ぶ焼きたてのパン",
+      "page": "https://unsplash.com/photos/USg-3Z9T4uY"
+    }
+  }
+}

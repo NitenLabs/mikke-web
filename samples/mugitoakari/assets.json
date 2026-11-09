@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1240,
+        "height": 1066,
+        "bytes": 486324,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/H_PXix_4Bwc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "木のまな板の上で切り分けた天然酵母のカンパーニュと、生成りの布"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.webp",
+        "mime": "image/webp",
+        "width": 1300,
+        "height": 1090,
+        "bytes": 230022,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/5CRzqqWzEKQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "粉をふった作業台で生地を成形する手元"
+    },
+    "ast_mn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn01.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 700,
+        "bytes": 160216,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/p9h7jrVuJDY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "天然酵母のカンパーニュ（ハーフ）。冷ましの網にのった丸いパン"
+    },
+    "ast_mn02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn02.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 700,
+        "bytes": 242884,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/sqkXyyj4WdE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "クロワッサン。焼き上がりを天板に並べて"
+    },
+    "ast_mn03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn03.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 700,
+        "bytes": 107672,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/oPBKD1bLCwM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "季節のフルーツデニッシュ。果物をのせた焼きたて"
+    },
+    "ast_mn04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn04.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 700,
+        "bytes": 105254,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/e83dQJ-BMog"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "角食パン（1斤）。厚めに切り分けた断面"
+    },
+    "ast_cf01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cf01.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 916,
+        "bytes": 101276,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/n2Au_tj8I_s"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "季節のスープと、切り分けたパン"
+    },
+    "ast_cf02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cf02.webp",
+        "mime": "image/webp",
+        "width": 1320,
+        "height": 1400,
+        "bytes": 118150,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/GUTO5wSTe6M"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "窓辺の光を受ける、木の台のパン"
+    },
+    "ast_bn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_bn01.webp",
+        "mime": "image/webp",
+        "width": 1800,
+        "height": 648,
+        "bytes": 328058,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/USg-3Z9T4uY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "木の台に並ぶ焼きたてのパン"
+    }
+  }
+}
