@@ -5,6 +5,8 @@ export const FONT_REGISTRY = {
   "zen-old-mincho": { family: "Zen Old Mincho", generic: "serif", param: "Zen+Old+Mincho:wght@400;500;600;700;900" },
   "noto-sans-jp": { family: "Noto Sans JP", generic: "sans-serif", param: "Noto+Sans+JP:wght@400;500;700" },
   "shippori-mincho": { family: "Shippori Mincho", generic: "serif", param: "Shippori+Mincho:wght@400;500" },
+  "shippori-mincho-b1": { family: "Shippori Mincho B1", generic: "serif", param: "Shippori+Mincho+B1:wght@400;500" },
+  "cormorant-garamond-light": { family: "Cormorant Garamond", generic: "serif", param: "Cormorant+Garamond:wght@300;400" },
   "zen-kaku-gothic-new": { family: "Zen Kaku Gothic New", generic: "sans-serif", param: "Zen+Kaku+Gothic+New:wght@400;500;700" },
   "noto-serif-jp": { family: "Noto Serif JP", generic: "serif", param: "Noto+Serif+JP:wght@400" },
   "archivo": { family: "Archivo", generic: "sans-serif", param: "Archivo:wght@400" },
