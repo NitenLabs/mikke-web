@@ -27,6 +27,13 @@
       "genre": "コーヒースタンド",
       "mood": "白とグレーの余白に、大きな欧文。海辺の朝のコーヒースタンド",
       "path": "tide"
+    },
+    {
+      "id": "mareluce",
+      "name": "Trattoria Mareluce",
+      "genre": "イタリアン",
+      "mood": "手打ちパスタと薪窯のピッツァ、自然派ワインの街のトラットリア",
+      "path": "mareluce"
     }
   ]
 }
