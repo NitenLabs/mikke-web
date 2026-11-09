@@ -33,3 +33,6 @@ apps/editor/dist/
 
 # Python の一時ファイル
 __pycache__/
+
+# 参考サイトの文が入るもの（公開リポジトリに上げない）
+refs/houzentei/
