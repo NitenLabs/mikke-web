@@ -130,7 +130,7 @@ photo("fv_ph", "sec_firstv", "ast_fv01", 1, { x: 0, y: 0, w: 1440, h: 900 }, { x
 t("fv_name", "sec_firstv", SHORT, [[200, 208, 0], [84, 87, 0]], H, W, [{ x: 80, y: 436, w: 1280, h: 372 }, { x: 20, y: 667, w: 370, h: 87 }], { role: "pageTitle" });
 t("fv_l", "sec_firstv", { lines: ["兵庫県芦屋市 浜町", "阪神芦屋駅 徒歩5分"] }, [[14, 21, 0.7], [12, 18, 0.6]], B, W, [{ x: 80, y: 836, w: 400, h: 42 }, { x: 20, y: 772, w: 170, h: 36 }]);
 t("fv_r", "sec_firstv", { lines: ["Trattoria", "手打ちパスタと薪窯のピッツァ"] }, [[14, 21, 0.7], [12, 18, 0.6]], B, W, [{ x: 960, y: 836, w: 400, h: 42 }, { x: 190, y: 772, w: 180, h: 36 }], { align: "right" });
-tb("fv_name", { "font-size": "calc((100vw - 9.6rem) / 3.54)", "line-height": "1.04", left: "4.8rem", width: "auto", top: "56rem", height: "auto" });
+tb("fv_name", { "font-size": "calc((100vw - 9.6rem) / 3.54)", "line-height": "1.04", left: "4.8rem", width: "auto", top: "calc(75.2rem - (100vw - 9.6rem) / 3.54 * 1.04)", height: "auto" }); // 下端を下の行の手前に固定（幅で伸びても重ならない）
 tb("fv_l", { left: "4.8rem", width: "40%", top: "77.2rem" });
 tb("fv_r", { left: "auto", right: "4.8rem", width: "40%", top: "77.2rem" });
 
@@ -139,13 +139,14 @@ const ABOUT = [
   "芦屋川の河口に近い浜町の路地に、小さなトラットリアを開きました。店の名前はイタリア語で「海の光」。昼は窓からの陽ざしの中で、夜は薪窯の炎を眺めながら、ご家族やご友人と気兼ねなく食事を楽しんでいただきたいと思っています。",
   "パスタは毎朝、粉を練るところから。ピッツァは薪窯で一気に焼き上げ、魚は明石や淡路の浜から届いたものを、その日いちばんおいしい形でお出しします。ワインは造り手の顔が見える自然派を中心に揃えました。",
 ];
-sec("sec_about", "お店について", 1880, 1620, { bg: OL, anchor: "about", nav: { label: "お店について", order: 1 } });
+sec("sec_about", "お店について", 1880, 1660, { bg: OL, anchor: "about", nav: { label: "お店について", order: 1 } });
 t("ab_lb", "sec_about", "About", [[32, 48, 0], [28, 42, 0]], H, CR, [{ x: 80, y: 180, w: 140, h: 48 }, { x: 20, y: 104, w: 130, h: 42 }]);
-t("ab_hand", "sec_about", "Benvenuti!", [[40, 48, 0], [32, 40, 0]], A, CR, [{ x: 240, y: 164, w: 260, h: 48 }, { x: 170, y: 90, w: 220, h: 40 }], { weight: 500 });
+t("ab_hand", "sec_about", "Benvenuti!", [[40, 48, 0], [32, 40, 0]], A, CR, [{ x: 240, y: 164, w: 260, h: 48 }, { x: 170, y: 90, w: 180, h: 40 }], { weight: 500 });
+tb("ab_hand", { left: "16rem", width: "20rem" });
 t("ab_en", "sec_about", { lines: ["Mare e", "Luce"] }, [[96, 115, 0], [50, 60, 0]], H, CR, [{ x: 80, y: 304, w: 660, h: 230 }, { x: 20, y: 168, w: 350, h: 120 }], { role: "heading" });
 t("ab_p", "sec_about", { lines: ABOUT }, [[16, 40, 1.28], [16, 36, 0.8]], B, W, [{ x: 80, y: 600, w: 560, h: 560 }, { x: 20, y: 320, w: 350, h: 460 }]);
-photo("ab_ph1", "sec_about", "ast_ab01", 2, { x: 800, y: 420, w: 640, h: 848 }, { x: 58, y: 800, w: 332, h: 440 });
-photo("ab_ph2", "sec_about", "ast_ab02", 2, { x: 0, y: 1160, w: 400, h: 534 }, { x: 0, y: 1280, w: 207, h: 277 }, { fy: 60 });
+photo("ab_ph1", "sec_about", "ast_ab01", 2, { x: 800, y: 420, w: 640, h: 848 }, { x: 58, y: 840, w: 332, h: 440 });
+photo("ab_ph2", "sec_about", "ast_ab02", 2, { x: 0, y: 1160, w: 400, h: 534 }, { x: 0, y: 1320, w: 207, h: 277 }, { fy: 60 });
 tb("ab_ph1", { ...tbMargin, top: "80rem", height: "89.6rem" });
 tb("ab_ph2", { left: "0", width: "40rem", top: "173.6rem", height: "53.4rem" });
 tablet.secs.sec_about = "237.4rem";
@@ -153,10 +154,10 @@ tablet.secs.sec_about = "237.4rem";
 // ---- 3 おすすめ3品（テラコッタの帯）
 const RC = [["Antipasto", "ブルスケッタ 三種の盛り合わせ", 1280, "ast_rc01", {}], ["Pasta", "ボロネーゼのタリアテッレ", 2000, "ast_rc02", { fx: 90 }], ["Pizza", "マルゲリータ", 1500, "ast_rc03", {}]];
 sec("sec_recommend", "おすすめ3品", 1021, 1875, { bg: TC, anchor: "recommend", nav: { label: "おすすめ", order: 2 } });
-t("rc_h", "sec_recommend", "Recommended", [[32, 48, 0], [28, 42, 0]], H, W, [{ x: 80, y: 140, w: 1280, h: 48 }, { x: 20, y: 104, w: 350, h: 42 }], { ...C, role: "heading" });
+t("rc_h", "sec_recommend", "Recommended", [[34, 48, 0], [30, 42, 0]], H, W, [{ x: 80, y: 140, w: 1280, h: 48 }, { x: 20, y: 104, w: 350, h: 42 }], { ...C, role: "heading" });
 RC.forEach(([en, name, price, ast, crop], i) => {
   const xP = 480 * i, yS = 200 + 527 * i, cl = 33.3333 * i;
-  photo(`rc_ph${i}`, "sec_recommend", ast, 2, { x: xP, y: 240, w: 480, h: 641 }, { x: 20, y: yS, w: 350, h: 475 }, crop, DARKEN);
+  photo(`rc_ph${i}`, "sec_recommend", ast, 2, { x: xP, y: 240, w: 480, h: 641 }, { x: 20, y: yS, w: 350, h: 475 }, crop, 50);
   t(`rc_en${i}`, "sec_recommend", en, [[64, 96, 0], [41, 62, 0]], H, W, [{ x: xP, y: 450, w: 480, h: 96 }, { x: 20, y: yS + 150, w: 350, h: 62 }], C);
   t(`rc_n${i}`, "sec_recommend", name, [[16, 24, 0.8], [16, 24, 0.8]], B, W, [{ x: xP + 40, y: 560, w: 400, h: 24 }, { x: 40, y: yS + 226, w: 310, h: 24 }], C);
   t(`rc_p${i}`, "sec_recommend", yen(price), [[18, 27, 0], [18, 27, 0]], B, W, [{ x: xP, y: 596, w: 480, h: 27 }, { x: 20, y: yS + 262, w: 350, h: 27 }], C);
@@ -171,9 +172,9 @@ tablet.secs.sec_recommend = "68.2rem";
 sec("sec_menu", "メニュー", 3080, 2720, { anchor: "menu", nav: { label: "メニュー", order: 3 } });
 t("mn_h", "sec_menu", "Menu", [[96, 115, 0], [50, 60, 0]], H, TC, [{ x: 80, y: 180, w: 600, h: 115 }, { x: 20, y: 104, w: 350, h: 60 }], { role: "heading" });
 t("mn_p", "sec_menu", "前菜からドルチェまで、季節の食材でご用意しています。まずは前菜を分け合って、パスタかピッツァを囲み、仕上げに自家製のドルチェをどうぞ。", [[16, 40, 1.28], [16, 32, 0.8]], B, INK, [{ x: 720, y: 180, w: 640, h: 200 }, { x: 20, y: 184, w: 350, h: 200 }]);
-photo("mn_ph1", "sec_menu", "ast_mn01", 2, { x: 80, y: 683, w: 554, h: 739 }, { x: 20, y: 400, w: 216, h: 287 }, { fy: 60 });
-photo("mn_ph2", "sec_menu", "ast_mn02", 2, { x: 1040, y: 863, w: 320, h: 214 }, { x: 246, y: 440, w: 124, h: 83 }, { fy: 52 });
-photo("mn_ph3", "sec_menu", "ast_mn03", 2, { x: 720, y: 1237, w: 380, h: 507 }, { x: 222, y: 700, w: 148, h: 197 });
+photo("mn_ph1", "sec_menu", "ast_mn01", 2, { x: 80, y: 563, w: 554, h: 739 }, { x: 20, y: 400, w: 216, h: 287 }, { fy: 60 });
+photo("mn_ph2", "sec_menu", "ast_mn02", 2, { x: 1040, y: 743, w: 320, h: 214 }, { x: 246, y: 440, w: 124, h: 83 }, { fy: 52 });
+photo("mn_ph3", "sec_menu", "ast_mn03", 2, { x: 720, y: 1117, w: 380, h: 507 }, { x: 222, y: 700, w: 148, h: 197 });
 tb("mn_h", { "font-size": "7.2rem", "line-height": "8.6rem", height: "8.6rem", left: "4.8rem", width: "calc(100% - 9.6rem)", top: "10.4rem" });
 tb("mn_p", { ...tbMargin, top: "21rem", height: "16rem" });
 tb("mn_ph1", { left: "4.8rem", width: "29.1rem", top: "40rem", height: "38.8rem" });
@@ -194,7 +195,7 @@ function row(name, price, xP, yP, yS, i) {
   t(`li_p${k}`, "sec_menu", yen(price), [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: xP + 460, y: yP + 14, w: 140, h: 28 }, { x: 280, y: yS + 12, w: 90, h: 28 }], { align: "right" });
   rect(`li_l${k}`, "sec_menu", INK, 2, { x: xP, y: yP + 56, w: 600, h: 1 }, { x: 20, y: yS + 52, w: 350, h: 1 }, { opacity: 30 });
 }
-let yL = 1880, yR = 1880, yS = 940;
+let yL = 1760, yR = 1760, yS = 940;
 for (const c of MENU) {
   const left = ["antipasti", "pasta", "pizza"].includes(c.id);
   const xP = left ? 80 : 720;
@@ -225,7 +226,7 @@ const FEATS = [
 for (const f of FEATS) {
   const s = `sec_${f.en.toLowerCase()}`, pre = f.p;
   sec(s, f.en, 1218, 1040, { anchor: f.en.toLowerCase(), ...(f.nav ? { nav: f.nav } : {}) });
-  photo(`${pre}_ph`, s, f.ast, 1, { x: 0, y: 0, w: 1440, h: 810 }, { x: 0, y: 0, w: 390, h: 520 }, f.crop, 30);
+  photo(`${pre}_ph`, s, f.ast, 1, { x: 0, y: 0, w: 1440, h: 810 }, { x: 0, y: 0, w: 390, h: 520 }, f.crop, 40);
   t(`${pre}_en`, s, f.en, [[64, 76, 0], [44, 53, 0]], H, W, [{ x: 80, y: 686, w: 1280, h: 76 }, { x: 20, y: 442, w: 350, h: 53 }], { role: "heading" });
   t(`${pre}_h`, s, f.ja, [[24, 36, 0.5], [22, 33, 0]], B, INK, [{ x: 80, y: 858, w: 560, h: 36 }, { x: 20, y: 564, w: 350, h: 33 }], { role: "subheading", weight: 500 });
   t(`${pre}_p`, s, f.body, [[16, 32, 0.8], [16, 32, 0.8]], B, INK, [{ x: 80, y: 906, w: 560, h: 160 }, { x: 20, y: 609, w: 350, h: 180 }]);
@@ -249,39 +250,39 @@ for (const f of FEATS) {
 
 // ---- 8 営業案内
 sec("sec_info", "営業案内", 660, 700, { anchor: "information" });
-t("in_h", "sec_info", "Information", [[32, 48, 0], [28, 42, 0]], H, TC, [{ x: 80, y: 120, w: 300, h: 48 }, { x: 20, y: 104, w: 350, h: 42 }], { role: "heading" });
+t("in_h", "sec_info", "Information", [[34, 48, 0], [30, 42, 0]], H, TC, [{ x: 80, y: 120, w: 300, h: 48 }, { x: 20, y: 104, w: 350, h: 42 }], { role: "heading" });
 const INFO = [["ランチ", "11:30〜15:00（L.O. 14:00）"], ["ディナー", "17:30〜22:30（L.O. 21:30）"], ["定休日", "月曜日"], ["ご住所", ADDR], ["交通", ["/location/access", "access"]], ["お電話", PHONE]];
 INFO.forEach(([k, v], i) => {
   const yP = 120 + 76 * i, yS_ = 170 + 84 * i;
   rect(`in_l${i}`, "sec_info", INK, 2, { x: 400, y: yP + 75, w: 960, h: 1 }, { x: 20, y: yS_ + 83, w: 350, h: 1 }, { opacity: 30 });
   t(`in_k${i}`, "sec_info", k, [[14, 28, 0.7], [14, 22, 0.7]], B, OL, [{ x: 400, y: yP + 24, w: 150, h: 28 }, { x: 20, y: yS_ + 10, w: 350, h: 22 }]);
   t(`in_v${i}`, "sec_info", v, [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: 560, y: yP + 24, w: 800, h: 28 }, { x: 20, y: yS_ + 38, w: 350, h: 28 }], i === 5 ? { link: TEL } : {});
-  tb(`in_k${i}`, { width: "16rem" });
-  tb(`in_v${i}`, { left: "calc(5.128% + 16rem)", width: "calc(89.744% - 16rem)", top: `${(yS_ + 10) / 10}rem` });
+  tb(`in_k${i}`, { width: "16rem", top: `${(yS_ + 10) / 10}rem` }); tb(`in_l${i}`, { top: `${(yS_ + 83) / 10}rem` }); // 項目・値・線を同じ行の刻みにそろえる
+  tb(`in_v${i}`, { left: "calc(4.8rem + 16rem)", width: "calc(100% - 9.6rem - 16rem)", top: `${(yS_ + 10) / 10}rem` });
 });
 tb("in_h", {}); tablet.secs.sec_info = "68rem";
 
 // ---- 9 アクセス
 sec("sec_access", "アクセス", 720, 900, { anchor: "access", nav: { label: "アクセス", order: 6 } });
-t("ac_h", "sec_access", "Access", [[32, 48, 0], [28, 42, 0]], H, TC, [{ x: 80, y: 120, w: 300, h: 48 }, { x: 20, y: 104, w: 350, h: 42 }], { role: "heading" });
+t("ac_h", "sec_access", "Access", [[34, 48, 0], [30, 42, 0]], H, TC, [{ x: 80, y: 120, w: 300, h: 48 }, { x: 20, y: 104, w: 350, h: 42 }], { role: "heading" });
 t("ac_p", "sec_access", "阪神芦屋駅から南へ徒歩5分、芦屋川沿いの道を浜へ向かう途中にあります。お車の方は、お近くのコインパーキングをご利用ください。", [[16, 32, 0.8], [16, 32, 0.8]], B, INK, [{ x: 80, y: 192, w: 560, h: 192 }, { x: 20, y: 164, w: 350, h: 192 }]);
 rect("ac_map", "sec_access", "theme:lineSoft", 2, { x: 720, y: 120, w: 640, h: 440 }, { x: 20, y: 380, w: 350, h: 416 });
 tb("ac_map", { ...tbMargin, top: "38rem", height: "40rem" }); tablet.secs.sec_access = "88rem";
 
 // ---- 10 ご予約（オリーブの帯）
-sec("sec_reserve", "ご予約", 628, 761, { anchor: "reserve" });
-rect("rs_band", "sec_reserve", OL, 1, { x: 80, y: 120, w: 1280, h: 388 }, { x: 20, y: 60, w: 350, h: 640 }, { radius: 10 });
+sec("sec_reserve", "ご予約", 628, 586, { anchor: "reserve" });
+rect("rs_band", "sec_reserve", OL, 1, { x: 80, y: 120, w: 1280, h: 388 }, { x: 20, y: 60, w: 350, h: 466 }, { radius: 10 });
 t("rs_h", "sec_reserve", "Reservation", [[48, 58, 0], [36, 44, 0]], H, W, [{ x: 160, y: 200, w: 520, h: 58 }, { x: 44, y: 120, w: 300, h: 44 }], { role: "heading" });
-t("rs_p", "sec_reserve", "ご家族のお祝いや、ご友人との集まりなど、人数やご希望に合わせてお席をご用意します。当日のご予約も、お気軽にお電話ください。", [[16, 32, 0.8], [16, 32, 0.8]], B, W, [{ x: 720, y: 200, w: 560, h: 128 }, { x: 44, y: 200, w: 302, h: 288 }]);
-rect("rs_btn_b", "sec_reserve", CR, 2, { x: 720, y: 356, w: 260, h: 54 }, { x: 44, y: 540, w: 302, h: 54 }, { radius: 30, link: TEL });
-t("rs_btn_t", "sec_reserve", "電話で予約する", [[16, 24, 0.8], [16, 24, 0.8]], B, OL, [{ x: 720, y: 371, w: 260, h: 24 }, { x: 44, y: 555, w: 302, h: 24 }], { ...C, link: TEL, z: 4 });
+t("rs_p", "sec_reserve", "ご家族のお祝いや、ご友人との集まりなど、人数やご希望に合わせてお席をご用意します。当日のご予約も、お気軽にお電話ください。", [[16, 32, 0.8], [16, 32, 0.8]], B, W, [{ x: 720, y: 200, w: 560, h: 128 }, { x: 44, y: 200, w: 302, h: 192 }]);
+rect("rs_btn_b", "sec_reserve", CR, 2, { x: 720, y: 356, w: 260, h: 54 }, { x: 44, y: 420, w: 302, h: 54 }, { radius: 30, link: TEL });
+t("rs_btn_t", "sec_reserve", "電話で予約する", [[16, 24, 0.8], [16, 24, 0.8]], B, OL, [{ x: 720, y: 371, w: 260, h: 24 }, { x: 44, y: 435, w: 302, h: 24 }], { ...C, link: TEL, z: 4 });
 
 // ---- 11 店内の2枚（欧文はリンクにしない）
 sec("sec_scene", "店内", 676, 726);
 const SA = [["La Sala", "明るい窓辺の客席", "ast_sa01", { fy: 72 }], ["Il Forno", "薪窯で焼き上げます", "ast_sa02", { fy: 40 }]];
 SA.forEach(([en, d, ast, crop], i) => {
   const xP = 80 + 640 * i, yS_ = 20 + 324 * i;
-  photo(`sa_ph${i}`, "sec_scene", ast, 2, { x: xP, y: 0, w: 640, h: 556 }, { x: 20, y: yS_, w: 350, h: 304 }, crop, DARKEN);
+  photo(`sa_ph${i}`, "sec_scene", ast, 2, { x: xP, y: 0, w: 640, h: 556 }, { x: 20, y: yS_, w: 350, h: 304 }, crop, 42);
   t(`sa_en${i}`, "sec_scene", en, [[54, 81, 0], [41, 62, 0]], H, W, [{ x: xP, y: 214, w: 640, h: 81 }, { x: 20, y: yS_ + 100, w: 350, h: 62 }], C);
   t(`sa_d${i}`, "sec_scene", d, [[12, 18, 0.6], [12, 18, 0.6]], B, W, [{ x: xP, y: 300, w: 640, h: 18 }, { x: 20, y: yS_ + 168, w: 350, h: 18 }], C);
   tb(`sa_ph${i}`, { left: i ? "50%" : "0", width: "50%", top: "2rem", height: "33.4rem" });

@@ -33,12 +33,21 @@ html:not(.wa06-past) .site-header.overlay.scrolled .el-text,html:not(.wa06-past)
 [data-el=ac_map] iframe{width:100%;height:100%;border:0;display:block}
 @media (min-width:768px){.site-header.overlay,.site-header.overlay.scrolled{margin-bottom:-9.3rem}[data-el=fv_name],[data-el=ft_name]{font-size:35.6rem!important;line-height:37.2rem!important}}
 [data-el=fv_name],[data-el=ft_name]{white-space:nowrap}
-@media (max-width:767.98px){[data-el=hd_tel_b],[data-el=hd_tel_t]{display:none}html{scroll-padding-top:7.5rem}.site-header.overlay,.site-header.overlay.scrolled{margin-bottom:-7.5rem}}
+@media (max-width:767.98px){[data-el=hd_tel_b],[data-el=hd_tel_t]{display:none}[data-el=hd_name]{text-align:left!important}.el-nav .nav-sp:not([open]) summary{line-height:7.5rem}html{scroll-padding-top:7.5rem}.site-header.overlay,.site-header.overlay.scrolled{margin-bottom:-7.5rem}}
 </style>`;
 // ヘッダーの地は「最初の画面を過ぎてから」切り替える（下の文字と重ならないよう、過ぎたら不透明）
 const js = `<script>(function(){var d=document.documentElement,f=document.querySelector('[data-sec="sec_firstv"]');if(!f)return;function u(){d.classList.toggle("wa06-past",f.getBoundingClientRect().bottom<=(innerWidth<${BP}?75:93))}u();addEventListener("scroll",u,{passive:true});addEventListener("resize",u);})();</script>`;
 const rule = (sel, o) => `${sel}{${Object.entries(o).map(([k, v]) => `${k}:${v}`).join(";")}}`;
 const rows = Object.entries(TB.els).filter(([, o]) => Object.keys(o).length).map(([id, o]) => rule(`[data-el=${id}]`, o)).join("\n");
+// スマホのデータのままの要素は、左右の余白を 48px にそろえる（タブレットの設定があるものはそちらを優先）
+const site = JSON.parse(fs.readFileSync(`samples/${ID}/site.json`, "utf8"));
+const edge = Object.entries(site.elements).flatMap(([id, e]) => {
+  const s = e.layout?.sp, o = TB.els[id] || {}, near = (a, b) => Math.abs(a - b) < 0.02;
+  if (!s || s.x == null || o.left || o.right) return [];
+  if (near(s.x, 5.1282)) return [rule(`[data-el=${id}]`, { left: "4.8rem", ...(o.width ? {} : near(s.w, 89.7436) ? { width: "calc(100% - 9.6rem)" } : { width: `calc(${s.w}% - 2.4rem)` }) })]; // 左の列を縮めて右の列（値段など）に重ねない
+  if (near(s.x + s.w, 94.8718)) return [rule(`[data-el=${id}]`, { left: "auto", right: "4.8rem" })];
+  return [];
+}).join("\n");
 const secRows = Object.entries(TB.secs).map(([id, v]) => rule(`[data-sec=${id}]`, { "min-height": v })).join("\n");
 const dVars = ["sec_wine", "sec_lunch", "sec_dinner"].map((s) => rule(`[data-sec=${s}]`, { "--d": "calc(56.25vw - 52rem)" })).join("\n");
 const tablet = `<style>@media (min-width:${TAB}px) and (max-width:${BP - 0.02}px){
@@ -46,7 +55,9 @@ const tablet = `<style>@media (min-width:${TAB}px) and (max-width:${BP - 0.02}px
 .cbox{width:100%}
 .cbox>.el{transform:none!important}
 ${dVars}
+${edge}
 ${rows}
+[data-el=hd_nav]{left:auto;right:4.8rem;width:8rem}
 ${secRows}
 }</style>`;
 
@@ -61,6 +72,8 @@ function apply(file, isHome) {
     if (!re.test(h)) throw new Error("ac_map が見つかりません");
     h = h.replace(re, `$1${map}`);
   }
+  // 店名は PC で CSS により 372px の高さになる。実測の高さ（データ上の 200px のもの）のままだと後ろの文字が押し下げられる
+  h = h.replace(/<[a-z0-9]+ [^>]*data-el="(?:fv_name|ft_name)"[^>]*>/g, (t) => t.replace(/data-mh-pc="[\d.]+"/, 'data-mh-pc="372"'));
   h = h.replace("</head>", css + "</head>").replace("</body>", js + "</body>");
   const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
   fs.writeFileSync(file, bp(h).replace("</head>", tablet + "</head>")); // bp の置き換えの後に足す（768 の下限を巻き込まないため）
