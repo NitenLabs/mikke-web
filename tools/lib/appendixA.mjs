@@ -36,7 +36,7 @@ export const TEXT = [
   t("A2-15", MIN, [14, 19.6], [12, 16.8], 700, 0.15, [{ id: "el_fven", c: ON }]),
   t("A2-16", MIN, [32, 44.8], [32, 44.8], 700, 0, [{ id: "el_fname", c: ON }]),
   t("A2-17", GOT, [12, 16.8], [12, 16.8], 400, 0, [
-    { id: "el_fpriv", c: ON }, { id: "el_fcopy", c: ON }, { id: "el_fmikke", c: ON }]),
+    { id: "el_fpriv", c: ON }, { id: "el_fcopy", c: ON }]), // el_fmikke は芦屋堂が架空のお店（demo）になり出さないので外した
   t("A2-19", MIN, [14, 22.4], [14, 22.4], 400, 0, [{ id: "el_kanmitime", c: MU }, { id: "el_mk_time", c: MU }]),
   // A2-21・A2-22（営業案内の帯の札・文字）は fix04 で削除（帯を外した）
   // A2-3 リード（ABOUT）／A2-2 見出し 等は上で網羅
@@ -273,7 +273,7 @@ export const SECBOTTOM = [
 
 // B6 見本（架空のお店）の表示（fix05 §5・shop.isSample=true のときのみ）
 export const SAMPLE = [
-  { kind: "sampleline", id: "B6-1", sel: '[data-el="el_fsample"]', text: "このサイトは見本です（架空のお店です）", fam: GOT, size: 12, opacity: 0.7, c: ON, note: "見本の断り書き（フッター最下段左・ゴシック12/16.8・onDark70%）" },
+  { kind: "sampleline", id: "B6-1", sel: ".demo-note", text: "このサイトは架空のお店のデザイン見本です（芦屋みっけ）", fam: GOT, size: 12, note: "架空のお店の断り書き（shop.demo。フッターの直後・ゴシック12）" },
   { kind: "metarobots", id: "B6-2", name: "robots", expect: "noindex,nofollow", pages: ["pg_home", "pg_menu", "pg_contact", "pg_privacy"], note: "全ページ noindex,nofollow（isSample時）" },
 ];
 

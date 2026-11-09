@@ -43,7 +43,7 @@ const DIST_DEFECTS = [
   { id: "B3-1", kind: "B5-1 改行(word-break)", from: ".lb{word-break:keep-all;overflow-wrap:anywhere}", to: ".lb{word-break:break-all}" },
   { id: "B3-2", kind: "B5-2 最後の行1文字", re: /(<p data-el="el_featb1"[^>]*>)<span class="pg">.*?<\/span>(<\/p>)/, to: '$1<span class="pg">ながいテキストながいテキストながいテキストながいテキスト<wbr>あ</span>$2' },
   // fix05 §5：isSample=true なのに見本の断り書き／noindex が出ない状態を作る
-  { id: "B6-1", kind: "見本の断り書きが消える", from: "このサイトは見本です（架空のお店です）", to: "" },
+  { id: "B6-1", kind: "見本の断り書きが消える", from: "このサイトは架空のお店のデザイン見本です（芦屋みっけ）", to: "" },
   { id: "B6-2", kind: "noindex が消える", from: '<meta name="robots" content="noindex,nofollow">', to: "" },
   { id: "B4-7", kind: "B5-7 行の高さ", from: ".row-table .lc{gap:2.4rem;padding:1.6rem 0", to: ".row-table .lc{gap:2.4rem;padding:1rem 0" },
 ];

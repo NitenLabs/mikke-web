@@ -48,6 +48,9 @@ function isDecorative(el, device) {
   return false;
 }
 
+// 「芦屋みっけ 掲載店」の表示か（型ごとに要素の id が違うので文言で見分ける）
+const isMikkeListedLabel = (el) => el.type === "text" && (el.paragraphs || []).some((p) => (p.runs || []).some((r) => r.text === "芦屋みっけ 掲載店"));
+
 // ---------- 1. resolveSite ----------
 export function resolveSite(data, refDate) {
   const { shop, site, theme, assets } = data;
@@ -58,6 +61,8 @@ export function resolveSite(data, refDate) {
   for (const [id, el] of Object.entries(site.elements)) {
     // onlySample の要素は、見本の店（shop.isSample）のときだけ出す（実在の店では描かない・fix05 §5）
     if (el.onlySample && !shop.isSample) continue;
+    // 架空のお店（shop.demo）は、断り書きを demoNoteHtml の1行だけにする：古い見本の一文（onlySample）と「芦屋みっけ 掲載店」を出さない
+    if (shop.demo === true && (el.onlySample || isMikkeListedLabel(el))) continue;
     const base = {
       id, type: el.type, z: el.z ?? 1, section: el.section,
       box: el.layout, locked: el.locked, hidden: el.hidden, motion: el.motion,
