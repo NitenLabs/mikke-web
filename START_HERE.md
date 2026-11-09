@@ -33,6 +33,7 @@
 - **実行役**＝ユーザーのパソコンのターミナルの Claude Code。`C:\Users\sea_p\GitHub\mikke-start.bat` で起動し、受信箱を見張って実行する。ルールは `C:\Users\sea_p\GitHub\CLAUDE.md`
 - 実行役は、終わったら `_mailbox\reports\latest.md` に結果を書き、ターミナルにも出す。ユーザーはターミナルが止まったら相談役に話しかける
 - 詳しくはプロジェクトの `claude/進め方_相談と実行.md`
+- **2レーン（2026-11-09）**：実行役は `mikke-lane1.bat`・`mikke-lane2.bat` の2つを並べる。受信箱は `_mailbox\lane1\`・`lane2\` に分かれ、報告も自分のレーンの `reports\latest.md`。お店の作業は本体のフォルダでなく worktree（`C:\Users\sea_p\GitHub\wt\<店のID>`、ブランチ `shop/<店のID>`）で行い、検査のあと rebase して `git push origin HEAD:main`。共通の道具を直したら別のコミットで早めに main へ。見本は `C:\Users\sea_p\GitHub\_preview\` に集める（`tools/preview-export.mjs <店> --out ...`）。細かい決まりは `C:\Users\sea_p\GitHub\CLAUDE.md`
 
 ### 進み具合（2026-11-09 18:50。次のチャットはここから）
 **済んだこと**
