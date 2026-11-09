@@ -88,14 +88,14 @@ sec("sec_header", "ヘッダー", 48, 48);
 add("hd_nav", { type: "nav", z: 4, section: "sec_header", style: { color: INK, font: B, spMenuBackground: "theme:primary" }, layout: lay({ x: 1376, y: 0, w: 48, h: 48, size: 14 }, { x: 334, y: 0, w: 48, h: 48 }) });
 
 // ---- 1 ファーストビュー
-sec("sec_firstv", "最初の画面", 900, 844);
-photo("fv_ph", "sec_firstv", "ast_fv01", 1, { x: 580, y: 0, w: 860, h: 900 }, { x: 40, y: 146, w: 310, h: 413 }, { fy: 72 });
-t("fv_copy", "sec_firstv", { lines: ["一椀の出汁に、", "冬の香りを澄ませて。"] }, [[18, 36, 1.8], [14, 22, 1.4]], H, INK, [{ x: 90, y: 112, w: 400, h: 72 }, { x: 40, y: 22, w: 310, h: 44 }], { ...C, role: "heading" });
-t("fv_en", "sec_firstv", "Seasonal Japanese cuisine in Ashiya", [[11, 18, 1.1], [11, 18, 1.1]], A, MOSS, [{ x: 90, y: 206, w: 400, h: 18 }, { x: 40, y: 70, w: 310, h: 18 }], C);
-t("fv_name", "sec_firstv", NAME, [[48, 90, 4.8], [28, 44, 2.8]], H, INK, [{ x: 40, y: 340, w: 500, h: 90 }, { x: 40, y: 94, w: 310, h: 44 }], { ...C, role: "pageTitle" });
+sec("sec_firstv", "最初の画面", 900, 865);
+photo("fv_ph", "sec_firstv", "ast_fv01", 1, { x: 580, y: 0, w: 860, h: 900 }, { x: 40, y: 167, w: 310, h: 413 }, { fy: 72 });
+t("fv_copy", "sec_firstv", { lines: ["一椀の出汁に、", "冬の香りを澄ませて。"] }, [[18, 36, 1.8], [14, 22, 1.4]], H, INK, [{ x: 90, y: 112, w: 400, h: 72 }, { x: 40, y: 22, w: 310, h: 56 }], { ...C, role: "heading" });
+t("fv_en", "sec_firstv", "Seasonal Japanese cuisine in Ashiya", [[11, 18, 1.1], [11, 18, 1.1]], A, MOSS, [{ x: 90, y: 206, w: 400, h: 18 }, { x: 40, y: 82, w: 310, h: 18 }], C);
+t("fv_name", "sec_firstv", NAME, [[48, 90, 4.8], [28, 44, 2.8]], H, INK, [{ x: 40, y: 340, w: 500, h: 90 }, { x: 40, y: 106, w: 310, h: 53 }], { ...C, role: "pageTitle" });
 const FM = [["お料理", "cuisine"], ["お献立", "course"], ["季節の一品", "seasonal"], ["お席", "seats"], ["ご案内", "information"]];
-FM.forEach(([l, id], i) => t(`fv_m${i}`, "sec_firstv", l, [[14, 36, 2.8], [14, 36, 2.8]], B, INK, [{ x: 218, y: 540 + 36 * i, w: 144, h: 36 }, { x: 40, y: 578 + 36 * i, w: 310, h: 36 }], { ...C, link: go(id) }));
-btn("fv_tel", "sec_firstv", "ご予約", TEL, { x: 214, y: 732, w: 152, h: 48 }, { x: 119, y: 776, w: 152, h: 48 });
+FM.forEach(([l, id], i) => t(`fv_m${i}`, "sec_firstv", l, [[14, 36, 2.8], [14, 36, 2.8]], B, INK, [{ x: 218, y: 540 + 36 * i, w: 144, h: 36 }, { x: 40, y: 599 + 36 * i, w: 310, h: 36 }], { ...C, link: go(id) }));
+btn("fv_tel", "sec_firstv", "ご予約", TEL, { x: 214, y: 732, w: 152, h: 48 }, { x: 119, y: 797, w: 152, h: 48 });
 
 // ---- 2 ご挨拶
 const GREET = [
@@ -106,16 +106,16 @@ const GREET = [
   "盛りの少し手前、香りがいちばん立つ頃を見計らって仕入れています。",
   "焼く、炊く、蒸す。手数はなるべく少なく、素材の輪郭を残すように。",
   "器は作家のものと古いものを取り合わせ、季節ごとに入れ替えます。",
-  "一皿ごとに間をとり、温かいものは温かいうちにお出しします。",
+  "一皿ごとに間をとって、お出しします。",
   "カウンターでは、料理の話もお酒の話も、どうぞお気軽に。",
   "大切な方との節目の席には、奥の個室をご用意しています。",
   "急がず、ゆっくりと、冬の時間を召し上がっていただけましたら幸いです。",
   "店主",
 ];
-sec("sec_greeting", "ご挨拶", 1184, 1240);
+sec("sec_greeting", "ご挨拶", 1184, 1400);
 t("gr_h", "sec_greeting", "出汁の一滴に、季節を聴く。", [[24, 48, 2.4], [20, 36, 2]], H, INK, [{ x: 120, y: 240, w: 1200, h: 48 }, { x: 40, y: 160, w: 310, h: 36 }], { ...C, role: "heading" });
 t("gr_en", "sec_greeting", "Greeting", [[11, 18, 1.1], [11, 18, 1.1]], A, MOSS, [{ x: 120, y: 302, w: 1200, h: 18 }, { x: 40, y: 206, w: 310, h: 18 }], C);
-t("gr_p", "sec_greeting", { lines: GREET }, [[14, 42, 1.4], [14, 34, 1.4]], B, INK, [{ x: 120, y: 440, w: 1200, h: 504 }, { x: 40, y: 280, w: 310, h: 816 }], C);
+t("gr_p", "sec_greeting", { lines: GREET }, [[14, 42, 1.4], [14, 34, 1.4]], B, INK, [{ x: 120, y: 440, w: 1200, h: 504 }, { x: 40, y: 280, w: 310, h: 970 }], C);
 
 // ---- 3 お料理（写真の帯は wa05-finish で流す）
 sec("sec_cuisine", "お料理", 1040, 1083, { anchor: "cuisine", nav: { label: "お料理", order: 1 } });
@@ -135,7 +135,7 @@ const COURSE = [
   { k: "夜", en: "Dinner", time: "17:30〜22:00（L.O. 20:00）", rows: [["おまかせ", "15,400円"], ["おまかせ 特選", "22,000円"]] },
 ];
 COURSE.forEach((c, i) => {
-  const xP = i ? 745 : 278, yS0 = i ? 500 : 250, W = 420;
+  const xP = i ? 745 : 278, yS0 = i ? 520 : 290, W = 420;
   t(`co_h${i}`, "sec_course", c.k, [[18, 36, 1.8], [18, 36, 1.8]], H, INK, [{ x: xP, y: 340, w: W, h: 36 }, { x: 40, y: yS0, w: 310, h: 36 }], { role: "subheading" });
   c.rows.forEach(([n, p], j) => {
     const yP = 392 + 56 * j, yS = yS0 + 48 + 56 * j;
@@ -148,8 +148,8 @@ COURSE.forEach((c, i) => {
 t("co_note", "sec_course", "完全予約制です。値段は税込み、サービス料はいただいておりません。", [[14, 28, 0], [14, 28, 0]], B, INK, [{ x: 278, y: 580, w: 887, h: 28 }, { x: 40, y: 740, w: 310, h: 56 }]);
 
 // ---- 5 季節の一品（墨の帯 x40〜1400）
-sec("sec_seasonal", "季節の一品", 1099, 2160, { anchor: "seasonal", nav: { label: "季節の一品", order: 3 } });
-rect("sn_band", "sec_seasonal", INK, 1, { x: 40, y: 0, w: 1360, h: 1099 }, { x: 0, y: 0, w: 390, h: 2160 });
+sec("sec_seasonal", "季節の一品", 840, 2160, { anchor: "seasonal", nav: { label: "季節の一品", order: 3 } });
+rect("sn_band", "sec_seasonal", INK, 1, { x: 40, y: 0, w: 1360, h: 840 }, { x: 0, y: 0, w: 390, h: 2160 });
 head("sn", "sec_seasonal", "季節の一品", "Seasonal", CR, 120, 80);
 t("sn_en2", "sec_seasonal", "冬の品書きより", [[14, 28, 1.4], [14, 28, 1.4]], B, CR, [{ x: 278, y: 240, w: 887, h: 28 }, { x: 96, y: 146, w: 254, h: 28 }]);
 const item = (path, pc, sp, ps, ss, lh) => ({ type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path, format: "plain" } }] }], style: { font: B, weight: 400, color: CR, lineHeight: lh }, layout: { pc: { ...pc, size: ps }, sp: { ...sp, size: ss } } });
