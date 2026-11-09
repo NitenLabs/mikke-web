@@ -30,7 +30,6 @@ for (const w of WIDTHS) {
     for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) { const a = R[i][1], b = R[j][1]; if (a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.t < a.b - 1) out.over.push(R[i][0] + "×" + R[j][0]); }
     for (const s of document.querySelectorAll("[data-sec]")) out.secs[s.dataset.sec] = Math.round(s.getBoundingClientRect().height * 10) / 10;
     const body = document.querySelector("[data-el=in_vt0]"); out.bodyPx = body ? parseFloat(getComputedStyle(body).fontSize) : 0;
-    const b2 = document.querySelector("[data-g=toggle]")?.getBoundingClientRect(), g4 = document.querySelector("[data-el=gal_4]")?.getBoundingClientRect(); out.btnOff = b2 && g4 ? Math.abs((b2.left + b2.right) / 2 - (g4.left + g4.right) / 2) : 99;
     out.fvTop = Math.round(document.querySelector("[data-sec=sec_firstv]").getBoundingClientRect().top + scrollY);
     for (const i of document.images) if (!i.complete || !i.naturalWidth) out.broken.push(i.getAttribute("src"));
     return out;
@@ -39,21 +38,23 @@ for (const w of WIDTHS) {
   if (r.clip.length) ng(`${w}: 文字のはみ出し ${r.clip.join(",")}`);
   if (r.over.length) ng(`${w}: 文字の重なり ${r.over.join(",")}`);
   if (w >= 768 && w <= 1007 && r.bodyPx < 14) ng(`${w}: 本文 ${r.bodyPx}px（14 未満）`);
-  if (r.btnOff > 2) ng(`${w}: ギャラリーのボタンが中央からずれ ${r.btnOff}`);
   if (r.fvTop !== 0) ng(`${w}: 最初の写真の上に ${r.fvTop}px の空き`);
   if (r.broken.length) ng(`${w}: 読めない写真 ${r.broken.join(",")}`);
   if (errs.length) ng(`${w}: エラー ${errs.join(" / ")}`);
   if (SPEC[w]) for (const [s, h] of Object.entries(SPEC[w])) if (Math.abs((r.secs[s] ?? 0) - h) > 1.5) ng(`${w}: ${s} 高さ ${r.secs[s]}（設計 ${h}）`);
   if (w === 1440 || w === 390) {
-    const g = await page.evaluate(() => { const c = () => Math.round(document.querySelector('[data-el="gal_4"]').getBoundingClientRect().left); const a = c(); document.querySelector("[data-g=next]").click(); return { a, g: getComputedStyle(document.querySelector('[data-el="gal_4"]')).getPropertyValue("--g").trim() }; });
-    if (g.g !== "-1") ng(`${w}: ギャラリーの送りが効かない（--g=${g.g}）`);
-    const a = await page.evaluate(() => { const D = [...document.querySelectorAll(".wa02-acc")], closed = D.every((d) => !d.open); D.forEach((d) => { d.open = true; }); return { n: D.length, closed }; });
-    await page.waitForTimeout(150);
-    const fit = await page.evaluate(() => { const b = document.querySelector("[data-el=mn_acc]").getBoundingClientRect(), s = document.querySelector("[data-sec=sec_menu]").getBoundingClientRect(); return Math.round(s.bottom - b.bottom); });
-    if (a.n !== 6 || !a.closed) ng(`${w}: 開く括り ${a.n}・初めに閉じている ${a.closed}`);
-    if (fit < 40) ng(`${w}: 括りを全部開くと区画からはみ出す（下の余白 ${fit}）`);
-    console.log(`${w}: 括り ${a.n} 個・全部開いた時の下の余白 ${fit}px`);
-    console.log(`${w}: ギャラリー中央 left=${g.a}（設計 ${w === 1440 ? 370 : 24}）`);
+    const left = await page.evaluate(() => Math.round(document.querySelector('[data-el="gal_4"]').getBoundingClientRect().left));
+    await page.waitForTimeout(5400);
+    const g = await page.evaluate(() => ({ g: document.querySelector('[data-el="gal_4"]').style.getPropertyValue("--g"), btn: document.querySelectorAll(".wa02-btn,.wa02-acc").length, rows: document.querySelectorAll("[data-el=mn_side] .rep-card").length }));
+    if (g.g !== "-1") ng(`${w}: ギャラリーが自動で送られない（--g=${g.g}）`);
+    if (g.btn !== 0) ng(`${w}: ボタンか折りたたみが残っている（${g.btn}）`);
+    if (g.rows < 30) ng(`${w}: 括りの品が開いて出ていない（${g.rows}）`);
+    const ctx = await browser.newContext({ viewport: { width: w, height: 844 }, reducedMotion: "reduce" });
+    const q = await ctx.newPage(); await q.goto(URL_, { waitUntil: "load" }); await q.waitForTimeout(5400);
+    const still = await q.evaluate(() => document.querySelector('[data-el="gal_4"]').style.getPropertyValue("--g"));
+    if (still !== "") ng(`${w}: 動きを減らす設定でも動いている`);
+    await ctx.close();
+    console.log(`${w}: ギャラリー中央 left=${left}（設計 ${w === 1440 ? 370 : 24}）・品 ${g.rows} 行`);
   }
   await page.close();
 }

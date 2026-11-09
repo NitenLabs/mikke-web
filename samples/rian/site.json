@@ -92,7 +92,7 @@
       },
       "minHeight": {
         "pc": 3220,
-        "sp": 3643
+        "sp": 5012
       },
       "anchor": "menu",
       "nav": {
@@ -2050,6 +2050,197 @@
         }
       }
     },
+    "mn_side": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_menu",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "groupByCategory": true,
+        "categoryIds": [
+          "cat_ippin",
+          "cat_chige",
+          "cat_soup",
+          "cat_salad",
+          "cat_kimchi",
+          "cat_gohan"
+        ]
+      },
+      "display": {
+        "mode": "list",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 39.2,
+          "sp": 36.6
+        },
+        "elements": {
+          "c_name": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "#000000",
+              "lineHeight": 1.4
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 4.5,
+                "w": 68,
+                "h": 22.4,
+                "size": 16
+              },
+              "sp": {
+                "x": 0,
+                "y": 4.5,
+                "w": 64,
+                "h": 19.6,
+                "size": 14
+              }
+            }
+          },
+          "c_price": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "price"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "#000000",
+              "lineHeight": 1.4,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 68,
+                "y": 4.5,
+                "w": 32,
+                "h": 22.4,
+                "size": 16
+              },
+              "sp": {
+                "x": 64,
+                "y": 4.5,
+                "w": 36,
+                "h": 19.6,
+                "size": 14
+              }
+            }
+          },
+          "c_line": {
+            "type": "shape",
+            "z": 1,
+            "kind": "line",
+            "fill": "theme:lineSoft",
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 31.4,
+                "w": 100,
+                "h": 1,
+                "strokeWidth": 1
+              },
+              "sp": {
+                "x": 0,
+                "y": 28.6,
+                "w": 100,
+                "h": 1,
+                "strokeWidth": 1
+              }
+            }
+          }
+        }
+      },
+      "groupHeading": {
+        "type": "text",
+        "z": 1,
+        "role": "body",
+        "paragraphs": [
+          {
+            "runs": [
+              {
+                "bind": {
+                  "scope": "item",
+                  "path": "/category/name",
+                  "format": "plain"
+                }
+              }
+            ]
+          }
+        ],
+        "style": {
+          "font": "font:heading",
+          "weight": 400,
+          "color": "#FFFFFF",
+          "lineHeight": 1.6222
+        },
+        "layout": {
+          "pc": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 29.2,
+            "size": 18
+          },
+          "sp": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 26.4,
+            "size": 16
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 56.0833,
+          "y": 1186.8,
+          "w": 35.5833,
+          "h": 1715.2000000000003
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 3271.7,
+          "w": 84.6154,
+          "h": 1607.4
+        }
+      }
+    },
     "mn_nb": {
       "type": "text",
       "z": 3,
@@ -2074,38 +2265,17 @@
       "layout": {
         "pc": {
           "x": 56.0833,
-          "y": 1186.8,
+          "y": 2918,
           "w": 35.5833,
           "h": 19.6,
           "size": 14
         },
         "sp": {
           "x": 7.6923,
-          "y": 3271.7,
+          "y": 4895.1,
           "w": 84.6154,
           "h": 16.8,
           "size": 12
-        }
-      }
-    },
-    "mn_acc": {
-      "type": "shape",
-      "z": 3,
-      "kind": "rect",
-      "fill": "#FFFFFF",
-      "section": "sec_menu",
-      "layout": {
-        "pc": {
-          "x": 56.0833,
-          "y": 1222.3999999999999,
-          "w": 35.5833,
-          "h": 255.20000000000005
-        },
-        "sp": {
-          "x": 7.6923,
-          "y": 3304.5,
-          "w": 84.6154,
-          "h": 238.39999999999998
         }
       }
     },
