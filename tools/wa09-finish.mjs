@@ -28,7 +28,10 @@ html:not(.wa09-past) .site-header.overlay.scrolled{background:transparent}
 html:not(.wa09-past) .site-header.overlay.scrolled .el-text,html:not(.wa09-past) .site-header.overlay.scrolled .el-nav a,html:not(.wa09-past) .site-header.overlay.scrolled .nav-sp summary{color:${WH}}
 [data-el=in_btn]{transition:background .2s}
 [data-el=in_btn]:hover{background:${GD}!important}
-[data-el=in_btn]:hover+[data-el=in_btn_t],[data-el=in_btn_t]:hover{color:${BK}}
+[data-el=in_btn]:hover~[data-el=in_btn_t]{color:${BK}}
+[data-el=in_btn_t]{pointer-events:none}
+[data-el=hd_name] a,[data-el=in_v5] a,[data-el=ft_t] a{color:inherit;text-decoration:none}
+[data-el=in_v5] a,[data-el=ft_t] a{text-decoration:underline;text-underline-offset:.3em;text-decoration-thickness:1px}
 [data-el=in_map]{overflow:hidden}
 [data-el=in_map] iframe{width:100%;height:100%;border:0;display:block;filter:grayscale(1) invert(.92)}
 [data-el=ct_bg]{white-space:nowrap}
@@ -53,6 +56,11 @@ html{scroll-padding-top:5.6rem}
 function apply(file, isHome) {
   let h = fs.readFileSync(file, "utf8");
   h = h.split(">☰</summary>").join(`>${C.labels.menuButton}</summary>`);
+  // build.mjs は文字の要素の link を出さないので、店名と電話の文字をここでリンクにする
+  const telRow = C.info.rows.findIndex(([, v]) => v === "$phone");
+  for (const [id, href] of [["hd_name", isHome ? "#top" : "./"], [`in_v${telRow}`, `tel:${TEL.digits}`], ["ft_t", `tel:${TEL.digits}`]]) {
+    h = h.replace(new RegExp(`(<([a-z0-9]+) data-el="${id}"[^>]*>)([\\s\\S]*?)(</\\2>)`), `$1<a href="${href}">$3</a>$4`);
+  }
   h = h.replace(/(<div class="nav-menu">)([\s\S]*?)(<\/div>)/, `$1$2<a class="wa09-tel" href="tel:${TEL.digits}">${TEL.display}</a>$3`);
   if (isHome) {
     const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;

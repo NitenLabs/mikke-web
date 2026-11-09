@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // wa-09：templates/wa-09/SPEC.md の数値から samples/<店>/ の shop・theme・assets・site を作る。
-// 店名・文・値段は samples/<店>/wa09-content.json、写真は templates/wa-09/photos.txt（枠 URL 短いID）から読む（この道具に店の中身を書かない）。
+// 店名・文・値段は samples/<店>/wa09-content.json、写真は templates/wa-09/photos.txt（枠 短いID URL）から読む（この道具に店の中身を書かない）。
 // 使い方：node tools/wa09-gen.mjs <店のID> → node tools/build.mjs samples/<店のID> → node tools/wa09-finish.mjs <店のID>
 import fs from "node:fs";
 const ID = process.argv[2];
@@ -57,7 +57,7 @@ function webpSize(b) {
 }
 const rows = fs.readFileSync(LIST, "utf8").split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#")).map((l) => l.split(/\s+/));
 const assets = {};
-for (const [k, url, page] of rows) {
+for (const [k, page, url] of rows) {
   const meta = C.photos[k];
   if (!meta) throw new Error(`写真 ${k} の説明が wa09-content.json にありません`);
   const id = `ast_ph${k}`, key = `${id}.webp`, f = `${DIR}/media/${key}`;
@@ -106,12 +106,12 @@ tb("hd_name", { left: "4.8rem" });
 
 // ---- 1 最初の画面
 sec("sec_firstv", "最初の画面", 900, 844, { anchor: "top" });
-photo("fv_ph", "sec_firstv", "ast_phfv", 1, { x: 0, y: 0, w: 1440, h: 900 }, { x: 0, y: 0, w: 390, h: 844 }, { fx: 47, fy: 62 }, 45);
-t("fv_en", "sec_firstv", C.nameEn, [[13, 20, 5.2], [11, 17, 4.4]], A, GD, [{ x: 120, y: 330, w: 1200, h: 20 }, { x: 13, y: 340, w: 364, h: 17 }], CT);
-t("fv_cp", "sec_firstv", C.catchCopy, [[56, 84, 4.48], [32, 52, 2.56]], H, WH, [{ x: 120, y: 382, w: 1200, h: 84 }, { x: 24, y: 389, w: 342, h: 52 }], { ...CT, role: "pageTitle", hidden: { sp: true } });
-t("fv_cp2", "sec_firstv", { lines: C.catchCopyLines }, [[56, 84, 4.48], [32, 52, 2.56]], H, WH, [{ x: 120, y: 382, w: 1200, h: 168 }, { x: 24, y: 389, w: 342, h: 104 }], { ...CT, role: "pageTitle", hidden: { pc: true } });
-tb("fv_en", { left: "0", width: "100%", top: "33rem" });
-tb("fv_cp2", { left: "0", width: "100%", top: "37.2rem", "font-size": "4.8rem", "line-height": "7.2rem", height: "14.4rem" });
+photo("fv_ph", "sec_firstv", "ast_phfv", 1, { x: 0, y: 0, w: 1440, h: 900 }, { x: 0, y: 0, w: 390, h: 844 }, { fx: 47, fy: 62 }, 55);
+t("fv_en", "sec_firstv", C.nameEn, [[13, 20, 5.2], [11, 17, 4.4]], A, WH, [{ x: 120, y: 330, w: 1200, h: 20 }, { x: 13, y: 130, w: 364, h: 17 }], CT);
+t("fv_cp", "sec_firstv", C.catchCopy, [[56, 84, 4.48], [32, 52, 2.56]], H, WH, [{ x: 120, y: 382, w: 1200, h: 84 }, { x: 24, y: 169, w: 342, h: 52 }], { ...CT, role: "pageTitle", hidden: { sp: true } });
+t("fv_cp2", "sec_firstv", { lines: C.catchCopyLines }, [[56, 84, 4.48], [32, 52, 2.56]], H, WH, [{ x: 120, y: 382, w: 1200, h: 168 }, { x: 24, y: 169, w: 342, h: 104 }], { ...CT, role: "pageTitle", hidden: { pc: true } });
+tb("fv_en", { left: "0", width: "100%", top: "16rem" });
+tb("fv_cp2", { left: "0", width: "100%", top: "20.2rem", "font-size": "4.8rem", "line-height": "7.2rem", height: "14.4rem" });
 tablet.secs.sec_firstv = "84.4rem";
 
 // ---- 2 紹介
@@ -121,7 +121,7 @@ t("ab_lb", "sec_about", C.labels.about, LB, A, GD, [{ x: 920, y: 200, w: 440, h:
 t("ab_h", "sec_about", C.about.heading, [[32, 56, 0], [24, 40, 0]], H, WH, [{ x: 920, y: 240, w: 440, h: 112 }, { x: 24, y: 128, w: 342, h: 80 }], { role: "heading" });
 t("ab_p", "sec_about", C.about.body, [[16, 36, 0.96], [16, 34, 0.96]], B, WH, [{ x: 920, y: 376, w: 440, h: 216 }, { x: 24, y: 224, w: 342, h: 170 }]);
 photo("ab_ph2", "sec_about", "ast_phab2", 2, { x: 189, y: 780, w: 528, h: 704 }, { x: 13, y: 673, w: 187, h: 249 });
-photo("ab_ph3", "sec_about", "ast_phab3", 2, { x: 986, y: 1000, w: 441, h: 440 }, { x: 180, y: 813, w: 197, h: 197 });
+photo("ab_ph3", "sec_about", "ast_phab3", 2, { x: 986, y: 1000, w: 441, h: 440 }, { x: 208, y: 841, w: 169, h: 169 });
 tb("ab_lb", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "9.6rem" });
 tb("ab_h", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "13rem", "font-size": "3.2rem", "line-height": "5.6rem", height: "5.6rem" });
 tb("ab_p", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "20rem", height: "10.2rem" });
