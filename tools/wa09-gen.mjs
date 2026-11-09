@@ -25,7 +25,7 @@ C.omakase.rows.forEach((r, i) => {
 const shop = {
   schemaVersion: 1, shopId: `shp_${ID}`, updatedAt: NOW, isSample: true, demo: true,
   basic: { name: C.name, nameKana: C.nameKana, genre: { template: "restaurant", detail: C.genreDetail } },
-  location: { prefecture: "兵庫県", city: "芦屋市", town: C.town },
+  location: { prefecture: "兵庫県", city: "芦屋市", town: C.town, ...(C.geo ? { geo: C.geo } : {}) },
   hours: { weekly },
   contact: { phone: C.phone },
   facilities: { smoking: "none" },
@@ -157,13 +157,13 @@ C.omakase.rows.forEach((row, i) => {
 tablet.secs.sec_omakase = "calc(56.25vw + 56rem)";
 
 // ---- 4 お席
-sec("sec_counter", "お席", 1354, 872, { anchor: "counter", nav: NAV(C.labels.counter, 3) });
+sec("sec_counter", "お席", 1354, 849, { anchor: "counter", nav: NAV(C.labels.counter, 3) });
 t("ct_bg", "sec_counter", C.labels.counterBack, [[160, 200, 0], [56, 72, 0]], A, WH, [{ x: 13, y: 120, w: 1414, h: 200 }, { x: 13, y: 96, w: 364, h: 72 }], { z: 1, opacity: 6 });
 photo("ct_ph1", "sec_counter", "ast_phct1", 2, { x: 360, y: 220, w: 1067, h: 600 }, { x: 13, y: 168, w: 364, h: 205 });
 t("ct_lb", "sec_counter", C.labels.counter, LB, A, GD, [{ x: 201, y: 880, w: 560, h: 20 }, { x: 24, y: 405, w: 342, h: 20 }]);
 t("ct_h", "sec_counter", C.counter.heading, [[32, 56, 0], [24, 40, 0]], H, WH, [{ x: 201, y: 916, w: 560, h: 56 }, { x: 24, y: 437, w: 342, h: 40 }], { role: "heading" });
 t("ct_p", "sec_counter", C.counter.body, [[16, 36, 0.96], [16, 34, 0.96]], B, WH, [{ x: 201, y: 988, w: 560, h: 144 }, { x: 24, y: 489, w: 342, h: 136 }]);
-photo("ct_ph2", "sec_counter", "ast_phct2", 2, { x: 986, y: 900, w: 441, h: 294 }, { x: 180, y: 645, w: 197, h: 131 });
+photo("ct_ph2", "sec_counter", "ast_phct2", 2, { x: 986, y: 900, w: 441, h: 294 }, { x: 143, y: 629, w: 234, h: 156 });
 const yC = `20rem + ${H169}`;
 tb("ct_bg", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "9.6rem", "font-size": "9.6rem", "line-height": "12rem", height: "12rem" });
 tb("ct_ph1", { ...tbM, top: "20rem", height: `calc(${H169})` });

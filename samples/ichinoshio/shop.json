@@ -15,7 +15,11 @@
   "location": {
     "prefecture": "兵庫県",
     "city": "芦屋市",
-    "town": "東芦屋町"
+    "town": "東芦屋町",
+    "geo": {
+      "lat": 34.7414,
+      "lng": 135.3042
+    }
   },
   "hours": {
     "weekly": {

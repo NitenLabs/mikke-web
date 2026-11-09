@@ -4,6 +4,7 @@
   "nameEn": "SUSHI ICHINOSHIO",
   "genreDetail": "鮨・おまかせ",
   "town": "東芦屋町",
+  "geo": { "lat": 34.7414, "lng": 135.3042 },
   "phone": { "display": "0797-00-0000", "digits": "0797000000" },
   "closedDay": "mon",
   "periods": { "lunch": { "start": "12:00", "end": "14:30" }, "dinner": { "start": "18:00", "end": "22:30" } },
@@ -12,7 +13,7 @@
   "labels": { "about": "About", "omakase": "Omakase", "counter": "Counter", "counterBack": "COUNTER", "info": "Information", "menuButton": "Menu" },
   "about": {
     "heading": "その日いちばんの魚を、おまかせで。",
-    "body": "明石・淡路の魚を中心に、その日いちばんの仕入れでおまかせを組み立てます。シャリは赤酢と米酢を合わせ、ネタに合わせて温度を変えて。"
+    "body": "明石・淡路の魚を中心に、その日いちばんの仕入れでおまかせを組み立てます。シャリは赤酢と米酢を合わせ、ネタごとに温度を変えています。"
   },
   "omakase": {
     "heading": "おまかせ",
@@ -24,8 +25,8 @@
     ]
   },
   "counter": {
-    "heading": "白木のカウンター、8席。",
-    "body": "お席は白木のカウンターの8席のみです。昼は一斉に、夜は二部制で、皆さまご一緒におまかせを始めます。"
+    "heading": "一枚板のカウンター、8席。",
+    "body": "お席は一枚板のカウンターの8席のみです。昼は一斉に、夜は二部制で、皆さまご一緒におまかせを始めます。"
   },
   "info": {
     "heading": "ご案内",
