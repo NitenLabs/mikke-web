@@ -27,6 +27,8 @@ html:not(.wa06-past) .site-header.overlay.scrolled .el-text,html:not(.wa06-past)
 .site-header .el-nav .nav-sp[open] summary{color:${CR}!important}
 .site-header [data-el=hd_tel_b]{background:${OL}!important;opacity:1!important}
 .site-header [data-el=hd_tel_t],.site-header [data-el=hd_tel_t] a{color:${W}!important}
+[data-el=hd_tel_t],[data-el=rs_btn_t]{pointer-events:none}
+[data-el=in_v5] a,[data-el=ft_t] a{color:inherit;text-decoration:none}
 .cbox>.el[data-el=ab_hand]{transform:rotate(-4deg)!important}
 [data-el=ab_p] .pg+.pg{margin-top:2.4rem}
 [data-el=ac_map]{overflow:hidden}
@@ -66,6 +68,8 @@ function apply(file, isHome) {
   // Menu のボタン（☰ の代わり）と、メニューの中の電話のピル
   h = h.split(">☰</summary>").join(">Menu</summary>");
   h = h.replace(/(<div class="nav-menu">)([\s\S]*?)(<\/div>)/, `$1$2<a class="wa06-tel" href="tel:${TEL.digits}">${TEL.display}</a>$3`);
+  // build.mjs は文字の要素の link を出さないので、電話番号の文字をここでリンクにする
+  for (const id of ["in_v5", "ft_t"]) h = h.replace(new RegExp(`(<([a-z0-9]+) data-el="${id}"[^>]*>)([\\s\\S]*?)(</\\2>)`), `$1<a href="tel:${TEL.digits}">$3</a>$4`);
   if (isHome) {
     const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
     const re = /(<div data-el="ac_map"[^>]*>)/;
