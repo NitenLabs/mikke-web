@@ -44,6 +44,8 @@ main{display:block}
 /* 改行の規則（fix04 §1）：lb＝文節でだけ折る（word-break:keep-all、<wbr>が改行位置）／lbh＝見出しの行の長さをそろえる */
 .lb{word-break:keep-all;overflow-wrap:anywhere}
 .lbh{text-wrap:balance}
+a.el-text,.el-text>a.el-link{text-decoration:none}
+.el-text>a.el-link{display:block}
 .el-text .pg{display:block}
 .el-text .nowrap{white-space:nowrap}
 .el-text .lc{display:flex}

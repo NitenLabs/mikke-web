@@ -85,8 +85,6 @@ const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://w
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");
 h = h.replace(re, `$1${map}`);
-// build.mjs は文字の要素の link を出さないので、電話番号の文字をここでリンクにする
-for (const id of ["in_v7", "ft_tv"]) h = h.replace(new RegExp(`(<([a-z0-9]+) data-el="${id}"[^>]*>)([\\s\\S]*?)(</\\2>)`), `$1<a href="tel:0797000000">$3</a>$4`);
 h = h.replace("</head>", css + "</head>").replace("</body>", js + "</body>");
 const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
 fs.writeFileSync(f, bp(h).replace("</head>", tablet + "</head>")); // bp の置き換えの後に足す（768 の下限を巻き込まないため）

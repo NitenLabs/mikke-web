@@ -64,6 +64,11 @@ function makeLinkResolver(shop, site, page, pageHref) {
   };
 }
 
+// <a> の href（と別タブの指定）の属性文字列
+function linkAttrs(link) {
+  return ` href="${esc(link.href)}"${link.target ? ` target="${link.target}" rel="noopener"` : ""}`;
+}
+
 // ページIDから、現在ページ（深さ depth）への相対URL
 function makePageHref(pages, depth) {
   return (targetId) => {
@@ -115,16 +120,25 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
   if (el.type === "text") {
     const tag = ROLE_TAG[el.role] || "div";
     const lb = lbEnabled(el.style, el.box, resolved.site);
-    const inner = paragraphsHtml(el.text, el.style, { linkResolver: (l) => linkResolver(l), labelColumn: el.style?.labelColumn, lb, lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep });
+    // 文字の箱全体のリンク（style.link）。箱全体が <a> になるので、中の run のリンクは出さない（<a> の入れ子を防ぐ）
+    const boxLink = el.style?.link ? linkResolver(el.style.link) : null;
+    const inner = paragraphsHtml(el.text, el.style, { linkResolver: boxLink ? undefined : (l) => linkResolver(l), labelColumn: el.style?.labelColumn, lb, lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep });
     const mh = mhAttr(resolved, `t:pc:${el.id}`, `t:sp:${el.id}`);
     const rowCls = el.style?.rowLines ? " row-table" : "";
-    return `<${tag} data-el="${el.id}" class="el el-text${lbCls(el.style, el.box, el.role, resolved.site)}${rowCls}"${mh}>${inner}</${tag}>`;
+    const cls = `el el-text${lbCls(el.style, el.box, el.role, resolved.site)}${rowCls}`;
+    if (boxLink) {
+      const attrs = linkAttrs(boxLink);
+      // data-el を先頭の属性にしない：finish の「<タグ data-el=…> の中身を <a> で包む」回避の置き換えに当たらないようにする（当たると <a> が入れ子になる）
+      if (/^h[1-6]$/.test(tag)) return `<${tag} class="${cls}" data-el="${el.id}"${mh}><a class="el-link"${attrs}>${inner}</a></${tag}>`; // 見出しは見出しのまま、中に <a>
+      return `<a${attrs} data-el="${el.id}" class="${cls}"${mh}>${inner}</a>`;
+    }
+    return `<${tag} data-el="${el.id}" class="${cls}"${mh}>${inner}</${tag}>`;
   }
   if (el.type === "photo") return photoHtml(el, resolved);
   if (el.type === "shape") {
     const link = el.shape.link ? linkResolver(el.shape.link) : null;
     const tag = link ? "a" : "div";
-    const href = link ? ` href="${esc(link.href)}"` : "";
+    const href = link ? linkAttrs(link) : "";
     return `<${tag} data-el="${el.id}" class="el el-shape el-shape-${el.shape.kind}"${href}></${tag}>`;
   }
   if (el.type === "embed") {

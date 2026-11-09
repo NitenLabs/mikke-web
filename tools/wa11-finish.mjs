@@ -28,7 +28,6 @@ html{scroll-padding-top:8rem}
 .nav-sp summary{color:${INK}}
 [data-cel=c_nm],[data-cel=b_nm]{word-break:keep-all}
 [data-cel=c_ds],[data-cel=b_ds],[data-el=ab_p] .pg,[data-el=ei_p] .pg{text-wrap:pretty}
-a.el-text{text-decoration:none}
 @media (min-width:${BP}px){${cakes.length === 5 ? cakes.slice(3).map((id, i) => pos(card(id), `left:${ROW2[i]}%!important`)).join("") : ""}}
 @media (max-width:767.98px){
 [data-sec=sec_cake]{border-radius:50% 50% 0 0/5rem 5rem 0 0}
@@ -100,17 +99,6 @@ let h = fs.readFileSync(f, "utf8");
 const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");
-// 文字の箱のリンク（style.link）は描画エンジンが出力しないので <a> にする（共通の render.mjs の既知の不具合の回避）
-const site = JSON.parse(fs.readFileSync(`samples/${ID}/site.json`, "utf8"));
-const hrefOf = (l) => (l.kind === "shopPhone" ? `tel:${shop.contact.phone.digits}` : l.kind === "anchor" ? `#${l.value.split("#")[1]}` : l.kind === "page" ? "./" : l.value);
-for (const [id, el] of Object.entries(site.elements)) {
-  const l = el.type === "text" && el.style?.link;
-  if (!l) continue;
-  const tag = new RegExp(`<p data-el="${id}"([^>]*)>([\\s\\S]*?)</p>`);
-  if (!tag.test(h)) throw new Error(`${id} の文字の箱が見つかりません`);
-  const attr = l.newTab ? ' target="_blank" rel="noopener"' : "";
-  h = h.replace(tag, (_, a, body) => `<a data-el="${id}"${a} href="${hrefOf(l).replace(/&/g, "&amp;")}"${attr}>${body}</a>`);
-}
 h = h.replace(re, `$1${map}`).replace("</head>", css + "</head>");
 const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
 fs.writeFileSync(f, bp(h).replace("</head>", tablet + "</head>"));
