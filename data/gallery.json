@@ -1,0 +1,11 @@
+{
+  "shops": [
+    {
+      "id": "ashiyado",
+      "name": "御菓子司 芦屋堂",
+      "genre": "和菓子店",
+      "mood": "季節の上生菓子と、甘味処のある和菓子店",
+      "path": "ashiyado"
+    }
+  ]
+}

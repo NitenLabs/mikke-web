@@ -3,6 +3,7 @@
   "shopId": "shp_ashiyado",
   "updatedAt": "2026-09-22T10:00:00+09:00",
   "isSample": true,
+  "demo": true,
   "basic": {
     "name": "御菓子司 芦屋堂",
     "nameKana": "おかしつかさ あしやどう",
