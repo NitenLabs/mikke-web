@@ -28,7 +28,7 @@ C.menu.groups.forEach((g, gi) => {
 const shop = {
   schemaVersion: 1, shopId: `shp_${ID}`, updatedAt: NOW, isSample: true, demo: true,
   basic: { name: C.name, nameKana: C.nameKana, genre: { template: "restaurant", detail: C.genreDetail } },
-  location: { prefecture: "兵庫県", city: "芦屋市", town: C.town },
+  location: { prefecture: "兵庫県", city: "芦屋市", town: C.town, ...(C.geo ? { geo: C.geo } : {}) },
   hours: { weekly },
   contact: { phone: C.phone },
   catalog: { menus: { mnu_main: { order: 1, name: C.menu.heading } }, categories, labels: { lbl_recommend: { name: "おすすめ", system: "recommended", order: 1 } }, items, placements },
