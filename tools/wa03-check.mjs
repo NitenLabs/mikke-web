@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-// wa-03：dist/roku の数値の検査（撮影はしない）。幅 320〜1920 の横はみ出し・文字のはみ出し・文字どうしの重なり・
+// wa-03：dist/<店> の数値の検査（node tools/wa03-check.mjs <店>。既定は roku）（撮影はしない）。幅 320〜1920 の横はみ出し・文字のはみ出し・文字どうしの重なり・
 // セクションの高さ（SPEC 比）・読めない写真・コントラスト・写真の帯の動きを調べる。問題があれば終了コード 1。
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
-const URL_ = pathToFileURL(path.resolve("dist/roku/index.html")).href;
+const ID = process.argv[2] || "roku";
+const URL_ = pathToFileURL(path.resolve(`dist/${ID}/index.html`)).href;
 const WIDTHS = [320, 360, 390, 430, 600, 767, 768, 1007, 1008, 1024, 1280, 1440, 1920];
-const site = JSON.parse(fs.readFileSync("samples/roku/site.json", "utf8"));
+const site = JSON.parse(fs.readFileSync(`samples/${ID}/site.json`, "utf8"));
 const specOf = (d) => Object.fromEntries(Object.entries(site.sections).map(([k, v]) => [k, v.minHeight[d]]));
 const SPEC = { 1440: specOf("pc"), 390: specOf("sp") };
 const browser = await chromium.launch();

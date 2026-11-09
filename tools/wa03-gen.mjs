@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-// wa-03：templates/wa-03/SPEC.md の実測値から samples/roku/site.json を作る。
-// 使い方：node tools/wa03-gen.mjs → node tools/build.mjs samples/roku → node tools/wa03-finish.mjs
+// wa-03：templates/wa-03/SPEC.md の実測値から samples/<店>/site.json を作る。店ごとの文言は samples/<店>/wa03.json。
+// 使い方：node tools/wa03-gen.mjs <店> → node tools/build.mjs samples/<店> → node tools/wa03-finish.mjs <店>（<店> の既定は roku）
 import fs from "node:fs";
-const DIR = "samples/roku";
+const ID = process.argv[2] || "roku";
+const DIR = `samples/${ID}`;
+const C = JSON.parse(fs.readFileSync(`${DIR}/wa03.json`, "utf8"));
 const shop = JSON.parse(fs.readFileSync(`${DIR}/shop.json`, "utf8"));
 const P = 1440, S = 390, r = (n) => Math.round(n * 10000) / 10000;
 const box = (b, W) => ({ ...b, x: r((b.x / W) * 100), w: r((b.w / W) * 100) });
@@ -24,7 +26,7 @@ const photo = (id, section, asset, z, pc, sp) => add(id, { type: "photo", z, sec
 
 const SCRIPT = "font:heading", B = "font:body", M = "font:accent", TX = "theme:text", MU = "theme:textMuted", AC = "theme:accent", SO = "theme:lineSoft", LN = "theme:line";
 const SCRIPT_C = "#D0D0C6";
-const NAME = "珈琲 麓", SITE_NAME_EN = "Coffee Roku";
+const NAME = C.name, SITE_NAME_EN = C.nameEn;
 const MAP_Q = `${shop.location.prefecture}${shop.location.city}${shop.location.town}${shop.location.street}`;
 const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${MAP_Q} ${shop.basic.name}`)}`;
 
@@ -46,15 +48,15 @@ bar("hd_b1", 29); bar("hd_b2", 39); bar("hd_b3", 49);
 sec("sec_firstv", "最初の画面", "theme:background", 810, 675);
 photo("fv_1", "sec_firstv", "ast_fv01", 1, { x: 432, y: 0, w: 504, h: 810 }, { x: 0, y: 270.1, w: 195, h: 404.9 });
 photo("fv_2", "sec_firstv", "ast_fv02", 1, { x: 936, y: 0, w: 504, h: 810 }, { x: 195, y: 270.1, w: 195, h: 404.9 });
-t("fv_copy", "sec_firstv", lines(["草屋根の下の、", "ちいさな喫茶店。"]), [[28.8, 40.32, 2.88], [25.6, 35.84, 1.28]], B, TX, [{ x: 175.7, y: 251, w: 80.6, h: 260 }, { x: 30, y: 63.3, w: 330, h: 71.7 }], { vp: 1, weight: 500 });
-t("fv_en", "sec_firstv", "A little coffee house under a grass roof, in Ashiya.", [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], M, MU, [{ x: 80.4, y: 524, w: 271.2, h: 34.6 }, { x: 30, y: 154.9, w: 271.2, h: 34.6 }], { weight: 500, align: "center" });
+t("fv_copy", "sec_firstv", lines(C.fvCopy), [[28.8, 40.32, 2.88], [25.6, 35.84, 1.28]], B, TX, [{ x: 175.7, y: 251, w: 80.6, h: 260 }, { x: 30, y: 63.3, w: 330, h: 71.7 }], { vp: 1, weight: 500 });
+t("fv_en", "sec_firstv", C.fvEn, [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], M, MU, [{ x: 80.4, y: 524, w: 271.2, h: 34.6 }, { x: 30, y: 154.9, w: 271.2, h: 34.6 }], { weight: 500, align: "center" });
 t("fv_script", "sec_firstv", SITE_NAME_EN, [[144, 144, -7.2], [64, 64, -3.2]], SCRIPT, SCRIPT_C, [{ x: 200, y: 666, w: 997, h: 144 }, { x: 8, y: 603, w: 374, h: 64 }], { z: 5, weight: 300 });
 
 // ---- 2 Our story（PC 1498 / スマホは本文の長さで詰める）
-const D_SP = Number(process.env.WA03_STORY_SP_DELTA ?? 231); // 本文が参考より短い分（実測で決めた値。SPEC 6章）
+const D_SP = Number(process.env.WA03_STORY_SP_DELTA ?? C.storySpDelta); // 本文が参考より短い分（実測で決めた値。SPEC 6章）
 const a = shop.story.answers;
 sec("sec_story", "Our story", "theme:background", 1498, 1521 - D_SP, { anchor: "story", nav: { label: "About", order: 1 } });
-head("st", "sec_story", "Our story", `${NAME}について`, 140, 197.6, 100, 155);
+head("st", "sec_story", "Our story", C.storyJa, 140, 197.6, 100, 155);
 t("st_catch", "sec_story", lines(a.q_catch.answer.split("\n")), [[32, 54.4, 0], [22.4, 38.08, 0]], B, TX, [{ x: 80, y: 295.6, w: 400, h: 108.8 }, { x: 30, y: 205.1, w: 330, h: 76.2 }], { weight: 500 });
 t("st_body", "sec_story", lines(a.q_body.answer.split("\n")), [[16, 28.8, 0.48], [16, 28.8, 0.48]], B, TX, [{ x: 80, y: 434.4, w: 580, h: 345.6 }, { x: 30, y: 301.3, w: 330, h: 547.1 - D_SP }], { gap: 14 });
 photo("st_ph1", "sec_story", "ast_st01", 1, { x: 780, y: 267.8, w: 580, h: 540 }, { x: 30, y: 898.4 - D_SP, w: 330, h: 253.2 });
@@ -78,7 +80,7 @@ add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: { kind: "
 
 // ---- 5 Access（PC 939 / スマホ 1057）
 const cityTown = ["/location", "address"];
-const ROWS = [["住所", cityTown], ["営業時間", ["/hours", "hoursShort"]], ["定休日", ["/hours", "closedDays"]], ["電話番号", ["/contact/phone", "phone"]], ["アクセス", ["/location/access", "access"]]];
+const ROWS = [["住所", cityTown], ["営業時間", ["/hours", "hoursShort"]], C.infoRow ? [C.infoRow.label, C.infoRow.value] : ["定休日", ["/hours", "closedDays"]], ["電話番号", ["/contact/phone", "phone"]], ["アクセス", ["/location/access", "access"]]];
 sec("sec_access", "Access", "theme:background", 939, 1057, { anchor: "access", nav: { label: "Access", order: 3 } });
 head("ac", "sec_access", "Access", "店舗情報", 140.2, 197.8, 100, 155.2);
 t("ac_name", "sec_access", NAME, [[32, 60, 3.2], [28, 60, 2.8]], B, TX, [{ x: 80, y: 268, w: 350, h: 60 }, { x: 30, y: 488.5, w: 250, h: 60 }], { weight: 500 });
@@ -101,10 +103,10 @@ for (let i = 1; i <= 6; i++) add(`sr_${i}`, { type: "photo", z: 1, section: "sec
 sec("sec_footer", "フッター", "theme:paper", 914, 1038);
 t("ft_name", "sec_footer", NAME, [[32, 60, 3.2], [28, 60, 2.8]], B, TX, [{ x: 123.2, y: 180, w: 350, h: 60 }, { x: 70, y: 100, w: 250, h: 60 }], { weight: 500 });
 line("ft_div", "sec_footer", AC, { x: 720.5, y: 140, w: 1, h: 536.4 }, { x: 0, y: 0, w: 0.01, h: 1 });
-const NV = [["About", "story"], ["Menu", "menu"], ["Access", "access"]];
+const NV = [["About", "story"], ["Menu", "menu"], ["Access", "access"], ...(C.extraNav || []).map((n) => [n.label, null, n.url])];
 const NAV_T = [[16, 22.4, 0.8], [16, 22.4, 0.8]];
-NV.forEach(([l, a2], i) => t(`ft_n${i}`, "sec_footer", l, NAV_T, M, TX, [{ x: 123.2, y: 290 + 42.4 * i, w: 200, h: 22.4 }, { x: 30, y: 210 + 42.4 * i, w: 330, h: 22.4 }], { weight: 500, link: { kind: "anchor", value: `pg_home#${a2}` } }));
-const F_R = [["住所", cityTown], ["営業時間", ["/hours", "hoursShort"]], ["定休日", ["/hours", "closedDays"]], ["電話番号", ["/contact/phone", "phone"]]];
+NV.forEach(([l, a2, url], i) => t(`ft_n${i}`, "sec_footer", l, NAV_T, M, TX, [{ x: 123.2, y: 290 + 42.4 * i, w: 200, h: 22.4 }, { x: 30, y: 210 + 42.4 * i, w: 330, h: 22.4 }], { weight: 500, link: url ? { kind: "url", value: url, newTab: true } : { kind: "anchor", value: `pg_home#${a2}` } }));
+const F_R = [["住所", cityTown], ["営業時間", ["/hours", "hoursShort"]], C.infoRow ? [C.infoRow.label, C.infoRow.valueShort || C.infoRow.value] : ["定休日", ["/hours", "closedDays"]], ["電話番号", ["/contact/phone", "phone"]]];
 const FT = [[14.4, 21.6, 0.72], [14.4, 21.6, 0.72]];
 add("ft_mapbox", { type: "shape", z: 2, kind: "rect", fill: "theme:surface", section: "sec_footer", layout: lay({ x: 820.5, y: 180, w: 496.3, h: 280 }, { x: 30, y: 387, w: 330, h: 280 }) });
 F_R.forEach(([k, v], i) => {
@@ -112,9 +114,9 @@ F_R.forEach(([k, v], i) => {
   t(`ft_k${i}`, "sec_footer", k, FT, B, MU, [{ x: 820.5, y: yP, w: 103.9, h: 21.6 }, { x: 30, y: yS, w: 85, h: 21.6 }]);
   t(`ft_v${i}`, "sec_footer", v, FT, B, TX, [{ x: 944.4, y: yP, w: 372.4, h: 21.6 }, { x: 135, y: yS, w: 225, h: 21.6 }]);
 });
-t("ft_mikke", "sec_footer", "芦屋みっけ 掲載店", FT, B, SO, [{ x: 123.2, y: 610, w: 500, h: 21.6 }, { x: 30, y: 883.4, w: 330, h: 21.6 }], { link: { kind: "url", value: "https://ashiya-mikke.pages.dev/spot/roku-coffee/", newTab: true } });
+t("ft_mikke", "sec_footer", "芦屋みっけ 掲載店", FT, B, SO, [{ x: 123.2, y: 610, w: 500, h: 21.6 }, { x: 30, y: 883.4, w: 330, h: 21.6 }], { link: { kind: "url", value: C.mikkeUrl, newTab: true } });
 t("ft_draft", "sec_footer", "営業用の見本（写真・品は仮）", FT, B, SO, [{ x: 123.2, y: 636, w: 560, h: 21.6 }, { x: 30, y: 909.4, w: 330, h: 21.6 }]);
-t("ft_copy", "sec_footer", "© Coffee ROKU", [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], M, SO, [{ x: 123.2, y: 816.4, w: 500, h: 17.3 }, { x: 30, y: 980, w: 330, h: 17.3 }], { weight: 500 });
+t("ft_copy", "sec_footer", C.copyright, [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], M, SO, [{ x: 123.2, y: 816.4, w: 500, h: 17.3 }, { x: 30, y: 980, w: 330, h: 17.3 }], { weight: 500 });
 
 const site = { schemaVersion: 1, shopId: shop.shopId, templateId: "tpl_wa_03", canvas: { pcContentWidth: P, spDesignWidth: S },
   pages: { pg_home: { kind: "home", slug: "/", navLabel: "TOP", navOrder: 1, showInNav: false, published: true, sections: ["sec_firstv", "sec_story", "sec_menu", "sec_access", "sec_strip"] },

@@ -1,0 +1,16 @@
+{
+  "name": "珈琲 麓",
+  "nameEn": "Coffee Roku",
+  "fvCopy": ["草屋根の下の、", "ちいさな喫茶店。"],
+  "fvEn": "A little coffee house under a grass roof, in Ashiya.",
+  "storyJa": "珈琲 麓について",
+  "storySpDelta": 231,
+  "mikkeUrl": "https://ashiya-mikke.pages.dev/spot/roku-coffee/",
+  "copyright": "© Coffee ROKU",
+  "nameBreaks": {
+    "ロイヤルミルクティー": "ロイヤル|ミルク|ティー",
+    "アイスカフェオレ": "アイス|カフェオレ",
+    "ベイクドチーズケーキ": "ベイクド|チーズ|ケーキ",
+    "チーズトースト": "チーズ|トースト"
+  }
+}

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-// wa-03：描画エンジンに無いものを dist/roku に足す（写真の帯の流れ・地図の埋め込み・ヘッダーの字間・地図のピン）。
-// JavaScript が無くても配置は崩れない。node tools/build.mjs samples/roku の後に実行する。
+// wa-03：描画エンジンに無いものを dist/<店> に足す（写真の帯の流れ・地図の埋め込み・ヘッダーの字間・地図のピン）。
+// JavaScript が無くても配置は崩れない。node tools/build.mjs samples/<店> の後に node tools/wa03-finish.mjs <店> を実行する（<店> の既定は roku）。
 import fs from "node:fs";
-const OUT = "dist/roku";
-const shop = JSON.parse(fs.readFileSync("samples/roku/shop.json", "utf8"));
+const ID = process.argv[2] || "roku";
+const OUT = `dist/${ID}`;
+const shop = JSON.parse(fs.readFileSync(`samples/${ID}/shop.json`, "utf8"));
 const BP = 1008; // この幅未満はスマホの配置（wa-02 と同じ）
 const loc = shop.location, addr = `${loc.prefecture}${loc.city}${loc.town}${loc.street}`;
 const N = 6;
@@ -36,7 +37,7 @@ const pin = `<svg class="wa03-pin" viewBox="0 0 24 24" aria-hidden="true"><path 
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
 // 品名は語の切れ目だけで折り返す（1字だけ次の行に落ちないように）
-const BREAKS = { "ロイヤルミルクティー": "ロイヤル|ミルク|ティー", "アイスカフェオレ": "アイス|カフェオレ", "ベイクドチーズケーキ": "ベイクド|チーズ|ケーキ", "チーズトースト": "チーズ|トースト" };
+const BREAKS = JSON.parse(fs.readFileSync(`samples/${ID}/wa03.json`, "utf8")).nameBreaks || {};
 for (const [n, b] of Object.entries(BREAKS)) { const from = `data-cel="c_nm"`; const re = new RegExp(`(<p ${from}[^>]*><span class="pg"><span>)${n}(</span>)`); if (!re.test(h)) throw new Error("品名が見つかりません: " + n); h = h.replace(re, `$1${b.split("|").join("<wbr>")}$2`); }
 const map = (t) => `<iframe title="${shop.basic.name}の${t}" src="https://www.google.com/maps?q=${encodeURIComponent(`${addr} ${shop.basic.name}`)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 for (const [id, t] of [["ac_mapbox", "地図"], ["ft_mapbox", "地図（フッター）"]]) {
