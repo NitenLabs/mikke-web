@@ -26,8 +26,8 @@ ${Array.from({ length: N }, (_, i) => `[data-el=st_${i + 1}]{--i:${i}}`).join(""
 .el-nav .nav-sp[open] summary{top:0;right:1.6rem;background:transparent;color:#F4F0E8!important}
 .el-nav .nav-menu{background:#1F1E1C}
 .el-nav .nav-menu a{color:#F4F0E8!important;font-family:var(--f-body)}
-@media (min-width:768px){[data-el^=st_],[data-clone]{--step:44rem;--dur:110s}}
-@media (max-width:767.98px){[data-el^=st_],[data-clone]{--step:35rem;--dur:88s}}
+@media (min-width:768px){[data-el^=st_],[data-clone]{--step:44rem;--dur:110s}[data-clone]{left:0;top:64rem;width:27.778%;height:40rem;z-index:2}}
+@media (max-width:767.98px){[data-el^=st_],[data-clone]{--step:35rem;--dur:88s}[data-clone]{left:0;top:76rem;width:79.487%;height:31rem;z-index:2}}
 @media (prefers-reduced-motion:reduce){[data-el^=st_]{animation:none}}
 </style>`;
 // 続けて流すために、写真の帯を JavaScript で1周分増やす。動きを減らす設定の人には増やさない
