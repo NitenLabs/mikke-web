@@ -17,6 +17,7 @@ export const FONT_REGISTRY = {
   "eb-garamond": { family: "EB Garamond", generic: "serif", param: "EB+Garamond:ital,wght@0,400;0,500;1,400" },
   "playfair-display": { family: "Playfair Display", generic: "serif", param: "Playfair+Display:ital,wght@0,400;0,500;1,400" },
   "space-mono": { family: "Space Mono", generic: "monospace", param: "Space+Mono:wght@400;700" },
+  "manrope": { family: "Manrope", generic: "sans-serif", param: "Manrope:wght@400;500;600;700;800" },
 };
 
 // フォントID → CSS の font-family スタック
