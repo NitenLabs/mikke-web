@@ -1,0 +1,16 @@
+# wa-06 Trattoria Mareluce（架空のお店）の使用写真
+# lu は卓の奥の瓶のラベルを外すため rect で切り抜いた。紹介ページの短い ID は tools/wa06-gen.mjs の PAGES
+fv https://images.unsplash.com/photo-1622880833523-7cf1c0bd4296?w=2400&q=80&fm=webp
+ab1 https://images.unsplash.com/photo-1606091484089-089fa86fad4f?w=1400&q=80&fm=webp
+ab2 https://images.unsplash.com/photo-1782174177283-a9cd1747335e?w=900&q=80&fm=webp
+rc1 https://images.unsplash.com/photo-1506280754576-f6fa8a873550?w=1000&q=80&fm=webp
+rc2 https://images.unsplash.com/photo-1696935315843-2e6e066bce17?w=2000&q=80&fm=webp
+rc3 https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=2000&q=80&fm=webp
+mn1 https://images.unsplash.com/photo-1777333033656-0b8e6a37b2fa?w=1200&q=80&fm=webp
+mn2 https://images.unsplash.com/photo-1766232333746-b0a2697d6d0d?w=800&q=80&fm=webp
+mn3 https://images.unsplash.com/photo-1680404840959-3211731fbb52?w=900&q=80&fm=webp
+wi https://images.unsplash.com/photo-1783628642381-4d3a2a5839d2?w=2400&q=80&fm=webp
+lu https://images.unsplash.com/photo-1762922425232-ab2b6b251739?rect=0,1000,5000,3000&w=2400&q=80&fm=webp
+di https://images.unsplash.com/photo-1772479036537-2f24be392ab0?w=2400&q=80&fm=webp
+sa1 https://images.unsplash.com/photo-1722587539644-03164d2d327b?w=1400&q=80&fm=webp
+sa2 https://images.unsplash.com/photo-1680798671233-a6823e6e9a1e?w=1400&q=80&fm=webp

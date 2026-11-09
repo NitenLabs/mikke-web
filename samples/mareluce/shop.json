@@ -1,0 +1,578 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_mareluce",
+  "updatedAt": "2026-11-10T01:30:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "Trattoria Mareluce",
+    "nameKana": "とらっとりあ まれるーちぇ",
+    "genre": {
+      "template": "restaurant",
+      "detail": "イタリアン・トラットリア"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "浜町",
+    "access": {
+      "acc_hanshin": {
+        "station": "阪神芦屋駅",
+        "method": "walk",
+        "minutes": 5,
+        "order": 1
+      }
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "closed"
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:30",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:30",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:30",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:30",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:30",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:30",
+            "lastOrder": "21:30"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "smoking": "none"
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "メニュー"
+      }
+    },
+    "categories": {
+      "cat_antipasti": {
+        "menuId": "mnu_main",
+        "name": "前菜",
+        "order": 1
+      },
+      "cat_pasta": {
+        "menuId": "mnu_main",
+        "name": "パスタ",
+        "order": 2
+      },
+      "cat_pizza": {
+        "menuId": "mnu_main",
+        "name": "ピッツァ",
+        "order": 3
+      },
+      "cat_secondi": {
+        "menuId": "mnu_main",
+        "name": "メイン",
+        "order": 4
+      },
+      "cat_dolci": {
+        "menuId": "mnu_main",
+        "name": "ドルチェ",
+        "order": 5
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_ant1": {
+        "name": "鮮魚のカルパッチョ",
+        "photos": [
+          "ast_ab02"
+        ],
+        "prices": [
+          {
+            "id": "prc_ant1",
+            "type": "fixed",
+            "amount": 1800
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_ant2": {
+        "name": "ブルスケッタ 三種の盛り合わせ",
+        "photos": [
+          "ast_rc01"
+        ],
+        "prices": [
+          {
+            "id": "prc_ant2",
+            "type": "fixed",
+            "amount": 1280
+          }
+        ],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_ant3": {
+        "name": "カプレーゼ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_ant3",
+            "type": "fixed",
+            "amount": 1200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_ant4": {
+        "name": "自家製ハムの盛り合わせ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_ant4",
+            "type": "fixed",
+            "amount": 1500
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_ant5": {
+        "name": "オリーブのマリネ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_ant5",
+            "type": "fixed",
+            "amount": 980
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_pas1": {
+        "name": "ボロネーゼのタリアテッレ",
+        "photos": [
+          "ast_rc02"
+        ],
+        "prices": [
+          {
+            "id": "prc_pas1",
+            "type": "fixed",
+            "amount": 2000
+          }
+        ],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_pas2": {
+        "name": "魚介のパッパルデッレ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_pas2",
+            "type": "fixed",
+            "amount": 2400
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_pas3": {
+        "name": "カルボナーラ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_pas3",
+            "type": "fixed",
+            "amount": 1900
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_pas4": {
+        "name": "ペンネ アラビアータ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_pas4",
+            "type": "fixed",
+            "amount": 1600
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_piz1": {
+        "name": "マルゲリータ",
+        "photos": [
+          "ast_rc03"
+        ],
+        "prices": [
+          {
+            "id": "prc_piz1",
+            "type": "fixed",
+            "amount": 1500
+          }
+        ],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_piz2": {
+        "name": "マリナーラ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_piz2",
+            "type": "fixed",
+            "amount": 1500
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_piz3": {
+        "name": "四種のチーズ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_piz3",
+            "type": "fixed",
+            "amount": 2000
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_piz4": {
+        "name": "生ハムとルッコラ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_piz4",
+            "type": "fixed",
+            "amount": 2200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_sec1": {
+        "name": "本日の鮮魚の香草パン粉焼き",
+        "photos": [
+          "ast_mn03"
+        ],
+        "prices": [
+          {
+            "id": "prc_sec1",
+            "type": "fixed",
+            "amount": 2800
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_sec2": {
+        "name": "若鶏の薪窯ロースト",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_sec2",
+            "type": "fixed",
+            "amount": 2800
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_sec3": {
+        "name": "豚肩ロースのグリル",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_sec3",
+            "type": "fixed",
+            "amount": 3200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_sec4": {
+        "name": "牛ランプのタリアータ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_sec4",
+            "type": "fixed",
+            "amount": 4200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_dol1": {
+        "name": "自家製ティラミス",
+        "photos": [
+          "ast_mn02"
+        ],
+        "prices": [
+          {
+            "id": "prc_dol1",
+            "type": "fixed",
+            "amount": 800
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_dol2": {
+        "name": "パンナコッタ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_dol2",
+            "type": "fixed",
+            "amount": 700
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_dol3": {
+        "name": "ジェラート 三種",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_dol3",
+            "type": "fixed",
+            "amount": 900
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      }
+    },
+    "placements": {
+      "plc_ant1": {
+        "itemId": "itm_ant1",
+        "categoryId": "cat_antipasti",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_ant2": {
+        "itemId": "itm_ant2",
+        "categoryId": "cat_antipasti",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_ant3": {
+        "itemId": "itm_ant3",
+        "categoryId": "cat_antipasti",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_ant4": {
+        "itemId": "itm_ant4",
+        "categoryId": "cat_antipasti",
+        "order": 4,
+        "menuId": "mnu_main"
+      },
+      "plc_ant5": {
+        "itemId": "itm_ant5",
+        "categoryId": "cat_antipasti",
+        "order": 5,
+        "menuId": "mnu_main"
+      },
+      "plc_pas1": {
+        "itemId": "itm_pas1",
+        "categoryId": "cat_pasta",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_pas2": {
+        "itemId": "itm_pas2",
+        "categoryId": "cat_pasta",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_pas3": {
+        "itemId": "itm_pas3",
+        "categoryId": "cat_pasta",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_pas4": {
+        "itemId": "itm_pas4",
+        "categoryId": "cat_pasta",
+        "order": 4,
+        "menuId": "mnu_main"
+      },
+      "plc_piz1": {
+        "itemId": "itm_piz1",
+        "categoryId": "cat_pizza",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_piz2": {
+        "itemId": "itm_piz2",
+        "categoryId": "cat_pizza",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_piz3": {
+        "itemId": "itm_piz3",
+        "categoryId": "cat_pizza",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_piz4": {
+        "itemId": "itm_piz4",
+        "categoryId": "cat_pizza",
+        "order": 4,
+        "menuId": "mnu_main"
+      },
+      "plc_sec1": {
+        "itemId": "itm_sec1",
+        "categoryId": "cat_secondi",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_sec2": {
+        "itemId": "itm_sec2",
+        "categoryId": "cat_secondi",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_sec3": {
+        "itemId": "itm_sec3",
+        "categoryId": "cat_secondi",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_sec4": {
+        "itemId": "itm_sec4",
+        "categoryId": "cat_secondi",
+        "order": 4,
+        "menuId": "mnu_main"
+      },
+      "plc_dol1": {
+        "itemId": "itm_dol1",
+        "categoryId": "cat_dolci",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_dol2": {
+        "itemId": "itm_dol2",
+        "categoryId": "cat_dolci",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_dol3": {
+        "itemId": "itm_dol3",
+        "categoryId": "cat_dolci",
+        "order": 3,
+        "menuId": "mnu_main"
+      }
+    }
+  }
+}

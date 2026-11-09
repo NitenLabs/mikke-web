@@ -1,0 +1,369 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 323128,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/vHRFraV4U00"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "薪窯の炎の前で焼き上がるマルゲリータ"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.webp",
+        "mime": "image/webp",
+        "width": 1400,
+        "height": 1750,
+        "bytes": 881810,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/T6vI65xwoNA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "打ち粉をまとった手打ちのタリアテッレ"
+    },
+    "ast_ab02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab02.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 1349,
+        "bytes": 160672,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/R5sV5JopKxI"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "鮮魚のカルパッチョ、レモンを添えて"
+    },
+    "ast_rc01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rc01.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 1500,
+        "bytes": 347832,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/rPkgYDh2bmo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ブルスケッタ 三種の盛り合わせ（トマトとバジル）"
+    },
+    "ast_rc02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rc02.webp",
+        "mime": "image/webp",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 345430,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/B0b_Iklk9l8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ボロネーゼのタリアテッレ"
+    },
+    "ast_rc03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rc03.webp",
+        "mime": "image/webp",
+        "width": 2000,
+        "height": 1335,
+        "bytes": 639458,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/x00CzBt4Dfk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "バジルをのせたマルゲリータ"
+    },
+    "ast_mn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 760430,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/qIU2qhp2tVk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "卓に並んだパスタとピッツァ、カプレーゼ"
+    },
+    "ast_mn02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn02.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1200,
+        "bytes": 85600,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/v5m_Dm7BQ_c"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "カカオをふった自家製ティラミス"
+    },
+    "ast_mn03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn03.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 1349,
+        "bytes": 218676,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/aupBlUT_EEE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "本日の鮮魚の香草パン粉焼き"
+    },
+    "ast_wi01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_wi01.webp",
+        "mime": "image/webp",
+        "width": 2400,
+        "height": 1597,
+        "bytes": 533778,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Btl_RJ0TaEQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "白ワインのグラス"
+    },
+    "ast_lu01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_lu01.webp",
+        "mime": "image/webp",
+        "width": 2400,
+        "height": 1440,
+        "bytes": 502776,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/uVjqFohje3I"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "木の卓に置いた魚介のパスタ"
+    },
+    "ast_di01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_di01.webp",
+        "mime": "image/webp",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 361514,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Xl3zzUp60yA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "夜の店内と卓のキャンドル"
+    },
+    "ast_sa01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sa01.webp",
+        "mime": "image/webp",
+        "width": 1400,
+        "height": 2485,
+        "bytes": 478610,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/2L_FKjWEk6M"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "窓辺の明るい客席"
+    },
+    "ast_sa02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sa02.webp",
+        "mime": "image/webp",
+        "width": 1400,
+        "height": 2100,
+        "bytes": 185286,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T01:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/F2rMgRhjJpg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T01:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "薪窯の炎とピッツァ"
+    }
+  }
+}
