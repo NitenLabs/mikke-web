@@ -1,0 +1,2881 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_luneclaire",
+  "templateId": "tpl_wa_11",
+  "canvas": {
+    "pcContentWidth": 1440,
+    "spDesignWidth": 390
+  },
+  "pages": {
+    "pg_home": {
+      "kind": "home",
+      "slug": "/",
+      "navLabel": "TOP",
+      "navOrder": 1,
+      "showInNav": false,
+      "published": true,
+      "sections": [
+        "sec_firstv",
+        "sec_about",
+        "sec_cake",
+        "sec_baked",
+        "sec_salon",
+        "sec_info"
+      ]
+    },
+    "pg_404": {
+      "kind": "notFound",
+      "slug": "/404",
+      "navLabel": "404",
+      "navOrder": 9,
+      "showInNav": false,
+      "published": true,
+      "sections": []
+    }
+  },
+  "regions": {
+    "header": "sec_header",
+    "footer": "sec_footer",
+    "headerBehavior": "sticky"
+  },
+  "sections": {
+    "sec_header": {
+      "name": "ヘッダー",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 76,
+        "sp": 64
+      }
+    },
+    "sec_firstv": {
+      "name": "最初の画面",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 860,
+        "sp": 844
+      }
+    },
+    "sec_about": {
+      "name": "紹介",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 760,
+        "sp": 808
+      },
+      "anchor": "about",
+      "nav": {
+        "label": "当店について",
+        "order": 1
+      }
+    },
+    "sec_cake": {
+      "name": "生菓子",
+      "background": {
+        "color": "theme:surface"
+      },
+      "minHeight": {
+        "pc": 1428,
+        "sp": 2574
+      },
+      "anchor": "gateaux",
+      "nav": {
+        "label": "生菓子",
+        "order": 2
+      }
+    },
+    "sec_baked": {
+      "name": "焼き菓子",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 720,
+        "sp": 1196
+      },
+      "anchor": "secs",
+      "nav": {
+        "label": "焼き菓子",
+        "order": 3
+      }
+    },
+    "sec_salon": {
+      "name": "イートイン",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 640,
+        "sp": 580
+      },
+      "anchor": "salon",
+      "nav": {
+        "label": "イートイン",
+        "order": 4
+      }
+    },
+    "sec_info": {
+      "name": "ご案内",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 720,
+        "sp": 960
+      },
+      "anchor": "information",
+      "nav": {
+        "label": "ご案内",
+        "order": 5
+      }
+    },
+    "sec_footer": {
+      "name": "フッター",
+      "background": {
+        "color": "#3B2F33"
+      },
+      "minHeight": {
+        "pc": 320,
+        "sp": 596
+      }
+    }
+  },
+  "elements": {
+    "hd_name": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Lune Claire"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 500,
+        "color": "#3B2F33",
+        "lineHeight": 1.4286,
+        "letterSpacing": 0.0357,
+        "link": {
+          "kind": "page",
+          "value": "pg_home"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 2.7778,
+          "y": 18,
+          "w": 20.8333,
+          "h": 40,
+          "size": 28
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 14,
+          "w": 61.5385,
+          "h": 36,
+          "size": 24
+        }
+      }
+    },
+    "hd_nav": {
+      "type": "nav",
+      "z": 4,
+      "section": "sec_header",
+      "style": {
+        "color": "#3B2F33",
+        "font": "font:body",
+        "spMenuBackground": "theme:primary"
+      },
+      "layout": {
+        "pc": {
+          "x": 52.7778,
+          "y": 18,
+          "w": 44.4444,
+          "h": 40,
+          "size": 14
+        },
+        "sp": {
+          "x": 85.1282,
+          "y": 10,
+          "w": 11.2821,
+          "h": 44
+        }
+      }
+    },
+    "fv_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_firstv",
+      "asset": "ast_fv01",
+      "layout": {
+        "pc": {
+          "x": 30.5556,
+          "y": 40,
+          "w": 38.8889,
+          "h": 780,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 122,
+          "w": 84.6154,
+          "h": 420,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "fv_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Pâtisserie"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#9C4F5A",
+        "lineHeight": 1.3636,
+        "letterSpacing": 0.0455
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 300,
+          "w": 22.2222,
+          "h": 30,
+          "size": 22
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 34,
+          "w": 84.6154,
+          "h": 24,
+          "size": 16
+        }
+      }
+    },
+    "fv_name": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Lune Claire"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.0952,
+        "letterSpacing": 0.006
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 340,
+          "w": 22.2222,
+          "h": 184,
+          "size": 84
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 60,
+          "w": 84.6154,
+          "h": 56,
+          "size": 46
+        }
+      }
+    },
+    "fv_line": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#C8A97E",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 548,
+          "w": 4.4444,
+          "h": 1
+        },
+        "sp": {
+          "x": 44.8718,
+          "y": 665,
+          "w": 10.2564,
+          "h": 1
+        }
+      }
+    },
+    "fv_copy": {
+      "type": "text",
+      "z": 3,
+      "role": "pageTitle",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "月あかりのように、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "やさしい甘さを。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.7692,
+        "letterSpacing": 0.0769
+      },
+      "layout": {
+        "pc": {
+          "x": 72.2222,
+          "y": 296,
+          "w": 22.2222,
+          "h": 92,
+          "size": 26
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 566,
+          "w": 84.6154,
+          "h": 85,
+          "size": 24
+        }
+      }
+    },
+    "fv_k0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご住所"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 72.2222,
+          "y": 424,
+          "w": 22.2222,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 685,
+          "w": 18.4615,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "fv_v0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.0286
+      },
+      "layout": {
+        "pc": {
+          "x": 72.2222,
+          "y": 448,
+          "w": 22.2222,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 26.6667,
+          "y": 685,
+          "w": 65.641,
+          "h": 22,
+          "size": 14
+        }
+      }
+    },
+    "fv_k1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 72.2222,
+          "y": 482,
+          "w": 22.2222,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 717,
+          "w": 18.4615,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "fv_v1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "10:00〜19:00"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "（イートインは 18:00 L.O.）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.0286
+      },
+      "layout": {
+        "pc": {
+          "x": 72.2222,
+          "y": 506,
+          "w": 22.2222,
+          "h": 44,
+          "size": 14
+        },
+        "sp": {
+          "x": 26.6667,
+          "y": 717,
+          "w": 65.641,
+          "h": 44,
+          "size": 14
+        }
+      }
+    },
+    "fv_k2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "定休日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 72.2222,
+          "y": 562,
+          "w": 22.2222,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 771,
+          "w": 18.4615,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "fv_v2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "月曜日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.0286
+      },
+      "layout": {
+        "pc": {
+          "x": 72.2222,
+          "y": 586,
+          "w": 22.2222,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 26.6667,
+          "y": 771,
+          "w": 65.641,
+          "h": 22,
+          "size": 14
+        }
+      }
+    },
+    "ab_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "À propos"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.1818,
+        "letterSpacing": 0.0136
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 120,
+          "w": 33.3333,
+          "h": 52,
+          "size": 44
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 56,
+          "w": 84.6154,
+          "h": 44,
+          "size": 36
+        }
+      }
+    },
+    "ab_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "当店について"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 178,
+          "w": 33.3333,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 104,
+          "w": 84.6154,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "ab_h": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ひとつひとつ、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "小さく仕立てて。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.6429,
+        "letterSpacing": 0.0714
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 232,
+          "w": 33.3333,
+          "h": 92,
+          "size": 28
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 140,
+          "w": 84.6154,
+          "h": 79,
+          "size": 24
+        }
+      }
+    },
+    "ab_p": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "季節の果物と、ていねいに炊いたクリーム。ひとつひとつ小さく仕立てた生菓子と、贈り物にしたくなる焼き菓子をご用意しています。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 2,
+        "letterSpacing": 0.0313
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 356,
+          "w": 33.3333,
+          "h": 170,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 239,
+          "w": 84.6154,
+          "h": 150,
+          "size": 15
+        }
+      }
+    },
+    "ab_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_about",
+      "asset": "ast_ab01",
+      "layout": {
+        "pc": {
+          "x": 54.1667,
+          "y": 100,
+          "w": 31.9444,
+          "h": 560,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 15.3846,
+          "y": 415,
+          "w": 69.2308,
+          "h": 340,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "ck_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_cake",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Gâteaux"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.1818,
+        "letterSpacing": 0.0136,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 33.3333,
+          "y": 136,
+          "w": 33.3333,
+          "h": 52,
+          "size": 44
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 72,
+          "w": 84.6154,
+          "h": 44,
+          "size": 36
+        }
+      }
+    },
+    "ck_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_cake",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "生菓子"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 33.3333,
+          "y": 194,
+          "w": 33.3333,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 120,
+          "w": 84.6154,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "ck_cards": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_cake",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_cake",
+        "pick": [
+          "itm_m001",
+          "itm_m002",
+          "itm_m003",
+          "itm_m004",
+          "itm_m005"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 3,
+          "sp": 1
+        },
+        "gap": {
+          "pc": 40,
+          "sp": 32
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 500,
+          "sp": 430
+        },
+        "elements": {
+          "c_ph": {
+            "type": "photo",
+            "z": 1,
+            "bind": {
+              "scope": "item",
+              "path": "/photos"
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 400,
+                "ratio": "custom"
+              },
+              "sp": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 340,
+                "ratio": "custom"
+              }
+            }
+          },
+          "c_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 500,
+              "color": "#3B2F33",
+              "lineHeight": 1.6471,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 414,
+                "w": 72,
+                "h": 28,
+                "size": 17
+              },
+              "sp": {
+                "x": 0,
+                "y": 352,
+                "w": 72,
+                "h": 26,
+                "size": 16
+              }
+            }
+          },
+          "c_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:accent",
+              "weight": 400,
+              "color": "#9C4F5A",
+              "lineHeight": 1.4,
+              "letterSpacing": 0,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 72,
+                "y": 414,
+                "w": 28,
+                "h": 28,
+                "size": 20
+              },
+              "sp": {
+                "x": 72,
+                "y": 352,
+                "w": 28,
+                "h": 26,
+                "size": 19
+              }
+            }
+          },
+          "c_ds": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/description",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "#6D5D62",
+              "lineHeight": 1.6923,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 446,
+                "w": 100,
+                "h": 44,
+                "size": 13
+              },
+              "sp": {
+                "x": 0,
+                "y": 382,
+                "w": 100,
+                "h": 44,
+                "size": 13
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 260,
+          "w": 72.2222,
+          "h": 1056
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 196,
+          "w": 84.6154,
+          "h": 2278
+        }
+      }
+    },
+    "ck_note": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_cake",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "表示の値段はすべて税込みです。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#6D5D62",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0308
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 1344,
+          "w": 72.2222,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 2498,
+          "w": 84.6154,
+          "h": 20,
+          "size": 12
+        }
+      }
+    },
+    "bk_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_baked",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Gâteaux Secs"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.1818,
+        "letterSpacing": 0.0136
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 110,
+          "w": 22.2222,
+          "h": 52,
+          "size": 44
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 56,
+          "w": 84.6154,
+          "h": 44,
+          "size": 36
+        }
+      }
+    },
+    "bk_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_baked",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "焼き菓子"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 168,
+          "w": 22.2222,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 104,
+          "w": 84.6154,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "bk_p": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_baked",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "日持ちのする焼き菓子は、ご自宅にも、贈り物にも。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.875,
+        "letterSpacing": 0.0313
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 222,
+          "w": 20.8333,
+          "h": 90,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 140,
+          "w": 84.6154,
+          "h": 56,
+          "size": 15
+        }
+      }
+    },
+    "bk_note": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_baked",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "表示の値段はすべて税込みです。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#6D5D62",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0308
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 330,
+          "w": 20.8333,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 204,
+          "w": 84.6154,
+          "h": 20,
+          "size": 12
+        }
+      }
+    },
+    "bk_cards": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_baked",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_baked",
+        "pick": [
+          "itm_m006",
+          "itm_m007"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 2,
+          "sp": 1
+        },
+        "gap": {
+          "pc": 40,
+          "sp": 32
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 500,
+          "sp": 430
+        },
+        "elements": {
+          "b_ph": {
+            "type": "photo",
+            "z": 1,
+            "bind": {
+              "scope": "item",
+              "path": "/photos"
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 400,
+                "ratio": "custom"
+              },
+              "sp": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 340,
+                "ratio": "custom"
+              }
+            }
+          },
+          "b_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 500,
+              "color": "#3B2F33",
+              "lineHeight": 1.6471,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 414,
+                "w": 72,
+                "h": 28,
+                "size": 17
+              },
+              "sp": {
+                "x": 0,
+                "y": 352,
+                "w": 72,
+                "h": 26,
+                "size": 16
+              }
+            }
+          },
+          "b_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:accent",
+              "weight": 400,
+              "color": "#9C4F5A",
+              "lineHeight": 1.4,
+              "letterSpacing": 0,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 72,
+                "y": 414,
+                "w": 28,
+                "h": 28,
+                "size": 20
+              },
+              "sp": {
+                "x": 72,
+                "y": 352,
+                "w": 28,
+                "h": 26,
+                "size": 19
+              }
+            }
+          },
+          "b_ds": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/description",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "#6D5D62",
+              "lineHeight": 1.6923,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 446,
+                "w": 100,
+                "h": 44,
+                "size": 13
+              },
+              "sp": {
+                "x": 0,
+                "y": 382,
+                "w": 100,
+                "h": 44,
+                "size": 13
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 110,
+          "w": 47.2222,
+          "h": 500
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 240,
+          "w": 84.6154,
+          "h": 892
+        }
+      }
+    },
+    "ei_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_salon",
+      "asset": "ast_ei01",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 640,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 260,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 35,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "ei_panel": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#FFFFFF",
+      "section": "sec_salon",
+      "layout": {
+        "pc": {
+          "x": 59.7222,
+          "y": 100,
+          "w": 31.9444,
+          "h": 440
+        },
+        "sp": {
+          "x": 0,
+          "y": 260,
+          "w": 100,
+          "h": 320
+        }
+      }
+    },
+    "ei_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_salon",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Salon"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.1818,
+        "letterSpacing": 0.0136
+      },
+      "layout": {
+        "pc": {
+          "x": 63.1944,
+          "y": 150,
+          "w": 25,
+          "h": 52,
+          "size": 44
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 296,
+          "w": 84.6154,
+          "h": 44,
+          "size": 36
+        }
+      }
+    },
+    "ei_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_salon",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "イートイン"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429
+      },
+      "layout": {
+        "pc": {
+          "x": 63.1944,
+          "y": 208,
+          "w": 25,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 344,
+          "w": 84.6154,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "ei_p": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_salon",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "店内には8席のイートインがあります。"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "お好きなケーキに、ドリンクをセットで（+550円）。"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "ラストオーダーは 18:00 です。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.875,
+        "letterSpacing": 0.025,
+        "paragraphGap": 8
+      },
+      "layout": {
+        "pc": {
+          "x": 63.1944,
+          "y": 262,
+          "w": 25,
+          "h": 230,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 384,
+          "w": 84.6154,
+          "h": 170,
+          "size": 15
+        }
+      }
+    },
+    "in_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Information"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.1818,
+        "letterSpacing": 0.0136
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 90,
+          "w": 33.3333,
+          "h": 52,
+          "size": 44
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 48,
+          "w": 84.6154,
+          "h": 44,
+          "size": 36
+        }
+      }
+    },
+    "in_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご案内"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 148,
+          "w": 33.3333,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 96,
+          "w": 84.6154,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "in_l0": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#E8DCD6",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 186,
+          "w": 34.7222,
+          "h": 1
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 130,
+          "w": 84.6154,
+          "h": 1
+        }
+      }
+    },
+    "in_k0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご住所"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 206,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 137,
+          "w": 84.6154,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188
+      },
+      "layout": {
+        "pc": {
+          "x": 21.6667,
+          "y": 205,
+          "w": 26.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 161,
+          "w": 84.6154,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_l1": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#E8DCD6",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 250,
+          "w": 34.7222,
+          "h": 1
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 194,
+          "w": 84.6154,
+          "h": 1
+        }
+      }
+    },
+    "in_k1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 270,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 201,
+          "w": 84.6154,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "10:00〜19:00"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188
+      },
+      "layout": {
+        "pc": {
+          "x": 21.6667,
+          "y": 269,
+          "w": 26.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 225,
+          "w": 84.6154,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_l2": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#E8DCD6",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 314,
+          "w": 34.7222,
+          "h": 1
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 258,
+          "w": 84.6154,
+          "h": 1
+        }
+      }
+    },
+    "in_k2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "定休日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 334,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 265,
+          "w": 84.6154,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "月曜日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188
+      },
+      "layout": {
+        "pc": {
+          "x": 21.6667,
+          "y": 333,
+          "w": 26.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 289,
+          "w": 84.6154,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_l3": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#E8DCD6",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 378,
+          "w": 34.7222,
+          "h": 1
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 322,
+          "w": 84.6154,
+          "h": 1
+        }
+      }
+    },
+    "in_k3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "イートイン"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 398,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 329,
+          "w": 84.6154,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "8席（ラストオーダー 18:00）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188
+      },
+      "layout": {
+        "pc": {
+          "x": 21.6667,
+          "y": 397,
+          "w": 26.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 353,
+          "w": 84.6154,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_l4": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#E8DCD6",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 442,
+          "w": 34.7222,
+          "h": 1
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 386,
+          "w": 84.6154,
+          "h": 1
+        }
+      }
+    },
+    "in_k4": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お電話"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#9C4F5A",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 462,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 393,
+          "w": 84.6154,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v4": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#3B2F33",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188,
+        "link": {
+          "kind": "shopPhone"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 21.6667,
+          "y": 461,
+          "w": 26.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 417,
+          "w": 84.6154,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_tel_b": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#3B2F33",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 540,
+          "w": 16.6667,
+          "h": 56
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 466,
+          "w": 40.5128,
+          "h": 50
+        }
+      },
+      "link": {
+        "kind": "shopPhone"
+      },
+      "radius": 100
+    },
+    "in_tel_t": {
+      "type": "text",
+      "z": 4,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お電話する"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#FFFFFF",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0.0857,
+        "align": "center",
+        "link": {
+          "kind": "shopPhone"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 556,
+          "w": 16.6667,
+          "h": 24,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 479,
+          "w": 40.5128,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "in_map_b": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#FFFFFF",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 31.9444,
+          "y": 540,
+          "w": 16.6667,
+          "h": 56
+        },
+        "sp": {
+          "x": 51.7949,
+          "y": 466,
+          "w": 40.5128,
+          "h": 50
+        }
+      },
+      "link": {
+        "kind": "url",
+        "value": "https://www.google.com/maps/search/?api=1&query=%E5%85%B5%E5%BA%AB%E7%9C%8C%E8%8A%A6%E5%B1%8B%E5%B8%82%E8%A5%BF%E5%B1%B1%E7%94%BA%20P%C3%A2tisserie%20Lune%20Claire",
+        "newTab": true
+      },
+      "radius": 100
+    },
+    "in_map_t": {
+      "type": "text",
+      "z": 4,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "地図で開く"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#3B2F33",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0.0857,
+        "align": "center",
+        "link": {
+          "kind": "url",
+          "value": "https://www.google.com/maps/search/?api=1&query=%E5%85%B5%E5%BA%AB%E7%9C%8C%E8%8A%A6%E5%B1%8B%E5%B8%82%E8%A5%BF%E5%B1%B1%E7%94%BA%20P%C3%A2tisserie%20Lune%20Claire",
+          "newTab": true
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 31.9444,
+          "y": 556,
+          "w": 16.6667,
+          "h": 24,
+          "size": 14
+        },
+        "sp": {
+          "x": 51.7949,
+          "y": 479,
+          "w": 40.5128,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "in_mapbox": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#E8DCD6",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 52.7778,
+          "y": 90,
+          "w": 33.3333,
+          "h": 540
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 540,
+          "w": 84.6154,
+          "h": 360
+        }
+      }
+    },
+    "ft_name": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Lune Claire"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 500,
+        "color": "#FFFFFF",
+        "lineHeight": 1.25,
+        "letterSpacing": 0.0313
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 64,
+          "w": 20.8333,
+          "h": 40,
+          "size": 32
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 44,
+          "w": 84.6154,
+          "h": 38,
+          "size": 30
+        }
+      }
+    },
+    "ft_addr": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.8571,
+        "letterSpacing": 0.0214
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 114,
+          "w": 20.8333,
+          "h": 26,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 88,
+          "w": 84.6154,
+          "h": 26,
+          "size": 14
+        }
+      }
+    },
+    "ft_n0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "当店について"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#about"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 60,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 128,
+          "w": 84.6154,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_n1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "生菓子"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#gateaux"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 90,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 160,
+          "w": 84.6154,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_n2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "焼き菓子"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#secs"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 120,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 192,
+          "w": 84.6154,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_n3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "イートイン"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#salon"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 150,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 224,
+          "w": 84.6154,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_n4": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご案内"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#information"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 180,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 256,
+          "w": 84.6154,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_hk": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#C8A97E",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 56.9444,
+          "y": 64,
+          "w": 29.1667,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 304,
+          "w": 84.6154,
+          "h": 20,
+          "size": 12
+        }
+      }
+    },
+    "ft_hv": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "10:00〜19:00"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "（イートインは 18:00 L.O.）"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "月曜日 定休"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.8571,
+        "letterSpacing": 0.0214
+      },
+      "layout": {
+        "pc": {
+          "x": 56.9444,
+          "y": 90,
+          "w": 29.1667,
+          "h": 78,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 328,
+          "w": 84.6154,
+          "h": 78,
+          "size": 14
+        }
+      }
+    },
+    "ft_tk": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お電話"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#C8A97E",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 56.9444,
+          "y": 180,
+          "w": 13.8889,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 418,
+          "w": 84.6154,
+          "h": 20,
+          "size": 12
+        }
+      }
+    },
+    "ft_tv": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.02,
+        "link": {
+          "kind": "shopPhone"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 56.9444,
+          "y": 206,
+          "w": 16.6667,
+          "h": 30,
+          "size": 20
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 442,
+          "w": 84.6154,
+          "h": 30,
+          "size": 20
+        }
+      }
+    },
+    "ft_copy": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "© Pâtisserie Lune Claire"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#FFFFFF",
+        "lineHeight": 1.6667,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 256,
+          "w": 29.1667,
+          "h": 20,
+          "size": 12
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 524,
+          "w": 84.6154,
+          "h": 20,
+          "size": 12
+        }
+      }
+    }
+  }
+}

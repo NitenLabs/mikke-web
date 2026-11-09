@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1120,
+        "height": 1400,
+        "bytes": 217764,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/-qQlfYB7pqM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "白い器にのせた苺のショートケーキと、麻の布"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.webp",
+        "mime": "image/webp",
+        "width": 920,
+        "height": 1120,
+        "bytes": 37684,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/PIDlLKcFOEI"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "白い台の上に並べた淡い色のマカロン"
+    },
+    "ast_ck01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ck01.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 53914,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/fENvSZUzbzU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "苺のショートケーキ"
+    },
+    "ast_ck02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ck02.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 63726,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/cZFU60dKB6U"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "フレジエ。断面に苺を並べたケーキ"
+    },
+    "ast_ck03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ck03.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 69460,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/6b9MlJLVVqo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "和栗のモンブラン"
+    },
+    "ast_ck04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ck04.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 31902,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/jmRQxhDuDcM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "タルト・オ・シトロン。白い皿にのせて"
+    },
+    "ast_ck05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ck05.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 77514,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/D6JRlY9BYVY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ピスタチオとフランボワーズ。小さなタルト仕立て"
+    },
+    "ast_bk01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_bk01.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 32582,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/i5BY6W2ttts"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "マカロン（1個）。淡い色を積み重ねて"
+    },
+    "ast_bk02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_bk02.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 79274,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_f8S_o9xQK8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "焼き菓子の詰め合わせ（8個）。紙の箱に入れて"
+    },
+    "ast_ei01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ei01.webp",
+        "mime": "image/webp",
+        "width": 1800,
+        "height": 800,
+        "bytes": 66540,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_5qeAski0T8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "白い布の上の紅茶と、淡いピンクのチューリップ"
+    }
+  }
+}

@@ -1,0 +1,162 @@
+{
+  "nameEn": "Lune Claire",
+  "kicker": "Pâtisserie",
+  "copyright": "© Pâtisserie Lune Claire",
+  "fvCopy": [
+    "月あかりのように、",
+    "やさしい甘さを。"
+  ],
+  "facts": [
+    [
+      "ご住所",
+      [
+        "/location",
+        "address"
+      ]
+    ],
+    [
+      "営業時間",
+      {
+        "lines": [
+          "10:00〜19:00",
+          "（イートインは 18:00 L.O.）"
+        ]
+      }
+    ],
+    [
+      "定休日",
+      "月曜日"
+    ]
+  ],
+  "aboutEn": "À propos",
+  "aboutJa": "当店について",
+  "aboutHead": [
+    "ひとつひとつ、",
+    "小さく仕立てて。"
+  ],
+  "aboutBody": "季節の果物と、ていねいに炊いたクリーム。ひとつひとつ小さく仕立てた生菓子と、贈り物にしたくなる焼き菓子をご用意しています。",
+  "cakeEn": "Gâteaux",
+  "cakeJa": "生菓子",
+  "note": "表示の値段はすべて税込みです。",
+  "bakedEn": "Gâteaux Secs",
+  "bakedJa": "焼き菓子",
+  "bakedBody": "日持ちのする焼き菓子は、ご自宅にも、贈り物にも。",
+  "eatEn": "Salon",
+  "eatJa": "イートイン",
+  "eatBody": [
+    "店内には8席のイートインがあります。",
+    "お好きなケーキに、ドリンクをセットで（+550円）。",
+    "ラストオーダーは 18:00 です。"
+  ],
+  "infoEn": "Information",
+  "infoJa": "ご案内",
+  "infoRows": [
+    [
+      "ご住所",
+      [
+        "/location",
+        "address"
+      ]
+    ],
+    [
+      "営業時間",
+      "10:00〜19:00"
+    ],
+    [
+      "定休日",
+      "月曜日"
+    ],
+    [
+      "イートイン",
+      "8席（ラストオーダー 18:00）"
+    ],
+    [
+      "お電話",
+      [
+        "/contact/phone",
+        "phone"
+      ]
+    ]
+  ],
+  "telLabel": "お電話する",
+  "mapLabel": "地図で開く",
+  "footHours": [
+    "10:00〜19:00",
+    "（イートインは 18:00 L.O.）",
+    "月曜日 定休"
+  ],
+  "nav": [
+    [
+      "当店について",
+      "about"
+    ],
+    [
+      "生菓子",
+      "gateaux"
+    ],
+    [
+      "焼き菓子",
+      "secs"
+    ],
+    [
+      "イートイン",
+      "salon"
+    ],
+    [
+      "ご案内",
+      "information"
+    ]
+  ],
+  "photos": {
+    "fv": {
+      "slot": "signature",
+      "alt": "白い器にのせた苺のショートケーキと、麻の布",
+      "page": "https://unsplash.com/photos/-qQlfYB7pqM"
+    },
+    "ab1": {
+      "slot": "product",
+      "alt": "白い台の上に並べた淡い色のマカロン",
+      "page": "https://unsplash.com/photos/PIDlLKcFOEI"
+    },
+    "ck1": {
+      "slot": "signature",
+      "alt": "苺のショートケーキ",
+      "page": "https://unsplash.com/photos/fENvSZUzbzU"
+    },
+    "ck2": {
+      "slot": "signature",
+      "alt": "フレジエ。断面に苺を並べたケーキ",
+      "page": "https://unsplash.com/photos/cZFU60dKB6U"
+    },
+    "ck3": {
+      "slot": "signature",
+      "alt": "和栗のモンブラン",
+      "page": "https://unsplash.com/photos/6b9MlJLVVqo"
+    },
+    "ck4": {
+      "slot": "signature",
+      "alt": "タルト・オ・シトロン。白い皿にのせて",
+      "page": "https://unsplash.com/photos/jmRQxhDuDcM"
+    },
+    "ck5": {
+      "slot": "signature",
+      "alt": "ピスタチオとフランボワーズ。小さなタルト仕立て",
+      "page": "https://unsplash.com/photos/D6JRlY9BYVY"
+    },
+    "bk1": {
+      "slot": "signature",
+      "alt": "マカロン（1個）。淡い色を積み重ねて",
+      "page": "https://unsplash.com/photos/i5BY6W2ttts"
+    },
+    "bk2": {
+      "slot": "signature",
+      "alt": "焼き菓子の詰め合わせ（8個）。紙の箱に入れて",
+      "page": "https://unsplash.com/photos/_f8S_o9xQK8"
+    },
+    "ei": {
+      "slot": "product",
+      "alt": "白い布の上の紅茶と、淡いピンクのチューリップ",
+      "page": "https://unsplash.com/photos/_5qeAski0T8"
+    }
+  }
+}

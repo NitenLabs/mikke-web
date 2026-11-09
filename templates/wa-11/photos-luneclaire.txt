@@ -1,0 +1,11 @@
+# wa-11 Pâtisserie Lune Claire（架空のお店）の使用写真
+fv https://images.unsplash.com/photo-1627308595171-d1b5d67129c4?w=1120&h=1400&fit=crop&q=72&fm=webp
+ab1 https://images.unsplash.com/photo-1612198791461-e26e3b5dcb86?w=920&h=1120&fit=crop&q=72&fm=webp
+ck1 https://images.unsplash.com/photo-1602663491496-73f07481dbea?w=720&h=900&fit=crop&q=72&fm=webp
+ck2 https://images.unsplash.com/photo-1611293388250-580b08c4a145?w=720&h=900&fit=crop&q=72&fm=webp
+ck3 https://images.unsplash.com/photo-1790328603569-5581ff8bf5af?w=720&h=900&fit=crop&crop=focalpoint&fp-x=.36&fp-y=.7&fp-z=2.1&q=72&fm=webp
+ck4 https://images.unsplash.com/photo-1543508834-51a9bcc28a88?w=720&h=900&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.5&fp-z=1.35&q=72&fm=webp
+ck5 https://images.unsplash.com/photo-1702745284678-2ae974a7f0aa?w=720&h=900&fit=crop&q=72&fm=webp
+bk1 https://images.unsplash.com/photo-1612198790700-0ff08cb726e5?w=720&h=900&fit=crop&crop=top&q=72&fm=webp
+bk2 https://images.unsplash.com/photo-1449049607083-e29383d58423?w=720&h=900&fit=crop&q=72&fm=webp
+ei https://images.unsplash.com/photo-1771170223515-b174382335e5?w=1800&h=800&fit=crop&q=72&fm=webp

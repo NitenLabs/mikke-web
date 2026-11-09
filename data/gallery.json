@@ -36,11 +36,11 @@
       "path": "mareluce"
     },
     {
-      "id": "ichinoshio",
-      "name": "鮨 一之汐",
-      "genre": "鮨店",
-      "mood": "明石・淡路の魚で組み立てる、白木のカウンター8席のおまかせ",
-      "path": "ichinoshio"
+      "id": "luneclaire",
+      "name": "Pâtisserie Lune Claire",
+      "genre": "パティスリー",
+      "mood": "淡いピンクと白に、やわらかい欧文。生菓子と焼き菓子のパティスリー",
+      "path": "luneclaire"
     }
   ]
 }

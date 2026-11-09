@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_luneclaire",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "Pâtisserie Lune Claire",
+    "nameKana": "ぱてぃすりー りゅぬ・くれーる",
+    "genre": {
+      "template": "restaurant",
+      "detail": "パティスリー"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "西山町"
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "closed"
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "10:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "10:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "10:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "10:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "10:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "10:00",
+            "end": "19:00"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 8
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_cake": {
+        "order": 1,
+        "name": "生菓子"
+      },
+      "mnu_baked": {
+        "order": 2,
+        "name": "焼き菓子"
+      }
+    },
+    "categories": {
+      "cat_cake": {
+        "menuId": "mnu_cake",
+        "name": "生菓子",
+        "order": 1
+      },
+      "cat_baked": {
+        "menuId": "mnu_baked",
+        "name": "焼き菓子",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_m001": {
+        "name": "苺のショートケーキ",
+        "description": "ふんわりしたスポンジと、軽い生クリームで。",
+        "photos": [
+          "ast_ck01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m001",
+            "type": "fixed",
+            "amount": 680
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m002": {
+        "name": "フレジエ",
+        "description": "断面に苺を並べた、フランスの苺のケーキです。",
+        "photos": [
+          "ast_ck02"
+        ],
+        "prices": [
+          {
+            "id": "prc_m002",
+            "type": "fixed",
+            "amount": 720
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m003": {
+        "name": "和栗のモンブラン",
+        "description": "和栗のクリームを細く絞り、小さく仕立てました。",
+        "photos": [
+          "ast_ck03"
+        ],
+        "prices": [
+          {
+            "id": "prc_m003",
+            "type": "fixed",
+            "amount": 750
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m004": {
+        "name": "タルト・オ・シトロン",
+        "description": "レモンの酸味をいかした、小さなタルトです。",
+        "photos": [
+          "ast_ck04"
+        ],
+        "prices": [
+          {
+            "id": "prc_m004",
+            "type": "fixed",
+            "amount": 650
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m005": {
+        "name": "ピスタチオとフランボワーズ",
+        "description": "ピスタチオのクリームに、フランボワーズの酸味を合わせて。",
+        "photos": [
+          "ast_ck05"
+        ],
+        "prices": [
+          {
+            "id": "prc_m005",
+            "type": "fixed",
+            "amount": 720
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m006": {
+        "name": "マカロン（1個）",
+        "description": "1個からお選びいただけます。",
+        "photos": [
+          "ast_bk01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m006",
+            "type": "fixed",
+            "amount": 300
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m007": {
+        "name": "焼き菓子の詰め合わせ（8個）",
+        "description": "贈り物にしたくなる、箱入りの詰め合わせです。",
+        "photos": [
+          "ast_bk02"
+        ],
+        "prices": [
+          {
+            "id": "prc_m007",
+            "type": "fixed",
+            "amount": 2800
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_cake",
+        "categoryId": "cat_cake",
+        "order": 1
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_cake",
+        "categoryId": "cat_cake",
+        "order": 2
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_cake",
+        "categoryId": "cat_cake",
+        "order": 3
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_cake",
+        "categoryId": "cat_cake",
+        "order": 4
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_cake",
+        "categoryId": "cat_cake",
+        "order": 5
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_baked",
+        "categoryId": "cat_baked",
+        "order": 6
+      },
+      "plc_m007": {
+        "itemId": "itm_m007",
+        "menuId": "mnu_baked",
+        "categoryId": "cat_baked",
+        "order": 7
+      }
+    }
+  }
+}
