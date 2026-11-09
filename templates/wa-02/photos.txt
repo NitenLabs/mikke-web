@@ -1,0 +1,13 @@
+# wa-02 李杏（営業用の見本）の使用写真
+fv-1 https://images.unsplash.com/photo-1791599790588-d71cfe8158e0?w=2400&q=80&fm=jpg
+fv-2 https://images.unsplash.com/photo-1773903369045-242a4dc87b3b?w=2400&q=80&fm=jpg
+fv-3 https://images.unsplash.com/photo-1785636883701-bd4f9e3173c4?w=2400&q=80&fm=jpg
+gallery-1 https://images.unsplash.com/photo-1773903238064-b82a5bb99ac9?w=2400&q=80&fm=jpg
+gallery-2 https://images.unsplash.com/photo-1764994880917-b46601e402ab?w=2400&q=80&fm=jpg
+gallery-3 https://images.unsplash.com/photo-1621851709622-e19c9a4f0cc5?w=2400&q=80&fm=jpg
+gallery-4 https://images.unsplash.com/photo-1785733690832-eabe6e6d5c84?w=2400&q=80&fm=jpg
+gallery-5 https://images.unsplash.com/photo-1780275832803-1edcd35c39d2?w=2400&q=80&fm=jpg
+gallery-6 https://images.unsplash.com/photo-1680027412524-dcabcd83dc59?w=2400&q=80&fm=jpg
+gallery-7 https://images.unsplash.com/photo-1785636820215-9b647f2b20c5?w=2400&q=80&fm=jpg
+resv https://images.unsplash.com/photo-1588182657969-777d766e31ab?w=2400&q=80&fm=jpg
+tex-paper https://images.unsplash.com/photo-1686806372892-6a18b402bcef?w=1600&q=80&fm=jpg

@@ -1,4 +1,317 @@
 {
   "schemaVersion": 1,
-  "assets": {}
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1800,
+        "bytes": 604230,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/EM91dEcZnBM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "炭火の網の上で焼ける肉"
+    },
+    "ast_fv02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 375703,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/ar84rPk3YWU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "網の上で焼ける角切りの牛肉"
+    },
+    "ast_fv03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 415875,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/4AY1asZPoYs"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "円いグリルで肉を焼くトング"
+    },
+    "ast_gal1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_gal1.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 436157,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/g68m5V_jkDE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "work",
+      "alt": "円いグリルで焼く肉と野菜"
+    },
+    "ast_gal2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_gal2.jpg",
+        "mime": "image/jpeg",
+        "width": 1600,
+        "height": 2400,
+        "bytes": 438488,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/ueJz76nvnk8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "霜降りの薄切り牛肉"
+    },
+    "ast_gal3": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_gal3.jpg",
+        "mime": "image/jpeg",
+        "width": 1600,
+        "height": 2400,
+        "bytes": 303656,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/SHFQI_DGgAU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "work",
+      "alt": "炎の上がる炭火の網"
+    },
+    "ast_gal4": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_gal4.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 632804,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/uvYjT7do1bk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "わさびを添えた焼いた肉の皿"
+    },
+    "ast_gal5": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_gal5.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 200221,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/IkQ-9tGKXWo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "小鉢三つと薄切りの肉"
+    },
+    "ast_gal6": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_gal6.jpg",
+        "mime": "image/jpeg",
+        "width": 1600,
+        "height": 2400,
+        "bytes": 476888,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/kAv3w4ftDEM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "work",
+      "alt": "赤く燃える炭の寄り"
+    },
+    "ast_gal7": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_gal7.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 538795,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/5ZUysqN1wsw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "interior",
+      "alt": "料理が並ぶ窓際の卓"
+    },
+    "ast_resv": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_resv.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1602,
+        "bytes": 931236,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/q_xW-2ICvfA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "work",
+      "alt": "炭火のグリルに上がる炎"
+    },
+    "ast_texp": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_texp.jpg",
+        "mime": "image/jpeg",
+        "width": 1600,
+        "height": 2400,
+        "bytes": 365911,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T17:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/FZBoZOmI9hs"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T17:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "other",
+      "alt": "紙の質感（飾り）"
+    }
+  }
 }
