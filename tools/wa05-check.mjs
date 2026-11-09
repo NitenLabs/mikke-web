@@ -6,7 +6,8 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
 const URL_ = pathToFileURL(path.resolve("dist/sumi/index.html")).href;
-const WIDTHS = [320, 360, 390, 430, 600, 767, 768, 1007, 1008, 1024, 1280, 1440, 1920];
+const WIDTHS = [320, 360, 390, 430, 600, 767, 768, 834, 1007, 1008, 1024, 1280, 1440, 1920];
+const TABLET = [768, 834, 1024]; // 本文の列が画面幅の 70% 以上、濃い帯とフッターが画面いっぱいか（1024 も finish の BP でタブレットの配置）
 const site = JSON.parse(fs.readFileSync("samples/sumi/site.json", "utf8"));
 const specOf = (d) => Object.fromEntries(Object.entries(site.sections).map(([k, v]) => [k, v.minHeight[d]]));
 // ご挨拶のスマホは本文の折り返しの実測で数 px 伸びるので、許容を 6px にする
@@ -71,6 +72,18 @@ try {
     if (r.placeholder) ng(`${w}: 仮の文 ${r.placeholder}`);
     if (errs.length) ng(`${w}: エラー ${errs.join(" / ")}`);
     if (SPEC[w]) for (const [s, h] of Object.entries(SPEC[w])) if (Math.abs((r.secs[s] ?? 0) - h) > (s === "sec_greeting" ? 6 : 1.5)) ng(`${w}: ${s} 高さ ${r.secs[s]}（設計 ${h}）`);
+    if (TABLET.includes(w)) {
+      const c = await page.evaluate(() => {
+        const box = (s) => document.querySelector(`[data-el="${s}"]`).getBoundingClientRect();
+        const span = (...ids) => { const b = ids.map(box); return Math.max(...b.map((x) => x.right)) - Math.min(...b.map((x) => x.left)); };
+        return { gr_p: box("gr_p").width, cu_p: box("cu_p").width, sn_cards: box("sn_cards").width, course: box("co_l00").width, seats: span("se_ph1", "se_p1"), info: box("in_l0").width, band: box("sn_band").width, foot: box("ft_card").width };
+      });
+      const { band, foot, ...cols } = c;
+      for (const [k, v] of Object.entries(cols)) if (v < w * 0.7) ng(`${w}: 本文の列 ${k} が ${Math.round(v)}px（画面幅の 70% 未満）`);
+      if (Math.abs(band - w) > 1) ng(`${w}: 濃い帯が端まで届いていない ${band}`);
+      if (Math.abs(foot - w) > 1) ng(`${w}: フッターが全幅でない ${foot}`);
+      console.log(`${w}: 列の幅 ${JSON.stringify(Object.fromEntries(Object.entries(cols).map(([k, v]) => [k, Math.round(v)])))}`);
+    }
     if (w === 1440 || w === 768 || w === 390) {
       const x0 = await page.evaluate(() => document.querySelector('[data-el="st_2"]').getBoundingClientRect().left);
       await page.waitForTimeout(1500);

@@ -9,16 +9,17 @@ const NOW = "2026-11-09T23:30:00+09:00";
 
 // ---- 写真の枠（SPEC 7章）
 const SLOTS = {
-  fv: ["signature", "黒い椀によそった白いご飯と、奥の朱塗りの汁椀"],
-  st1: ["signature", "箸で持ち上げた握り"], st2: ["signature", "黒い長皿に並べた握りと箸"], st3: ["signature", "炙りを入れた握り二貫"],
+  fv: ["signature", "朱の折敷にガラスの器、海老と紅葉の前菜"],
+  st1: ["signature", "黒い盆の刺身の盛り合わせと朱の椀"], st2: ["signature", "蓋付きの漆の椀が並ぶ様子"], st3: ["signature", "土ものの皿に盛った焼き魚"],
   st4: ["product", "土ものの小さな器の取り合わせ"], st5: ["product", "木の棚に重ねた皿と鉢"],
-  sn1: ["signature", "白身魚の西京焼きと甘酢の生姜"], sn2: ["signature", "若布と豆腐の椀（朱の木椀）"], sn3: ["signature", "揚げ出し豆腐 舞茸の餡（黒い鉢）"], sn4: ["signature", "九条葱の温うどん（土ものの鉢）"],
+  sn1: ["signature", "白身魚の西京焼きと甘酢の生姜"], sn2: ["signature", "若布と豆腐の止め椀（朱の木椀）"], sn3: ["signature", "揚げ出し豆腐 舞茸の餡（黒い鉢）"], sn4: ["signature", "白い器によそった季節の炊き込みご飯"],
   se1: ["interior", "白木のカウンターと奥の棚の器"], se2: ["interior", "障子から光の入る畳の個室"],
 };
 // 検索で確かめた枠は、紹介ページの URL を台帳に書く
 const PAGES = {
   sn1: "https://unsplash.com/photos/WosJwI5F23Q", sn2: "https://unsplash.com/photos/Mk3NKQboQkA", sn3: "https://unsplash.com/photos/d5bdtWUbFkM",
   se1: "https://unsplash.com/photos/wCrSi4mSsxM", se2: "https://unsplash.com/photos/ITx82kndvm0",
+  fv: "https://unsplash.com/photos/aGgqumYHbpc", st1: "https://unsplash.com/photos/XzdUHwAun9Q", st2: "https://unsplash.com/photos/_r6X-QA-KfQ", st3: "https://unsplash.com/photos/Ur0yp5xOi7o", sn4: "https://unsplash.com/photos/qM8PlclZGg4",
 };
 const astId = (k) => (k === "fv" ? "fv01" : `${k.slice(0, 2)}0${k[2]}`); // 台帳の ID は4文字以上
 // WebP の大きさを読む（VP8X・VP8・VP8L）
@@ -183,9 +184,9 @@ ROWS.forEach(([k, v], i) => {
   t(`in_v${i}`, "sec_info", v, [[16, 32, 0], [16, 32, 0]], B, INK, [{ x: 278, y: yP + 42, w: 420, h: 32 }, { x: 40, y: yS + 36, w: 310, h: 32 }], i === 7 ? { link: TEL } : {});
 });
 
-// ---- 8 フッター（白いカード x40〜1400、4列）
+// ---- 8 フッター（白い面。PC は全幅に広げて生成りの上に浮かないように、4列）
 sec("sec_footer", "フッター", 481, 760);
-rect("ft_card", "sec_footer", "theme:surface", 1, { x: 40, y: 40, w: 1360, h: 401 }, { x: 16, y: 20, w: 358, h: 720 });
+rect("ft_card", "sec_footer", "theme:surface", 1, { x: 0, y: 0, w: 1440, h: 481 }, { x: 16, y: 20, w: 358, h: 720 });
 t("ft_name", "sec_footer", NAME, [[24, 40, 2.4], [22, 36, 2.2]], H, INK, [{ x: 120, y: 120, w: 260, h: 40 }, { x: 40, y: 60, w: 310, h: 36 }]);
 t("ft_addr", "sec_footer", ["/location", "address"], [[14, 28, 0], [14, 28, 0]], B, INK, [{ x: 120, y: 176, w: 260, h: 28 }, { x: 40, y: 104, w: 310, h: 28 }]);
 FM.forEach(([l, id], i) => t(`ft_n${i}`, "sec_footer", l, [[14, 36, 1.4], [14, 36, 1.4]], B, INK, [{ x: 460, y: 120 + 36 * i, w: 260, h: 36 }, { x: 40, y: 164 + 36 * i, w: 310, h: 36 }], { link: go(id) }));
