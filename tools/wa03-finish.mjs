@@ -17,6 +17,7 @@ ${Array.from({ length: N }, (_, i) => `[data-el=sr_${i + 1}]{--i:${i}}`).join(""
 @keyframes wa03s{from{transform:translateX(calc(var(--i)*var(--step)))}to{transform:translateX(calc((var(--i) - ${N})*var(--step)))}}
 @media (min-width:768px){[data-el^=sr_]{--step:64rem;--dur:60s}[data-el^=hd_b],[data-el=ft_div]~x{display:none}[data-el^=hd_b]{display:none}}
 @media (max-width:767.98px){[data-el^=sr_]{--step:35.1rem;--dur:45s}[data-el=ft_div]{display:none}[data-el=ft_name],[data-el^=ft_n]{text-align:center}[data-el=fv_en]{text-align:left}}
+[data-cel=c_nm]{word-break:keep-all}
 .nav-row{justify-content:flex-end;gap:2rem!important;height:100%;align-items:center}
 .nav-row a{letter-spacing:.16rem;font-weight:400}
 .nav-sp summary{color:transparent!important;list-style:none;height:100%}
@@ -32,6 +33,9 @@ const cloneCss = `<style>[data-clone]{animation:wa03s var(--dur) linear infinite
 const pin = `<svg class="wa03-pin" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
+// 品名は語の切れ目だけで折り返す（1字だけ次の行に落ちないように）
+const BREAKS = { "ロイヤルミルクティー": "ロイヤル|ミルク|ティー", "アイスカフェオレ": "アイス|カフェオレ", "ベイクドチーズケーキ": "ベイクド|チーズ|ケーキ", "チーズトースト": "チーズ|トースト" };
+for (const [n, b] of Object.entries(BREAKS)) { const from = `data-cel="c_nm"`; const re = new RegExp(`(<p ${from}[^>]*><span class="pg"><span>)${n}(</span>)`); if (!re.test(h)) throw new Error("品名が見つかりません: " + n); h = h.replace(re, `$1${b.split("|").join("<wbr>")}$2`); }
 const map = (t) => `<iframe title="${shop.basic.name}の${t}" src="https://www.google.com/maps?q=${encodeURIComponent(`${addr} ${shop.basic.name}`)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 for (const [id, t] of [["ac_mapbox", "地図"], ["ft_mapbox", "地図（フッター）"]]) {
   const re = new RegExp(`(<div data-el="${id}"[^>]*>)`);

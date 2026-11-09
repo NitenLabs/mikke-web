@@ -49,11 +49,14 @@ for (const w of WIDTHS) {
       if (cr < out.min) out.min = Math.round(cr * 100) / 100;
       if (cr < 4.5) out.contrast.push(`${id}:${cr.toFixed(2)}`);
     }
+    out.orphan = [];
+    for (const e of document.querySelectorAll('[data-cel="c_nm"]')) { if (!vis(e)) continue; const tn = []; const W = document.createTreeWalker(e, NodeFilter.SHOW_TEXT); while (W.nextNode()) tn.push(W.currentNode); const tops = []; for (const n of tn) for (let i = 0; i < n.length; i++) { if (!n.data[i].trim()) continue; const g = document.createRange(); g.setStart(n, i); g.setEnd(n, i + 1); tops.push(Math.round(g.getBoundingClientRect().top)); } const lines = {}; for (const y of tops) lines[y] = (lines[y] || 0) + 1; const c = Object.keys(lines).map(Number).sort((a, b) => a - b).map((y) => lines[y]); if (c.length > 1 && c[c.length - 1] <= 2) out.orphan.push(e.textContent + ":" + c.join("/")); }
     return out;
   });
   if (r.sw > r.vw) ng(`${w}: 横はみ出し ${r.sw}>${r.vw}`);
   if (r.clip.length) ng(`${w}: 文字のはみ出し ${[...new Set(r.clip)].join(",")}`);
   if (r.over.length) ng(`${w}: 文字の重なり ${r.over.join(",")}`);
+  if (r.orphan.length) ng(`${w}: 品名の最後の行が 1〜2 字 ${r.orphan.join(",")}`);
   if (r.broken.length) ng(`${w}: 読めない写真 ${r.broken.join(",")}`);
   if (r.contrast.length) ng(`${w}: コントラスト ${r.contrast.join(",")}`);
   if (r.cards !== 8) ng(`${w}: カード ${r.cards} 枚`);

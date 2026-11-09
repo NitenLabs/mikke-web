@@ -33,8 +33,8 @@
         "key": "ast_fv02.jpg",
         "mime": "image/jpeg",
         "width": 2400,
-        "height": 4094,
-        "bytes": 1230776,
+        "height": 3600,
+        "bytes": 1201645,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T20:00:00+09:00",
@@ -42,7 +42,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/Q0FLPtBpaRk"
+        "pageUrl": "https://unsplash.com/photos/GamrY1QLb2o"
       },
       "rights": {
         "basis": "licensed",
@@ -51,7 +51,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "signature",
-      "alt": "古い木のカウンターとランプ"
+      "alt": "暗い木の椅子とテーブル"
     },
     "ast_st01": {
       "kind": "photo",
