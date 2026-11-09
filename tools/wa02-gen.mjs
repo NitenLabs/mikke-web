@@ -30,7 +30,7 @@ t("hd_genre", "sec_header", ["/basic/genre/detail"], [[14, 22.4, 0], [11, 15.4, 
 t("hd_name", "sec_header", "李杏", [[28, 32.7, 0], [24, 27.3, 0]], H, K, [{ x: 138.8, y: 17.6, w: 120, h: 32.7 }, { x: 88.8, y: 17.4, w: 100, h: 27.3 }], { link: { kind: "page", value: "pg_home" } });
 t("hd_read", "sec_header", "- RIAN -", [[10, 14, 2], [10, 14, 2]], H, K, [{ x: 152.7, y: 58.4, w: 92.1, h: 14 }, { x: 92.7, y: 52.6, w: 92.1, h: 14 }]);
 add("hd_nav", { type: "nav", z: 4, section: "sec_header", style: { color: K, font: H, spMenuBackground: "theme:text" }, layout: lay({ x: 700, y: 33.8, w: 710, h: 22.4, size: 16 }, { x: 330, y: 20, w: 42, h: 44 }) });
-const bar = (id, y, w) => add(id, { type: "shape", z: 3, kind: "rect", fill: K, section: "sec_header", layout: { pc: { x: 50, y: 0, w: 0.01, h: 1 }, sp: { x: r((336 / S) * 100), y, w: r((w / S) * 100), h: 2 } }, hidden: { pc: true } });
+const bar = (id, y, w) => add(id, { type: "shape", z: 3, kind: "rect", fill: K, section: "sec_header", layout: { pc: { x: 99.9, y: 80, w: 0.01, h: 1 }, sp: { x: r((336 / S) * 100), y, w: r((w / S) * 100), h: 2 } } });
 bar("hd_b1", 29, 30); bar("hd_b2", 41, 30); bar("hd_b3", 53, 20);
 
 // ---- 1 ファーストビュー
@@ -58,11 +58,15 @@ if (shop.story) {
   t("st_ja", "sec_story", "当店について", [[32, 44.8, 1.6], [24, 33.6, 1.2]], H, K, [{ x: 120, y: 120, w: 1200, h: 44.8 }, { x: 30, y: 100, w: 330, h: 33.6 }], { align: "center" });
   t("st_en", "sec_story", "About", [[16, 22.4, 1.6], [14, 19.6, 1.4]], A, K, [{ x: 620, y: 168.8, w: 200, h: 22.4 }, { x: 95, y: 137.6, w: 200, h: 19.6 }], { align: "center" });
   line("st_enl", "sec_story", K, { x: 696, y: 200.2, w: 48, h: 1 }, { x: 175, y: 166.2, w: 40, h: 1 });
-  add("st_sage", { type: "shape", z: 1, kind: "rect", fill: "theme:sage", section: "sec_story", layout: lay({ x: 216, y: 447, w: 1224, h: 1053.1 }, { x: 97.5, y: 348, w: 292.5, h: 1344.1 }) });
+  add("st_sage", { type: "shape", z: 1, kind: "rect", fill: "#2E2925", section: "sec_story", layout: lay({ x: 216, y: 447, w: 1224, h: 1053.1 }, { x: 0, y: 176, w: 390, h: 1516 }) });
   pics("st_ph1", "ast_ab01", 2, { x: 464, y: 260.1, w: 976, h: 500 }, { x: 0, y: 464.2, w: 390, h: 400 });
   pics("st_ph2", "ast_ab02", 2, { x: 0, y: 880.1, w: 576, h: 500 }, { x: 0, y: 1292.2, w: 330, h: 300 });
-  t("st_copy", "sec_story", a.q_catch.answer, [[28, 56, 2.8], [20, 40, 2]], H, K, [{ x: 120, y: 371.5, w: 224, h: 277.2 }, { x: 115, y: 226.2, w: 160, h: 198 }], { vp: 1, vs: 1, z: 4 });
-  t("st_body", "sec_story", a.q_body.answer, [[16, 32, 0], [14, 28, 0]], H, K, [{ x: 812, y: 970.1, w: 392, h: 192 }, { x: 30, y: 924.2, w: 330, h: 196 }], { z: 4 });
+  const L = "#F2EFE9"; // 炭の色の面の上の文字（縦書きは面の中に収める）
+  t("st_copy", "sec_story", a.q_catch.answer, [[28, 56, 2.8], [20, 40, 2]], H, L, [{ x: 120, y: 480, w: 224, h: 277.2 }, { x: 115, y: 226.2, w: 160, h: 198 }], { vp: 1, vs: 1, z: 4 });
+  t("st_body", "sec_story", "", [[16, 32, 0], [14, 28, 0]], H, L, [{ x: 812, y: 970.1, w: 392, h: 300 }, { x: 30, y: 924.2, w: 330, h: 280 }], { z: 4 });
+  els.st_body.paragraphs = a.q_body.answer.split("\n").map((text) => ({ runs: [{ text }] }));
+  els.st_body.style.paragraphGap = 12;
+  t("st_note", "sec_story", a.q_note.answer, [[13, 22.4, 0], [12, 20.7, 0]], B, L, [{ x: 812, y: 1286, w: 392, h: 44.8 }, { x: 30, y: 1216, w: 330, h: 41.4 }], { z: 4 });
 }
 
 // 見出し列（縦書き）：PC x120、スマホ x168.2
@@ -77,20 +81,25 @@ function listHead(prefix, section, content, pcXY, spXY, under = 120) {
   line(`${prefix}_hl`, section, K, { x: pcXY.x, y: pcXY.y + 47, w: under, h: 1 }, { x: spXY.x, y: spXY.y + 41, w: under, h: 1 });
 }
 
-// ---- 4 おすすめ・3 メニュー（SPEC 2）
+// ---- 4 おすすめ・3 メニュー（SPEC 2。右の面はユーザーの判断で外した）
 const cat = shop.catalog, ROW = { pc: 39.2, sp: 36.6 }, TAG = { pc: 29.2, sp: 26.4 };
-const listH = (menuId, d) => { const cs = Object.entries(cat.categories).filter(([id, c]) => c.menuId === menuId && Object.values(cat.placements).some((p) => p.categoryId === id)); return cs.reduce((n, [id], i) => n + (i ? 24 : 0) + TAG[d] + 8 + Object.values(cat.placements).filter((p) => p.categoryId === id).length * ROW[d], 0); };
+const count = (id) => Object.values(cat.placements).filter((p) => p.categoryId === id).length;
+const listH = (ids, d) => ids.reduce((n, id, i) => n + (i ? 24 : 0) + TAG[d] + 8 + count(id) * ROW[d], 0);
 const cell = (content, align, pc, sp, ps, ss, font = B, color = K) => ({ type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path: content[0], format: content[1] } }] }], style: { font, weight: 400, color, lineHeight: r(pc.h / ps), ...(align ? { align } : {}) }, layout: { pc: { ...pc, size: ps }, sp: { ...sp, size: ss } } });
-const yP = 1114.8, yS = 1302.1, foodP = listH("mnu_food", "pc"), drinkP = listH("mnu_main", "pc"), foodS = listH("mnu_food", "sp"), drinkS = listH("mnu_main", "sp");
-const yDrinkS = yS + 60 + foodS + 60, endP = Math.ceil(yP + 72 + Math.max(foodP, drinkP) + 120), endS = Math.ceil(yDrinkS + 60 + drinkS + 100);
+const A1 = ["cat_yaki"], A2 = ["cat_tori", "cat_buta", "cat_kaisen", "cat_yasai"], B1 = ["cat_ippin", "cat_chige", "cat_soup", "cat_salad", "cat_kimchi", "cat_gohan"], D1 = ["cat_drink"];
+const N2 = { pc: 39.2, sp: 33.6 }, N1 = { pc: 19.6, sp: 16.8 }, G1 = 16, G2 = 32;
+const yP = 1114.8, yS = 1302.1, H0 = { pc: 72, sp: 60 };
+const lay2 = (y0, d) => { const a1 = y0 + H0[d], nA = a1 + listH(A1, d) + G1, a2 = nA + N2[d] + G2; return { a1, nA, a2, end: a2 + listH(A2, d) }; };
+const layB = (y0, d) => { const b1 = y0 + H0[d], nB = b1 + listH(B1, d) + G1, dh = nB + N1[d] + 48, d1 = dh + H0[d]; return { b1, nB, dh, d1, end: d1 + listH(D1, d) }; };
+const LA = lay2(yP, "pc"), LB = layB(yP, "pc"), SA = lay2(yS, "sp"), yBS = SA.end + 60, SB = layB(yBS, "sp");
+const endP = Math.ceil(Math.max(LA.end, LB.end) + 120), endS = Math.ceil(SB.end + 100);
 sec("sec_menu", "お品書き", "theme:background", endP, endS, { anchor: "menu", nav: { label: "お品書き", order: 2 } });
-add("mn_panel", { type: "shape", z: 1, kind: "rect", fill: "theme:surface", section: "sec_menu", layout: lay({ x: 432, y: 305.9, w: 1008, h: endP - 305.9 }, { x: 117, y: 281.3, w: 273, h: endS - 281.3 }) });
 headCol("mn", "sec_menu", "お品書き", "Menu", 120, 100);
-// おすすめの札（内側 5 に白い線）
 add("mn_tag", { type: "shape", z: 2, kind: "rect", fill: K, section: "sec_menu", layout: lay({ x: 245.2, y: 190, w: 172, h: 48 }, { x: 20, y: 285.8, w: 123, h: 38.2 }) });
 add("mn_tagi", { type: "shape", z: 3, kind: "rect", fill: K, stroke: { width: 1, color: W }, section: "sec_menu", layout: lay({ x: 250.2, y: 195, w: 162, h: 38 }, { x: 25, y: 290.8, w: 113, h: 28.2 }) });
 t("mn_tagt", "sec_menu", "おすすめ", [[20, 28, 0], [13, 18.2, 0]], H, W, [{ x: 245.2, y: 200, w: 172, h: 28 }, { x: 20, y: 295.8, w: 123, h: 18.2 }], { align: "center", z: 4 });
-add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: { kind: "catalog", menuId: "mnu_food", labelIds: ["lbl_recommend"] }, display: { mode: "grid", columns: { pc: 3, sp: 2 }, gap: { pc: 40, sp: 20 }, photoless: "sameCard" },
+const REC = ["上タン", "特選ハラミ", "上カルビ（カイノミ）", "特選厚切りサーロイン", "ホルモンミックス", "石焼きビビンバ"].map((n) => Object.entries(cat.items).find(([, it]) => it.name === n)[0]);
+add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: { kind: "catalog", menuId: "mnu_food", pick: REC }, display: { mode: "grid", columns: { pc: 3, sp: 2 }, gap: { pc: 40, sp: 20 }, photoless: "sameCard" },
   card: { height: { pc: 373.4, sp: 289.4 }, elements: {
     c_ph: { type: "photo", z: 1, bind: { scope: "item", path: "/photos" }, layout: { pc: { x: 0, y: 0, w: 100, h: 220.8, ratio: "custom" }, sp: { x: 0, y: 0, w: 100, h: 110, ratio: "custom" } } },
     c_nm: cell(["/name", "plain"], null, { x: 0, y: 230.9, w: 100, h: 25.2 }, { x: 0, y: 120, w: 100, h: 22.4 }, 18, 16, H),
@@ -98,16 +107,24 @@ add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: { kind: "
     c_ds: cell(["/description", "plain"], null, { x: 0, y: 277, w: 100, h: 48 }, { x: 0, y: 163.4, w: 100, h: 83.2 }, 15, 13, B, G),
     c_pr: cell(["/prices", "price"], "right", { x: 0, y: 359, w: 100, h: 14.4 }, { x: 0, y: 256.6, w: 100, h: 16 }, 18, 16) } },
   layout: lay({ x: 245.2, y: 258, w: 1073.6, h: 786.8 }, { x: 20, y: 344, w: 350, h: 908.2 }) });
-const listCard = () => ({ height: { pc: ROW.pc, sp: ROW.sp }, elements: {
+els.mn_cards.card.elements.c_ds.style.lineHeight = 1.6; // 説明は 15/24・13/20.8（SPEC 3）
+const listCard = (fmt) => ({ height: { pc: ROW.pc, sp: ROW.sp }, elements: {
   c_name: cell(["/name", "plain"], null, { x: 0, y: 4.5, w: 68, h: 22.4 }, { x: 0, y: 4.5, w: 64, h: 19.6 }, 16, 14),
-  c_price: cell(["/prices", "priceAllTax"], "right", { x: 68, y: 4.5, w: 32, h: 22.4 }, { x: 64, y: 4.5, w: 36, h: 19.6 }, 16, 14),
+  c_price: cell(["/prices", fmt], "right", { x: 68, y: 4.5, w: 32, h: 22.4 }, { x: 64, y: 4.5, w: 36, h: 19.6 }, 16, 14),
   c_line: { type: "shape", z: 1, kind: "line", fill: "theme:lineSoft", layout: { pc: { x: 0, y: 31.4, w: 100, h: 1, strokeWidth: 1 }, sp: { x: 0, y: 28.6, w: 100, h: 1, strokeWidth: 1 } } } } });
 const tagHead = () => ({ type: "text", z: 1, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path: "/category/name", format: "plain" } }] }], style: { font: H, weight: 400, color: W, lineHeight: 1.6222 }, layout: { pc: { x: 0, y: 0, w: 100, h: 29.2, size: 18 }, sp: { x: 0, y: 0, w: 100, h: 26.4, size: 16 } } });
-const list = (id, menuId, pc, sp, h) => add(id, { type: "repeater", z: 3, section: "sec_menu", source: { kind: "catalog", menuId, groupByCategory: true }, display: { mode: "list", columns: { pc: 1, sp: 1 }, photoless: "sameCard" }, card: listCard(), groupHeading: tagHead(), layout: lay({ ...pc, w: 512.4, h: h.pc }, { ...sp, w: 330, h: h.sp }) });
-listHead("mn_lf", "sec_menu", ["/catalog/menus/mnu_food/name"], { x: 245.2, y: yP }, { x: 30, y: yS });
-listHead("mn_ld", "sec_menu", ["/catalog/menus/mnu_main/name"], { x: 807.6, y: yP }, { x: 30, y: yDrinkS });
-list("mn_food", "mnu_food", { x: 245.2, y: yP + 72 }, { x: 30, y: yS + 60 }, { pc: foodP, sp: foodS });
-list("mn_drnk", "mnu_main", { x: 807.6, y: yP + 72 }, { x: 30, y: yDrinkS + 60 }, { pc: drinkP, sp: drinkS });
+const list = (id, menuId, ids, fmt, xP, yPc, ySp) => add(id, { type: "repeater", z: 3, section: "sec_menu", source: { kind: "catalog", menuId, groupByCategory: true, categoryIds: ids }, display: { mode: "list", columns: { pc: 1, sp: 1 }, photoless: "sameCard" }, card: listCard(fmt), groupHeading: tagHead(), layout: lay({ x: xP, y: yPc, w: 512.4, h: listH(ids, "pc") }, { x: 30, y: ySp, w: 330, h: listH(ids, "sp") }) });
+const note = (id, lines, xP, yPc, ySp, h) => { t(id, "sec_menu", lines[0], [[14, 19.6, 0], [12, 16.8, 0]], B, G, [{ x: xP, y: yPc, w: 512.4, h: h.pc }, { x: 30, y: ySp, w: 330, h: h.sp }]); els[id].paragraphs = lines.map((text) => ({ runs: [{ text }] })); };
+const TAX = "価格は税抜（別途消費税10%）";
+listHead("mn_lf", "sec_menu", "焼きもの", { x: 245.2, y: yP }, { x: 30, y: yS });
+list("mn_yaki", "mnu_food", A1, "price", 245.2, LA.a1, SA.a1);
+note("mn_na", ["当店では国産黒毛和牛を使用しております", TAX], 245.2, LA.nA, SA.nA, N2);
+list("mn_etc", "mnu_food", A2, "price", 245.2, LA.a2, SA.a2);
+listHead("mn_lb", "sec_menu", "一品・ご飯もの", { x: 807.6, y: yP }, { x: 30, y: yBS });
+list("mn_side", "mnu_food", B1, "price", 807.6, LB.b1, SB.b1);
+note("mn_nb", [TAX], 807.6, LB.nB, SB.nB, N1);
+listHead("mn_ld", "sec_menu", ["/catalog/menus/mnu_main/name"], { x: 807.6, y: LB.dh }, { x: 30, y: SB.dh });
+list("mn_drnk", "mnu_main", D1, "priceAllTax", 807.6, LB.d1, SB.d1);
 
 // ---- 9 お店の情報（① に値がある行だけ）
 const f = shop.facilities || {}, loc = shop.location || {};

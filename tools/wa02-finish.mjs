@@ -8,13 +8,12 @@ const BP = 1008; // この幅未満はスマホの配置（タブレットで文
 const loc = shop.location, addr = `${loc.prefecture}${loc.city}${loc.town}${loc.street}`;
 const icon = (d) => `<svg viewBox="0 0 24 24" fill="#333" aria-hidden="true"><path d="${d}"/></svg>`;
 const L = "M15.41 7.41 14 6l-6 6 6 6 1.41-1.41L10.83 12z", R = "M10 6 8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z", PA = "M6 19h4V5H6v14zm8-14v14h4V5h-4z", PL = "M8 5v14l11-7z";
-for (const n of ["ast_texp.jpg", "ast_texg.jpg"]) fs.copyFileSync(`samples/rian/media/${n}`, `${OUT}/assets/${n}`);
+fs.copyFileSync("samples/rian/media/ast_texp.jpg", `${OUT}/assets/ast_texp.jpg`);
 const css = `<style>
 html{scroll-padding-top:9rem}
 .site-header{position:fixed!important;left:0;right:0;top:0}
 .site-header,[data-sec=sec_info],[data-sec=sec_access]{background-image:linear-gradient(rgba(245,246,239,.8),rgba(245,246,239,.8)),url(assets/ast_texp.jpg);background-size:auto,120rem}
 [data-el=rv_pill]{background:transparent!important}
-[data-el=st_sage]{background-image:linear-gradient(rgba(217,222,215,.82),rgba(217,222,215,.82)),url(assets/ast_texg.jpg);background-size:auto,120rem}
 .rep-head{background:#000;width:auto!important;padding:0 1rem;white-space:nowrap}
 [data-el=ac_mapbox] iframe{width:100%;height:100%;border:0;display:block}
 [data-el=fv_2],[data-el=fv_3]{opacity:0}
@@ -25,6 +24,7 @@ html{scroll-padding-top:9rem}
 [data-el^=gal_]{transform:translateX(calc(var(--g,0)*var(--step)));transition:transform .8s ease}
 [data-el=gal_1]{--g:-3}[data-el=gal_2]{--g:-2}[data-el=gal_3]{--g:-1}[data-el=gal_5]{--g:1}[data-el=gal_6]{--g:2}[data-el=gal_7]{--g:3}
 [data-sec=sec_gallery]{position:relative;overflow:hidden}
+@media (min-width:768px){[data-el^=hd_b]{display:none}}
 .wa02-btn{position:absolute;z-index:5;width:4rem;height:4rem;border:0;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
 .wa02-btn svg{width:2.4rem;height:2.4rem}
 .nav-row{justify-content:flex-end;gap:0!important;height:100%;align-items:center}
@@ -46,12 +46,12 @@ function stop(){clearInterval(t);t=null;B.innerHTML=${JSON.stringify(icon(PL))};
 document.querySelector('[data-g=prev]').onclick=function(){S(-1)};document.querySelector('[data-g=next]').onclick=function(){S(1)};B.onclick=function(){t?stop():run()};if(R)stop();else run();})();</script>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
-const g = h.indexOf('data-sec="sec_gallery"'), end = h.indexOf("</section>", g);
+const g = h.search(/<section[^>]*data-sec="sec_gallery"/), end = h.indexOf("</section>", g); // CSS の中の同じ文字列に当たらないよう <section> で探す
 if (g < 0 || end < 0) throw new Error("ギャラリーのセクションが見つかりません");
 const box = h.lastIndexOf("</div>", end); // ボタンは cbox の中に置き、写真と一緒に中央へ
 h = h.slice(0, box) + btns + h.slice(box);
-const map = `<iframe title="${shop.basic.name}の地図" src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&z=16&hl=ja&output=embed" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
-h = h.replace(/(data-el="ac_mapbox"[^>]*>)/, `$1${map}`);
+const map = `<iframe title="${shop.basic.name}の地図" src="https://www.google.com/maps?q=${encodeURIComponent(`${addr} ${shop.basic.name}`)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+h = h.replace(/(<div data-el="ac_mapbox"[^>]*>)/, `$1${map}`);
 h = h.replace("</head>", css + "</head>").replace("</body>", js + "</body>");
 const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
 fs.writeFileSync(f, bp(h));

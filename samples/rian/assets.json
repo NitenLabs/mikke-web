@@ -389,7 +389,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "タン塩（仮の写真）"
+      "alt": "上タン（仮の写真）"
     },
     "ast_cd02": {
       "kind": "photo",
@@ -415,7 +415,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "上カルビ（仮の写真）"
+      "alt": "上カルビ（カイノミ）（仮の写真）"
     },
     "ast_cd03": {
       "kind": "photo",
@@ -441,7 +441,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "ハラミ（仮の写真）"
+      "alt": "特選ハラミ（仮の写真）"
     },
     "ast_cd04": {
       "kind": "photo",
@@ -467,7 +467,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "ロース（仮の写真）"
+      "alt": "特選厚切りサーロイン（仮の写真）"
     },
     "ast_cd05": {
       "kind": "photo",
@@ -493,7 +493,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "ホルモン盛り合わせ（仮の写真）"
+      "alt": "ホルモンミックス（仮の写真）"
     },
     "ast_cd06": {
       "kind": "photo",
@@ -519,7 +519,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "ビビンバ（仮の写真）"
+      "alt": "石焼きビビンバ（仮の写真）"
     },
     "ast_it01": {
       "kind": "photo",
@@ -571,7 +571,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "豚トロ（仮の写真）"
+      "alt": "豚バラ（仮の写真）"
     },
     "ast_it03": {
       "kind": "photo",
@@ -597,7 +597,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "キムチ盛り合わせ（仮の写真）"
+      "alt": "キムチ盛合せ（仮の写真）"
     },
     "ast_it04": {
       "kind": "photo",
@@ -649,7 +649,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "チゲ（仮の写真）"
+      "alt": "豆腐チゲ（仮の写真）"
     },
     "ast_it06": {
       "kind": "photo",
@@ -701,7 +701,7 @@
         "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
       },
       "slot": "product",
-      "alt": "冷麺（仮の写真）"
+      "alt": "冷麺（そば粉不使用）（仮の写真）"
     },
     "ast_it08": {
       "kind": "photo",

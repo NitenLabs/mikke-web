@@ -91,8 +91,8 @@
         "color": "theme:background"
       },
       "minHeight": {
-        "pc": 2290,
-        "sp": 2793
+        "pc": 3333,
+        "sp": 5265
       },
       "anchor": "menu",
       "nav": {
@@ -355,8 +355,8 @@
       "section": "sec_header",
       "layout": {
         "pc": {
-          "x": 50,
-          "y": 0,
+          "x": 99.9,
+          "y": 80,
           "w": 0.01,
           "h": 1
         },
@@ -366,9 +366,6 @@
           "w": 7.6923,
           "h": 2
         }
-      },
-      "hidden": {
-        "pc": true
       }
     },
     "hd_b2": {
@@ -379,8 +376,8 @@
       "section": "sec_header",
       "layout": {
         "pc": {
-          "x": 50,
-          "y": 0,
+          "x": 99.9,
+          "y": 80,
           "w": 0.01,
           "h": 1
         },
@@ -390,9 +387,6 @@
           "w": 7.6923,
           "h": 2
         }
-      },
-      "hidden": {
-        "pc": true
       }
     },
     "hd_b3": {
@@ -403,8 +397,8 @@
       "section": "sec_header",
       "layout": {
         "pc": {
-          "x": 50,
-          "y": 0,
+          "x": 99.9,
+          "y": 80,
           "w": 0.01,
           "h": 1
         },
@@ -414,9 +408,6 @@
           "w": 5.1282,
           "h": 2
         }
-      },
-      "hidden": {
-        "pc": true
       }
     },
     "fv_1": {
@@ -926,7 +917,7 @@
       "type": "shape",
       "z": 1,
       "kind": "rect",
-      "fill": "theme:sage",
+      "fill": "#2E2925",
       "section": "sec_story",
       "layout": {
         "pc": {
@@ -936,10 +927,10 @@
           "h": 1053.1
         },
         "sp": {
-          "x": 25,
-          "y": 348,
-          "w": 75,
-          "h": 1344.1
+          "x": 0,
+          "y": 176,
+          "w": 100,
+          "h": 1516
         }
       }
     },
@@ -1014,14 +1005,14 @@
       "style": {
         "font": "font:heading",
         "weight": 400,
-        "color": "#000000",
+        "color": "#F2EFE9",
         "lineHeight": 2,
         "letterSpacing": 0.1
       },
       "layout": {
         "pc": {
           "x": 8.3333,
-          "y": 371.5,
+          "y": 480,
           "w": 15.5556,
           "h": 277.2,
           "size": 28,
@@ -1046,7 +1037,21 @@
         {
           "runs": [
             {
-              "text": "炭火焼肉 李杏は、兵庫県芦屋市東山町の焼肉店です。ここには、取材のあとでお店の言葉が入ります。今は営業用の見本として、仮の文を置いています。"
+              "text": "芦屋・東山町に灯る、炭火焼肉 李杏。"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "国産黒毛和牛を、一枚ずつ炭火で焼き上げます。カイノミや三角バラ、イチボといった希少な部位から、上タン、特選ハラミ、新鮮なホルモンまで。塩かタレか、お好みの味でどうぞ。"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "炭の香りと、肉の焼ける音。落ち着いた店内で、大切な人との夜をゆっくりとお過ごしください。"
             }
           ]
         }
@@ -1054,45 +1059,63 @@
       "style": {
         "font": "font:heading",
         "weight": 400,
-        "color": "#000000",
+        "color": "#F2EFE9",
         "lineHeight": 2,
-        "letterSpacing": 0
+        "letterSpacing": 0,
+        "paragraphGap": 12
       },
       "layout": {
         "pc": {
           "x": 56.3889,
           "y": 970.1,
           "w": 27.2222,
-          "h": 192,
+          "h": 300,
           "size": 16
         },
         "sp": {
           "x": 7.6923,
           "y": 924.2,
           "w": 84.6154,
-          "h": 196,
+          "h": 280,
           "size": 14
         }
       }
     },
-    "mn_panel": {
-      "type": "shape",
-      "z": 1,
-      "kind": "rect",
-      "fill": "theme:surface",
-      "section": "sec_menu",
+    "st_note": {
+      "type": "text",
+      "z": 4,
+      "role": "body",
+      "section": "sec_story",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "JR芦屋駅から徒歩約8分（約600m）／全42席・全席禁煙／17:00〜23:00"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F2EFE9",
+        "lineHeight": 1.7231,
+        "letterSpacing": 0
+      },
       "layout": {
         "pc": {
-          "x": 30,
-          "y": 305.9,
-          "w": 70,
-          "h": 1984.1
+          "x": 56.3889,
+          "y": 1286,
+          "w": 27.2222,
+          "h": 44.8,
+          "size": 13
         },
         "sp": {
-          "x": 30,
-          "y": 281.3,
-          "w": 70,
-          "h": 2511.7
+          "x": 7.6923,
+          "y": 1216,
+          "w": 84.6154,
+          "h": 41.4,
+          "size": 12
         }
       }
     },
@@ -1291,8 +1314,13 @@
       "source": {
         "kind": "catalog",
         "menuId": "mnu_food",
-        "labelIds": [
-          "lbl_recommend"
+        "pick": [
+          "itm_m014",
+          "itm_m017",
+          "itm_m004",
+          "itm_m003",
+          "itm_m024",
+          "itm_m065"
         ]
       },
       "display": {
@@ -1420,7 +1448,7 @@
               "font": "font:body",
               "weight": 400,
               "color": "#333333",
-              "lineHeight": 3.2
+              "lineHeight": 1.6
             },
             "layout": {
               "pc": {
@@ -1506,11 +1534,7 @@
         {
           "runs": [
             {
-              "bind": {
-                "scope": "shop",
-                "path": "/catalog/menus/mnu_food/name",
-                "format": "plain"
-              }
+              "text": "焼きもの"
             }
           ]
         }
@@ -1562,79 +1586,17 @@
         }
       }
     },
-    "mn_ld_h": {
-      "type": "text",
-      "z": 3,
-      "role": "body",
-      "section": "sec_menu",
-      "paragraphs": [
-        {
-          "runs": [
-            {
-              "bind": {
-                "scope": "shop",
-                "path": "/catalog/menus/mnu_main/name",
-                "format": "plain"
-              }
-            }
-          ]
-        }
-      ],
-      "style": {
-        "font": "font:heading",
-        "weight": 400,
-        "color": "#000000",
-        "lineHeight": 1.4,
-        "letterSpacing": 0.05
-      },
-      "layout": {
-        "pc": {
-          "x": 56.0833,
-          "y": 1114.8,
-          "w": 35.5833,
-          "h": 39.2,
-          "size": 28
-        },
-        "sp": {
-          "x": 7.6923,
-          "y": 2341.8999999999996,
-          "w": 84.6154,
-          "h": 33.6,
-          "size": 24
-        }
-      }
-    },
-    "mn_ld_hl": {
-      "type": "shape",
-      "z": 2,
-      "kind": "line",
-      "fill": "#000000",
-      "section": "sec_menu",
-      "layout": {
-        "pc": {
-          "x": 56.0833,
-          "y": 1161.8,
-          "w": 8.3333,
-          "h": 1,
-          "strokeWidth": 1
-        },
-        "sp": {
-          "x": 7.6923,
-          "y": 2382.8999999999996,
-          "w": 30.7692,
-          "h": 1,
-          "strokeWidth": 1
-        }
-      }
-    },
-    "mn_food": {
+    "mn_yaki": {
       "type": "repeater",
       "z": 3,
       "section": "sec_menu",
       "source": {
         "kind": "catalog",
         "menuId": "mnu_food",
-        "groupByCategory": true
+        "groupByCategory": true,
+        "categoryIds": [
+          "cat_yaki"
+        ]
       },
       "display": {
         "mode": "list",
@@ -1701,7 +1663,7 @@
                     "bind": {
                       "scope": "item",
                       "path": "/prices",
-                      "format": "priceAllTax"
+                      "format": "price"
                     }
                   }
                 ]
@@ -1800,13 +1762,602 @@
           "x": 17.0278,
           "y": 1186.8,
           "w": 35.5833,
-          "h": 982.8000000000001
+          "h": 1095.6000000000001
         },
         "sp": {
           "x": 7.6923,
           "y": 1362.1,
           "w": 84.6154,
-          "h": 919.8
+          "h": 1022.6
+        }
+      }
+    },
+    "mn_na": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "当店では国産黒毛和牛を使用しております"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "価格は税抜（別途消費税10%）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#333333",
+        "lineHeight": 1.4,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 17.0278,
+          "y": 2298.4,
+          "w": 35.5833,
+          "h": 39.2,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 2400.7,
+          "w": 84.6154,
+          "h": 33.6,
+          "size": 12
+        }
+      }
+    },
+    "mn_etc": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_menu",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "groupByCategory": true,
+        "categoryIds": [
+          "cat_tori",
+          "cat_buta",
+          "cat_kaisen",
+          "cat_yasai"
+        ]
+      },
+      "display": {
+        "mode": "list",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 39.2,
+          "sp": 36.6
+        },
+        "elements": {
+          "c_name": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "#000000",
+              "lineHeight": 1.4
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 4.5,
+                "w": 68,
+                "h": 22.4,
+                "size": 16
+              },
+              "sp": {
+                "x": 0,
+                "y": 4.5,
+                "w": 64,
+                "h": 19.6,
+                "size": 14
+              }
+            }
+          },
+          "c_price": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "price"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "#000000",
+              "lineHeight": 1.4,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 68,
+                "y": 4.5,
+                "w": 32,
+                "h": 22.4,
+                "size": 16
+              },
+              "sp": {
+                "x": 64,
+                "y": 4.5,
+                "w": 36,
+                "h": 19.6,
+                "size": 14
+              }
+            }
+          },
+          "c_line": {
+            "type": "shape",
+            "z": 1,
+            "kind": "line",
+            "fill": "theme:lineSoft",
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 31.4,
+                "w": 100,
+                "h": 1,
+                "strokeWidth": 1
+              },
+              "sp": {
+                "x": 0,
+                "y": 28.6,
+                "w": 100,
+                "h": 1,
+                "strokeWidth": 1
+              }
+            }
+          }
+        }
+      },
+      "groupHeading": {
+        "type": "text",
+        "z": 1,
+        "role": "body",
+        "paragraphs": [
+          {
+            "runs": [
+              {
+                "bind": {
+                  "scope": "item",
+                  "path": "/category/name",
+                  "format": "plain"
+                }
+              }
+            ]
+          }
+        ],
+        "style": {
+          "font": "font:heading",
+          "weight": 400,
+          "color": "#FFFFFF",
+          "lineHeight": 1.6222
+        },
+        "layout": {
+          "pc": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 29.2,
+            "size": 18
+          },
+          "sp": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 26.4,
+            "size": 16
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 17.0278,
+          "y": 2369.6,
+          "w": 35.5833,
+          "h": 730.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 2466.2999999999997,
+          "w": 84.6154,
+          "h": 685.4
+        }
+      }
+    },
+    "mn_lb_h": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "一品・ご飯もの"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#000000",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 56.0833,
+          "y": 1114.8,
+          "w": 35.5833,
+          "h": 39.2,
+          "size": 28
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 3211.7,
+          "w": 84.6154,
+          "h": 33.6,
+          "size": 24
+        }
+      }
+    },
+    "mn_lb_hl": {
+      "type": "shape",
+      "z": 2,
+      "kind": "line",
+      "fill": "#000000",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 56.0833,
+          "y": 1161.8,
+          "w": 8.3333,
+          "h": 1,
+          "strokeWidth": 1
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 3252.7,
+          "w": 30.7692,
+          "h": 1,
+          "strokeWidth": 1
+        }
+      }
+    },
+    "mn_side": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_menu",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "groupByCategory": true,
+        "categoryIds": [
+          "cat_ippin",
+          "cat_chige",
+          "cat_soup",
+          "cat_salad",
+          "cat_kimchi",
+          "cat_gohan"
+        ]
+      },
+      "display": {
+        "mode": "list",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 39.2,
+          "sp": 36.6
+        },
+        "elements": {
+          "c_name": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "#000000",
+              "lineHeight": 1.4
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 4.5,
+                "w": 68,
+                "h": 22.4,
+                "size": 16
+              },
+              "sp": {
+                "x": 0,
+                "y": 4.5,
+                "w": 64,
+                "h": 19.6,
+                "size": 14
+              }
+            }
+          },
+          "c_price": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "price"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "#000000",
+              "lineHeight": 1.4,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 68,
+                "y": 4.5,
+                "w": 32,
+                "h": 22.4,
+                "size": 16
+              },
+              "sp": {
+                "x": 64,
+                "y": 4.5,
+                "w": 36,
+                "h": 19.6,
+                "size": 14
+              }
+            }
+          },
+          "c_line": {
+            "type": "shape",
+            "z": 1,
+            "kind": "line",
+            "fill": "theme:lineSoft",
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 31.4,
+                "w": 100,
+                "h": 1,
+                "strokeWidth": 1
+              },
+              "sp": {
+                "x": 0,
+                "y": 28.6,
+                "w": 100,
+                "h": 1,
+                "strokeWidth": 1
+              }
+            }
+          }
+        }
+      },
+      "groupHeading": {
+        "type": "text",
+        "z": 1,
+        "role": "body",
+        "paragraphs": [
+          {
+            "runs": [
+              {
+                "bind": {
+                  "scope": "item",
+                  "path": "/category/name",
+                  "format": "plain"
+                }
+              }
+            ]
+          }
+        ],
+        "style": {
+          "font": "font:heading",
+          "weight": 400,
+          "color": "#FFFFFF",
+          "lineHeight": 1.6222
+        },
+        "layout": {
+          "pc": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 29.2,
+            "size": 18
+          },
+          "sp": {
+            "x": 0,
+            "y": 0,
+            "w": 100,
+            "h": 26.4,
+            "size": 16
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 56.0833,
+          "y": 1186.8,
+          "w": 35.5833,
+          "h": 1715.2000000000003
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 3271.7,
+          "w": 84.6154,
+          "h": 1607.4
+        }
+      }
+    },
+    "mn_nb": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "価格は税抜（別途消費税10%）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#333333",
+        "lineHeight": 1.4,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 56.0833,
+          "y": 2918,
+          "w": 35.5833,
+          "h": 19.6,
+          "size": 14
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 4895.1,
+          "w": 84.6154,
+          "h": 16.8,
+          "size": 12
+        }
+      }
+    },
+    "mn_ld_h": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_main/name",
+                "format": "plain"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#000000",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 56.0833,
+          "y": 2985.6,
+          "w": 35.5833,
+          "h": 39.2,
+          "size": 28
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 4959.900000000001,
+          "w": 84.6154,
+          "h": 33.6,
+          "size": 24
+        }
+      }
+    },
+    "mn_ld_hl": {
+      "type": "shape",
+      "z": 2,
+      "kind": "line",
+      "fill": "#000000",
+      "section": "sec_menu",
+      "layout": {
+        "pc": {
+          "x": 56.0833,
+          "y": 3032.6,
+          "w": 8.3333,
+          "h": 1,
+          "strokeWidth": 1
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 5000.900000000001,
+          "w": 30.7692,
+          "h": 1,
+          "strokeWidth": 1
         }
       }
     },
@@ -1817,7 +2368,10 @@
       "source": {
         "kind": "catalog",
         "menuId": "mnu_main",
-        "groupByCategory": true
+        "groupByCategory": true,
+        "categoryIds": [
+          "cat_drink"
+        ]
       },
       "display": {
         "mode": "list",
@@ -1981,15 +2535,15 @@
       "layout": {
         "pc": {
           "x": 56.0833,
-          "y": 1186.8,
+          "y": 3057.6,
           "w": 35.5833,
-          "h": 311.6
+          "h": 154.8
         },
         "sp": {
           "x": 7.6923,
-          "y": 2401.8999999999996,
+          "y": 5019.900000000001,
           "w": 84.6154,
-          "h": 290.59999999999997
+          "h": 144.20000000000002
         }
       }
     },

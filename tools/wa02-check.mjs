@@ -31,6 +31,7 @@ for (const w of WIDTHS) {
     for (const s of document.querySelectorAll("[data-sec]")) out.secs[s.dataset.sec] = Math.round(s.getBoundingClientRect().height * 10) / 10;
     const body = document.querySelector("[data-el=in_vt0]"); out.bodyPx = body ? parseFloat(getComputedStyle(body).fontSize) : 0;
     const b2 = document.querySelector("[data-g=toggle]")?.getBoundingClientRect(), g4 = document.querySelector("[data-el=gal_4]")?.getBoundingClientRect(); out.btnOff = b2 && g4 ? Math.abs((b2.left + b2.right) / 2 - (g4.left + g4.right) / 2) : 99;
+    out.fvTop = Math.round(document.querySelector("[data-sec=sec_firstv]").getBoundingClientRect().top + scrollY);
     for (const i of document.images) if (!i.complete || !i.naturalWidth) out.broken.push(i.getAttribute("src"));
     return out;
   });
@@ -39,6 +40,7 @@ for (const w of WIDTHS) {
   if (r.over.length) ng(`${w}: 文字の重なり ${r.over.join(",")}`);
   if (w >= 768 && w <= 1007 && r.bodyPx < 14) ng(`${w}: 本文 ${r.bodyPx}px（14 未満）`);
   if (r.btnOff > 2) ng(`${w}: ギャラリーのボタンが中央からずれ ${r.btnOff}`);
+  if (r.fvTop !== 0) ng(`${w}: 最初の写真の上に ${r.fvTop}px の空き`);
   if (r.broken.length) ng(`${w}: 読めない写真 ${r.broken.join(",")}`);
   if (errs.length) ng(`${w}: エラー ${errs.join(" / ")}`);
   if (SPEC[w]) for (const [s, h] of Object.entries(SPEC[w])) if (Math.abs((r.secs[s] ?? 0) - h) > 1.5) ng(`${w}: ${s} 高さ ${r.secs[s]}（設計 ${h}）`);
