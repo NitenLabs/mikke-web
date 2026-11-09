@@ -18,6 +18,8 @@ export const FONT_REGISTRY = {
   "playfair-display": { family: "Playfair Display", generic: "serif", param: "Playfair+Display:ital,wght@0,400;0,500;1,400" },
   "space-mono": { family: "Space Mono", generic: "monospace", param: "Space+Mono:wght@400;700" },
   "manrope": { family: "Manrope", generic: "sans-serif", param: "Manrope:wght@400;500;600;700;800" },
+  "fraunces": { family: "Fraunces", generic: "serif", param: "Fraunces:opsz,wght@9..144,400;9..144,600" },
+  "caveat": { family: "Caveat", generic: "cursive", param: "Caveat:wght@500" },
 };
 
 // フォントID → CSS の font-family スタック
