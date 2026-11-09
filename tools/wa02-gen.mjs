@@ -62,11 +62,11 @@ if (shop.story) {
   pics("st_ph1", "ast_ab01", 2, { x: 464, y: 260.1, w: 976, h: 500 }, { x: 0, y: 464.2, w: 390, h: 400 });
   pics("st_ph2", "ast_ab02", 2, { x: 0, y: 880.1, w: 576, h: 500 }, { x: 0, y: 1292.2, w: 330, h: 300 });
   const L = "#F2EFE9"; // 炭の色の面の上の文字（縦書きは面の中に収める）
-  t("st_copy", "sec_story", a.q_catch.answer, [[28, 56, 2.8], [20, 40, 2]], H, L, [{ x: 120, y: 480, w: 224, h: 277.2 }, { x: 115, y: 226.2, w: 160, h: 198 }], { vp: 1, vs: 1, z: 4 });
+  t("st_copy", "sec_story", "", [[28, 56, 2.8], [20, 40, 2]], H, L, [{ x: 232, y: 480, w: 224, h: 277.2 }, { x: 115, y: 226.2, w: 160, h: 198 }], { vp: 1, vs: 1, z: 4 });
+  els.st_copy.paragraphs = a.q_catch.answer.split("\n").map((text) => ({ runs: [{ text }] }));
   t("st_body", "sec_story", "", [[16, 32, 0], [14, 28, 0]], H, L, [{ x: 812, y: 970.1, w: 392, h: 300 }, { x: 30, y: 924.2, w: 330, h: 280 }], { z: 4 });
   els.st_body.paragraphs = a.q_body.answer.split("\n").map((text) => ({ runs: [{ text }] }));
   els.st_body.style.paragraphGap = 12;
-  t("st_note", "sec_story", a.q_note.answer, [[13, 22.4, 0], [12, 20.7, 0]], B, L, [{ x: 812, y: 1286, w: 392, h: 44.8 }, { x: 30, y: 1216, w: 330, h: 41.4 }], { z: 4 });
 }
 
 // 見出し列（縦書き）：PC x120、スマホ x168.2
@@ -86,11 +86,12 @@ const cat = shop.catalog, ROW = { pc: 39.2, sp: 36.6 }, TAG = { pc: 29.2, sp: 26
 const count = (id) => Object.values(cat.placements).filter((p) => p.categoryId === id).length;
 const listH = (ids, d) => ids.reduce((n, id, i) => n + (i ? 24 : 0) + TAG[d] + 8 + count(id) * ROW[d], 0);
 const cell = (content, align, pc, sp, ps, ss, font = B, color = K) => ({ type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path: content[0], format: content[1] } }] }], style: { font, weight: 400, color, lineHeight: r(pc.h / ps), ...(align ? { align } : {}) }, layout: { pc: { ...pc, size: ps }, sp: { ...sp, size: ss } } });
-const A1 = ["cat_yaki"], A2 = ["cat_tori", "cat_buta", "cat_kaisen", "cat_yasai"], B1 = ["cat_ippin", "cat_chige", "cat_soup", "cat_salad", "cat_kimchi", "cat_gohan"], D1 = ["cat_drink"];
+const A1 = ["cat_yaki"], A2 = ["cat_tori", "cat_buta", "cat_kaisen", "cat_yasai"], B1 = ["cat_ippin", "cat_chige", "cat_soup", "cat_salad", "cat_kimchi", "cat_gohan"];
 const N2 = { pc: 39.2, sp: 33.6 }, N1 = { pc: 19.6, sp: 16.8 }, G1 = 16, G2 = 32;
 const yP = 1114.8, yS = 1302.1, H0 = { pc: 72, sp: 60 };
 const lay2 = (y0, d) => { const a1 = y0 + H0[d], nA = a1 + listH(A1, d) + G1, a2 = nA + N2[d] + G2; return { a1, nA, a2, end: a2 + listH(A2, d) }; };
-const layB = (y0, d) => { const b1 = y0 + H0[d], nB = b1 + listH(B1, d) + G1, dh = nB + N1[d] + 48, d1 = dh + H0[d]; return { b1, nB, dh, d1, end: d1 + listH(D1, d) }; };
+const accH = (d) => B1.length * (TAG[d] + 16) - 16;
+const layB = (y0, d) => { const nB = y0 + H0[d], acc = nB + N1[d] + 16; return { nB, acc, end: acc + accH(d) }; };
 const LA = lay2(yP, "pc"), LB = layB(yP, "pc"), SA = lay2(yS, "sp"), yBS = SA.end + 60, SB = layB(yBS, "sp");
 const endP = Math.ceil(Math.max(LA.end, LB.end) + 120), endS = Math.ceil(SB.end + 100);
 sec("sec_menu", "お品書き", "theme:background", endP, endS, { anchor: "menu", nav: { label: "お品書き", order: 2 } });
@@ -121,10 +122,9 @@ list("mn_yaki", "mnu_food", A1, "price", 245.2, LA.a1, SA.a1);
 note("mn_na", ["当店では国産黒毛和牛を使用しております", TAX], 245.2, LA.nA, SA.nA, N2);
 list("mn_etc", "mnu_food", A2, "price", 245.2, LA.a2, SA.a2);
 listHead("mn_lb", "sec_menu", "一品・ご飯もの", { x: 807.6, y: yP }, { x: 30, y: yBS });
-list("mn_side", "mnu_food", B1, "price", 807.6, LB.b1, SB.b1);
 note("mn_nb", [TAX], 807.6, LB.nB, SB.nB, N1);
-listHead("mn_ld", "sec_menu", ["/catalog/menus/mnu_main/name"], { x: 807.6, y: LB.dh }, { x: 30, y: SB.dh });
-list("mn_drnk", "mnu_main", D1, "priceAllTax", 807.6, LB.d1, SB.d1);
+// 焼きもの以外は括りの見出しだけを出し、押すと開く（中身は wa02-finish が details で入れる）
+add("mn_acc", { type: "shape", z: 3, kind: "rect", fill: W, section: "sec_menu", layout: lay({ x: 807.6, y: LB.acc, w: 512.4, h: accH("pc") }, { x: 30, y: SB.acc, w: 330, h: accH("sp") }) });
 
 // ---- 9 お店の情報（① に値がある行だけ）
 const f = shop.facilities || {}, loc = shop.location || {};

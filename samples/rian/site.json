@@ -91,8 +91,8 @@
         "color": "theme:background"
       },
       "minHeight": {
-        "pc": 3333,
-        "sp": 5265
+        "pc": 3220,
+        "sp": 3643
       },
       "anchor": "menu",
       "nav": {
@@ -997,7 +997,28 @@
         {
           "runs": [
             {
-              "text": "芦屋の炭火焼肉"
+              "text": "喧騒の中"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "ひっそりと佇む"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "隠れ家で"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "至福のひとときを。"
             }
           ]
         }
@@ -1011,7 +1032,7 @@
       },
       "layout": {
         "pc": {
-          "x": 8.3333,
+          "x": 16.1111,
           "y": 480,
           "w": 15.5556,
           "h": 277.2,
@@ -1078,44 +1099,6 @@
           "w": 84.6154,
           "h": 280,
           "size": 14
-        }
-      }
-    },
-    "st_note": {
-      "type": "text",
-      "z": 4,
-      "role": "body",
-      "section": "sec_story",
-      "paragraphs": [
-        {
-          "runs": [
-            {
-              "text": "JR芦屋駅から徒歩約8分（約600m）／全42席・全席禁煙／17:00〜23:00"
-            }
-          ]
-        }
-      ],
-      "style": {
-        "font": "font:body",
-        "weight": 400,
-        "color": "#F2EFE9",
-        "lineHeight": 1.7231,
-        "letterSpacing": 0
-      },
-      "layout": {
-        "pc": {
-          "x": 56.3889,
-          "y": 1286,
-          "w": 27.2222,
-          "h": 44.8,
-          "size": 13
-        },
-        "sp": {
-          "x": 7.6923,
-          "y": 1216,
-          "w": 84.6154,
-          "h": 41.4,
-          "size": 12
         }
       }
     },
@@ -2067,197 +2050,6 @@
         }
       }
     },
-    "mn_side": {
-      "type": "repeater",
-      "z": 3,
-      "section": "sec_menu",
-      "source": {
-        "kind": "catalog",
-        "menuId": "mnu_food",
-        "groupByCategory": true,
-        "categoryIds": [
-          "cat_ippin",
-          "cat_chige",
-          "cat_soup",
-          "cat_salad",
-          "cat_kimchi",
-          "cat_gohan"
-        ]
-      },
-      "display": {
-        "mode": "list",
-        "columns": {
-          "pc": 1,
-          "sp": 1
-        },
-        "photoless": "sameCard"
-      },
-      "card": {
-        "height": {
-          "pc": 39.2,
-          "sp": 36.6
-        },
-        "elements": {
-          "c_name": {
-            "type": "text",
-            "z": 2,
-            "role": "body",
-            "paragraphs": [
-              {
-                "runs": [
-                  {
-                    "bind": {
-                      "scope": "item",
-                      "path": "/name",
-                      "format": "plain"
-                    }
-                  }
-                ]
-              }
-            ],
-            "style": {
-              "font": "font:body",
-              "weight": 400,
-              "color": "#000000",
-              "lineHeight": 1.4
-            },
-            "layout": {
-              "pc": {
-                "x": 0,
-                "y": 4.5,
-                "w": 68,
-                "h": 22.4,
-                "size": 16
-              },
-              "sp": {
-                "x": 0,
-                "y": 4.5,
-                "w": 64,
-                "h": 19.6,
-                "size": 14
-              }
-            }
-          },
-          "c_price": {
-            "type": "text",
-            "z": 2,
-            "role": "body",
-            "paragraphs": [
-              {
-                "runs": [
-                  {
-                    "bind": {
-                      "scope": "item",
-                      "path": "/prices",
-                      "format": "price"
-                    }
-                  }
-                ]
-              }
-            ],
-            "style": {
-              "font": "font:body",
-              "weight": 400,
-              "color": "#000000",
-              "lineHeight": 1.4,
-              "align": "right"
-            },
-            "layout": {
-              "pc": {
-                "x": 68,
-                "y": 4.5,
-                "w": 32,
-                "h": 22.4,
-                "size": 16
-              },
-              "sp": {
-                "x": 64,
-                "y": 4.5,
-                "w": 36,
-                "h": 19.6,
-                "size": 14
-              }
-            }
-          },
-          "c_line": {
-            "type": "shape",
-            "z": 1,
-            "kind": "line",
-            "fill": "theme:lineSoft",
-            "layout": {
-              "pc": {
-                "x": 0,
-                "y": 31.4,
-                "w": 100,
-                "h": 1,
-                "strokeWidth": 1
-              },
-              "sp": {
-                "x": 0,
-                "y": 28.6,
-                "w": 100,
-                "h": 1,
-                "strokeWidth": 1
-              }
-            }
-          }
-        }
-      },
-      "groupHeading": {
-        "type": "text",
-        "z": 1,
-        "role": "body",
-        "paragraphs": [
-          {
-            "runs": [
-              {
-                "bind": {
-                  "scope": "item",
-                  "path": "/category/name",
-                  "format": "plain"
-                }
-              }
-            ]
-          }
-        ],
-        "style": {
-          "font": "font:heading",
-          "weight": 400,
-          "color": "#FFFFFF",
-          "lineHeight": 1.6222
-        },
-        "layout": {
-          "pc": {
-            "x": 0,
-            "y": 0,
-            "w": 100,
-            "h": 29.2,
-            "size": 18
-          },
-          "sp": {
-            "x": 0,
-            "y": 0,
-            "w": 100,
-            "h": 26.4,
-            "size": 16
-          }
-        }
-      },
-      "layout": {
-        "pc": {
-          "x": 56.0833,
-          "y": 1186.8,
-          "w": 35.5833,
-          "h": 1715.2000000000003
-        },
-        "sp": {
-          "x": 7.6923,
-          "y": 3271.7,
-          "w": 84.6154,
-          "h": 1607.4
-        }
-      }
-    },
     "mn_nb": {
       "type": "text",
       "z": 3,
@@ -2282,268 +2074,38 @@
       "layout": {
         "pc": {
           "x": 56.0833,
-          "y": 2918,
+          "y": 1186.8,
           "w": 35.5833,
           "h": 19.6,
           "size": 14
         },
         "sp": {
           "x": 7.6923,
-          "y": 4895.1,
+          "y": 3271.7,
           "w": 84.6154,
           "h": 16.8,
           "size": 12
         }
       }
     },
-    "mn_ld_h": {
-      "type": "text",
-      "z": 3,
-      "role": "body",
-      "section": "sec_menu",
-      "paragraphs": [
-        {
-          "runs": [
-            {
-              "bind": {
-                "scope": "shop",
-                "path": "/catalog/menus/mnu_main/name",
-                "format": "plain"
-              }
-            }
-          ]
-        }
-      ],
-      "style": {
-        "font": "font:heading",
-        "weight": 400,
-        "color": "#000000",
-        "lineHeight": 1.4,
-        "letterSpacing": 0.05
-      },
-      "layout": {
-        "pc": {
-          "x": 56.0833,
-          "y": 2985.6,
-          "w": 35.5833,
-          "h": 39.2,
-          "size": 28
-        },
-        "sp": {
-          "x": 7.6923,
-          "y": 4959.900000000001,
-          "w": 84.6154,
-          "h": 33.6,
-          "size": 24
-        }
-      }
-    },
-    "mn_ld_hl": {
+    "mn_acc": {
       "type": "shape",
-      "z": 2,
-      "kind": "line",
-      "fill": "#000000",
-      "section": "sec_menu",
-      "layout": {
-        "pc": {
-          "x": 56.0833,
-          "y": 3032.6,
-          "w": 8.3333,
-          "h": 1,
-          "strokeWidth": 1
-        },
-        "sp": {
-          "x": 7.6923,
-          "y": 5000.900000000001,
-          "w": 30.7692,
-          "h": 1,
-          "strokeWidth": 1
-        }
-      }
-    },
-    "mn_drnk": {
-      "type": "repeater",
       "z": 3,
+      "kind": "rect",
+      "fill": "#FFFFFF",
       "section": "sec_menu",
-      "source": {
-        "kind": "catalog",
-        "menuId": "mnu_main",
-        "groupByCategory": true,
-        "categoryIds": [
-          "cat_drink"
-        ]
-      },
-      "display": {
-        "mode": "list",
-        "columns": {
-          "pc": 1,
-          "sp": 1
-        },
-        "photoless": "sameCard"
-      },
-      "card": {
-        "height": {
-          "pc": 39.2,
-          "sp": 36.6
-        },
-        "elements": {
-          "c_name": {
-            "type": "text",
-            "z": 2,
-            "role": "body",
-            "paragraphs": [
-              {
-                "runs": [
-                  {
-                    "bind": {
-                      "scope": "item",
-                      "path": "/name",
-                      "format": "plain"
-                    }
-                  }
-                ]
-              }
-            ],
-            "style": {
-              "font": "font:body",
-              "weight": 400,
-              "color": "#000000",
-              "lineHeight": 1.4
-            },
-            "layout": {
-              "pc": {
-                "x": 0,
-                "y": 4.5,
-                "w": 68,
-                "h": 22.4,
-                "size": 16
-              },
-              "sp": {
-                "x": 0,
-                "y": 4.5,
-                "w": 64,
-                "h": 19.6,
-                "size": 14
-              }
-            }
-          },
-          "c_price": {
-            "type": "text",
-            "z": 2,
-            "role": "body",
-            "paragraphs": [
-              {
-                "runs": [
-                  {
-                    "bind": {
-                      "scope": "item",
-                      "path": "/prices",
-                      "format": "priceAllTax"
-                    }
-                  }
-                ]
-              }
-            ],
-            "style": {
-              "font": "font:body",
-              "weight": 400,
-              "color": "#000000",
-              "lineHeight": 1.4,
-              "align": "right"
-            },
-            "layout": {
-              "pc": {
-                "x": 68,
-                "y": 4.5,
-                "w": 32,
-                "h": 22.4,
-                "size": 16
-              },
-              "sp": {
-                "x": 64,
-                "y": 4.5,
-                "w": 36,
-                "h": 19.6,
-                "size": 14
-              }
-            }
-          },
-          "c_line": {
-            "type": "shape",
-            "z": 1,
-            "kind": "line",
-            "fill": "theme:lineSoft",
-            "layout": {
-              "pc": {
-                "x": 0,
-                "y": 31.4,
-                "w": 100,
-                "h": 1,
-                "strokeWidth": 1
-              },
-              "sp": {
-                "x": 0,
-                "y": 28.6,
-                "w": 100,
-                "h": 1,
-                "strokeWidth": 1
-              }
-            }
-          }
-        }
-      },
-      "groupHeading": {
-        "type": "text",
-        "z": 1,
-        "role": "body",
-        "paragraphs": [
-          {
-            "runs": [
-              {
-                "bind": {
-                  "scope": "item",
-                  "path": "/category/name",
-                  "format": "plain"
-                }
-              }
-            ]
-          }
-        ],
-        "style": {
-          "font": "font:heading",
-          "weight": 400,
-          "color": "#FFFFFF",
-          "lineHeight": 1.6222
-        },
-        "layout": {
-          "pc": {
-            "x": 0,
-            "y": 0,
-            "w": 100,
-            "h": 29.2,
-            "size": 18
-          },
-          "sp": {
-            "x": 0,
-            "y": 0,
-            "w": 100,
-            "h": 26.4,
-            "size": 16
-          }
-        }
-      },
       "layout": {
         "pc": {
           "x": 56.0833,
-          "y": 3057.6,
+          "y": 1222.3999999999999,
           "w": 35.5833,
-          "h": 154.8
+          "h": 255.20000000000005
         },
         "sp": {
           "x": 7.6923,
-          "y": 5019.900000000001,
+          "y": 3304.5,
           "w": 84.6154,
-          "h": 144.20000000000002
+          "h": 238.39999999999998
         }
       }
     },

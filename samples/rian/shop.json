@@ -127,20 +127,10 @@
   "catalog": {
     "menus": {
       "mnu_food": {
-        "name": "お料理",
         "order": 1
-      },
-      "mnu_main": {
-        "name": "ドリンク",
-        "order": 2
       }
     },
     "categories": {
-      "cat_drink": {
-        "menuId": "mnu_main",
-        "name": "お飲み物",
-        "order": 12
-      },
       "cat_yaki": {
         "menuId": "mnu_food",
         "name": "焼肉（塩 or タレ）",
@@ -216,39 +206,6 @@
       }
     },
     "items": {
-      "itm_sapporo": {
-        "name": "サッポロ黒ラベル",
-        "prices": [
-          {
-            "id": "prc_sapporo",
-            "type": "fixed",
-            "amount": 550
-          }
-        ],
-        "status": "onSale"
-      },
-      "itm_sapporos": {
-        "name": "サッポロ黒ラベル小",
-        "prices": [
-          {
-            "id": "prc_sapporos",
-            "type": "fixed",
-            "amount": 480
-          }
-        ],
-        "status": "onSale"
-      },
-      "itm_lemon": {
-        "name": "レモン",
-        "prices": [
-          {
-            "id": "prc_lemon",
-            "type": "fixed",
-            "amount": 480
-          }
-        ],
-        "status": "onSale"
-      },
       "itm_m001": {
         "name": "焼しゃぶ（おろしポン酢）",
         "prices": [
@@ -1212,24 +1169,6 @@
       }
     },
     "placements": {
-      "plc_sapporo": {
-        "itemId": "itm_sapporo",
-        "menuId": "mnu_main",
-        "categoryId": "cat_drink",
-        "order": 1
-      },
-      "plc_sapporos": {
-        "itemId": "itm_sapporos",
-        "menuId": "mnu_main",
-        "categoryId": "cat_drink",
-        "order": 2
-      },
-      "plc_lemon": {
-        "itemId": "itm_lemon",
-        "menuId": "mnu_main",
-        "categoryId": "cat_drink",
-        "order": 3
-      },
       "plc_m001": {
         "itemId": "itm_m001",
         "menuId": "mnu_food",
@@ -1896,39 +1835,6 @@
         }
       ]
     },
-    "/catalog/items/itm_sapporo": {
-      "status": "pending",
-      "sources": [
-        {
-          "kind": "reviewSite",
-          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
-          "value": "550円（税込）。2024-02-27 更新の情報",
-          "fetchedAt": "2026-11-09T15:16:00+09:00"
-        }
-      ]
-    },
-    "/catalog/items/itm_sapporos": {
-      "status": "pending",
-      "sources": [
-        {
-          "kind": "reviewSite",
-          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
-          "value": "480円（税込）。2024-02-27 更新の情報",
-          "fetchedAt": "2026-11-09T15:16:00+09:00"
-        }
-      ]
-    },
-    "/catalog/items/itm_lemon": {
-      "status": "pending",
-      "sources": [
-        {
-          "kind": "reviewSite",
-          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
-          "value": "480円（税込）。品名は掲載のまま。2024-02-27 更新の情報",
-          "fetchedAt": "2026-11-09T15:16:00+09:00"
-        }
-      ]
-    },
     "/hours/weekly": {
       "status": "conflict",
       "question": "月曜は定休ですか。閉店は23時と24時のどちらですか。ラストオーダーは22時で合っていますか（月曜は未記入）。",
@@ -2023,15 +1929,11 @@
     "answers": {
       "q_catch": {
         "question": "縦書きの見出し（仮）",
-        "answer": "芦屋の炭火焼肉"
+        "answer": "喧騒の中\nひっそりと佇む\n隠れ家で\n至福のひとときを。"
       },
       "q_body": {
         "question": "お店の紹介（仮）",
         "answer": "芦屋・東山町に灯る、炭火焼肉 李杏。\n国産黒毛和牛を、一枚ずつ炭火で焼き上げます。カイノミや三角バラ、イチボといった希少な部位から、上タン、特選ハラミ、新鮮なホルモンまで。塩かタレか、お好みの味でどうぞ。\n炭の香りと、肉の焼ける音。落ち着いた店内で、大切な人との夜をゆっくりとお過ごしください。"
-      },
-      "q_note": {
-        "question": "添え書き（仮）",
-        "answer": "JR芦屋駅から徒歩約8分（約600m）／全42席・全席禁煙／17:00〜23:00"
       }
     }
   }

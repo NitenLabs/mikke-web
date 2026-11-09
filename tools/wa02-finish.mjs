@@ -15,7 +15,18 @@ html{scroll-padding-top:9rem}
 .site-header,[data-sec=sec_info],[data-sec=sec_access]{background-image:linear-gradient(rgba(245,246,239,.8),rgba(245,246,239,.8)),url(assets/ast_texp.jpg);background-size:auto,120rem}
 [data-el=rv_pill]{background:transparent!important}
 .rep-head{background:#000;width:auto!important;padding:0 1rem;white-space:nowrap}
-[data-el=ac_mapbox] iframe{width:100%;height:100%;border:0;display:block}
+[data-el=ac_mapbox]{overflow:hidden}
+[data-el=ac_mapbox] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block}
+[data-el=mn_acc]{height:auto!important;background:transparent!important}
+.wa02-acc{margin-bottom:1.6rem}
+.wa02-acc summary{display:inline-flex;align-items:center;gap:1rem;background:#000;color:#fff;font-family:var(--f-heading);font-size:1.8rem;line-height:2.92rem;padding:0 1rem;cursor:pointer;list-style:none}
+.wa02-acc summary::-webkit-details-marker{display:none}
+.wa02-acc summary::after{content:"＋";font-size:1.4rem}
+.wa02-acc[open] summary::after{content:"−"}
+.wa02-acc summary:focus-visible{outline:2px solid #000;outline-offset:2px}
+.wa02-row{display:flex;justify-content:space-between;height:3.92rem;padding-top:.45rem;border-bottom:1px solid #C8C8C8;font-size:1.6rem;line-height:2.24rem;box-sizing:border-box;color:#000}
+.wa02-rows{margin-top:.8rem}
+@media (max-width:767.98px){.wa02-acc summary{font-size:1.6rem;line-height:2.64rem}.wa02-row{height:3.66rem;font-size:1.4rem;line-height:1.96rem}}
 [data-el=fv_2],[data-el=fv_3]{opacity:0}
 [data-el=fv_2]{animation:wa02b 18s linear infinite}
 [data-el=fv_3]{animation:wa02c 18s linear infinite}
@@ -38,7 +49,7 @@ html{scroll-padding-top:9rem}
 @media (prefers-reduced-motion:reduce){[data-el=fv_2],[data-el=fv_3]{animation:none}[data-el^=gal_]{transition:none}}
 </style>`;
 const btns = `<button type="button" class="wa02-btn wa02-b1" data-g="prev" aria-label="前の写真">${icon(L)}</button><button type="button" class="wa02-btn wa02-b2" data-g="toggle" aria-label="一時停止">${icon(PA)}</button><button type="button" class="wa02-btn wa02-b3" data-g="next" aria-label="次の写真">${icon(R)}</button>`;
-const js = `<script>(function(){var n=7,c=0,t=null,E=[];for(var i=1;i<=n;i++)E.push(document.querySelector('[data-el="gal_'+i+'"]'));if(!E[0])return;
+const js = `<script>(function(){var A=document.querySelector('[data-el="mn_acc"]');if(A){var Z=A.closest('[data-sec]'),F=function(){Z.style.minHeight='';var f=parseFloat(getComputedStyle(document.documentElement).fontSize),pad=(innerWidth<768?10:12)*f,n=A.getBoundingClientRect().bottom-Z.getBoundingClientRect().top+pad;if(n>Z.offsetHeight)Z.style.minHeight=n+'px';};A.addEventListener('toggle',F,true);addEventListener('resize',F);}})();(function(){var n=7,c=0,t=null,E=[];for(var i=1;i<=n;i++)E.push(document.querySelector('[data-el="gal_'+i+'"]'));if(!E[0])return;
 function S(d){var o=c;c=(c+d+n)%n;E.forEach(function(e,i){var b=i-3,s=((b-c+3)%n+n)%n-3,p=((b-o+3)%n+n)%n-3;e.style.transition=Math.abs(s-p)>1?'none':'';e.style.setProperty("--g",s);});}
 var R=matchMedia('(prefers-reduced-motion: reduce)').matches,B=document.querySelector('[data-g=toggle]');
 function run(){t=setInterval(function(){S(1)},5000);B.innerHTML=${JSON.stringify(icon(PA))};B.setAttribute('aria-label','一時停止');}
@@ -52,6 +63,14 @@ const box = h.lastIndexOf("</div>", end); // ボタンは cbox の中に置き�
 h = h.slice(0, box) + btns + h.slice(box);
 const map = `<iframe title="${shop.basic.name}の地図" src="https://www.google.com/maps?q=${encodeURIComponent(`${addr} ${shop.basic.name}`)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 h = h.replace(/(<div data-el="ac_mapbox"[^>]*>)/, `$1${map}`);
+const E = (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+const cat = shop.catalog, yen = (p) => (p.type === "tbd" ? "—" : `${p.amount.toLocaleString("en-US")}円`);
+const acc = ["cat_ippin", "cat_chige", "cat_soup", "cat_salad", "cat_kimchi", "cat_gohan"].map((id) => {
+  const rows = Object.values(cat.placements).filter((p) => p.categoryId === id).sort((a, b) => a.order - b.order).map((p) => { const it = cat.items[p.itemId]; return `<div class="wa02-row"><span>${E(it.name)}</span><span>${yen(it.prices[0])}</span></div>`; }).join("");
+  return `<details class="wa02-acc"><summary>${E(cat.categories[id].name)}</summary><div class="wa02-rows">${rows}</div></details>`;
+}).join("");
+h = h.replace(/(<div data-el="mn_acc"[^>]*>)/, `$1${acc}`);
+
 h = h.replace("</head>", css + "</head>").replace("</body>", js + "</body>");
 const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
 fs.writeFileSync(f, bp(h));

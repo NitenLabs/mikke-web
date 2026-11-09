@@ -47,6 +47,12 @@ for (const w of WIDTHS) {
   if (w === 1440 || w === 390) {
     const g = await page.evaluate(() => { const c = () => Math.round(document.querySelector('[data-el="gal_4"]').getBoundingClientRect().left); const a = c(); document.querySelector("[data-g=next]").click(); return { a, g: getComputedStyle(document.querySelector('[data-el="gal_4"]')).getPropertyValue("--g").trim() }; });
     if (g.g !== "-1") ng(`${w}: ギャラリーの送りが効かない（--g=${g.g}）`);
+    const a = await page.evaluate(() => { const D = [...document.querySelectorAll(".wa02-acc")], closed = D.every((d) => !d.open); D.forEach((d) => { d.open = true; }); return { n: D.length, closed }; });
+    await page.waitForTimeout(150);
+    const fit = await page.evaluate(() => { const b = document.querySelector("[data-el=mn_acc]").getBoundingClientRect(), s = document.querySelector("[data-sec=sec_menu]").getBoundingClientRect(); return Math.round(s.bottom - b.bottom); });
+    if (a.n !== 6 || !a.closed) ng(`${w}: 開く括り ${a.n}・初めに閉じている ${a.closed}`);
+    if (fit < 40) ng(`${w}: 括りを全部開くと区画からはみ出す（下の余白 ${fit}）`);
+    console.log(`${w}: 括り ${a.n} 個・全部開いた時の下の余白 ${fit}px`);
     console.log(`${w}: ギャラリー中央 left=${g.a}（設計 ${w === 1440 ? 370 : 24}）`);
   }
   await page.close();
