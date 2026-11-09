@@ -77,8 +77,10 @@
 3. 読む順：このファイル → `docs/business/README.md` → `docs/reference_analysis_guide.md` → `docs/DATA_SPEC.md` → `docs/plan/DECISIONS.md`（上の方＝新しい番号）
 4. 準備：`npm ci`（クラウドには Chromium と Playwright が入っている。Python の playwright も）
 
-### 手元のパソコンで
-`git clone https://github.com/NitenLabs/mikke-web` → Node 22 → `npm ci` → `npm run setup:browser`
+### 手元のパソコンで（2026-11-09 から主にこちら。ターミナルの Claude Code）
+- 自動化（段ごとにスクリプトから Claude を呼ぶ）を見込んで、デスクトップアプリの Code ではなく**ターミナル版**を使う（ユーザーの判断）
+- 置き場所：`C:\Users\sea_p\GitHub\mikke-web`（GitHub Desktop で取得済み。OneDrive の中には置かない）
+- 準備：Git for Windows → Claude Code（PowerShell で `irm https://claude.ai/install.ps1 | iex`）→ そのフォルダで `claude` → Node 22 → `npm ci` → `npm run setup:browser`
 
 ## 6. リポジトリの地図
 
