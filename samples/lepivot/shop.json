@@ -1,0 +1,280 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_lepivot",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "Bistro à Vin Le Pivot",
+    "nameKana": "びすとろ あ ばん る ぴぼ",
+    "genre": {
+      "template": "restaurant",
+      "detail": "ビストロ"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "大原町"
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "23:00",
+            "lastOrder": "22:00"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "23:00",
+            "lastOrder": "22:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "23:00",
+            "lastOrder": "22:00"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "23:00",
+            "lastOrder": "22:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "23:00",
+            "lastOrder": "22:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "23:00",
+            "lastOrder": "22:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "closed"
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 20,
+      "counter": 6,
+      "table": 14
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_food": {
+        "order": 1,
+        "name": "お料理"
+      },
+      "mnu_wine": {
+        "order": 2,
+        "name": "ワイン"
+      }
+    },
+    "categories": {
+      "cat_food": {
+        "menuId": "mnu_food",
+        "name": "お料理",
+        "order": 1
+      },
+      "cat_wine": {
+        "menuId": "mnu_wine",
+        "name": "ワイン",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_m001": {
+        "name": "シャルキュトリーの盛り合わせ",
+        "photos": [
+          "ast_ch01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m001",
+            "type": "fixed",
+            "amount": 1800
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m002": {
+        "name": "パテ・ド・カンパーニュ",
+        "prices": [
+          {
+            "id": "prc_m002",
+            "type": "fixed",
+            "amount": 1200
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m003": {
+        "name": "牡蠣のグラタン",
+        "prices": [
+          {
+            "id": "prc_m003",
+            "type": "fixed",
+            "amount": 1400
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m004": {
+        "name": "鴨もものコンフィ",
+        "photos": [
+          "ast_cf01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m004",
+            "type": "fixed",
+            "amount": 2800
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m005": {
+        "name": "牛ハラミのステーキ フリット添え",
+        "photos": [
+          "ast_sk01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m005",
+            "type": "fixed",
+            "amount": 3200
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m006": {
+        "name": "本日のデザート",
+        "prices": [
+          {
+            "id": "prc_m006",
+            "type": "fixed",
+            "amount": 800
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m007": {
+        "name": "グラスワイン",
+        "prices": [
+          {
+            "id": "prc_m007",
+            "type": "from",
+            "amount": 900
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m008": {
+        "name": "ボトル",
+        "prices": [
+          {
+            "id": "prc_m008",
+            "type": "from",
+            "amount": 5500
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_food",
+        "categoryId": "cat_food",
+        "order": 1
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_food",
+        "categoryId": "cat_food",
+        "order": 2
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_food",
+        "categoryId": "cat_food",
+        "order": 3
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_food",
+        "categoryId": "cat_food",
+        "order": 4
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_food",
+        "categoryId": "cat_food",
+        "order": 5
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_food",
+        "categoryId": "cat_food",
+        "order": 6
+      },
+      "plc_m007": {
+        "itemId": "itm_m007",
+        "menuId": "mnu_wine",
+        "categoryId": "cat_wine",
+        "order": 7
+      },
+      "plc_m008": {
+        "itemId": "itm_m008",
+        "menuId": "mnu_wine",
+        "categoryId": "cat_wine",
+        "order": 8
+      }
+    }
+  }
+}

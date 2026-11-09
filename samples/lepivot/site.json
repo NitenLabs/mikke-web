@@ -1,0 +1,3622 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_lepivot",
+  "templateId": "tpl_wa_14",
+  "canvas": {
+    "pcContentWidth": 1440,
+    "spDesignWidth": 390
+  },
+  "pages": {
+    "pg_home": {
+      "kind": "home",
+      "slug": "/",
+      "navLabel": "TOP",
+      "navOrder": 1,
+      "showInNav": false,
+      "published": true,
+      "sections": [
+        "sec_firstv",
+        "sec_about",
+        "sec_band",
+        "sec_plats",
+        "sec_carte",
+        "sec_wine",
+        "sec_info"
+      ]
+    },
+    "pg_404": {
+      "kind": "notFound",
+      "slug": "/404",
+      "navLabel": "404",
+      "navOrder": 9,
+      "showInNav": false,
+      "published": true,
+      "sections": []
+    }
+  },
+  "regions": {
+    "header": "sec_header",
+    "footer": "sec_footer",
+    "headerBehavior": "sticky"
+  },
+  "sections": {
+    "sec_header": {
+      "name": "ヘッダー",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 76,
+        "sp": 64
+      }
+    },
+    "sec_firstv": {
+      "name": "最初の画面",
+      "background": {
+        "color": "#6B1E2B"
+      },
+      "minHeight": {
+        "pc": 860,
+        "sp": 868
+      }
+    },
+    "sec_about": {
+      "name": "紹介",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 900,
+        "sp": 990
+      },
+      "anchor": "about",
+      "nav": {
+        "label": "当店について",
+        "order": 1
+      }
+    },
+    "sec_band": {
+      "name": "夜の店内",
+      "background": {
+        "color": "#1A1617"
+      },
+      "minHeight": {
+        "pc": 560,
+        "sp": 320
+      }
+    },
+    "sec_plats": {
+      "name": "お料理",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 1240,
+        "sp": 1360
+      },
+      "anchor": "plats",
+      "nav": {
+        "label": "お料理",
+        "order": 2
+      }
+    },
+    "sec_carte": {
+      "name": "ほかの品",
+      "background": {
+        "color": "#6B1E2B"
+      },
+      "minHeight": {
+        "pc": 760,
+        "sp": 860
+      }
+    },
+    "sec_wine": {
+      "name": "ワイン",
+      "background": {
+        "color": "#1A1617"
+      },
+      "minHeight": {
+        "pc": 760,
+        "sp": 800
+      },
+      "anchor": "vin",
+      "nav": {
+        "label": "ワイン",
+        "order": 3
+      }
+    },
+    "sec_info": {
+      "name": "ご案内",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 760,
+        "sp": 1000
+      },
+      "anchor": "acces",
+      "nav": {
+        "label": "ご案内",
+        "order": 4
+      }
+    },
+    "sec_footer": {
+      "name": "フッター",
+      "background": {
+        "color": "#1A1617"
+      },
+      "minHeight": {
+        "pc": 320,
+        "sp": 596
+      }
+    }
+  },
+  "elements": {
+    "hd_name": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Le Pivot"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.3333,
+        "letterSpacing": 0.0167,
+        "link": {
+          "kind": "page",
+          "value": "pg_home"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 2.7778,
+          "y": 18,
+          "w": 20.8333,
+          "h": 40,
+          "size": 30
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 14,
+          "w": 61.5385,
+          "h": 36,
+          "size": 26
+        }
+      }
+    },
+    "hd_nav": {
+      "type": "nav",
+      "z": 4,
+      "section": "sec_header",
+      "style": {
+        "color": "#1A1617",
+        "font": "font:body",
+        "spMenuBackground": "theme:primary"
+      },
+      "layout": {
+        "pc": {
+          "x": 59.7222,
+          "y": 18,
+          "w": 37.5,
+          "h": 40,
+          "size": 14
+        },
+        "sp": {
+          "x": 85.1282,
+          "y": 10,
+          "w": 11.2821,
+          "h": 44
+        }
+      }
+    },
+    "fv_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_firstv",
+      "asset": "ast_fv01",
+      "layout": {
+        "pc": {
+          "x": 51.3889,
+          "y": 60,
+          "w": 41.6667,
+          "h": 740,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 30.7692,
+          "y": 120,
+          "w": 69.2308,
+          "h": 420,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "fv_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Bistro à Vin"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#D2A74A",
+        "lineHeight": 1.3077,
+        "letterSpacing": 0.0385
+      },
+      "layout": {
+        "pc": {
+          "x": 5.8333,
+          "y": 70,
+          "w": 34.7222,
+          "h": 34,
+          "size": 26
+        },
+        "sp": {
+          "x": 6.6667,
+          "y": 30,
+          "w": 87.6923,
+          "h": 26,
+          "size": 18
+        }
+      }
+    },
+    "fv_name": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Le Pivot"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.3,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 110,
+          "w": 76.3889,
+          "h": 260,
+          "size": 200
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 63,
+          "w": 87.6923,
+          "h": 114,
+          "size": 88
+        }
+      }
+    },
+    "fv_copy": {
+      "type": "text",
+      "z": 3,
+      "role": "pageTitle",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "今夜は、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "ワインと小さなひと皿を。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.65,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 400,
+          "w": 44.4444,
+          "h": 132,
+          "size": 40
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 566,
+          "w": 87.6923,
+          "h": 85,
+          "size": 26
+        }
+      }
+    },
+    "fv_line": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#C89B3C",
+      "section": "sec_firstv",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 620,
+          "w": 43.0556,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 668,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "fv_k0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご住所"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#D2A74A",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 644,
+          "w": 13.1944,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 686,
+          "w": 18.4615,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "fv_v0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.7333,
+        "letterSpacing": 0.0267
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 670,
+          "w": 13.1944,
+          "h": 26,
+          "size": 15
+        },
+        "sp": {
+          "x": 24.6154,
+          "y": 686,
+          "w": 69.2308,
+          "h": 22,
+          "size": 14
+        }
+      }
+    },
+    "fv_k1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#D2A74A",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 19.4444,
+          "y": 644,
+          "w": 20.1389,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 730,
+          "w": 18.4615,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "fv_v1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "17:30〜23:00（L.O. 22:00）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.7333,
+        "letterSpacing": 0.0267
+      },
+      "layout": {
+        "pc": {
+          "x": 19.4444,
+          "y": 670,
+          "w": 20.1389,
+          "h": 26,
+          "size": 15
+        },
+        "sp": {
+          "x": 24.6154,
+          "y": 730,
+          "w": 69.2308,
+          "h": 22,
+          "size": 14
+        }
+      }
+    },
+    "fv_k2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "定休日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#D2A74A",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 40.2778,
+          "y": 644,
+          "w": 8.3333,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 774,
+          "w": 18.4615,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "fv_v2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "日曜日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.7333,
+        "letterSpacing": 0.0267
+      },
+      "layout": {
+        "pc": {
+          "x": 40.2778,
+          "y": 670,
+          "w": 8.3333,
+          "h": 26,
+          "size": 15
+        },
+        "sp": {
+          "x": 24.6154,
+          "y": 774,
+          "w": 69.2308,
+          "h": 22,
+          "size": 14
+        }
+      }
+    },
+    "ab_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Bonsoir."
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#6B1E2B",
+        "lineHeight": 1.3,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 30,
+          "w": 52.7778,
+          "h": 260,
+          "size": 200
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 30,
+          "w": 87.6923,
+          "h": 88,
+          "size": 68
+        }
+      }
+    },
+    "ab_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "当店について"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#6B1E2B",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429
+      },
+      "layout": {
+        "pc": {
+          "x": 5.8333,
+          "y": 296,
+          "w": 27.7778,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 122,
+          "w": 87.6923,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "ab_h": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ワインに寄り添う、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "ビストロの夜。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.5882,
+        "letterSpacing": 0.0441
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 322,
+          "w": 47.2222,
+          "h": 108,
+          "size": 34
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 146,
+          "w": 87.6923,
+          "h": 76,
+          "size": 24
+        }
+      }
+    },
+    "ab_l0": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#C89B3C",
+      "section": "sec_about",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 470,
+          "w": 15.2778,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 244,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "ab_n0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "N°1"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#6B1E2B",
+        "lineHeight": 1.4444,
+        "letterSpacing": 0.0278
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 484,
+          "w": 15.2778,
+          "h": 26,
+          "size": 18
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 258,
+          "w": 12.3077,
+          "h": 24,
+          "size": 16
+        }
+      }
+    },
+    "ab_p0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "グラスで楽しめるワインを常時10種類ほど。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.8667,
+        "letterSpacing": 0.0267
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 516,
+          "w": 15.2778,
+          "h": 112,
+          "size": 15
+        },
+        "sp": {
+          "x": 19.4872,
+          "y": 256,
+          "w": 74.359,
+          "h": 56,
+          "size": 15
+        }
+      }
+    },
+    "ab_l1": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#C89B3C",
+      "section": "sec_about",
+      "layout": {
+        "pc": {
+          "x": 22.2222,
+          "y": 470,
+          "w": 15.2778,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 328,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "ab_n1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "N°2"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#6B1E2B",
+        "lineHeight": 1.4444,
+        "letterSpacing": 0.0278
+      },
+      "layout": {
+        "pc": {
+          "x": 22.2222,
+          "y": 484,
+          "w": 15.2778,
+          "h": 26,
+          "size": 18
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 342,
+          "w": 12.3077,
+          "h": 24,
+          "size": 16
+        }
+      }
+    },
+    "ab_p1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "シャルキュトリーから煮込みまで、ワインに寄り添うビストロ料理をお出しします。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.8667,
+        "letterSpacing": 0.0267
+      },
+      "layout": {
+        "pc": {
+          "x": 22.2222,
+          "y": 516,
+          "w": 15.2778,
+          "h": 112,
+          "size": 15
+        },
+        "sp": {
+          "x": 19.4872,
+          "y": 340,
+          "w": 74.359,
+          "h": 84,
+          "size": 15
+        }
+      }
+    },
+    "ab_l2": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#C89B3C",
+      "section": "sec_about",
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 470,
+          "w": 15.2778,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 440,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "ab_n2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "N°3"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#6B1E2B",
+        "lineHeight": 1.4444,
+        "letterSpacing": 0.0278
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 484,
+          "w": 15.2778,
+          "h": 26,
+          "size": 18
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 454,
+          "w": 12.3077,
+          "h": 24,
+          "size": 16
+        }
+      }
+    },
+    "ab_p2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "おひとりでも、カウンターへどうぞ。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.8667,
+        "letterSpacing": 0.0267
+      },
+      "layout": {
+        "pc": {
+          "x": 38.8889,
+          "y": 516,
+          "w": 15.2778,
+          "h": 112,
+          "size": 15
+        },
+        "sp": {
+          "x": 19.4872,
+          "y": 452,
+          "w": 74.359,
+          "h": 56,
+          "size": 15
+        }
+      }
+    },
+    "ab_sn0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "6"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#6B1E2B",
+        "lineHeight": 1.3,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 666,
+          "w": 4.1667,
+          "h": 125,
+          "size": 96
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 492,
+          "w": 10.2564,
+          "h": 73,
+          "size": 56
+        }
+      }
+    },
+    "ab_sl0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "カウンター"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#1A1617",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.0857
+      },
+      "layout": {
+        "pc": {
+          "x": 10.1389,
+          "y": 740,
+          "w": 7.6389,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 17.4359,
+          "y": 530,
+          "w": 23.5897,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "ab_sn1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "14"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#6B1E2B",
+        "lineHeight": 1.3,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 22.2222,
+          "y": 666,
+          "w": 7.3611,
+          "h": 125,
+          "size": 96
+        },
+        "sp": {
+          "x": 51.2821,
+          "y": 492,
+          "w": 16.4103,
+          "h": 73,
+          "size": 56
+        }
+      }
+    },
+    "ab_sl1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_about",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "テーブル"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#1A1617",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.0857
+      },
+      "layout": {
+        "pc": {
+          "x": 30,
+          "y": 740,
+          "w": 7.6389,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 68.7179,
+          "y": 530,
+          "w": 23.5897,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "ab_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_about",
+      "asset": "ast_ab01",
+      "layout": {
+        "pc": {
+          "x": 59.7222,
+          "y": 120,
+          "w": 34.7222,
+          "h": 700,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 590,
+          "w": 87.6923,
+          "h": 340,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "bd_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_band",
+      "asset": "ast_bd01",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 560,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 320,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "bd_en": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_band",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Le Soir"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.3,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 260,
+          "w": 69.4444,
+          "h": 260,
+          "size": 200
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 167,
+          "w": 87.6923,
+          "h": 109,
+          "size": 84
+        }
+      }
+    },
+    "bd_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_band",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "灯りを落として、ゆっくりと。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.6667,
+        "letterSpacing": 0.1111
+      },
+      "layout": {
+        "pc": {
+          "x": 6.1111,
+          "y": 228,
+          "w": 41.6667,
+          "h": 30,
+          "size": 18
+        },
+        "sp": {
+          "x": 6.6667,
+          "y": 282,
+          "w": 87.6923,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "pl_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_plats",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Les Plats"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#6B1E2B",
+        "lineHeight": 1.3,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 30,
+          "w": 47.2222,
+          "h": 260,
+          "size": 200
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 30,
+          "w": 87.6923,
+          "h": 88,
+          "size": 68
+        }
+      }
+    },
+    "pl_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_plats",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お料理"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#6B1E2B",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429
+      },
+      "layout": {
+        "pc": {
+          "x": 5.8333,
+          "y": 296,
+          "w": 27.7778,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 122,
+          "w": 87.6923,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "pl_a": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_plats",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "pick": [
+          "itm_m001"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "gap": {
+          "pc": 0,
+          "sp": 0
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 790,
+          "sp": 464
+        },
+        "elements": {
+          "a_ph": {
+            "type": "photo",
+            "z": 1,
+            "bind": {
+              "scope": "item",
+              "path": "/photos"
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 720,
+                "ratio": "custom"
+              },
+              "sp": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 400,
+                "ratio": "custom"
+              }
+            }
+          },
+          "a_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:heading",
+              "weight": 400,
+              "color": "#1A1617",
+              "lineHeight": 1.5238,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 736,
+                "w": 72,
+                "h": 32,
+                "size": 21
+              },
+              "sp": {
+                "x": 0,
+                "y": 412,
+                "w": 72,
+                "h": 48,
+                "size": 16
+              }
+            }
+          },
+          "a_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:accent",
+              "weight": 400,
+              "color": "#6B1E2B",
+              "lineHeight": 1.2857,
+              "letterSpacing": 0,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 72,
+                "y": 734,
+                "w": 28,
+                "h": 36,
+                "size": 28
+              },
+              "sp": {
+                "x": 72,
+                "y": 410,
+                "w": 28,
+                "h": 36,
+                "size": 24
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 340,
+          "w": 43.0556,
+          "h": 790
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 152,
+          "w": 87.6923,
+          "h": 464
+        }
+      }
+    },
+    "pl_b": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_plats",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "pick": [
+          "itm_m005"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "gap": {
+          "pc": 0,
+          "sp": 0
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 450,
+          "sp": 292
+        },
+        "elements": {
+          "b_ph": {
+            "type": "photo",
+            "z": 1,
+            "bind": {
+              "scope": "item",
+              "path": "/photos"
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 378,
+                "ratio": "custom"
+              },
+              "sp": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 228,
+                "ratio": "custom"
+              }
+            }
+          },
+          "b_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:heading",
+              "weight": 400,
+              "color": "#1A1617",
+              "lineHeight": 1.5238,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 394,
+                "w": 72,
+                "h": 32,
+                "size": 21
+              },
+              "sp": {
+                "x": 0,
+                "y": 240,
+                "w": 72,
+                "h": 48,
+                "size": 16
+              }
+            }
+          },
+          "b_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:accent",
+              "weight": 400,
+              "color": "#6B1E2B",
+              "lineHeight": 1.2857,
+              "letterSpacing": 0,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 72,
+                "y": 392,
+                "w": 28,
+                "h": 36,
+                "size": 28
+              },
+              "sp": {
+                "x": 72,
+                "y": 238,
+                "w": 28,
+                "h": 36,
+                "size": 24
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 55.5556,
+          "y": 120,
+          "w": 38.8889,
+          "h": 450
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 636,
+          "w": 87.6923,
+          "h": 292
+        }
+      }
+    },
+    "pl_c": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_plats",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "pick": [
+          "itm_m004"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "gap": {
+          "pc": 0,
+          "sp": 0
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 410,
+          "sp": 292
+        },
+        "elements": {
+          "c_ph": {
+            "type": "photo",
+            "z": 1,
+            "bind": {
+              "scope": "item",
+              "path": "/photos"
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 340,
+                "ratio": "custom"
+              },
+              "sp": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 228,
+                "ratio": "custom"
+              }
+            }
+          },
+          "c_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:heading",
+              "weight": 400,
+              "color": "#1A1617",
+              "lineHeight": 1.5238,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 356,
+                "w": 72,
+                "h": 32,
+                "size": 21
+              },
+              "sp": {
+                "x": 0,
+                "y": 240,
+                "w": 72,
+                "h": 48,
+                "size": 16
+              }
+            }
+          },
+          "c_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:accent",
+              "weight": 400,
+              "color": "#6B1E2B",
+              "lineHeight": 1.2857,
+              "letterSpacing": 0,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 72,
+                "y": 354,
+                "w": 28,
+                "h": 36,
+                "size": 28
+              },
+              "sp": {
+                "x": 72,
+                "y": 238,
+                "w": 28,
+                "h": 36,
+                "size": 24
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 59.7222,
+          "y": 640,
+          "w": 34.7222,
+          "h": 410
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 948,
+          "w": 87.6923,
+          "h": 292
+        }
+      }
+    },
+    "pl_note": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_plats",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "表示の値段はすべて税込みです。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#5C5257",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0308
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 1160,
+          "w": 43.0556,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 1270,
+          "w": 87.6923,
+          "h": 20,
+          "size": 12
+        }
+      }
+    },
+    "ca_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_carte",
+      "asset": "ast_st01",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 80,
+          "w": 36.1111,
+          "h": 600,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 420,
+          "w": 87.6923,
+          "h": 400,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "ca_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_carte",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "La Carte"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.3,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 47.2222,
+          "y": 62,
+          "w": 47.2222,
+          "h": 156,
+          "size": 120
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 31,
+          "w": 87.6923,
+          "h": 78,
+          "size": 60
+        }
+      }
+    },
+    "ca_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_carte",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ほかにも、ワインに合う品を"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#D2A74A",
+        "lineHeight": 1.6,
+        "letterSpacing": 0.08
+      },
+      "layout": {
+        "pc": {
+          "x": 47.5,
+          "y": 220,
+          "w": 44.4444,
+          "h": 24,
+          "size": 15
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 112,
+          "w": 87.6923,
+          "h": 22,
+          "size": 13
+        }
+      }
+    },
+    "ca_rows": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_carte",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "pick": [
+          "itm_m002",
+          "itm_m003",
+          "itm_m006"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "gap": {
+          "pc": 0,
+          "sp": 0
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 96,
+          "sp": 72
+        },
+        "elements": {
+          "r_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:heading",
+              "weight": 400,
+              "color": "#F4EEE6",
+              "lineHeight": 1.6364,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 26,
+                "w": 64,
+                "h": 36,
+                "size": 22
+              },
+              "sp": {
+                "x": 0,
+                "y": 18,
+                "w": 64,
+                "h": 36,
+                "size": 16
+              }
+            }
+          },
+          "r_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:accent",
+              "weight": 400,
+              "color": "#D2A74A",
+              "lineHeight": 1.4286,
+              "letterSpacing": 0,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 64,
+                "y": 22,
+                "w": 36,
+                "h": 40,
+                "size": 28
+              },
+              "sp": {
+                "x": 64,
+                "y": 16,
+                "w": 36,
+                "h": 36,
+                "size": 24
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 47.2222,
+          "y": 290,
+          "w": 47.2222,
+          "h": 288
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 152,
+          "w": 87.6923,
+          "h": 216
+        }
+      }
+    },
+    "vn_ph": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_wine",
+      "asset": "ast_wn01",
+      "layout": {
+        "pc": {
+          "x": 41.6667,
+          "y": 0,
+          "w": 58.3333,
+          "h": 760,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 100,
+          "h": 380,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "vn_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_wine",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Le Vin"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.3,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 130,
+          "w": 69.4444,
+          "h": 260,
+          "size": 200
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 316,
+          "w": 87.6923,
+          "h": 125,
+          "size": 96
+        }
+      }
+    },
+    "vn_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_wine",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ワイン"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#C89B3C",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429
+      },
+      "layout": {
+        "pc": {
+          "x": 6.1111,
+          "y": 410,
+          "w": 27.7778,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 444,
+          "w": 87.6923,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "vn_p": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_wine",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "その夜の料理に合わせて、グラスでも、ボトルでも。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.875,
+        "letterSpacing": 0.0313
+      },
+      "layout": {
+        "pc": {
+          "x": 6.1111,
+          "y": 444,
+          "w": 30.5556,
+          "h": 60,
+          "size": 16
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 470,
+          "w": 87.6923,
+          "h": 56,
+          "size": 15
+        }
+      }
+    },
+    "vn_rows": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_wine",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_wine",
+        "pick": [
+          "itm_m007",
+          "itm_m008"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "gap": {
+          "pc": 0,
+          "sp": 0
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 84,
+          "sp": 72
+        },
+        "elements": {
+          "w_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:heading",
+              "weight": 400,
+              "color": "#F4EEE6",
+              "lineHeight": 1.6364,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 26,
+                "w": 64,
+                "h": 36,
+                "size": 22
+              },
+              "sp": {
+                "x": 0,
+                "y": 18,
+                "w": 64,
+                "h": 36,
+                "size": 16
+              }
+            }
+          },
+          "w_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:accent",
+              "weight": 400,
+              "color": "#C89B3C",
+              "lineHeight": 1.4286,
+              "letterSpacing": 0,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 64,
+                "y": 22,
+                "w": 36,
+                "h": 40,
+                "size": 28
+              },
+              "sp": {
+                "x": 64,
+                "y": 16,
+                "w": 36,
+                "h": 36,
+                "size": 24
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 6.1111,
+          "y": 524,
+          "w": 30.5556,
+          "h": 168
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 532,
+          "w": 87.6923,
+          "h": 144
+        }
+      }
+    },
+    "vn_note": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_wine",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "表示の値段はすべて税込みです。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0308
+      },
+      "layout": {
+        "pc": {
+          "x": 6.1111,
+          "y": 700,
+          "w": 30.5556,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 690,
+          "w": 87.6923,
+          "h": 20,
+          "size": 12
+        }
+      }
+    },
+    "in_en": {
+      "type": "text",
+      "z": 3,
+      "role": "heading",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Accès"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#6B1E2B",
+        "lineHeight": 1.3,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 23,
+          "w": 41.6667,
+          "h": 234,
+          "size": 180
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 30,
+          "w": 87.6923,
+          "h": 88,
+          "size": 68
+        }
+      }
+    },
+    "in_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご案内"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#6B1E2B",
+        "lineHeight": 1.5714,
+        "letterSpacing": 0.1429
+      },
+      "layout": {
+        "pc": {
+          "x": 5.8333,
+          "y": 262,
+          "w": 27.7778,
+          "h": 22,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 122,
+          "w": 87.6923,
+          "h": 20,
+          "size": 13
+        }
+      }
+    },
+    "in_l0": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#D9CFC2",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 290,
+          "w": 40.2778,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 150,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "in_k0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご住所"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#6B1E2B",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 308,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 157,
+          "w": 87.6923,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 307,
+          "w": 31.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 181,
+          "w": 87.6923,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_l1": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#D9CFC2",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 350,
+          "w": 40.2778,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 216,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "in_k1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#6B1E2B",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 368,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 223,
+          "w": 87.6923,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "17:30〜23:00（L.O. 22:00）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 367,
+          "w": 31.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 247,
+          "w": 87.6923,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_l2": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#D9CFC2",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 410,
+          "w": 40.2778,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 282,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "in_k2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "定休日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#6B1E2B",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 428,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 289,
+          "w": 87.6923,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "日曜日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 427,
+          "w": 31.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 313,
+          "w": 87.6923,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_l3": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#D9CFC2",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 470,
+          "w": 40.2778,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 348,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "in_k3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お席"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#6B1E2B",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 488,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 355,
+          "w": 87.6923,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "カウンター6席・テーブル14席"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 487,
+          "w": 31.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 379,
+          "w": 87.6923,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_l4": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#D9CFC2",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 530,
+          "w": 40.2778,
+          "h": 1
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 414,
+          "w": 87.6923,
+          "h": 1
+        }
+      }
+    },
+    "in_k4": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お電話"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#6B1E2B",
+        "lineHeight": 1.8462,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 548,
+          "w": 7.6389,
+          "h": 24,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 421,
+          "w": 87.6923,
+          "h": 22,
+          "size": 12
+        }
+      }
+    },
+    "in_v4": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#1A1617",
+        "lineHeight": 1.625,
+        "letterSpacing": 0.0188,
+        "link": {
+          "kind": "shopPhone"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 547,
+          "w": 31.9444,
+          "h": 26,
+          "size": 16
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 445,
+          "w": 87.6923,
+          "h": 26,
+          "size": 15
+        }
+      }
+    },
+    "in_tel_b": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#6B1E2B",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 620,
+          "w": 19.4444,
+          "h": 56
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 488,
+          "w": 42.0513,
+          "h": 50
+        }
+      },
+      "link": {
+        "kind": "shopPhone"
+      }
+    },
+    "in_tel_t": {
+      "type": "text",
+      "z": 4,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お電話する"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#F4EEE6",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0.0857,
+        "align": "center",
+        "link": {
+          "kind": "shopPhone"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 636,
+          "w": 19.4444,
+          "h": 24,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 501,
+          "w": 42.0513,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "in_map_b": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#1A1617",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 26.3889,
+          "y": 620,
+          "w": 19.4444,
+          "h": 56
+        },
+        "sp": {
+          "x": 51.7949,
+          "y": 488,
+          "w": 42.0513,
+          "h": 50
+        }
+      },
+      "link": {
+        "kind": "url",
+        "value": "https://www.google.com/maps/search/?api=1&query=%E5%85%B5%E5%BA%AB%E7%9C%8C%E8%8A%A6%E5%B1%8B%E5%B8%82%E5%A4%A7%E5%8E%9F%E7%94%BA%20Bistro%20%C3%A0%20Vin%20Le%20Pivot",
+        "newTab": true
+      }
+    },
+    "in_map_t": {
+      "type": "text",
+      "z": 4,
+      "role": "body",
+      "section": "sec_info",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "地図で開く"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 500,
+        "color": "#F4EEE6",
+        "lineHeight": 1.7143,
+        "letterSpacing": 0.0857,
+        "align": "center",
+        "link": {
+          "kind": "url",
+          "value": "https://www.google.com/maps/search/?api=1&query=%E5%85%B5%E5%BA%AB%E7%9C%8C%E8%8A%A6%E5%B1%8B%E5%B8%82%E5%A4%A7%E5%8E%9F%E7%94%BA%20Bistro%20%C3%A0%20Vin%20Le%20Pivot",
+          "newTab": true
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 26.3889,
+          "y": 636,
+          "w": 19.4444,
+          "h": 24,
+          "size": 14
+        },
+        "sp": {
+          "x": 51.7949,
+          "y": 501,
+          "w": 42.0513,
+          "h": 24,
+          "size": 14
+        }
+      }
+    },
+    "in_mapbox": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "#D9CFC2",
+      "section": "sec_info",
+      "layout": {
+        "pc": {
+          "x": 51.3889,
+          "y": 90,
+          "w": 43.0556,
+          "h": 586
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 570,
+          "w": 87.6923,
+          "h": 390
+        }
+      }
+    },
+    "ft_name": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Le Pivot"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.2222,
+        "letterSpacing": 0.0139
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 62,
+          "w": 27.7778,
+          "h": 44,
+          "size": 36
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 44,
+          "w": 87.6923,
+          "h": 40,
+          "size": 32
+        }
+      }
+    },
+    "ft_addr": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.8571,
+        "letterSpacing": 0.0214
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 114,
+          "w": 27.7778,
+          "h": 26,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 88,
+          "w": 87.6923,
+          "h": 26,
+          "size": 14
+        }
+      }
+    },
+    "ft_n0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "当店について"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#about"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 41.6667,
+          "y": 60,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 132,
+          "w": 87.6923,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_n1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お料理"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#plats"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 41.6667,
+          "y": 90,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 164,
+          "w": 87.6923,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_n2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ワイン"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#vin"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 41.6667,
+          "y": 120,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 196,
+          "w": 87.6923,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_n3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "ご案内"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 2.1429,
+        "letterSpacing": 0.0214,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#acces"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 41.6667,
+          "y": 150,
+          "w": 13.8889,
+          "h": 30,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 228,
+          "w": 87.6923,
+          "h": 32,
+          "size": 15
+        }
+      }
+    },
+    "ft_hk": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#C89B3C",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 59.7222,
+          "y": 64,
+          "w": 29.1667,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 280,
+          "w": 87.6923,
+          "h": 20,
+          "size": 12
+        }
+      }
+    },
+    "ft_hv": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "17:30〜23:00"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "（L.O. 22:00）"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "日曜日 定休"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.8571,
+        "letterSpacing": 0.0214
+      },
+      "layout": {
+        "pc": {
+          "x": 59.7222,
+          "y": 90,
+          "w": 29.1667,
+          "h": 78,
+          "size": 14
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 304,
+          "w": 87.6923,
+          "h": 78,
+          "size": 14
+        }
+      }
+    },
+    "ft_tk": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お電話"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "#C89B3C",
+        "lineHeight": 1.6923,
+        "letterSpacing": 0.0923
+      },
+      "layout": {
+        "pc": {
+          "x": 59.7222,
+          "y": 180,
+          "w": 13.8889,
+          "h": 22,
+          "size": 13
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 396,
+          "w": 87.6923,
+          "h": 20,
+          "size": 12
+        }
+      }
+    },
+    "ft_tv": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.3636,
+        "letterSpacing": 0.0182,
+        "link": {
+          "kind": "shopPhone"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 59.7222,
+          "y": 206,
+          "w": 18.0556,
+          "h": 30,
+          "size": 22
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 420,
+          "w": 87.6923,
+          "h": 30,
+          "size": 22
+        }
+      }
+    },
+    "ft_copy": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "© Bistro à Vin Le Pivot"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 400,
+        "color": "#F4EEE6",
+        "lineHeight": 1.6667,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 256,
+          "w": 34.7222,
+          "h": 20,
+          "size": 12
+        },
+        "sp": {
+          "x": 6.1538,
+          "y": 524,
+          "w": 87.6923,
+          "h": 20,
+          "size": 12
+        }
+      }
+    }
+  }
+}

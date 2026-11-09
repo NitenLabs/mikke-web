@@ -1,0 +1,9 @@
+# wa-14 Bistro à Vin Le Pivot（架空のお店）の使用写真
+fv https://images.unsplash.com/photo-1676324558731-019dfc39b394?w=1040&h=1480&fit=crop&q=72&fm=webp
+ab https://images.unsplash.com/photo-1740149190825-71a3ded55f06?w=1000&h=1400&fit=crop&crop=focalpoint&fp-x=.39&fp-y=.62&fp-z=1.5&q=72&fm=webp
+bd https://images.unsplash.com/photo-1698614082118-8e6eaecb08ef?w=2000&h=780&fit=crop&q=72&fm=webp
+ch https://images.unsplash.com/photo-1695606392727-d8b959879721?w=1240&h=1440&fit=crop&crop=focalpoint&fp-x=.43&fp-y=.6&fp-z=1.4&q=72&fm=webp
+cf https://images.unsplash.com/photo-1675718343369-b2e46a5ceeca?w=1000&h=680&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.55&fp-z=1.5&q=72&fm=webp
+sk https://images.unsplash.com/photo-1720701247887-cab418baa6d6?w=1160&h=780&fit=crop&q=72&fm=webp
+st https://images.unsplash.com/photo-1689860892307-7db54ab276ba?w=1040&h=1200&fit=crop&q=72&fm=webp
+wn https://images.unsplash.com/photo-1789132019122-a6fb17333203?w=1440&h=1520&fit=crop&q=72&fm=webp

@@ -1,0 +1,53 @@
+{
+  "nameEn": "Le Pivot",
+  "kicker": "Bistro à Vin",
+  "copyright": "© Bistro à Vin Le Pivot",
+  "fvCopy": ["今夜は、", "ワインと小さなひと皿を。"],
+  "facts": [
+    ["ご住所", ["/location", "address"]],
+    ["営業時間", "17:30〜23:00（L.O. 22:00）"],
+    ["定休日", "日曜日"]
+  ],
+  "aboutEn": "Bonsoir.",
+  "aboutJa": "当店について",
+  "aboutHead": ["ワインに寄り添う、", "ビストロの夜。"],
+  "aboutCols": [
+    "グラスで楽しめるワインを常時10種類ほど。",
+    "シャルキュトリーから煮込みまで、ワインに寄り添うビストロ料理をお出しします。",
+    "おひとりでも、カウンターへどうぞ。"
+  ],
+  "seats": [["6", "カウンター"], ["14", "テーブル"]],
+  "bandEn": "Le Soir",
+  "bandJa": "灯りを落として、ゆっくりと。",
+  "platsEn": "Les Plats",
+  "platsJa": "お料理",
+  "note": "表示の値段はすべて税込みです。",
+  "carteEn": "La Carte",
+  "carteJa": "ほかにも、ワインに合う品を",
+  "vinEn": "Le Vin",
+  "vinJa": "ワイン",
+  "vinBody": "その夜の料理に合わせて、グラスでも、ボトルでも。",
+  "infoEn": "Accès",
+  "infoJa": "ご案内",
+  "infoRows": [
+    ["ご住所", ["/location", "address"]],
+    ["営業時間", "17:30〜23:00（L.O. 22:00）"],
+    ["定休日", "日曜日"],
+    ["お席", "カウンター6席・テーブル14席"],
+    ["お電話", ["/contact/phone", "phone"]]
+  ],
+  "telLabel": "お電話する",
+  "mapLabel": "地図で開く",
+  "footHours": ["17:30〜23:00", "（L.O. 22:00）", "日曜日 定休"],
+  "nav": [["当店について", "about"], ["お料理", "plats"], ["ワイン", "vin"], ["ご案内", "acces"]],
+  "photos": {
+    "fv": { "slot": "signature", "alt": "灯りの前の赤ワインのグラス", "page": "https://unsplash.com/photos/CSQNSwksxEY" },
+    "ab": { "slot": "interior", "alt": "暗い店内の壁に灯るランプ", "page": "https://unsplash.com/photos/1nq1Gg-deKk" },
+    "bd": { "slot": "interior", "alt": "テーブルの小さな灯りがともる夜の店内", "page": "https://unsplash.com/photos/6-zEmwjWDCQ" },
+    "ch": { "slot": "signature", "alt": "シャルキュトリーの盛り合わせ。木の板にチーズとオリーブを添えて", "page": "https://unsplash.com/photos/Tw2cU6VvTZo" },
+    "cf": { "slot": "signature", "alt": "黒い皿にのせた鴨もものコンフィ", "page": "https://unsplash.com/photos/kSEeyYcSrt8" },
+    "sk": { "slot": "signature", "alt": "牛ハラミのステーキ フリット添え", "page": "https://unsplash.com/photos/74Yok80QXyY" },
+    "st": { "slot": "product", "alt": "黒い器に盛った煮込み", "page": "https://unsplash.com/photos/WgrOML7JhSU" },
+    "wn": { "slot": "product", "alt": "灯りに透ける、グラスのワイン", "page": "https://unsplash.com/photos/YkIPdbDRc74" }
+  }
+}

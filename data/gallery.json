@@ -41,6 +41,13 @@
       "genre": "パティスリー",
       "mood": "淡いピンクと白に、やわらかい欧文。生菓子と焼き菓子のパティスリー",
       "path": "luneclaire"
+    },
+    {
+      "id": "lepivot",
+      "name": "Bistro à Vin Le Pivot",
+      "genre": "ビストロ",
+      "mood": "ワインレッドと大きな欧文。雑誌のような組みの、夜のビストロ",
+      "path": "lepivot"
     }
   ]
 }
