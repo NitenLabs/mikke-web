@@ -15,6 +15,7 @@ export const FONT_REGISTRY = {
   "cormorant-garamond": { family: "Cormorant Garamond", generic: "serif", param: "Cormorant+Garamond:ital,wght@0,400;0,500;1,300" },
   "la-belle-aurore": { family: "La Belle Aurore", generic: "cursive", param: "La+Belle+Aurore" },
   "eb-garamond": { family: "EB Garamond", generic: "serif", param: "EB+Garamond:ital,wght@0,400;0,500;1,400" },
+  "playfair-display": { family: "Playfair Display", generic: "serif", param: "Playfair+Display:ital,wght@0,400;0,500;1,400" },
   "space-mono": { family: "Space Mono", generic: "monospace", param: "Space+Mono:wght@400;700" },
 };
 
