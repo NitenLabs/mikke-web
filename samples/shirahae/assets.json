@@ -1,0 +1,343 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 2000,
+        "height": 1581,
+        "bytes": 336012,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/r7A5P02iLr4"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "深緑の壁と赤い革のソファが並ぶ、古い喫茶店の店内"
+    },
+    "ast_in01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_in01.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 1342,
+        "bytes": 433308,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/X9xhmK5WUlc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "木の壁に花の絵が掛かり、大理石の卓と曲げ木の椅子が置かれた席"
+    },
+    "ast_in02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_in02.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 714,
+        "bytes": 110650,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/5Wu5K-JWK6w"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "光の縞が落ちる革張りの椅子"
+    },
+    "ast_in03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_in03.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 667,
+        "bytes": 72652,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/41CCQ-c9dkc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "火にかけたサイフォンと銅のやかん"
+    },
+    "ast_bn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_bn01.webp",
+        "mime": "image/webp",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 264630,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/KprL2PowOd8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "窓辺の盆にサイフォンと白いカップ"
+    },
+    "ast_mn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn01.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 800,
+        "bytes": 73110,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/op4gSRyHBwM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "木の卓の白いカップに注いだブラックコーヒー"
+    },
+    "ast_mn02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn02.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 454,
+        "bytes": 43200,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/erzd5vtgef8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "棚に並んだ絵柄のアンティークのカップ"
+    },
+    "ast_mn03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn03.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 533,
+        "bytes": 34562,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/KAzucTTCndM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "白いカップのコーヒーに、生クリームをのせて"
+    },
+    "ast_mn04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn04.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 640,
+        "bytes": 68372,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/QxsBxjA_mTg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "グラスに入った緑色の炭酸の飲み物"
+    },
+    "ast_mn05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn05.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 800,
+        "bytes": 40470,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/gynfA2P1dis"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "カラメルのかかったプリンとスプーン"
+    },
+    "ast_mn06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn06.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 533,
+        "bytes": 61104,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Htb3Neu9Tmg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "トマトソースのスパゲッティ"
+    },
+    "ast_mn07": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn07.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 800,
+        "bytes": 64166,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/DMD4oJ_DnIs"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "橙色の皿に重ねたホットケーキ"
+    },
+    "ast_mn08": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn08.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 600,
+        "bytes": 45820,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T02:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/1p2TwPJI_dM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T02:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "半熟のゆで卵とバターを塗ったトースト"
+    }
+  }
+}

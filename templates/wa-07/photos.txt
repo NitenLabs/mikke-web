@@ -1,0 +1,14 @@
+# wa-07 純喫茶 白南風（架空のお店）の使用写真
+fv https://images.unsplash.com/photo-1624265975281-34a30bbd6524?w=2000&q=80&fm=webp
+in1 https://images.unsplash.com/photo-1783949247747-210d1403da8a?w=900&q=70&fm=webp
+in2 https://images.unsplash.com/photo-1785303005967-0d9deb38fccf?w=1000&h=714&fit=crop&crop=bottom&q=80&fm=webp
+in3 https://images.unsplash.com/photo-1775987548158-e88513203c9d?w=1000&q=80&fm=webp
+bn https://images.unsplash.com/photo-1775626822332-740341540f49?w=2000&q=80&fm=webp
+mn1 https://images.unsplash.com/photo-1596362993377-717c67149feb?w=800&h=800&fit=crop&crop=bottom&q=80&fm=webp
+mn2 https://images.unsplash.com/photo-1758789900629-8d18c35e9d27?w=800&q=80&fm=webp
+mn3 https://images.unsplash.com/reserve/F8x8NPwTQEmVdXOHjO8o_Espresso.jpg?w=800&q=80&fm=webp
+mn4 https://images.unsplash.com/photo-1599876102132-baa0cf1ed0d5?w=800&q=80&fm=webp
+mn5 https://images.unsplash.com/photo-1780798465831-de1e4d58ee46?w=800&h=800&fit=crop&crop=bottom&q=80&fm=webp
+mn6 https://images.unsplash.com/photo-1713561058969-793049b01712?w=800&q=80&fm=webp
+mn7 https://images.unsplash.com/photo-1727732005580-875707975f6b?w=800&h=800&fit=crop&crop=bottom&q=80&fm=webp
+mn8 https://images.unsplash.com/photo-1559332174-18d25182eb11?w=800&q=80&fm=webp

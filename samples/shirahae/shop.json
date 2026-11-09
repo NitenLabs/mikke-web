@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_shirahae",
+  "updatedAt": "2026-11-10T02:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "純喫茶 白南風",
+    "nameKana": "じゅんきっさ しらはえ",
+    "genre": {
+      "template": "restaurant",
+      "detail": "喫茶店"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "宮塚町"
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:00",
+            "end": "18:00",
+            "lastOrder": "17:30"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:00",
+            "end": "18:00",
+            "lastOrder": "17:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "closed"
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:00",
+            "end": "18:00",
+            "lastOrder": "17:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:00",
+            "end": "18:00",
+            "lastOrder": "17:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:00",
+            "end": "18:00",
+            "lastOrder": "17:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:00",
+            "end": "18:00",
+            "lastOrder": "17:30"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 22,
+      "counter": 6,
+      "table": 16
+    },
+    "smoking": "none"
+  },
+  "catalog": {
+    "menus": {
+      "mnu_food": {
+        "order": 1,
+        "name": "お品書き"
+      }
+    },
+    "categories": {
+      "cat_menu": {
+        "menuId": "mnu_food",
+        "name": "お品書き",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_m001": {
+        "name": "白南風ブレンド",
+        "description": "ネルドリップで一杯ずつ淹れる、深煎りのブレンド。",
+        "photos": [
+          "ast_mn01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m001",
+            "type": "fixed",
+            "amount": 600
+          }
+        ],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_m002": {
+        "name": "浅煎りストレート",
+        "description": "その日の豆を、すっきりと。お好みの器で。",
+        "photos": [
+          "ast_mn02"
+        ],
+        "prices": [
+          {
+            "id": "prc_m002",
+            "type": "fixed",
+            "amount": 650
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m003": {
+        "name": "ウインナーコーヒー",
+        "description": "やわらかな生クリームをのせて。",
+        "photos": [
+          "ast_mn03"
+        ],
+        "prices": [
+          {
+            "id": "prc_m003",
+            "type": "fixed",
+            "amount": 750
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m004": {
+        "name": "クリームソーダ",
+        "description": "懐かしいメロンのソーダに、バニラのアイスをのせて。",
+        "photos": [
+          "ast_mn04"
+        ],
+        "prices": [
+          {
+            "id": "prc_m004",
+            "type": "fixed",
+            "amount": 800
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m005": {
+        "name": "自家製プリン",
+        "description": "カラメルのほろ苦い、昔ながらの固めのプリン。",
+        "photos": [
+          "ast_mn05"
+        ],
+        "prices": [
+          {
+            "id": "prc_m005",
+            "type": "fixed",
+            "amount": 550
+          }
+        ],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_m006": {
+        "name": "ナポリタン",
+        "description": "太めの麺をトマトで炒めた、喫茶店の定番。",
+        "photos": [
+          "ast_mn06"
+        ],
+        "prices": [
+          {
+            "id": "prc_m006",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m007": {
+        "name": "銅鍋のホットケーキ",
+        "description": "銅の鍋で、ふっくらと焼き上げます。",
+        "photos": [
+          "ast_mn07"
+        ],
+        "prices": [
+          {
+            "id": "prc_m007",
+            "type": "fixed",
+            "amount": 900
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m008": {
+        "name": "モーニング",
+        "description": "厚切りトースト・ゆで卵・ブレンド。11時まで。",
+        "photos": [
+          "ast_mn08"
+        ],
+        "prices": [
+          {
+            "id": "prc_m008",
+            "type": "fixed",
+            "amount": 750
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 1
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 2
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 3
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 4
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 5
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 6
+      },
+      "plc_m007": {
+        "itemId": "itm_m007",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 7
+      },
+      "plc_m008": {
+        "itemId": "itm_m008",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 8
+      }
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "colors": {
+    "background": { "value": "#F3ECDF" },
+    "surface": { "value": "#FBF7EF" },
+    "text": { "value": "#2B211B" },
+    "textMuted": { "value": "#5A4A3C" },
+    "primary": { "value": "#1F3A2E" },
+    "accent": { "value": "#7A5F2E" },
+    "line": { "value": "#A8874E" },
+    "lineSoft": { "value": "#DCD0B8" }
+  },
+  "fonts": { "heading": "zen-old-mincho", "body": "zen-old-mincho", "accent": "playfair-display" },
+  "textStyles": {
+    "pageTitle": { "font": "font:heading", "size": { "pc": 64, "sp": 36 }, "lineHeight": 1.4, "color": "theme:text" },
+    "heading": { "font": "font:heading", "size": { "pc": 40, "sp": 28 }, "lineHeight": 1.4, "color": "theme:text" },
+    "subheading": { "font": "font:body", "size": { "pc": 18, "sp": 16 }, "lineHeight": 1.7, "color": "theme:text" },
+    "body": { "font": "font:body", "size": { "pc": 16, "sp": 15 }, "lineHeight": 2, "color": "theme:text" },
+    "caption": { "font": "font:body", "size": { "pc": 13, "sp": 12 }, "lineHeight": 1.7, "color": "theme:textMuted" }
+  }
+}
