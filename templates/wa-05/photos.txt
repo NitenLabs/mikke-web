@@ -1,0 +1,8 @@
+# wa-05 日本料理 澄（架空のお店）の使用写真
+fv https://images.unsplash.com/photo-1516684732162-798a0062be99?w=2400&q=80&fm=jpg
+st1 https://images.unsplash.com/photo-1615361200141-f45040f367be?w=2400&q=80&fm=jpg
+st2 https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56?w=2400&q=80&fm=jpg
+st3 https://images.unsplash.com/photo-1562158074-d49fbeffcc91?w=2400&q=80&fm=jpg
+st4 https://images.unsplash.com/photo-1610701596007-11502861dcfa?w=2400&q=80&fm=jpg
+st5 https://images.unsplash.com/photo-1578749556568-bc2c40e68b61?w=2400&q=80&fm=jpg
+sn4 https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3?w=2400&q=80&fm=jpg

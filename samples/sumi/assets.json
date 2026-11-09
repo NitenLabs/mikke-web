@@ -1,0 +1,317 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.jpg",
+        "mime": "image/jpeg",
+        "height": 3600,
+        "width": 2400,
+        "bytes": 653158,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/photo-1516684732162-798a0062be99"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "黒い椀によそった白いご飯と、奥の朱塗りの汁椀"
+    },
+    "ast_st01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st01.jpg",
+        "mime": "image/jpeg",
+        "height": 3000,
+        "width": 2400,
+        "bytes": 856052,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/photo-1615361200141-f45040f367be"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "箸で持ち上げた握り"
+    },
+    "ast_st02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st02.jpg",
+        "mime": "image/jpeg",
+        "height": 1600,
+        "width": 2400,
+        "bytes": 275579,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/photo-1617196034796-73dfa7b1fd56"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "黒い長皿に並べた握りと箸"
+    },
+    "ast_st03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st03.jpg",
+        "mime": "image/jpeg",
+        "height": 1600,
+        "width": 2400,
+        "bytes": 212977,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/photo-1562158074-d49fbeffcc91"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "炙りを入れた握り二貫"
+    },
+    "ast_st04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st04.jpg",
+        "mime": "image/jpeg",
+        "height": 1600,
+        "width": 2400,
+        "bytes": 271230,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/photo-1610701596007-11502861dcfa"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "土ものの小さな器の取り合わせ"
+    },
+    "ast_st05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st05.jpg",
+        "mime": "image/jpeg",
+        "height": 1600,
+        "width": 2400,
+        "bytes": 617368,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/photo-1578749556568-bc2c40e68b61"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "木の棚に重ねた皿と鉢"
+    },
+    "ast_sn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sn01.jpg",
+        "mime": "image/jpeg",
+        "width": 1200,
+        "height": 1200,
+        "bytes": 1,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "甘鯛の松笠焼き"
+    },
+    "ast_sn02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sn02.jpg",
+        "mime": "image/jpeg",
+        "width": 1200,
+        "height": 1200,
+        "bytes": 1,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "蟹真丈の椀"
+    },
+    "ast_sn03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sn03.jpg",
+        "mime": "image/jpeg",
+        "width": 1200,
+        "height": 1200,
+        "bytes": 1,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "丹波の黒豆"
+    },
+    "ast_sn04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sn04.jpg",
+        "mime": "image/jpeg",
+        "height": 1600,
+        "width": 2400,
+        "bytes": 425226,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/photo-1618841557871-b4664fbf0cb3"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "九条葱の温うどん（土ものの鉢）"
+    },
+    "ast_se01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_se01.jpg",
+        "mime": "image/jpeg",
+        "width": 1200,
+        "height": 1200,
+        "bytes": 1,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "白木のカウンター"
+    },
+    "ast_se02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_se02.jpg",
+        "mime": "image/jpeg",
+        "width": 1200,
+        "height": 1200,
+        "bytes": 1,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T23:30:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://images.unsplash.com/"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T23:30:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "畳の個室"
+    }
+  }
+}

@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_sumi",
+  "updatedAt": "2026-11-09T23:30:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "日本料理 澄",
+    "nameKana": "にほんりょうり すみ",
+    "genre": {
+      "template": "restaurant",
+      "detail": "日本料理・割烹"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "業平町",
+    "access": {
+      "acc_jr": {
+        "station": "JR芦屋駅",
+        "method": "walk",
+        "minutes": 6,
+        "order": 1
+      }
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "lastOrder": "20:00"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "lastOrder": "20:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "closed"
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "lastOrder": "20:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "lastOrder": "20:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "lastOrder": "20:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "lastOrder": "20:00"
+          }
+        ]
+      }
+    },
+    "closedRules": [
+      {
+        "type": "nthWeekday",
+        "weekday": "tue",
+        "nth": [
+          3
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 14,
+      "counter": 8,
+      "privateRooms": 1
+    },
+    "smoking": "none"
+  },
+  "catalog": {
+    "menus": {
+      "mnu_seasonal": {
+        "order": 1,
+        "name": "季節の一品"
+      }
+    },
+    "categories": {
+      "cat_seasonal": {
+        "menuId": "mnu_seasonal",
+        "name": "季節の一品",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_s001": {
+        "name": "甘鯛の松笠焼き",
+        "description": "鱗を立てて香ばしく焼き上げ、身はふっくらと。柚子の香りを添えて。",
+        "photos": [
+          "ast_sn01"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_s002": {
+        "name": "蟹真丈の椀",
+        "description": "ずわい蟹をたっぷりと練り込んだ真丈に、ひきたての一番出汁を張って。",
+        "photos": [
+          "ast_sn02"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_s003": {
+        "name": "丹波の黒豆",
+        "description": "三日かけて、皮が破れないようにゆっくりと含め煮にしました。",
+        "photos": [
+          "ast_sn03"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_s004": {
+        "name": "九条葱の温うどん",
+        "description": "お食事の締めくくりに。甘みの増した冬の葱と、澄んだ出汁で。",
+        "photos": [
+          "ast_sn04"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      }
+    },
+    "placements": {
+      "plc_s001": {
+        "itemId": "itm_s001",
+        "categoryId": "cat_seasonal",
+        "order": 1,
+        "menuId": "mnu_seasonal"
+      },
+      "plc_s002": {
+        "itemId": "itm_s002",
+        "categoryId": "cat_seasonal",
+        "order": 2,
+        "menuId": "mnu_seasonal"
+      },
+      "plc_s003": {
+        "itemId": "itm_s003",
+        "categoryId": "cat_seasonal",
+        "order": 3,
+        "menuId": "mnu_seasonal"
+      },
+      "plc_s004": {
+        "itemId": "itm_s004",
+        "categoryId": "cat_seasonal",
+        "order": 4,
+        "menuId": "mnu_seasonal"
+      }
+    }
+  }
+}
