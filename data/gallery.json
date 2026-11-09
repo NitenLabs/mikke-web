@@ -55,6 +55,13 @@
       "genre": "焼肉店",
       "mood": "黒毛和牛の一頭買いを、七輪の備長炭で焼く焼肉店",
       "path": "kurozumi"
+    },
+    {
+      "id": "ichinoshio",
+      "name": "鮨 一之汐",
+      "genre": "鮨店",
+      "mood": "明石・淡路の魚で組み立てる、白木のカウンター8席のおまかせ",
+      "path": "ichinoshio"
     }
   ]
 }
