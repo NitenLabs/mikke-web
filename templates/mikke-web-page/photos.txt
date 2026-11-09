@@ -1,0 +1,6 @@
+# すべて仮。samples/ashiyado/assets.json に出どころの記録あり（Unsplash License）
+hero https://unsplash.com/photos/6UHULYaSIfs
+about-main https://unsplash.com/photos/mZd0EO0F9ro
+about-sub https://unsplash.com/photos/iJ7a6JLmAUI
+band https://unsplash.com/photos/Gm03YomE8E4
+contact https://unsplash.com/photos/oZzoDW61aoM
