@@ -4,11 +4,11 @@
     "ast_fv01": {
       "kind": "photo",
       "file": {
-        "key": "ast_fv01.jpg",
-        "mime": "image/jpeg",
-        "height": 3600,
-        "width": 2400,
-        "bytes": 653158,
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 2000,
+        "height": 3000,
+        "bytes": 290542,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -30,11 +30,11 @@
     "ast_st01": {
       "kind": "photo",
       "file": {
-        "key": "ast_st01.jpg",
-        "mime": "image/jpeg",
-        "height": 3000,
-        "width": 2400,
-        "bytes": 856052,
+        "key": "ast_st01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1500,
+        "bytes": 137862,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -56,11 +56,11 @@
     "ast_st02": {
       "kind": "photo",
       "file": {
-        "key": "ast_st02.jpg",
-        "mime": "image/jpeg",
-        "height": 1600,
-        "width": 2400,
-        "bytes": 275579,
+        "key": "ast_st02.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 64790,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -82,11 +82,11 @@
     "ast_st03": {
       "kind": "photo",
       "file": {
-        "key": "ast_st03.jpg",
-        "mime": "image/jpeg",
-        "height": 1600,
-        "width": 2400,
-        "bytes": 212977,
+        "key": "ast_st03.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 48862,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -108,11 +108,11 @@
     "ast_st04": {
       "kind": "photo",
       "file": {
-        "key": "ast_st04.jpg",
-        "mime": "image/jpeg",
-        "height": 1600,
-        "width": 2400,
-        "bytes": 271230,
+        "key": "ast_st04.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 51582,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -134,11 +134,11 @@
     "ast_st05": {
       "kind": "photo",
       "file": {
-        "key": "ast_st05.jpg",
-        "mime": "image/jpeg",
-        "height": 1600,
-        "width": 2400,
-        "bytes": 617368,
+        "key": "ast_st05.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 153612,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -160,11 +160,11 @@
     "ast_sn01": {
       "kind": "photo",
       "file": {
-        "key": "ast_sn01.jpg",
-        "mime": "image/jpeg",
-        "height": 2400,
-        "width": 2400,
-        "bytes": 859108,
+        "key": "ast_sn01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1200,
+        "bytes": 154532,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -186,11 +186,11 @@
     "ast_sn02": {
       "kind": "photo",
       "file": {
-        "key": "ast_sn02.jpg",
-        "mime": "image/jpeg",
-        "height": 1600,
-        "width": 2400,
-        "bytes": 412834,
+        "key": "ast_sn02.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 123096,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -212,11 +212,11 @@
     "ast_sn03": {
       "kind": "photo",
       "file": {
-        "key": "ast_sn03.jpg",
-        "mime": "image/jpeg",
-        "height": 3600,
-        "width": 2400,
-        "bytes": 991394,
+        "key": "ast_sn03.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 241800,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -238,11 +238,11 @@
     "ast_sn04": {
       "kind": "photo",
       "file": {
-        "key": "ast_sn04.jpg",
-        "mime": "image/jpeg",
-        "height": 1600,
-        "width": 2400,
-        "bytes": 425226,
+        "key": "ast_sn04.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 112584,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -264,11 +264,11 @@
     "ast_se01": {
       "kind": "photo",
       "file": {
-        "key": "ast_se01.jpg",
-        "mime": "image/jpeg",
-        "height": 1600,
-        "width": 2400,
-        "bytes": 710109,
+        "key": "ast_se01.webp",
+        "mime": "image/webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 337168,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -290,11 +290,11 @@
     "ast_se02": {
       "kind": "photo",
       "file": {
-        "key": "ast_se02.jpg",
-        "mime": "image/jpeg",
-        "height": 1600,
-        "width": 2400,
-        "bytes": 436544,
+        "key": "ast_se02.webp",
+        "mime": "image/webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 159760,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",

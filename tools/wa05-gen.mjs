@@ -21,29 +21,28 @@ const PAGES = {
   se1: "https://unsplash.com/photos/wCrSi4mSsxM", se2: "https://unsplash.com/photos/ITx82kndvm0",
 };
 const astId = (k) => (k === "fv" ? "fv01" : `${k.slice(0, 2)}0${k[2]}`); // 台帳の ID は4文字以上
-// JPEG の大きさを読む
-function jpegSize(b) {
-  for (let i = 2; i < b.length - 9;) {
-    if (b[i] !== 0xff) { i++; continue; }
-    const m = b[i + 1];
-    if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return { height: b.readUInt16BE(i + 5), width: b.readUInt16BE(i + 7) };
-    i += 2 + b.readUInt16BE(i + 2);
-  }
-  throw new Error("JPEG の大きさが読めません");
+// WebP の大きさを読む（VP8X・VP8・VP8L）
+function webpSize(b) {
+  if (b.toString("latin1", 0, 4) !== "RIFF" || b.toString("latin1", 8, 12) !== "WEBP") throw new Error("WebP ではありません");
+  const kind = b.toString("latin1", 12, 16);
+  if (kind === "VP8X") return { width: b.readUIntLE(24, 3) + 1, height: b.readUIntLE(27, 3) + 1 };
+  if (kind === "VP8 ") return { width: b.readUInt16LE(26) & 0x3fff, height: b.readUInt16LE(28) & 0x3fff };
+  if (kind === "VP8L") { const n = b.readUInt32LE(21); return { width: (n & 0x3fff) + 1, height: ((n >> 14) & 0x3fff) + 1 }; }
+  throw new Error("WebP の大きさが読めません");
 }
 const urls = Object.fromEntries(fs.readFileSync(LIST, "utf8").split("\n").map((l) => l.trim()).filter((l) => l && !l.startsWith("#")).map((l) => l.split(/\s+/)));
 fs.mkdirSync(`${DIR}/media`, { recursive: true });
 const assets = {};
 for (const [k, [slot, alt]] of Object.entries(SLOTS)) {
-  const id = `ast_${astId(k)}`, key = `${id}.jpg`, f = `${DIR}/media/${key}`, url = urls[k];
+  const id = `ast_${astId(k)}`, key = `${id}.webp`, f = `${DIR}/media/${key}`, url = urls[k];
   if (url && !fs.existsSync(f)) {
     const res = await fetch(url);
     if (!res.ok) throw new Error(`写真 ${k}: HTTP ${res.status}`);
     fs.writeFileSync(f, Buffer.from(await res.arrayBuffer()));
   }
   const buf = fs.existsSync(f) ? fs.readFileSync(f) : null;
-  const size = buf ? jpegSize(buf) : { width: 1200, height: 1200 };
-  assets[id] = { kind: "photo", file: { key, mime: "image/jpeg", ...size, bytes: buf ? buf.length : 1, exifStripped: true }, uploadedAt: NOW, uploadedBy: "producer",
+  const size = buf ? webpSize(buf) : { width: 1200, height: 1200 };
+  assets[id] = { kind: "photo", file: { key, mime: "image/webp", ...size, bytes: buf ? buf.length : 1, exifStripped: true }, uploadedAt: NOW, uploadedBy: "producer",
     origin: { kind: "stock", provider: "unsplash", pageUrl: PAGES[k] ?? (url ? url.split("?")[0] : "https://images.unsplash.com/") },
     rights: { basis: "licensed", confirmedAt: NOW, confirmedBy: "producer", note: "Unsplash License（架空のお店のデザイン見本）" }, slot, alt };
 }
