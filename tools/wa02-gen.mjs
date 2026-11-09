@@ -181,6 +181,8 @@ t("ft_mikke", "sec_footer", "芦屋みっけ 掲載店", [[13, 18.2, 0], [13, 18
 
 if (shop.salesDraft) t("ft_draft", "sec_footer", "営業用の見本（写真・品は仮）", [[13, 18.2, 0], [13, 18.2, 0]], B, "#646464", [{ x: 120, y: 322, w: 1200, h: 18.2 }, { x: 30, y: 295.5, w: 330, h: 18.2 }], C);
 
+// 電話番号の文字は押せるようにする（文字の箱の link）
+for (const e of Object.values(els)) if (e.type === "text" && !e.style?.link && e.paragraphs?.length === 1 && e.paragraphs[0].runs?.length === 1 && e.paragraphs[0].runs[0].bind?.path === "/contact/phone") (e.style ||= {}).link = { kind: "shopPhone" };
 const site = { schemaVersion: 1, shopId: shop.shopId, templateId: "tpl_wa_02", canvas: { pcContentWidth: P, spDesignWidth: S },
   pages: { pg_home: { kind: "home", slug: "/", navLabel: "TOP", navOrder: 1, showInNav: false, published: true, sections: ["sec_firstv", ...(shop.story ? ["sec_story"] : []), "sec_gallery", "sec_menu", "sec_info", "sec_access", "sec_resv"] },
     pg_404: { kind: "notFound", slug: "/404", navLabel: "404", navOrder: 9, showInNav: false, published: true, sections: [] } },

@@ -1416,7 +1416,10 @@
         "weight": 400,
         "color": "theme:text",
         "lineHeight": 1.8,
-        "letterSpacing": 0.03
+        "letterSpacing": 0.03,
+        "link": {
+          "kind": "shopPhone"
+        }
       },
       "layout": {
         "pc": {
@@ -2281,7 +2284,10 @@
         "weight": 400,
         "color": "theme:text",
         "lineHeight": 1.5,
-        "letterSpacing": 0.05
+        "letterSpacing": 0.05,
+        "link": {
+          "kind": "shopPhone"
+        }
       },
       "layout": {
         "pc": {

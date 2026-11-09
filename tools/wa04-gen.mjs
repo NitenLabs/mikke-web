@@ -124,6 +124,8 @@ t("ft_mikke", "sec_footer", "芦屋みっけ 掲載店", SM, B, CR, [{ x: 1194.4
 t("ft_draft", "sec_footer", "営業用の見本（写真・品は仮）", SM, B, CR, [{ x: 72, y: 400, w: 500, h: 18.4 }, { x: 19.5, y: 545, w: 351, h: 16 }]);
 t("ft_copy", "sec_footer", "© HAMA SYOU", [[14.4, 23.04, 0], [8.58, 13.73, 0]], A, CR, [{ x: 72, y: 426.4, w: 500, h: 23 }, { x: 19.5, y: 588, w: 351, h: 13.7 }]);
 
+// 電話番号の文字は押せるようにする（文字の箱の link）
+for (const e of Object.values(els)) if (e.type === "text" && !e.style?.link && e.paragraphs?.length === 1 && e.paragraphs[0].runs?.length === 1 && e.paragraphs[0].runs[0].bind?.path === "/contact/phone") (e.style ||= {}).link = { kind: "shopPhone" };
 const site = { schemaVersion: 1, shopId: shop.shopId, templateId: "tpl_wa_04", canvas: { pcContentWidth: P, spDesignWidth: S },
   pages: { pg_home: { kind: "home", slug: "/", navLabel: "TOP", navOrder: 1, showInNav: false, published: true, sections: ["sec_firstv", "sec_about", "sec_message", "sec_recommend", "sec_menu", "sec_photo", "sec_info", "sec_resv"] },
     pg_404: { kind: "notFound", slug: "/404", navLabel: "404", navOrder: 9, showInNav: false, published: true, sections: [] } },

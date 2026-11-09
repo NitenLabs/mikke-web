@@ -1936,7 +1936,10 @@
         "weight": 400,
         "color": "#770312",
         "lineHeight": 2,
-        "letterSpacing": 0
+        "letterSpacing": 0,
+        "link": {
+          "kind": "shopPhone"
+        }
       },
       "layout": {
         "pc": {
