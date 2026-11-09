@@ -64,7 +64,8 @@ function apply(file, isHome) {
   const resHref = isHome ? "#reserve" : "./#reserve";
   h = h.replace(/(<div class="nav-menu">)([\s\S]*?)(<\/div>)/, `$1$2<a class="wa13-res" href="${resHref}">${C.labels.reserveButton}</a>$3`);
   if (isHome) {
-    const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+    const mapQ = C.geo ? `${C.geo.lat},${C.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&hl=ja`; // 緯度経度＋拡大率なら Google の場所の札が出にくい（wa-07 と同じ）
+    const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
     const re = /(<div data-el="in_map"[^>]*>)/;
     if (!re.test(h)) throw new Error("in_map が見つかりません");
     h = h.replace(re, `$1${map}`);

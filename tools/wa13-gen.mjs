@@ -236,7 +236,7 @@ photo("mn_ph2", "sec_menu", "ast_phmn2", 3, { x: 868, y: phP, w: 394, h: 224 }, 
 tablet.secs.sec_menu = `calc(${rem(phT + 40 + 32 + 32)} + ${phH})`;
 
 // ---- 6 お席（大きな写真に札を 1 枚重ねる。札の高さは文の量に合わせて SPEC の 592 から 520 に詰めた）
-sec("sec_seats", "お席", 936, 840, { anchor: "seats", nav: NAV(C.labels.seats, 3) });
+sec("sec_seats", "お席", 856, 840, { anchor: "seats", nav: NAV(C.labels.seats, 3) });
 photo("se_ph", "sec_seats", "ast_phse1", 1, { x: 124, y: 160, w: 808, h: 505 }, { x: 0, y: 64, w: 390, h: 244 });
 {
   const pc = { x: 868, y: 256, w: 448, h: 520 }, sp = { x: 20, y: 276, w: 350, h: 468 }, seW = `(100vw - ${rem(M * 2)})`, seH = `(${seW} * .625)`;
