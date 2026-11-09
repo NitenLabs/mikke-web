@@ -199,3 +199,7 @@ test("D6 出る品（3.4）：販売中・出す月・販売の期間・メニ�
   assert.ok(ids.length >= base.length);
   assert.deepEqual(buildBundle(input()).meta.displayedItems, visibleItemIds(shop, "2026-10-24"));
 });
+
+test("営業用の見本（salesDraft）は公開の一式を作らずエラーにする", () => {
+  assert.throws(() => buildBundle({ shop: { salesDraft: true, basic: { name: "見本" } }, assets: {}, origin: "https://example.com", pages: [] }), /salesDraft/);
+});

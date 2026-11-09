@@ -188,18 +188,22 @@ for (const c of Object.values(cats)) if (c.photo) usableAsset(c.photo, `括り $
 
 // 素材サイトの写真（stock）は、架空のサンプルの店（isSample=true）でだけ「実物の枠」に使える。
 // 実在の店では、お客さんに実物と誤解させないため禁止する。飾りの写真（背景の質感など＝slot other・背景）は許す。
+// 営業用の見本（salesDraft=true。公開しない）だけは、エラーの代わりに差し替えの警告を出す（公開は publish が止める）。
 if (shop.isSample !== true) {
+  const stockIssue = shop.salesDraft === true
+    ? (m) => warn(`${m.split("。")[0]}。公開前に実物の写真へ差し替えてください（営業用の見本）`)
+    : err;
   const realSlots = new Set(["exterior", "signature", "interior", "work", "staff", "product"]);
   const isStock = (id) => assets.assets[id]?.origin?.kind === "stock";
   for (const [id, a] of Object.entries(assets.assets))
     if (a.origin?.kind === "stock" && realSlots.has(a.slot))
-      err(`[写真] ${id}: 素材サイトの写真（stock）を実物の枠（${a.slot}）に使っています。実在の店では実物の写真を使ってください（サンプルの店だけ許可）`);
+      stockIssue(`[写真] ${id}: 素材サイトの写真（stock）を実物の枠（${a.slot}）に使っています。実在の店では実物の写真を使ってください（サンプルの店だけ許可）`);
   for (const it of Object.values(items)) for (const a of it.photos || []) if (isStock(a))
-    err(`[写真] 品 ${it.name}: 素材サイトの写真（stock）は品の写真に使えません（実物と誤解させないため。サンプルの店だけ許可）`);
+    stockIssue(`[写真] 品 ${it.name}: 素材サイトの写真（stock）を品の写真に使っています。実物と誤解させないためサンプルの店だけ許可`);
   for (const p of Object.values(shop.people || {})) if (p.photo && isStock(p.photo))
-    err(`[写真] 人 ${p.name}: 素材サイトの写真（stock）は人の写真に使えません（実物と誤解させないため。サンプルの店だけ許可）`);
+    stockIssue(`[写真] 人 ${p.name}: 素材サイトの写真（stock）を人の写真に使っています。実物と誤解させないためサンプルの店だけ許可`);
   for (const c of Object.values(cats)) if (c.photo && isStock(c.photo))
-    err(`[写真] 括り ${c.name}: 素材サイトの写真（stock）は括りの写真に使えません（実物と誤解させないため。サンプルの店だけ許可）`);
+    stockIssue(`[写真] 括り ${c.name}: 素材サイトの写真（stock）を括りの写真に使っています。実物と誤解させないためサンプルの店だけ許可`);
 }
 
 // ---------- 2c. ③ 見た目の設定 ----------

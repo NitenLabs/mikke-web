@@ -488,7 +488,7 @@ function pageHead(resolved, page, assetPrefix, css) {
   const lines = [
     `<meta charset="utf-8">`,
     `<meta name="viewport" content="width=device-width,initial-scale=1">`,
-    resolved.shop.isSample && `<meta name="robots" content="noindex,nofollow">`,
+    (resolved.shop.isSample || resolved.shop.salesDraft) && `<meta name="robots" content="noindex,nofollow">`,
     `<title>${esc(title)}</title>`,
     desc && `<meta name="description" content="${esc(desc)}">`,
     `<meta property="og:type" content="website">`,
