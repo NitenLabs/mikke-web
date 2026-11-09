@@ -206,6 +206,9 @@ if (shop.isSample !== true) {
     stockIssue(`[写真] 括り ${c.name}: 素材サイトの写真（stock）を括りの写真に使っています。実物と誤解させないためサンプルの店だけ許可`);
 }
 
+// 「架空のお店」の印（demo=true）は、架空のサンプルの店（isSample=true）にだけ立てられる
+if (shop.demo === true && shop.isSample !== true) err("[架空の印] demo は架空のお店（isSample=true）にだけ立てられます");
+
 // 仮の中身（draft=true）と値段未定（type=tbd）は、営業用の見本（salesDraft=true）でだけ使える
 {
   const drafts = [];

@@ -37,6 +37,7 @@ main{display:block}
 .sec{position:relative;width:100%;overflow:hidden}
 .sec[id]{scroll-margin-top:9rem}
 .cbox{position:relative;margin:0 auto}
+.demo-note{padding:1.2rem 2rem 1.6rem;font-size:max(11px,1.2rem);line-height:1.6;letter-spacing:.04em;text-align:center}
 .el{position:absolute}
 /* 改行の規則を明示的に固定する（エンジンごとの既定値の違いで折り返しがゆれないように） */
 .el-text{line-break:strict;word-break:normal;overflow-wrap:anywhere;white-space:normal}
@@ -373,11 +374,27 @@ ${headerHtml}
 <main>
 ${mainHtml}
 </main>
-${footerHtml}
+${footerHtml}${demoNoteHtml(resolved)}
 ${accScript}
 <script>${CLIENT_JS}</script>
 </body>
 </html>`;
+}
+
+// 架空のお店（① demo=true）の断り書き。どの型でも、全ページのフッターの直後にこの1か所から出す。
+// 背景はフッターと同じ色にして、文字は背景の明るさで黒か白を選ぶ（型ごとの配色に書かなくて済むように）。
+const DEMO_NOTE = "このサイトは架空のお店のデザイン見本です（芦屋みっけ）";
+function demoNoteHtml(resolved) {
+  if (resolved.shop.demo !== true) return "";
+  const token = resolved.site.sections[resolved.site.regions.footer].background?.color || "theme:background";
+  const value = token.startsWith("theme:") ? resolved.theme.colors[token.slice(6)]?.value : token;
+  return `\n<p class="demo-note" style="background:${colorCss(token)};color:${readableOn(value)}">${esc(DEMO_NOTE)}</p>`;
+}
+function readableOn(color) {
+  const m = /^#([0-9a-f]{6})$/i.exec(color || "");
+  if (!m) return "var(--c-text)";
+  const [r, g, b] = [0, 2, 4].map((i) => parseInt(m[1].slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 0.18 ? "rgba(0,0,0,.72)" : "rgba(255,255,255,.78)";
 }
 
 // ヘッダー・フッターの中身（cbox に要素）
@@ -426,7 +443,7 @@ ${head}
 <body data-page="pg_404">
 ${headerHtml}
 ${body}
-${footerHtml}
+${footerHtml}${demoNoteHtml(resolved)}
 </body>
 </html>`;
 }
@@ -472,7 +489,7 @@ ${head}
 <body data-page="${pageId}">
 ${headerHtml}
 ${body}
-${footerHtml}
+${footerHtml}${demoNoteHtml(resolved)}
 </body>
 </html>`;
 }
