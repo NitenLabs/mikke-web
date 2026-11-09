@@ -1,0 +1,551 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_mv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mv01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 1182864,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/tUMUjTr5nq4"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "暗い厨房で鍋から上がる炎"
+    },
+    "ast_sr01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 1579060,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/fLGAFGpqzKk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒い皿の豚肉料理"
+    },
+    "ast_sr02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1448,
+        "bytes": 319197,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/GZe_M6TUJ_k"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "暗い中の点心"
+    },
+    "ast_sr03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1920,
+        "bytes": 660808,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/dTNNDTbZr8I"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒い器の海老炒飯"
+    },
+    "ast_sr04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr04.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1601,
+        "bytes": 219836,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/RJJXmIwoKWs"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "白い皿の巻き物にソース"
+    },
+    "ast_sr05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr05.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 1060025,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/PuixgeUVs8M"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒い皿の甘酢炒め"
+    },
+    "ast_sr06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr06.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1984,
+        "bytes": 572568,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/W96HA1KzShY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "胡瓜の和え物"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 1014617,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/gacgdItFGYQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒地に石目の器"
+    },
+    "ast_ms01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ms01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3624,
+        "bytes": 768363,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/mcbSkZ3l0xc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "鍋から上がる炎"
+    },
+    "ast_rc01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rc01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 1662967,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/kRYg25DO9R0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒酢の角煮酢豚"
+    },
+    "ast_rc02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rc02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 1615962,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/hGeGkdSOkCg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "四川麻婆豆腐"
+    },
+    "ast_rc03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rc03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3599,
+        "bytes": 1571632,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/gH5nT0L3IaA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "和牛薄切り肉の四川辛味煮込み"
+    },
+    "ast_rc04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rc04.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 846008,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/rn0WM4No-5A"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "季節の魚の蒸し物"
+    },
+    "ast_mn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 279458,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/D-vDQMTfAAU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "水餃子"
+    },
+    "ast_mn02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 381447,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/5wWAIfnx1rM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "春巻"
+    },
+    "ast_mn03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1352,
+        "bytes": 363168,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/ZCNW4Zcnu5E"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "青椒肉絲"
+    },
+    "ast_mn04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn04.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1599,
+        "bytes": 595004,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/hJKJQrsNHGQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "海鮮焼きそば"
+    },
+    "ast_mn05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn05.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 2242,
+        "bytes": 679272,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/IAgbsR7iQBE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "大エビのマヨネーズソース"
+    },
+    "ast_mn06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn06.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 2226,
+        "bytes": 654505,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Su_Tte_jxYE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "ゴマ団子"
+    },
+    "ast_ph01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ph01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 531445,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/DtfzqdgC7AQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "薄暗い店の木の卓と皿"
+    },
+    "ast_rs01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rs01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 282442,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/2TsgKmKTi2I"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "灯りと和の器の棚"
+    }
+  }
+}

@@ -1,0 +1,482 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_hamasyou",
+  "salesDraft": true,
+  "updatedAt": "2026-11-09T21:00:00+09:00",
+  "basic": {
+    "name": "中國菜 浜正",
+    "nameKana": "ちゅうごくさい はましょう",
+    "genre": {
+      "template": "restaurant",
+      "detail": "中華料理・四川料理"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "東芦屋町",
+    "street": "2-14",
+    "building": "エクセレント芦屋 1F",
+    "access": {
+      "acc_hankyu": {
+        "station": "阪急芦屋川駅",
+        "method": "walk",
+        "minutes": 6,
+        "order": 1
+      },
+      "acc_jr": {
+        "station": "JR芦屋駅",
+        "method": "walk",
+        "minutes": 7,
+        "order": 2
+      }
+    },
+    "parking": {
+      "status": "nearbyPaid"
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "closed"
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "21:00",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "21:00",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "21:00",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "21:00",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "21:00",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:30",
+            "end": "21:00",
+            "lastOrder": "20:30"
+          }
+        ]
+      }
+    },
+    "closedRules": [
+      {
+        "type": "nthWeekday",
+        "weekday": "sun",
+        "nth": [
+          2,
+          4
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-78-6274",
+      "digits": "0797786274"
+    },
+    "sns": {
+      "instagram": "ashiya.hamasyou"
+    }
+  },
+  "payment": {
+    "cards": [],
+    "eMoney": [],
+    "qr": [
+      "paypay"
+    ]
+  },
+  "facilities": {
+    "seats": {
+      "total": 16,
+      "privateRooms": 0
+    },
+    "smoking": "none"
+  },
+  "catalog": {
+    "menus": {
+      "mnu_osusume": {
+        "order": 1,
+        "name": "おすすめの料理"
+      },
+      "mnu_food": {
+        "order": 2,
+        "name": "お品書き"
+      }
+    },
+    "categories": {
+      "cat_recommend": {
+        "menuId": "mnu_osusume",
+        "name": "おすすめの料理",
+        "order": 1,
+        "draft": true
+      },
+      "cat_menu": {
+        "menuId": "mnu_food",
+        "name": "お品書き",
+        "order": 2,
+        "draft": true
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_r001": {
+        "name": "黒酢の角煮酢豚",
+        "description": "角煮を黒酢のたれで仕上げた、店の名物。",
+        "photos": [
+          "ast_rc01"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true,
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_r002": {
+        "name": "四川麻婆豆腐",
+        "description": "花椒の香りと辛さがあとを引く一皿。辛口も。",
+        "photos": [
+          "ast_rc02"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true,
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_r003": {
+        "name": "和牛薄切り肉の四川辛味煮込み",
+        "description": "薄切りの和牛を、四川の辛いスープで。",
+        "photos": [
+          "ast_rc03"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true,
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_r004": {
+        "name": "季節の魚の蒸し物",
+        "description": "金目鯛など、その時期の魚を香味だれで。",
+        "photos": [
+          "ast_rc04"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true,
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_m001": {
+        "name": "水餃子",
+        "photos": [
+          "ast_mn01"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m002": {
+        "name": "春巻",
+        "photos": [
+          "ast_mn02"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m003": {
+        "name": "青椒肉絲",
+        "photos": [
+          "ast_mn03"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m004": {
+        "name": "海鮮焼きそば",
+        "photos": [
+          "ast_mn04"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m005": {
+        "name": "大エビのマヨネーズソース",
+        "photos": [
+          "ast_mn05"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m006": {
+        "name": "ゴマ団子",
+        "photos": [
+          "ast_mn06"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      }
+    },
+    "placements": {
+      "plc_r001": {
+        "itemId": "itm_r001",
+        "menuId": "mnu_osusume",
+        "categoryId": "cat_recommend",
+        "order": 1
+      },
+      "plc_r002": {
+        "itemId": "itm_r002",
+        "menuId": "mnu_osusume",
+        "categoryId": "cat_recommend",
+        "order": 2
+      },
+      "plc_r003": {
+        "itemId": "itm_r003",
+        "menuId": "mnu_osusume",
+        "categoryId": "cat_recommend",
+        "order": 3
+      },
+      "plc_r004": {
+        "itemId": "itm_r004",
+        "menuId": "mnu_osusume",
+        "categoryId": "cat_recommend",
+        "order": 4
+      },
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 1
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 2
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 3
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 4
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 5
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 6
+      }
+    }
+  },
+  "review": {
+    "/basic/name": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28046406/",
+          "value": "中國菜 浜正",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/restaurant/100001361616/",
+          "value": "中國菜 浜正",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ]
+    },
+    "/location/street": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28046406/",
+          "value": "東芦屋町2-14 エクセレント芦屋 1F",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/restaurant/100001361616/",
+          "value": "東芦屋町2-14",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ]
+    },
+    "/contact/phone": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28046406/",
+          "value": "0797-78-6274（営業中は出られないことがある）",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ]
+    },
+    "/hours/weekly": {
+      "status": "conflict",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28046406/",
+          "value": "17:30〜21:00（L.O. 20:30）",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/restaurant/100001361616/",
+          "value": "ランチ 11:30〜14:00 もあり",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ],
+      "question": "ランチ営業はありますか。時間は"
+    },
+    "/hours/closedRules": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28046406/",
+          "value": "月曜・第2・第4日曜",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ]
+    },
+    "/facilities/seats": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28046406/",
+          "value": "16席",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ]
+    },
+    "/payment": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28046406/",
+          "value": "クレジットカード・PayPay",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ]
+    },
+    "/location/access": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28046406/",
+          "value": "阪急芦屋川駅 徒歩6分・JR芦屋駅 徒歩7分",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ]
+    },
+    "/contact/sns/instagram": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/restaurant/100001361616/",
+          "value": "https://www.instagram.com/ashiya.hamasyou/",
+          "fetchedAt": "2026-11-09T20:00:00+09:00"
+        }
+      ]
+    }
+  },
+  "story": {
+    "draft": true,
+    "answers": {
+      "q_catch": {
+        "question": "見出し（仮）",
+        "answer": "十六席の、\nていねいな中國菜。"
+      },
+      "q_body": {
+        "question": "お店の紹介（仮）",
+        "answer": "2016年、芦屋・東芦屋町に開いた中國料理の店です。四川の香りと辛さ、季節の魚介を生かした料理を、和の器に盛ってお出しします。テーブル4卓・16席の落ち着いた店内で、ゆっくりとお食事をお楽しみください。"
+      },
+      "q_message_h": {
+        "question": "料理の見出し（仮）",
+        "answer": "香りと火入れを、一皿ずつ。"
+      },
+      "q_message": {
+        "question": "料理について（仮）",
+        "answer": "黒酢で仕上げる角煮の酢豚、花椒の香る麻婆豆腐、季節の魚の蒸し物。定番の一皿から季節の料理まで、素材に合わせて丁寧に仕立てています。"
+      }
+    }
+  }
+}

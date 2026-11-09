@@ -1,0 +1,22 @@
+# wa-04 中國菜 浜正（営業用の見本）の使用写真
+mv https://images.unsplash.com/photo-1717321302149-3c6c9c76de67?w=2400&q=80&fm=jpg
+strip-1 https://images.unsplash.com/photo-1624174782964-e541742299ee?w=2400&q=80&fm=jpg
+strip-2 https://images.unsplash.com/photo-1563245372-f21724e3856d?w=2400&q=80&fm=jpg
+strip-3 https://images.unsplash.com/photo-1551326844-4df70f78d0e9?w=2400&q=80&fm=jpg
+strip-4 https://images.unsplash.com/photo-1719454261026-fc7f0ffc1835?w=2400&q=80&fm=jpg
+strip-5 https://images.unsplash.com/photo-1726514733403-905a2c92e96c?w=2400&q=80&fm=jpg
+strip-6 https://images.unsplash.com/photo-1791321827485-c8ccab1baf72?w=2400&q=80&fm=jpg
+about-1 https://images.unsplash.com/photo-1654327248130-2b7f55c18ac9?w=2400&q=80&fm=jpg
+message-bg https://images.unsplash.com/photo-1575664579788-0ce4503c7e89?w=2400&q=80&fm=jpg
+recommend-1 https://images.unsplash.com/photo-1681586745894-a049bcf07499?w=2400&q=80&fm=jpg
+recommend-2 https://images.unsplash.com/photo-1769065647078-f067eb768035?w=2400&q=80&fm=jpg
+recommend-3 https://images.unsplash.com/photo-1703684296214-92d3f9478cee?w=2400&q=80&fm=jpg
+recommend-4 https://images.unsplash.com/photo-1760504526044-840cade997b2?w=2400&q=80&fm=jpg
+menu-1 https://images.unsplash.com/photo-1496116218417-1a781b1c416c?w=2400&q=80&fm=jpg
+menu-2 https://images.unsplash.com/photo-1669340781012-ae89fbac9fc3?w=2400&q=80&fm=jpg
+menu-3 https://images.unsplash.com/photo-1702705487239-10a1ca715454?w=2400&q=80&fm=jpg
+menu-4 https://images.unsplash.com/photo-1607328874071-45a9cd600644?w=2400&q=80&fm=jpg
+menu-5 https://images.unsplash.com/photo-1766566959672-257837bc6c76?w=2400&q=80&fm=jpg
+menu-6 https://images.unsplash.com/photo-1645453014906-7f2874408d8d?w=2400&q=80&fm=jpg
+photo-band https://images.unsplash.com/photo-1765646772493-7b5341714eea?w=2400&q=80&fm=jpg
+reservation https://images.unsplash.com/photo-1773581002834-c80a9a99498f?w=2400&q=80&fm=jpg
