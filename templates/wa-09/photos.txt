@@ -1,0 +1,9 @@
+# wa-09 鮨 一之汐（架空のお店）の使用写真（Unsplash License）
+# 書式：枠 取得URL 紹介ページの短いID。ab1・ab3・om・ct1・ct2 は rect で切り抜いた（om は人物の手元を、ct1 は布と卓の傷を外すため）
+fv https://images.unsplash.com/photo-1732759957705-ba32c7cf6567?w=2400&q=80&fm=webp uwbMYjUjdrE
+ab1 https://images.unsplash.com/photo-1635452273202-3902dc139d14?rect=0,1250,4000,2250&w=1700&q=80&fm=webp _quKfaqulYk
+ab2 https://images.unsplash.com/photo-1742968922506-16be51d4f4da?w=1100&q=80&fm=webp FglvrLPBoEc
+ab3 https://images.unsplash.com/photo-1689039234540-d335a43ca28a?rect=0,1526,3560,3560&w=900&q=80&fm=webp XwqOKY7evdw
+om https://images.unsplash.com/photo-1763943431214-275e64002f90?rect=0,1837,3215,1808&w=2400&q=80&fm=webp Jm5uc0Z-5MQ
+ct1 https://images.unsplash.com/photo-1625668751669-65ceebd81e34?rect=400,2050,3004,1690&w=2200&q=80&fm=webp gg-FsJHmEdw
+ct2 https://images.unsplash.com/photo-1529066622974-2746b0bd06c4?rect=0,1580,4810,3209&w=900&q=80&fm=webp 7PzVjhyhKRY

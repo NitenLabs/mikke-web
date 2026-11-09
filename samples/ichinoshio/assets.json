@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_phfv": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfv.webp",
+        "mime": "image/webp",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 561482,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/uwbMYjUjdrE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "木の板に置いた白身の握り"
+    },
+    "ast_phab1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab1.webp",
+        "mime": "image/webp",
+        "width": 1700,
+        "height": 956,
+        "bytes": 282308,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_quKfaqulYk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "白い石の皿に置いた白身の握り"
+    },
+    "ast_phab2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab2.webp",
+        "mime": "image/webp",
+        "width": 1100,
+        "height": 1375,
+        "bytes": 71592,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/FglvrLPBoEc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "握りに煮切りを塗る手元"
+    },
+    "ast_phab3": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab3.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 900,
+        "bytes": 94548,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/XwqOKY7evdw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "飯切りに広げた酢飯"
+    },
+    "ast_phom": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phom.webp",
+        "mime": "image/webp",
+        "width": 2400,
+        "height": 1350,
+        "bytes": 171452,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Jm5uc0Z-5MQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "木の下駄に置いたまぐろの握りとガリ"
+    },
+    "ast_phct1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phct1.webp",
+        "mime": "image/webp",
+        "width": 2200,
+        "height": 1238,
+        "bytes": 57912,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/gg-FsJHmEdw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "カウンターに置いた柳刃"
+    },
+    "ast_phct2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phct2.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 600,
+        "bytes": 42104,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/7PzVjhyhKRY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "土ものの湯呑み"
+    }
+  }
+}

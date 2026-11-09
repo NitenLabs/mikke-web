@@ -1,0 +1,197 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_ichinoshio",
+  "updatedAt": "2026-11-10T12:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "鮨 一之汐",
+    "nameKana": "すし いちのしお",
+    "genre": {
+      "template": "restaurant",
+      "detail": "鮨・おまかせ"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "東芦屋町"
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "closed"
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "14:30"
+          },
+          {
+            "start": "18:00",
+            "end": "22:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "14:30"
+          },
+          {
+            "start": "18:00",
+            "end": "22:30"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "14:30"
+          },
+          {
+            "start": "18:00",
+            "end": "22:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "14:30"
+          },
+          {
+            "start": "18:00",
+            "end": "22:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "14:30"
+          },
+          {
+            "start": "18:00",
+            "end": "22:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "14:30"
+          },
+          {
+            "start": "18:00",
+            "end": "22:30"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "smoking": "none"
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "おまかせ"
+      }
+    },
+    "categories": {
+      "cat_omakase": {
+        "menuId": "mnu_main",
+        "name": "おまかせ",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_lunch": {
+        "name": "昼 おまかせ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_lunch",
+            "type": "fixed",
+            "amount": 11000
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_dinner": {
+        "name": "夜 おまかせ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_dinner",
+            "type": "fixed",
+            "amount": 22000
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_special": {
+        "name": "夜 特選（つまみ多め）",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_special",
+            "type": "fixed",
+            "amount": 30000
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      }
+    },
+    "placements": {
+      "plc_lunch": {
+        "itemId": "itm_lunch",
+        "categoryId": "cat_omakase",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_dinner": {
+        "itemId": "itm_dinner",
+        "categoryId": "cat_omakase",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_special": {
+        "itemId": "itm_special",
+        "categoryId": "cat_omakase",
+        "order": 3,
+        "menuId": "mnu_main"
+      }
+    }
+  }
+}
