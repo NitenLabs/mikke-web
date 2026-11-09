@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// wa-02：templates/wa-02/SPEC.md の実測値から samples/rian/site.json を作る（物語・おすすめは ① に無いので作らない）。
+// wa-02：templates/wa-02/SPEC.md の実測値から samples/rian/site.json を作る（物語は ① にあるときだけ作る）。
 // 使い方：node tools/wa02-gen.mjs → node tools/build.mjs samples/rian → node tools/wa02-finish.mjs
 import fs from "node:fs";
 const DIR = "samples/rian";
@@ -45,9 +45,25 @@ line("fv_line", "sec_firstv", W, { x: 719.5, y: 840, w: 1, h: 60 }, { x: 194.5, 
 add("fv_tab", { type: "shape", z: 6, kind: "rect", fill: K, section: "sec_firstv", link: { kind: "shopPhone" }, layout: lay({ x: 1396, y: 790, w: 44, h: 110 }, { x: 346, y: 744, w: 44, h: 100 }) });
 t("fv_tabt", "sec_firstv", "電話予約", [[15, 21, 1.5], [15, 21, 1.5]], H, W, [{ x: 1407.5, y: 812, w: 21, h: 66 }, { x: 357.5, y: 761, w: 21, h: 66 }], { vp: 1, vs: 1, z: 7, link: { kind: "shopPhone" } });
 
-// ---- 5 ギャラリー（物語が無いので FV の写真と続かないよう、上に標準の余白 120/100 を足す）
-sec("sec_gallery", "ギャラリー", "theme:background", 540, 360);
-for (let i = 0; i < 7; i++) add(`gal_${i + 1}`, { type: "photo", z: 1, section: "sec_gallery", asset: `ast_gal${i + 1}`, layout: lay({ x: 370, y: 120, w: 700, h: 400, ratio: "custom" }, { x: 23.5, y: 100, w: 343, h: 240, ratio: "custom" }), crop: { fx: 50, fy: 50, zoom: 1 } });
+// ---- 5 ギャラリー（物語が無いときは FV の写真と続かないよう、上に標準の余白 120/100 を足す）
+const padP = shop.story ? 0 : 120, padS = shop.story ? 0 : 100;
+sec("sec_gallery", "ギャラリー", "theme:background", 420 + padP, 260 + padS);
+for (let i = 0; i < 7; i++) add(`gal_${i + 1}`, { type: "photo", z: 1, section: "sec_gallery", asset: `ast_gal${i + 1}`, layout: lay({ x: 370, y: padP, w: 700, h: 400, ratio: "custom" }, { x: 23.5, y: padS, w: 343, h: 240, ratio: "custom" }), crop: { fx: 50, fy: 50, zoom: 1 } });
+
+// ---- 2 お店の物語（SPEC 2）
+const pics = (id, asset, z, pc, sp) => add(id, { type: "photo", z, section: "sec_story", asset, layout: lay({ ...pc, ratio: "custom" }, { ...sp, ratio: "custom" }), crop: { fx: 50, fy: 50, zoom: 1 } });
+if (shop.story) {
+  sec("sec_story", "当店について", "theme:background", 1620, 1792, { anchor: "about", nav: { label: "当店について", order: 1 } });
+  const a = shop.story.answers;
+  t("st_ja", "sec_story", "当店について", [[32, 44.8, 1.6], [24, 33.6, 1.2]], H, K, [{ x: 120, y: 120, w: 1200, h: 44.8 }, { x: 30, y: 100, w: 330, h: 33.6 }], { align: "center" });
+  t("st_en", "sec_story", "About", [[16, 22.4, 1.6], [14, 19.6, 1.4]], A, K, [{ x: 620, y: 168.8, w: 200, h: 22.4 }, { x: 95, y: 137.6, w: 200, h: 19.6 }], { align: "center" });
+  line("st_enl", "sec_story", K, { x: 696, y: 200.2, w: 48, h: 1 }, { x: 175, y: 166.2, w: 40, h: 1 });
+  add("st_sage", { type: "shape", z: 1, kind: "rect", fill: "theme:sage", section: "sec_story", layout: lay({ x: 216, y: 447, w: 1224, h: 1053.1 }, { x: 97.5, y: 348, w: 292.5, h: 1344.1 }) });
+  pics("st_ph1", "ast_ab01", 2, { x: 464, y: 260.1, w: 976, h: 500 }, { x: 0, y: 464.2, w: 390, h: 400 });
+  pics("st_ph2", "ast_ab02", 2, { x: 0, y: 880.1, w: 576, h: 500 }, { x: 0, y: 1292.2, w: 330, h: 300 });
+  t("st_copy", "sec_story", a.q_catch.answer, [[28, 56, 2.8], [20, 40, 2]], H, K, [{ x: 120, y: 371.5, w: 224, h: 277.2 }, { x: 115, y: 226.2, w: 160, h: 198 }], { vp: 1, vs: 1, z: 4 });
+  t("st_body", "sec_story", a.q_body.answer, [[16, 32, 0], [14, 28, 0]], H, K, [{ x: 812, y: 970.1, w: 392, h: 192 }, { x: 30, y: 924.2, w: 330, h: 196 }], { z: 4 });
+}
 
 // 見出し列（縦書き）：PC x120、スマホ x168.2
 function headCol(prefix, section, ja, en, yP, yS, xP = 120, xS = 168.2) {
@@ -61,18 +77,37 @@ function listHead(prefix, section, content, pcXY, spXY, under = 120) {
   line(`${prefix}_hl`, section, K, { x: pcXY.x, y: pcXY.y + 47, w: under, h: 1 }, { x: spXY.x, y: spXY.y + 41, w: under, h: 1 });
 }
 
-// ---- 3 メニュー（おすすめ 0 件なので札とカードは出さず、一覧を札の位置から始める）
-sec("sec_menu", "お品書き", "theme:background", 500, 556, { anchor: "menu", nav: { label: "お品書き", order: 2 } });
-add("mn_panel", { type: "shape", z: 1, kind: "rect", fill: "theme:surface", section: "sec_menu", layout: lay({ x: 432, y: 305.9, w: 1008, h: 194.1 }, { x: 117, y: 281.3, w: 273, h: 274.7 }) });
+// ---- 4 おすすめ・3 メニュー（SPEC 2）
+const cat = shop.catalog, ROW = { pc: 39.2, sp: 36.6 }, TAG = { pc: 29.2, sp: 26.4 };
+const listH = (menuId, d) => { const cs = Object.entries(cat.categories).filter(([id, c]) => c.menuId === menuId && Object.values(cat.placements).some((p) => p.categoryId === id)); return cs.reduce((n, [id], i) => n + (i ? 24 : 0) + TAG[d] + 8 + Object.values(cat.placements).filter((p) => p.categoryId === id).length * ROW[d], 0); };
+const cell = (content, align, pc, sp, ps, ss, font = B, color = K) => ({ type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path: content[0], format: content[1] } }] }], style: { font, weight: 400, color, lineHeight: r(pc.h / ps), ...(align ? { align } : {}) }, layout: { pc: { ...pc, size: ps }, sp: { ...sp, size: ss } } });
+const yP = 1114.8, yS = 1302.1, foodP = listH("mnu_food", "pc"), drinkP = listH("mnu_main", "pc"), foodS = listH("mnu_food", "sp"), drinkS = listH("mnu_main", "sp");
+const yDrinkS = yS + 60 + foodS + 60, endP = Math.ceil(yP + 72 + Math.max(foodP, drinkP) + 120), endS = Math.ceil(yDrinkS + 60 + drinkS + 100);
+sec("sec_menu", "お品書き", "theme:background", endP, endS, { anchor: "menu", nav: { label: "お品書き", order: 2 } });
+add("mn_panel", { type: "shape", z: 1, kind: "rect", fill: "theme:surface", section: "sec_menu", layout: lay({ x: 432, y: 305.9, w: 1008, h: endP - 305.9 }, { x: 117, y: 281.3, w: 273, h: endS - 281.3 }) });
 headCol("mn", "sec_menu", "お品書き", "Menu", 120, 100);
-listHead("mn_l", "sec_menu", ["/catalog/categories/cat_drink/name"], { x: 245.2, y: 190 }, { x: 30, y: 285.8 });
-const cell = (content, align, pc, sp, ps, ss) => ({ type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path: content[0], format: content[1] } }] }], style: { font: B, weight: 400, color: K, lineHeight: 1.4, ...(align ? { align } : {}) }, layout: { pc: { ...pc, size: ps }, sp: { ...sp, size: ss } } });
-add("mn_list", { type: "repeater", z: 3, section: "sec_menu", source: { kind: "catalog", menuId: "mnu_main" }, display: { mode: "list", columns: { pc: 1, sp: 1 }, photoless: "sameCard" },
-  card: { height: { pc: 39.2, sp: 36.6 }, elements: {
-    c_name: cell(["/name", "plain"], null, { x: 0, y: 4.5, w: 68, h: 22.4 }, { x: 0, y: 4.5, w: 64, h: 19.6 }, 16, 14),
-    c_price: cell(["/prices", "priceAllTax"], "right", { x: 68, y: 4.5, w: 32, h: 22.4 }, { x: 64, y: 4.5, w: 36, h: 19.6 }, 16, 14),
-    c_line: { type: "shape", z: 1, kind: "line", fill: "theme:lineSoft", layout: { pc: { x: 0, y: 31.4, w: 100, h: 1, strokeWidth: 1 }, sp: { x: 0, y: 28.6, w: 100, h: 1, strokeWidth: 1 } } } } },
-  layout: lay({ x: 245.2, y: 262, w: 512.4, h: 117.6 }, { x: 30, y: 345.8, w: 330, h: 109.8 }) });
+// おすすめの札（内側 5 に白い線）
+add("mn_tag", { type: "shape", z: 2, kind: "rect", fill: K, section: "sec_menu", layout: lay({ x: 245.2, y: 190, w: 172, h: 48 }, { x: 20, y: 285.8, w: 123, h: 38.2 }) });
+add("mn_tagi", { type: "shape", z: 3, kind: "rect", fill: K, stroke: { width: 1, color: W }, section: "sec_menu", layout: lay({ x: 250.2, y: 195, w: 162, h: 38 }, { x: 25, y: 290.8, w: 113, h: 28.2 }) });
+t("mn_tagt", "sec_menu", "おすすめ", [[20, 28, 0], [13, 18.2, 0]], H, W, [{ x: 245.2, y: 200, w: 172, h: 28 }, { x: 20, y: 295.8, w: 123, h: 18.2 }], { align: "center", z: 4 });
+add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: { kind: "catalog", menuId: "mnu_food", labelIds: ["lbl_recommend"] }, display: { mode: "grid", columns: { pc: 3, sp: 2 }, gap: { pc: 40, sp: 20 }, photoless: "sameCard" },
+  card: { height: { pc: 373.4, sp: 289.4 }, elements: {
+    c_ph: { type: "photo", z: 1, bind: { scope: "item", path: "/photos" }, layout: { pc: { x: 0, y: 0, w: 100, h: 220.8, ratio: "custom" }, sp: { x: 0, y: 0, w: 100, h: 110, ratio: "custom" } } },
+    c_nm: cell(["/name", "plain"], null, { x: 0, y: 230.9, w: 100, h: 25.2 }, { x: 0, y: 120, w: 100, h: 22.4 }, 18, 16, H),
+    c_ln: { type: "shape", z: 1, kind: "line", fill: "theme:line", layout: { pc: { x: 0, y: 262, w: 100, h: 1, strokeWidth: 1 }, sp: { x: 0, y: 150, w: 100, h: 1, strokeWidth: 1 } } },
+    c_ds: cell(["/description", "plain"], null, { x: 0, y: 277, w: 100, h: 48 }, { x: 0, y: 163.4, w: 100, h: 83.2 }, 15, 13, B, G),
+    c_pr: cell(["/prices", "price"], "right", { x: 0, y: 359, w: 100, h: 14.4 }, { x: 0, y: 256.6, w: 100, h: 16 }, 18, 16) } },
+  layout: lay({ x: 245.2, y: 258, w: 1073.6, h: 786.8 }, { x: 20, y: 344, w: 350, h: 908.2 }) });
+const listCard = () => ({ height: { pc: ROW.pc, sp: ROW.sp }, elements: {
+  c_name: cell(["/name", "plain"], null, { x: 0, y: 4.5, w: 68, h: 22.4 }, { x: 0, y: 4.5, w: 64, h: 19.6 }, 16, 14),
+  c_price: cell(["/prices", "priceAllTax"], "right", { x: 68, y: 4.5, w: 32, h: 22.4 }, { x: 64, y: 4.5, w: 36, h: 19.6 }, 16, 14),
+  c_line: { type: "shape", z: 1, kind: "line", fill: "theme:lineSoft", layout: { pc: { x: 0, y: 31.4, w: 100, h: 1, strokeWidth: 1 }, sp: { x: 0, y: 28.6, w: 100, h: 1, strokeWidth: 1 } } } } });
+const tagHead = () => ({ type: "text", z: 1, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path: "/category/name", format: "plain" } }] }], style: { font: H, weight: 400, color: W, lineHeight: 1.6222 }, layout: { pc: { x: 0, y: 0, w: 100, h: 29.2, size: 18 }, sp: { x: 0, y: 0, w: 100, h: 26.4, size: 16 } } });
+const list = (id, menuId, pc, sp, h) => add(id, { type: "repeater", z: 3, section: "sec_menu", source: { kind: "catalog", menuId, groupByCategory: true }, display: { mode: "list", columns: { pc: 1, sp: 1 }, photoless: "sameCard" }, card: listCard(), groupHeading: tagHead(), layout: lay({ ...pc, w: 512.4, h: h.pc }, { ...sp, w: 330, h: h.sp }) });
+listHead("mn_lf", "sec_menu", ["/catalog/menus/mnu_food/name"], { x: 245.2, y: yP }, { x: 30, y: yS });
+listHead("mn_ld", "sec_menu", ["/catalog/menus/mnu_main/name"], { x: 807.6, y: yP }, { x: 30, y: yDrinkS });
+list("mn_food", "mnu_food", { x: 245.2, y: yP + 72 }, { x: 30, y: yS + 60 }, { pc: foodP, sp: foodS });
+list("mn_drnk", "mnu_main", { x: 807.6, y: yP + 72 }, { x: 30, y: yDrinkS + 60 }, { pc: drinkP, sp: drinkS });
 
 // ---- 9 お店の情報（① に値がある行だけ）
 const f = shop.facilities || {}, loc = shop.location || {};
@@ -99,13 +134,14 @@ rows.forEach(([k, v], i) => {
   t(`in_vt${i}`, "sec_info", v, TBL, B, G, [{ x: 445.2, y: yP + 15, w: 874.8, h: 25.6 }, { x: 124, y: yS + 15, w: 236, h: 22.4 }]);
 });
 
-// ---- アクセス（① に緯度経度が無いので地図の埋め込みは出さず、住所で開くリンクだけ）
-sec("sec_access", "アクセス", "theme:paper", 274, 266, { anchor: "access", nav: { label: "アクセス", order: 4 } });
+// ---- アクセス（① に緯度経度が無いので、地図は住所で開く埋め込みを wa02-finish で入れる）
+sec("sec_access", "アクセス", "theme:paper", 721, 587, { anchor: "access", nav: { label: "アクセス", order: 4 } });
 listHead("ac", "sec_access", "アクセス", { x: 295.2, y: 0 }, { x: 30, y: 0 });
-t("ac_way", "sec_access", ["/location/access", "access"], TBL, B, G, [{ x: 295.2, y: 74.2, w: 1024.8, h: 25.6 }, { x: 30, y: 68.6, w: 330, h: 22.4 }]);
+t("ac_way", "sec_access", ["/location/access", "access"], TBL, B, G, [{ x: 295.2, y: 74.2, w: 1024.8, h: 25.6 }, { x: 30, y: 68.6, w: 330, h: 44.8 }]);
+add("ac_mapbox", { type: "shape", z: 2, kind: "rect", fill: "#EEEEEE", section: "sec_access", layout: lay({ x: 295.2, y: 155.3, w: 1024.8, h: 400 }, { x: 30, y: 143.4, w: 330, h: 300 }) });
 const addr = `${loc.prefecture}${loc.city}${loc.town}${loc.street}`;
-t("ac_map", "sec_access", "Google マップで開く", [[16, 22.4, 0], [15, 21, 0]], H, K, [{ x: 295.2, y: 132, w: 150, h: 22.4 }, { x: 30, y: 145, w: 150, h: 21 }], { link: { kind: "url", value: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, newTab: true } });
-line("ac_ml", "sec_access", K, { x: 295.2, y: 155.4, w: 142, h: 1 }, { x: 30, y: 167, w: 134, h: 1 });
+t("ac_map", "sec_access", "Google マップで開く", [[16, 22.4, 0], [15, 21, 0]], H, K, [{ x: 295.2, y: 575.3, w: 150, h: 22.4 }, { x: 30, y: 463.4, w: 150, h: 21 }], { link: { kind: "url", value: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(addr)}`, newTab: true } });
+line("ac_ml", "sec_access", K, { x: 295.2, y: 598.7, w: 142, h: 1 }, { x: 30, y: 485.4, w: 134, h: 1 });
 
 // ---- 8 予約の案内（Web 予約が無いのでピル1つ・SP は 485-84＝401）
 sec("sec_resv", "ご予約", "theme:text", 445, 401);
@@ -121,15 +157,17 @@ t("rv_hr", "sec_resv", "受付時間", [[13, 18.2, 0.65], [12, 16.8, 0.6]], B, W
 els.rv_hr.paragraphs = [{ runs: [{ text: "受付時間 " }, { bind: { scope: "shop", path: "/hours", format: "hoursShort" } }] }];
 
 // ---- フッター（SNS なしの値・SPEC 6章。芦屋みっけ掲載店の表示を一番下に足す）
-sec("sec_footer", "フッター", "theme:background", 358, 332);
+sec("sec_footer", "フッター", "theme:background", shop.salesDraft ? 384 : 358, shop.salesDraft ? 358 : 332);
 t("ft_name", "sec_footer", "李杏", [[32, 49.1, 0], [24, 32.7, 0]], H, K, [{ x: 630, y: 80, w: 180, h: 49.1 }, { x: 135, y: 80, w: 120, h: 36.9 }], C);
 t("ft_read", "sec_footer", "- RIAN -", [[10, 14, 2], [10, 14, 2]], H, K, [{ x: 620, y: 145.1, w: 200, h: 14 }, { x: 95, y: 122.7, w: 200, h: 14 }], C);
 t("ft_addr", "sec_footer", ["/location", "address"], TBL, B, G, [{ x: 120, y: 204.7, w: 1200, h: 25.6 }, { x: 30, y: 178.1, w: 330, h: 22.4 }], C);
 t("ft_copy", "sec_footer", "© RIAN", [[13, 18.2, 0], [13, 18.2, 0]], A, "#646464", [{ x: 120, y: 270.1, w: 1200, h: 18.2 }, { x: 30, y: 243.5, w: 330, h: 18.2 }], C);
 t("ft_mikke", "sec_footer", "芦屋みっけ 掲載店", [[13, 18.2, 0], [13, 18.2, 0]], B, "#646464", [{ x: 120, y: 296, w: 1200, h: 18.2 }, { x: 30, y: 269.5, w: 330, h: 18.2 }], { ...C, link: { kind: "url", value: "https://ashiya-mikke.pages.dev/spot/yakiniku-rian/", newTab: true } });
 
+if (shop.salesDraft) t("ft_draft", "sec_footer", "営業用の見本（写真・品は仮）", [[13, 18.2, 0], [13, 18.2, 0]], B, "#646464", [{ x: 120, y: 322, w: 1200, h: 18.2 }, { x: 30, y: 295.5, w: 330, h: 18.2 }], C);
+
 const site = { schemaVersion: 1, shopId: shop.shopId, templateId: "tpl_wa_02", canvas: { pcContentWidth: P, spDesignWidth: S },
-  pages: { pg_home: { kind: "home", slug: "/", navLabel: "TOP", navOrder: 1, showInNav: false, published: true, sections: ["sec_firstv", "sec_gallery", "sec_menu", "sec_info", "sec_access", "sec_resv"] },
+  pages: { pg_home: { kind: "home", slug: "/", navLabel: "TOP", navOrder: 1, showInNav: false, published: true, sections: ["sec_firstv", ...(shop.story ? ["sec_story"] : []), "sec_gallery", "sec_menu", "sec_info", "sec_access", "sec_resv"] },
     pg_404: { kind: "notFound", slug: "/404", navLabel: "404", navOrder: 9, showInNav: false, published: true, sections: [] } },
   regions: { header: "sec_header", footer: "sec_footer", headerBehavior: "sticky" }, sections: secs, elements: els };
 fs.writeFileSync(`${DIR}/site.json`, JSON.stringify(site, null, 2) + "\n");

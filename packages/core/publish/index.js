@@ -21,6 +21,8 @@ export const MIKKE_BASE = "https://ashiya-mikke.jp";
 export function mikkeUrlOf(shop) { const id = shop && shop.mikkeSpotId; return id ? `${MIKKE_BASE}/spots/${encodeURIComponent(id)}/` : `${MIKKE_BASE}/`; }
 
 const r3 = (n) => Math.round(n * 1000) / 1000;
+// ① のどこかに仮の中身（draft: true）か値段未定（type: "tbd"）が残っているか
+function hasDraft(v) { if (!v || typeof v !== "object") return false; if (v.draft === true || v.type === "tbd") return true; return Object.values(v).some(hasDraft); }
 const PHOTO_TOKEN = /<mk-photo data-i="(\d+)"><\/mk-photo>/g;
 
 // 1 つの端末の配置（セクションを上から並べる）。写真の印を <picture> に置き換える
@@ -56,6 +58,7 @@ function documentHtml({ head, body }) {
 export function buildBundle(input) {
   const shop = input.shop || {}; const assets = input.assets || {};
   if (shop.salesDraft === true) throw new Error("営業用の見本（salesDraft）は公開できません。実物の写真に差し替えて、salesDraft を外してください");
+  if (hasDraft(shop)) throw new Error("仮の中身（draft）が残っているので公開できません。お店の情報に差し替えて draft を外してください");
   const origin = String(input.origin || "").replace(/\/+$/, "");
   const date = input.date || jstDate(new Date()).date;
   const warnings = [];

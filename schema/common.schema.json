@@ -107,9 +107,10 @@
             "range",
             "market",
             "ask",
-            "free"
+            "free",
+            "tbd"
           ],
-          "description": "fixed=○円 / from=○円〜 / range=○円〜○円 / market=時価 / ask=応相談 / free=無料"
+          "description": "fixed=○円 / from=○円〜 / range=○円〜○円 / market=時価 / ask=応相談 / free=無料 / tbd=値段が未定（「—」と出す。draft の品だけ）"
         },
         "amount": {
           "type": "integer",
@@ -162,7 +163,8 @@
                 "enum": [
                   "market",
                   "ask",
-                  "free"
+                  "free",
+                  "tbd"
                 ]
               }
             }

@@ -203,3 +203,7 @@ test("D6 出る品（3.4）：販売中・出す月・販売の期間・メニ�
 test("営業用の見本（salesDraft）は公開の一式を作らずエラーにする", () => {
   assert.throws(() => buildBundle({ shop: { salesDraft: true, basic: { name: "見本" } }, assets: {}, origin: "https://example.com", pages: [] }), /salesDraft/);
 });
+
+test("仮の中身（draft）が残っている店は公開の一式を作らずエラーにする", () => {
+  assert.throws(() => buildBundle({ shop: { basic: { name: "見本" }, catalog: { items: { itm_abcd: { name: "仮", draft: true } } } }, assets: {}, origin: "https://example.com", pages: [] }), /draft/);
+});

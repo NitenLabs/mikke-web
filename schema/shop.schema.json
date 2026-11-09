@@ -833,6 +833,10 @@
               }
             }
           }
+        },
+        "draft": {
+          "type": "boolean",
+          "description": "営業用の見本（salesDraft）の仮の中身だけ true。公開用の書き出しは draft が1つでも残っているとエラーになる"
         }
       }
     },
@@ -1186,6 +1190,10 @@
               },
               "order": {
                 "type": "number"
+              },
+              "draft": {
+                "type": "boolean",
+                "description": "営業用の見本（salesDraft）の仮の中身だけ true。公開用の書き出しは draft が1つでも残っているとエラーになる"
               }
             }
           }
@@ -1420,6 +1428,10 @@
           "type": "string",
           "maxLength": 100,
           "description": "品への短い注記。例：要予約、数量限定、原材料についてはお店にお尋ねください"
+        },
+        "draft": {
+          "type": "boolean",
+          "description": "営業用の見本（salesDraft）の仮の中身だけ true。公開用の書き出しは draft が1つでも残っているとエラーになる"
         }
       },
       "if": {

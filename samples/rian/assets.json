@@ -312,6 +312,448 @@
       },
       "slot": "other",
       "alt": "紙の質感（飾り）"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 215682,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/0kAfov1-W-s"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "exterior",
+      "alt": "夜の通りの店先（仮の写真）"
+    },
+    "ast_ab02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab02.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 293642,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Shzb6CEVPtU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "皿に盛った肉（仮の写真）"
+    },
+    "ast_cd01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cd01.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1991,
+        "bytes": 686371,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/1ZvQmBx_f0I"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "タン塩（仮の写真）"
+    },
+    "ast_cd02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cd02.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1500,
+        "bytes": 348546,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/o9n3krP7u90"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "上カルビ（仮の写真）"
+    },
+    "ast_cd03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cd03.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 300567,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/TEOLSHYKh2M"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "ハラミ（仮の写真）"
+    },
+    "ast_cd04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cd04.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 230933,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/zSKijIPD-Yo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "ロース（仮の写真）"
+    },
+    "ast_cd05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cd05.jpg",
+        "mime": "image/jpeg",
+        "width": 1598,
+        "height": 2000,
+        "bytes": 425779,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/3YvFXvDrFyM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "ホルモン盛り合わせ（仮の写真）"
+    },
+    "ast_cd06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cd06.jpg",
+        "mime": "image/jpeg",
+        "width": 1500,
+        "height": 2000,
+        "bytes": 361525,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/SbHulgzS_eo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "ビビンバ（仮の写真）"
+    },
+    "ast_it01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_it01.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1240,
+        "bytes": 274194,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/MT0ec6WmPPQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "カルビ（仮の写真）"
+    },
+    "ast_it02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_it02.jpg",
+        "mime": "image/jpeg",
+        "width": 1600,
+        "height": 2000,
+        "bytes": 289009,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/hrkEJHZpUMs"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "豚トロ（仮の写真）"
+    },
+    "ast_it03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_it03.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 301420,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/M_mDgb8guhA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "キムチ盛り合わせ（仮の写真）"
+    },
+    "ast_it04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_it04.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 486692,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/4f4YZfDMLeU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "ナムル（仮の写真）"
+    },
+    "ast_it05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_it05.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 339518,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/1_SenAyTAXg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "チゲ（仮の写真）"
+    },
+    "ast_it06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_it06.jpg",
+        "mime": "image/jpeg",
+        "width": 2000,
+        "height": 1333,
+        "bytes": 286539,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/IlJhW2ScTqw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "クッパ（仮の写真）"
+    },
+    "ast_it07": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_it07.jpg",
+        "mime": "image/jpeg",
+        "width": 1500,
+        "height": 2000,
+        "bytes": 492236,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/diDja86YL_M"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "冷麺（仮の写真）"
+    },
+    "ast_it08": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_it08.jpg",
+        "mime": "image/jpeg",
+        "width": 1500,
+        "height": 2000,
+        "bytes": 207061,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/usoKMvaaRxw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "product",
+      "alt": "生ビール（仮の写真）"
+    },
+    "ast_texg": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_texg.jpg",
+        "mime": "image/jpeg",
+        "width": 1362,
+        "height": 2000,
+        "bytes": 607397,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T18:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Gsal9o_ETDU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T18:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "other",
+      "alt": "緑の紙の質感（飾り）"
     }
   }
 }

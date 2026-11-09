@@ -206,6 +206,19 @@ if (shop.isSample !== true) {
     stockIssue(`[写真] 括り ${c.name}: 素材サイトの写真（stock）を括りの写真に使っています。実物と誤解させないためサンプルの店だけ許可`);
 }
 
+// 仮の中身（draft=true）と値段未定（type=tbd）は、営業用の見本（salesDraft=true）でだけ使える
+{
+  const drafts = [];
+  if (shop.story?.draft) drafts.push("物語");
+  for (const c of Object.values(cats)) if (c.draft) drafts.push(`括り ${c.name}`);
+  for (const it of Object.values(items)) {
+    if (it.draft) drafts.push(`品 ${it.name}`);
+    if ((it.prices || []).some((p) => p.type === "tbd") && !it.draft) err(`[仮] 品 ${it.name}: 値段の未定（tbd）は仮の品（draft）だけに使えます`);
+  }
+  if (drafts.length && shop.salesDraft !== true) err(`[仮] 仮の中身は営業用の見本（salesDraft）でだけ使えます：${drafts.join("、")}`);
+  else if (drafts.length) warn(`[仮] 仮の中身が ${drafts.length} 件あります（公開前にお店の情報へ差し替えて draft を外す）`);
+}
+
 // ---------- 2c. ③ 見た目の設定 ----------
 const checkColor = (c, where) => {
   if (c?.startsWith("theme:") && !theme.colors[c.slice(6)]) err(`[色] ${where}: テーマ色 ${c} が③にありません`);

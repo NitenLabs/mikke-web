@@ -35,6 +35,7 @@ function priceValue(p) {
     case "market": return "時価";
     case "ask": return "応相談";
     case "free": return "無料";
+    case "tbd": return "—";
     default: return "";
   }
 }
@@ -57,6 +58,7 @@ export function formatPriceAll(prices) {
 //   例：「380円（税込）」「1個 220円／5個入り 1,200円（税込）」。空なら空文字。
 export function formatPriceAllTax(prices) {
   if (!Array.isArray(prices) || prices.length === 0) return "";
+  if (prices.every((p) => p.type === "tbd")) return "—";
   const body = prices.map((p) => (p.name ? `${p.name} ${priceValue(p)}` : priceValue(p))).join("／");
   return `${body}（税込）`;
 }

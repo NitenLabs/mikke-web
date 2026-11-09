@@ -126,15 +126,38 @@
   },
   "catalog": {
     "menus": {
-      "mnu_main": {
+      "mnu_food": {
+        "name": "お料理",
         "order": 1
+      },
+      "mnu_main": {
+        "name": "ドリンク",
+        "order": 2
       }
     },
     "categories": {
       "cat_drink": {
         "menuId": "mnu_main",
         "name": "お飲み物",
-        "order": 1
+        "order": 4
+      },
+      "cat_meat": {
+        "menuId": "mnu_food",
+        "name": "お肉",
+        "order": 1,
+        "draft": true
+      },
+      "cat_side": {
+        "menuId": "mnu_food",
+        "name": "一品・サラダ",
+        "order": 2,
+        "draft": true
+      },
+      "cat_rice": {
+        "menuId": "mnu_food",
+        "name": "ご飯・麺・スープ",
+        "order": 3,
+        "draft": true
       }
     },
     "labels": {
@@ -177,6 +200,347 @@
           }
         ],
         "status": "onSale"
+      },
+      "itm_d001": {
+        "name": "タン塩",
+        "description": "品の説明が入ります（取材のあとで差し替え）",
+        "labels": [
+          "lbl_recommend"
+        ],
+        "photos": [
+          "ast_cd01"
+        ],
+        "prices": [
+          {
+            "id": "prc_d001",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d002": {
+        "name": "上カルビ",
+        "description": "品の説明が入ります（取材のあとで差し替え）",
+        "labels": [
+          "lbl_recommend"
+        ],
+        "photos": [
+          "ast_cd02"
+        ],
+        "prices": [
+          {
+            "id": "prc_d002",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d003": {
+        "name": "カルビ",
+        "photos": [
+          "ast_it01"
+        ],
+        "prices": [
+          {
+            "id": "prc_d003",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d004": {
+        "name": "ハラミ",
+        "description": "品の説明が入ります（取材のあとで差し替え）",
+        "labels": [
+          "lbl_recommend"
+        ],
+        "photos": [
+          "ast_cd03"
+        ],
+        "prices": [
+          {
+            "id": "prc_d004",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d005": {
+        "name": "ロース",
+        "description": "品の説明が入ります（取材のあとで差し替え）",
+        "labels": [
+          "lbl_recommend"
+        ],
+        "photos": [
+          "ast_cd04"
+        ],
+        "prices": [
+          {
+            "id": "prc_d005",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d006": {
+        "name": "上ロース",
+        "prices": [
+          {
+            "id": "prc_d006",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d007": {
+        "name": "ミノ",
+        "prices": [
+          {
+            "id": "prc_d007",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d008": {
+        "name": "ホルモン盛り合わせ",
+        "description": "品の説明が入ります（取材のあとで差し替え）",
+        "labels": [
+          "lbl_recommend"
+        ],
+        "photos": [
+          "ast_cd05"
+        ],
+        "prices": [
+          {
+            "id": "prc_d008",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d009": {
+        "name": "豚トロ",
+        "photos": [
+          "ast_it02"
+        ],
+        "prices": [
+          {
+            "id": "prc_d009",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d010": {
+        "name": "鶏もも",
+        "prices": [
+          {
+            "id": "prc_d010",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d011": {
+        "name": "キムチ盛り合わせ",
+        "photos": [
+          "ast_it03"
+        ],
+        "prices": [
+          {
+            "id": "prc_d011",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d012": {
+        "name": "ナムル",
+        "photos": [
+          "ast_it04"
+        ],
+        "prices": [
+          {
+            "id": "prc_d012",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d013": {
+        "name": "韓国のり",
+        "prices": [
+          {
+            "id": "prc_d013",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d014": {
+        "name": "サンチュ",
+        "prices": [
+          {
+            "id": "prc_d014",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d015": {
+        "name": "チョレギサラダ",
+        "prices": [
+          {
+            "id": "prc_d015",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d016": {
+        "name": "ビビンバ",
+        "description": "品の説明が入ります（取材のあとで差し替え）",
+        "labels": [
+          "lbl_recommend"
+        ],
+        "photos": [
+          "ast_cd06"
+        ],
+        "prices": [
+          {
+            "id": "prc_d016",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d017": {
+        "name": "冷麺",
+        "photos": [
+          "ast_it07"
+        ],
+        "prices": [
+          {
+            "id": "prc_d017",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d018": {
+        "name": "クッパ",
+        "photos": [
+          "ast_it06"
+        ],
+        "prices": [
+          {
+            "id": "prc_d018",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d019": {
+        "name": "チゲ",
+        "photos": [
+          "ast_it05"
+        ],
+        "prices": [
+          {
+            "id": "prc_d019",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d020": {
+        "name": "わかめスープ",
+        "prices": [
+          {
+            "id": "prc_d020",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d021": {
+        "name": "ライス",
+        "prices": [
+          {
+            "id": "prc_d021",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d022": {
+        "name": "生ビール",
+        "photos": [
+          "ast_it08"
+        ],
+        "prices": [
+          {
+            "id": "prc_d022",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d023": {
+        "name": "ハイボール",
+        "prices": [
+          {
+            "id": "prc_d023",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d024": {
+        "name": "ウーロン茶",
+        "prices": [
+          {
+            "id": "prc_d024",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_d025": {
+        "name": "コーラ",
+        "prices": [
+          {
+            "id": "prc_d025",
+            "type": "tbd"
+          }
+        ],
+        "status": "onSale",
+        "draft": true
       }
     },
     "placements": {
@@ -197,6 +561,156 @@
         "menuId": "mnu_main",
         "categoryId": "cat_drink",
         "order": 3
+      },
+      "plc_d001": {
+        "itemId": "itm_d001",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 1
+      },
+      "plc_d002": {
+        "itemId": "itm_d002",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 2
+      },
+      "plc_d003": {
+        "itemId": "itm_d003",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 3
+      },
+      "plc_d004": {
+        "itemId": "itm_d004",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 4
+      },
+      "plc_d005": {
+        "itemId": "itm_d005",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 5
+      },
+      "plc_d006": {
+        "itemId": "itm_d006",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 6
+      },
+      "plc_d007": {
+        "itemId": "itm_d007",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 7
+      },
+      "plc_d008": {
+        "itemId": "itm_d008",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 8
+      },
+      "plc_d009": {
+        "itemId": "itm_d009",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 9
+      },
+      "plc_d010": {
+        "itemId": "itm_d010",
+        "menuId": "mnu_food",
+        "categoryId": "cat_meat",
+        "order": 10
+      },
+      "plc_d011": {
+        "itemId": "itm_d011",
+        "menuId": "mnu_food",
+        "categoryId": "cat_side",
+        "order": 1
+      },
+      "plc_d012": {
+        "itemId": "itm_d012",
+        "menuId": "mnu_food",
+        "categoryId": "cat_side",
+        "order": 2
+      },
+      "plc_d013": {
+        "itemId": "itm_d013",
+        "menuId": "mnu_food",
+        "categoryId": "cat_side",
+        "order": 3
+      },
+      "plc_d014": {
+        "itemId": "itm_d014",
+        "menuId": "mnu_food",
+        "categoryId": "cat_side",
+        "order": 4
+      },
+      "plc_d015": {
+        "itemId": "itm_d015",
+        "menuId": "mnu_food",
+        "categoryId": "cat_side",
+        "order": 5
+      },
+      "plc_d016": {
+        "itemId": "itm_d016",
+        "menuId": "mnu_food",
+        "categoryId": "cat_rice",
+        "order": 1
+      },
+      "plc_d017": {
+        "itemId": "itm_d017",
+        "menuId": "mnu_food",
+        "categoryId": "cat_rice",
+        "order": 2
+      },
+      "plc_d018": {
+        "itemId": "itm_d018",
+        "menuId": "mnu_food",
+        "categoryId": "cat_rice",
+        "order": 3
+      },
+      "plc_d019": {
+        "itemId": "itm_d019",
+        "menuId": "mnu_food",
+        "categoryId": "cat_rice",
+        "order": 4
+      },
+      "plc_d020": {
+        "itemId": "itm_d020",
+        "menuId": "mnu_food",
+        "categoryId": "cat_rice",
+        "order": 5
+      },
+      "plc_d021": {
+        "itemId": "itm_d021",
+        "menuId": "mnu_food",
+        "categoryId": "cat_rice",
+        "order": 6
+      },
+      "plc_d022": {
+        "itemId": "itm_d022",
+        "menuId": "mnu_main",
+        "categoryId": "cat_drink",
+        "order": 11
+      },
+      "plc_d023": {
+        "itemId": "itm_d023",
+        "menuId": "mnu_main",
+        "categoryId": "cat_drink",
+        "order": 12
+      },
+      "plc_d024": {
+        "itemId": "itm_d024",
+        "menuId": "mnu_main",
+        "categoryId": "cat_drink",
+        "order": 13
+      },
+      "plc_d025": {
+        "itemId": "itm_d025",
+        "menuId": "mnu_main",
+        "categoryId": "cat_drink",
+        "order": 14
       }
     }
   },
@@ -534,6 +1048,19 @@
           "fetchedAt": "2026-11-09T15:16:00+09:00"
         }
       ]
+    }
+  },
+  "story": {
+    "draft": true,
+    "answers": {
+      "q_catch": {
+        "question": "縦書きのひと言（仮）",
+        "answer": "芦屋の炭火焼肉"
+      },
+      "q_body": {
+        "question": "お店の紹介（仮）",
+        "answer": "炭火焼肉 李杏は、兵庫県芦屋市東山町の焼肉店です。ここには、取材のあとでお店の言葉が入ります。今は営業用の見本として、仮の文を置いています。"
+      }
     }
   }
 }

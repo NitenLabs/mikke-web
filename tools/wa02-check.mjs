@@ -1,12 +1,15 @@
 #!/usr/bin/env node
 // wa-02：dist/rian の数値の検査（撮影はしない）。幅 320〜1920 の横はみ出し・文字のはみ出し・文字どうしの重なり・
 // セクションの高さ（SPEC 比）・ギャラリーの送りを調べる。問題があれば終了コード 1。
+import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
 const URL_ = pathToFileURL(path.resolve("dist/rian/index.html")).href;
-const WIDTHS = [320, 360, 390, 430, 600, 767, 768, 1024, 1280, 1440, 1920];
-const SPEC = { 1440: { sec_header: 90, sec_firstv: 900, sec_gallery: 540, sec_menu: 500, sec_info: 815, sec_access: 274, sec_resv: 445, sec_footer: 358 }, 390: { sec_header: 84, sec_firstv: 844, sec_gallery: 360, sec_menu: 556, sec_info: 911, sec_access: 288.4, sec_resv: 401, sec_footer: 332 } };
+const WIDTHS = [320, 360, 390, 430, 600, 767, 768, 1007, 1008, 1024, 1280, 1440, 1920];
+const site = JSON.parse(fs.readFileSync("samples/rian/site.json", "utf8"));
+const specOf = (d) => Object.fromEntries(Object.entries(site.sections).map(([k, v]) => [k, v.minHeight[d]]));
+const SPEC = { 1440: specOf("pc"), 390: specOf("sp") };
 const browser = await chromium.launch();
 let bad = 0;
 const ng = (m) => { bad++; console.log("NG " + m); };
@@ -26,12 +29,16 @@ for (const w of WIDTHS) {
     const R = T.filter((e) => !fixed(e)).map((e) => [e.dataset.el || e.dataset.cel, yOf(e)]);
     for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) { const a = R[i][1], b = R[j][1]; if (a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.t < a.b - 1) out.over.push(R[i][0] + "×" + R[j][0]); }
     for (const s of document.querySelectorAll("[data-sec]")) out.secs[s.dataset.sec] = Math.round(s.getBoundingClientRect().height * 10) / 10;
+    const body = document.querySelector("[data-el=in_vt0]"); out.bodyPx = body ? parseFloat(getComputedStyle(body).fontSize) : 0;
+    const b2 = document.querySelector("[data-g=toggle]")?.getBoundingClientRect(), g4 = document.querySelector("[data-el=gal_4]")?.getBoundingClientRect(); out.btnOff = b2 && g4 ? Math.abs((b2.left + b2.right) / 2 - (g4.left + g4.right) / 2) : 99;
     for (const i of document.images) if (!i.complete || !i.naturalWidth) out.broken.push(i.getAttribute("src"));
     return out;
   });
   if (r.sw > r.vw) ng(`${w}: 横はみ出し ${r.sw}>${r.vw}`);
   if (r.clip.length) ng(`${w}: 文字のはみ出し ${r.clip.join(",")}`);
   if (r.over.length) ng(`${w}: 文字の重なり ${r.over.join(",")}`);
+  if (w >= 768 && w <= 1007 && r.bodyPx < 14) ng(`${w}: 本文 ${r.bodyPx}px（14 未満）`);
+  if (r.btnOff > 2) ng(`${w}: ギャラリーのボタンが中央からずれ ${r.btnOff}`);
   if (r.broken.length) ng(`${w}: 読めない写真 ${r.broken.join(",")}`);
   if (errs.length) ng(`${w}: エラー ${errs.join(" / ")}`);
   if (SPEC[w]) for (const [s, h] of Object.entries(SPEC[w])) if (Math.abs((r.secs[s] ?? 0) - h) > 1.5) ng(`${w}: ${s} 高さ ${r.secs[s]}（設計 ${h}）`);
