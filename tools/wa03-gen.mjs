@@ -39,7 +39,7 @@ function head(prefix, section, en, ja, yEnP, yJaP, yEnS, yJaS) {
 
 // ---- ヘッダー（in-flow の sticky。高さ 110 / 80）
 sec("sec_header", "ヘッダー", "theme:background", 110, 80);
-t("hd_name", "sec_header", NAME, [[26, 40, 2.6], [24, 40, 2.4]], B, TX, [{ x: 50, y: 35, w: 220, h: 40 }, { x: 20, y: 20, w: 200, h: 40 }], { weight: 500, link: { kind: "page", value: "pg_home" } });
+t("hd_name", "sec_header", NAME, [[26, 40, 2.6], [24, 40, 2.4]], B, TX, [{ x: 50, y: 35, w: C.headerW?.pc ?? 220, h: 40 }, { x: 20, y: 20, w: C.headerW?.sp ?? 200, h: 40 }], { weight: 500, link: { kind: "page", value: "pg_home" } });
 add("hd_nav", { type: "nav", z: 4, section: "sec_header", style: { color: TX, font: M, spMenuBackground: "theme:paper" }, layout: lay({ x: 700, y: 43.8, w: 690, h: 22.4, size: 16 }, { x: 334, y: 18, w: 44, h: 44 }) });
 const bar = (id, y) => add(id, { type: "shape", z: 3, kind: "rect", fill: TX, section: "sec_header", layout: { pc: { x: 99.9, y: 80, w: 0.01, h: 1 }, sp: { x: r((340 / S) * 100), y, w: r((30 / S) * 100), h: 2 } } });
 bar("hd_b1", 29); bar("hd_b2", 39); bar("hd_b3", 49);
@@ -48,7 +48,7 @@ bar("hd_b1", 29); bar("hd_b2", 39); bar("hd_b3", 49);
 sec("sec_firstv", "最初の画面", "theme:background", 810, 675);
 photo("fv_1", "sec_firstv", "ast_fv01", 1, { x: 432, y: 0, w: 504, h: 810 }, { x: 0, y: 270.1, w: 195, h: 404.9 });
 photo("fv_2", "sec_firstv", "ast_fv02", 1, { x: 936, y: 0, w: 504, h: 810 }, { x: 195, y: 270.1, w: 195, h: 404.9 });
-t("fv_copy", "sec_firstv", lines(C.fvCopy), [[28.8, 40.32, 2.88], [25.6, 35.84, 1.28]], B, TX, [{ x: 175.7, y: 251, w: 80.6, h: 260 }, { x: 30, y: 63.3, w: 330, h: 71.7 }], { vp: 1, weight: 500 });
+t("fv_copy", "sec_firstv", lines(C.fvCopy), [[28.8, 40.32, 2.88], C.fvCopyBox?.sp ?? [25.6, 35.84, 1.28]], B, TX, [{ x: 175.7, y: C.fvCopyBox?.y ?? 251, w: 80.6, h: C.fvCopyBox?.h ?? 260 }, { x: 30, y: 63.3, w: 330, h: 71.7 }], { vp: 1, weight: 500 });
 t("fv_en", "sec_firstv", C.fvEn, [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], M, MU, [{ x: 80.4, y: 524, w: 271.2, h: 34.6 }, { x: 30, y: 154.9, w: 271.2, h: 34.6 }], { weight: 500, align: "center" });
 t("fv_script", "sec_firstv", SITE_NAME_EN, [[144, 144, -7.2], [64, 64, -3.2]], SCRIPT, SCRIPT_C, [{ x: 200, y: 666, w: 997, h: 144 }, { x: 8, y: 603, w: 374, h: 64 }], { z: 5, weight: 300 });
 
@@ -83,7 +83,7 @@ const cityTown = ["/location", "address"];
 const ROWS = [["住所", cityTown], ["営業時間", ["/hours", "hoursShort"]], C.infoRow ? [C.infoRow.label, C.infoRow.value] : ["定休日", ["/hours", "closedDays"]], ["電話番号", ["/contact/phone", "phone"]], ["アクセス", ["/location/access", "access"]]];
 sec("sec_access", "Access", "theme:background", 939, 1057, { anchor: "access", nav: { label: "Access", order: 3 } });
 head("ac", "sec_access", "Access", "店舗情報", 140.2, 197.8, 100, 155.2);
-t("ac_name", "sec_access", NAME, [[32, 60, 3.2], [28, 60, 2.8]], B, TX, [{ x: 80, y: 268, w: 350, h: 60 }, { x: 30, y: 488.5, w: 250, h: 60 }], { weight: 500 });
+t("ac_name", "sec_access", NAME, [[32, 60, 3.2], [28, 60, 2.8]], B, TX, [{ x: 80, y: 268, w: 350, h: 60 }, { x: 30, y: 488.5, w: C.nameSpW ?? 250, h: 60 }], { weight: 500 });
 const TBL = [[16, 28.8, 0.48], [16, 28.8, 0.48]];
 ROWS.forEach(([k, v], i) => {
   const yP = 358 + 48.8 * i, yS = 558.5 + 67.6 * i;
@@ -101,7 +101,7 @@ for (let i = 1; i <= 6; i++) add(`sr_${i}`, { type: "photo", z: 1, section: "sec
 
 // ---- フッター（PC 914 / スマホ 1038）
 sec("sec_footer", "フッター", "theme:paper", 914, 1038);
-t("ft_name", "sec_footer", NAME, [[32, 60, 3.2], [28, 60, 2.8]], B, TX, [{ x: 123.2, y: 180, w: 350, h: 60 }, { x: 70, y: 100, w: 250, h: 60 }], { weight: 500 });
+t("ft_name", "sec_footer", NAME, [[32, 60, 3.2], [28, 60, 2.8]], B, TX, [{ x: 123.2, y: 180, w: 350, h: 60 }, { x: 195 - (C.nameSpW ?? 250) / 2, y: 100, w: C.nameSpW ?? 250, h: 60 }], { weight: 500 });
 line("ft_div", "sec_footer", AC, { x: 720.5, y: 140, w: 1, h: 536.4 }, { x: 0, y: 0, w: 0.01, h: 1 });
 const NV = [["About", "story"], ["Menu", "menu"], ["Access", "access"], ...(C.extraNav || []).map((n) => [n.label, null, n.url])];
 const NAV_T = [[16, 22.4, 0.8], [16, 22.4, 0.8]];
