@@ -69,7 +69,8 @@ ${pos("[data-el=ft_copy]", `left:${L};width:40%;top:27rem`)}
 }</style>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
-const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : encodeURIComponent(addr); // 緯度経度＋拡大率なら Google の場所の札が出にくい
+const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");
 h = h.replace(re, `$1${map}`).replace("</head>", css + "</head>");

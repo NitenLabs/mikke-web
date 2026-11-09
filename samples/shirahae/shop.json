@@ -15,7 +15,11 @@
   "location": {
     "prefecture": "兵庫県",
     "city": "芦屋市",
-    "town": "宮塚町"
+    "town": "宮塚町",
+    "geo": {
+      "lat": 34.731533,
+      "lng": 135.310425
+    }
   },
   "hours": {
     "weekly": {
@@ -139,7 +143,7 @@
         ]
       },
       "itm_m002": {
-        "name": "浅煎りストレート",
+        "name": "本日のストレート",
         "description": "その日の豆を、すっきりと。お好みの器で。",
         "photos": [
           "ast_mn02"
@@ -169,8 +173,8 @@
         "status": "onSale"
       },
       "itm_m004": {
-        "name": "クリームソーダ",
-        "description": "懐かしいメロンのソーダに、バニラのアイスをのせて。",
+        "name": "メロンソーダ",
+        "description": "懐かしい緑色のソーダを、よく冷やして。",
         "photos": [
           "ast_mn04"
         ],

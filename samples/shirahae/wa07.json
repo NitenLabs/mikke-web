@@ -17,7 +17,7 @@
   "menuJa": "お品書き",
   "menuNote": "値段はすべて税込みです。",
   "interiorJa": "店内",
-  "interiorHead": ["深緑の椅子と、", "真鍮の灯り。"],
+  "interiorHead": ["木の壁と、", "古い額。"],
   "interiorBody": "カウンター6席とテーブル16席の、小さな店です。全席禁煙。窓辺の席は、午後になると木の卓に陽が長くのびます。",
   "interiorBody2": "ネルドリップのほか、ご希望があればサイフォンでもお淹れします。お湯の沸く音を聞きながら、のんびりお待ちください。",
   "infoJa": "ご案内",
@@ -36,7 +36,7 @@
   "photos": {
     "fv": { "slot": "interior", "alt": "深緑の壁と赤い革のソファが並ぶ、古い喫茶店の店内", "page": "https://unsplash.com/photos/r7A5P02iLr4" },
     "in1": { "slot": "interior", "alt": "木の壁に花の絵が掛かり、大理石の卓と曲げ木の椅子が置かれた席", "page": "https://unsplash.com/photos/X9xhmK5WUlc" },
-    "in2": { "slot": "interior", "alt": "光の縞が落ちる革張りの椅子", "page": "https://unsplash.com/photos/5Wu5K-JWK6w" },
+    "in2": { "slot": "interior", "alt": "茶色の革の長椅子と、木の椅子と小さな卓", "page": "https://unsplash.com/photos/5FOmPe9ALC0" },
     "in3": { "slot": "product", "alt": "火にかけたサイフォンと銅のやかん", "page": "https://unsplash.com/photos/41CCQ-c9dkc" },
     "bn": { "slot": "signature", "alt": "窓辺の盆にサイフォンと白いカップ", "page": "https://unsplash.com/photos/KprL2PowOd8" },
     "mn1": { "slot": "signature", "alt": "木の卓の白いカップに注いだブラックコーヒー", "page": "https://unsplash.com/photos/op4gSRyHBwM" },

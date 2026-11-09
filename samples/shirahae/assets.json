@@ -59,8 +59,8 @@
         "key": "ast_in02.webp",
         "mime": "image/webp",
         "width": 1000,
-        "height": 714,
-        "bytes": 110650,
+        "height": 620,
+        "bytes": 129196,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T02:00:00+09:00",
@@ -68,7 +68,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/5Wu5K-JWK6w"
+        "pageUrl": "https://unsplash.com/photos/5FOmPe9ALC0"
       },
       "rights": {
         "basis": "licensed",
@@ -77,7 +77,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "interior",
-      "alt": "光の縞が落ちる革張りの椅子"
+      "alt": "茶色の革の長椅子と、木の椅子と小さな卓"
     },
     "ast_in03": {
       "kind": "photo",
