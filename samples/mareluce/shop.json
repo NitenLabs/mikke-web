@@ -16,6 +16,10 @@
     "prefecture": "兵庫県",
     "city": "芦屋市",
     "town": "浜町",
+    "geo": {
+      "lat": 34.7277,
+      "lng": 135.3167
+    },
     "access": {
       "acc_hanshin": {
         "station": "阪神芦屋駅",

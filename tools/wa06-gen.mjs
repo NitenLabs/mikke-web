@@ -39,7 +39,7 @@ MENU.forEach((c, ci) => {
 const shop = {
   schemaVersion: 1, shopId: `shp_${ID}`, updatedAt: NOW, isSample: true, demo: true,
   basic: { name: NAME, nameKana: "とらっとりあ まれるーちぇ", genre: { template: "restaurant", detail: "イタリアン・トラットリア" } },
-  location: { prefecture: "兵庫県", city: "芦屋市", town: "浜町", access: { acc_hanshin: { station: "阪神芦屋駅", method: "walk", minutes: 5, order: 1 } } },
+  location: { prefecture: "兵庫県", city: "芦屋市", town: "浜町", geo: { lat: 34.7277, lng: 135.3167 }, access: { acc_hanshin: { station: "阪神芦屋駅", method: "walk", minutes: 5, order: 1 } } },
   hours: { weekly: { mon: { status: "closed" }, tue: open, wed: open, thu: open, fri: open, sat: open, sun: open } },
   contact: { phone: { display: "0797-00-0000", digits: "0797000000" } },
   facilities: { smoking: "none" },
@@ -172,9 +172,9 @@ tablet.secs.sec_recommend = "68.2rem";
 sec("sec_menu", "メニュー", 3080, 2720, { anchor: "menu", nav: { label: "メニュー", order: 3 } });
 t("mn_h", "sec_menu", "Menu", [[96, 115, 0], [50, 60, 0]], H, TC, [{ x: 80, y: 180, w: 600, h: 115 }, { x: 20, y: 104, w: 350, h: 60 }], { role: "heading" });
 t("mn_p", "sec_menu", "前菜からドルチェまで、季節の食材でご用意しています。まずは前菜を分け合って、パスタかピッツァを囲み、仕上げに自家製のドルチェをどうぞ。", [[16, 40, 1.28], [16, 32, 0.8]], B, INK, [{ x: 720, y: 180, w: 640, h: 200 }, { x: 20, y: 184, w: 350, h: 200 }]);
-photo("mn_ph1", "sec_menu", "ast_mn01", 2, { x: 80, y: 563, w: 554, h: 739 }, { x: 20, y: 400, w: 216, h: 287 }, { fy: 60 });
-photo("mn_ph2", "sec_menu", "ast_mn02", 2, { x: 1040, y: 743, w: 320, h: 214 }, { x: 246, y: 440, w: 124, h: 83 }, { fy: 52 });
-photo("mn_ph3", "sec_menu", "ast_mn03", 2, { x: 720, y: 1117, w: 380, h: 507 }, { x: 222, y: 700, w: 148, h: 197 });
+photo("mn_ph1", "sec_menu", "ast_mn01", 2, { x: 80, y: 540, w: 554, h: 739 }, { x: 20, y: 400, w: 216, h: 287 }, { fy: 60 });
+photo("mn_ph2", "sec_menu", "ast_mn02", 2, { x: 800, y: 420, w: 560, h: 373 }, { x: 246, y: 440, w: 124, h: 83 }, { fy: 52 });
+photo("mn_ph3", "sec_menu", "ast_mn03", 2, { x: 720, y: 833, w: 420, h: 560 }, { x: 222, y: 700, w: 148, h: 197 });
 tb("mn_h", { "font-size": "7.2rem", "line-height": "8.6rem", height: "8.6rem", left: "4.8rem", width: "calc(100% - 9.6rem)", top: "10.4rem" });
 tb("mn_p", { ...tbMargin, top: "21rem", height: "16rem" });
 tb("mn_ph1", { left: "4.8rem", width: "29.1rem", top: "40rem", height: "38.8rem" });
@@ -195,7 +195,7 @@ function row(name, price, xP, yP, yS, i) {
   t(`li_p${k}`, "sec_menu", yen(price), [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: xP + 460, y: yP + 14, w: 140, h: 28 }, { x: 280, y: yS + 12, w: 90, h: 28 }], { align: "right" });
   rect(`li_l${k}`, "sec_menu", INK, 2, { x: xP, y: yP + 56, w: 600, h: 1 }, { x: 20, y: yS + 52, w: 350, h: 1 }, { opacity: 30 });
 }
-let yL = 1760, yR = 1760, yS = 940;
+let yL = 1520, yR = 1520, yS = 940;
 for (const c of MENU) {
   const left = ["antipasti", "pasta", "pizza"].includes(c.id);
   const xP = left ? 80 : 720;
