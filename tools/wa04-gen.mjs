@@ -59,16 +59,16 @@ t("ms_en", "sec_message", "Cuisine", [[43.2, 43.2, 0], [19.5, 19.5, 0]], A, CR, 
 // ---- 4 おすすめの料理（えんじ。大きなカード：参考の 534.8×720 ＋右の文。4枚）
 const item = (path, fmt, pc, sp, ps, ss, font, opts = {}) => ({ type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path, format: fmt } }] }], style: { font, weight: 400, color: CR, lineHeight: opts.lh, ...(opts.align ? { align: opts.align } : {}) }, layout: { pc: { ...pc, size: ps }, sp: { ...sp, size: ss } } });
 const REC = ["itm_r001", "itm_r002", "itm_r003", "itm_r004"], MEN = ["itm_m001", "itm_m002", "itm_m003", "itm_m004", "itm_m005", "itm_m006"];
-const CW = 1209.6, RH = { pc: 720, sp: 398 }, RG = { pc: 75.5, sp: 50 };
-sec("sec_recommend", "おすすめの料理", "theme:primary", 120 + 4 * 720 + 3 * 75.5 + 120, 62.4 + 4 * 398 + 3 * 50 + 47, { anchor: "recommend", nav: { label: "Recommend", order: 2 } });
+const CW = 1209.6, RH = { pc: 540, sp: 430 }, RG = { pc: 75.5, sp: 50 };
+sec("sec_recommend", "おすすめの料理", "theme:primary", 120 + 4 * 540 + 3 * 75.5 + 120, 62.4 + 4 * 430 + 3 * 50 + 47, { anchor: "recommend", nav: { label: "Recommend", order: 2 } });
 const pct = (n) => r((n / CW) * 100);
 add("rc_cards", { type: "repeater", z: 3, section: "sec_recommend", source: { kind: "catalog", menuId: "mnu_osusume", pick: REC }, display: { mode: "list", columns: { pc: 1, sp: 1 }, gap: { pc: RG.pc, sp: RG.sp }, photoless: "sameCard" },
   card: { height: RH, elements: {
-    c_ph: { type: "photo", z: 1, bind: { scope: "item", path: "/photos" }, layout: { pc: { x: 0, y: 0, w: pct(534.8), h: 720, ratio: "custom" }, sp: { x: 0, y: 0, w: 100, h: 220.1, ratio: "custom" } } },
-    c_lb: { type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ text: "Recommend" }] }], style: { font: A, weight: 400, color: CR, lineHeight: 1.6 }, layout: { pc: { x: pct(694.8), y: 74, w: pct(514.8), h: 34.6, size: 21.6 }, sp: { x: 0, y: 257.4, w: 100, h: 23.7, size: 14.82 } } },
-    c_nm: item("/name", "plain", { x: pct(694.8), y: 147.5, w: pct(514.8), h: 80.6 }, { x: 0, y: 288, w: 100, h: 47.6 }, 40.32, 23.79, B, { lh: 1 }),
-    c_ds: item("/description", "plain", { x: pct(694.8), y: 253.1, w: pct(514.8), h: 63.4 }, { x: 0, y: 346, w: 100, h: 51.9 }, 15.84, 13.65, B, { lh: 2 }) } },
-  layout: lay({ x: 115.2, y: 120, w: CW, h: 4 * 720 + 3 * 75.5 }, { x: 19.5, y: 62.4, w: 351, h: 4 * 398 + 3 * 50 }) });
+    c_ph: { type: "photo", z: 1, bind: { scope: "item", path: "/photos" }, layout: { pc: { x: 0, y: 0, w: pct(534.8), h: 540, ratio: "custom" }, sp: { x: 0, y: 0, w: 100, h: 220.1, ratio: "custom" } } },
+    c_lb: { type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ text: "Recommend" }] }], style: { font: A, weight: 400, color: CR, lineHeight: 1.6 }, layout: { pc: { x: pct(694.8), y: 133, w: pct(514.8), h: 34.6, size: 21.6 }, sp: { x: 0, y: 257.4, w: 100, h: 23.7, size: 14.82 } } },
+    c_nm: item("/name", "plain", { x: pct(694.8), y: 206.5, w: pct(514.8), h: 80.6 }, { x: 0, y: 288, w: 100, h: 47.6 }, 40.32, 23.79, B, { lh: 1 }),
+    c_ds: item("/description", "plain", { x: pct(694.8), y: 312.1, w: pct(514.8), h: 95.1 }, { x: 0, y: 346, w: 100, h: 81.9 }, 15.84, 13.65, B, { lh: 2 }) } },
+  layout: lay({ x: 115.2, y: 120, w: CW, h: 4 * 540 + 3 * 75.5 }, { x: 19.5, y: 62.4, w: 351, h: 4 * 430 + 3 * 50 }) });
 els.rc_cards.card.elements.c_ds.style.lineHeight = 2;
 
 // ---- 5 お品書き（えんじ。写真6枚。丸い写真は wa04-finish で）
