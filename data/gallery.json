@@ -20,6 +20,13 @@
       "genre": "喫茶店",
       "mood": "深緑の椅子と真鍮の灯り、ネルドリップの一杯を出す純喫茶",
       "path": "shirahae"
+    },
+    {
+      "id": "tide",
+      "name": "TIDE COFFEE STAND",
+      "genre": "コーヒースタンド",
+      "mood": "白とグレーの余白に、大きな欧文。海辺の朝のコーヒースタンド",
+      "path": "tide"
     }
   ]
 }

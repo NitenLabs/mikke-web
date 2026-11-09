@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1800,
+        "bytes": 137670,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/mSA585Y0Na0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "夜明けの浜に寄せる波と、足あとの残る砂浜"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 945,
+        "bytes": 164896,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/SwmUmhrFr54"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "エスプレッソマシンから白いカップに抽出されるコーヒー"
+    },
+    "ast_mn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn01.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 272928,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Nw8wbiDE3gU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "カフェラテ。木の卓の上の、葉の模様を描いた一杯"
+    },
+    "ast_mn02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn02.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 80054,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/N3btvQ51dL0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ハンドドリップ（シングルオリジン）。ガラスのサーバーからマグカップに注ぐ"
+    },
+    "ast_mn03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn03.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 32904,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/87fHq2C24IU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "コールドブリュー。氷の入ったグラス"
+    },
+    "ast_mn04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn04.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 18620,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/xIcg61GWav8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "エスプレッソ。白いカップに注いだ一杯"
+    },
+    "ast_st01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st01.webp",
+        "mime": "image/webp",
+        "width": 1300,
+        "height": 867,
+        "bytes": 50076,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/DTxxKUj5Xoc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "白い台の上の、グラスのアイスコーヒーとコーヒー豆"
+    },
+    "ast_st02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st02.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 667,
+        "bytes": 97056,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/T64_Ysj_EMQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "海を望む芝生の上の木のベンチ"
+    },
+    "ast_bn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_bn01.webp",
+        "mime": "image/webp",
+        "width": 2000,
+        "height": 3000,
+        "bytes": 226116,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/CF89rOvKcsQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "朝の光を映す穏やかな海の水面"
+    }
+  }
+}

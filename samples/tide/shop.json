@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_tide",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "TIDE COFFEE STAND",
+    "nameKana": "たいど こーひー すたんど",
+    "genre": {
+      "template": "restaurant",
+      "detail": "コーヒースタンド"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "浜芦屋町"
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "closed"
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "07:30",
+            "end": "17:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "07:30",
+            "end": "17:00"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "07:30",
+            "end": "17:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "07:30",
+            "end": "17:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "07:30",
+            "end": "17:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "07:30",
+            "end": "17:00"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 4
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_food": {
+        "order": 1,
+        "name": "メニュー"
+      }
+    },
+    "categories": {
+      "cat_menu": {
+        "menuId": "mnu_food",
+        "name": "メニュー",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_m001": {
+        "name": "カフェラテ",
+        "description": "ミルクをやわらかく立てて。",
+        "photos": [
+          "ast_mn01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m001",
+            "type": "fixed",
+            "amount": 600
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m002": {
+        "name": "ハンドドリップ（シングルオリジン）",
+        "description": "その日の豆を、一杯ずつ。",
+        "photos": [
+          "ast_mn02"
+        ],
+        "prices": [
+          {
+            "id": "prc_m002",
+            "type": "fixed",
+            "amount": 650
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m003": {
+        "name": "コールドブリュー",
+        "description": "低温でゆっくり抽出しました。",
+        "photos": [
+          "ast_mn03"
+        ],
+        "prices": [
+          {
+            "id": "prc_m003",
+            "type": "fixed",
+            "amount": 600
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m004": {
+        "name": "エスプレッソ",
+        "description": "季節ごとに替わる豆で。",
+        "photos": [
+          "ast_mn04"
+        ],
+        "prices": [
+          {
+            "id": "prc_m004",
+            "type": "fixed",
+            "amount": 450
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m005": {
+        "name": "アメリカーノ",
+        "description": "エスプレッソを、すっきりとお湯で。",
+        "prices": [
+          {
+            "id": "prc_m005",
+            "type": "fixed",
+            "amount": 500
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m006": {
+        "name": "フラットホワイト",
+        "description": "きめの細かいミルクで、豆の味わいを。",
+        "prices": [
+          {
+            "id": "prc_m006",
+            "type": "fixed",
+            "amount": 620
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m007": {
+        "name": "エスプレッソトニック",
+        "description": "トニックで割った、すっきりした一杯。",
+        "prices": [
+          {
+            "id": "prc_m007",
+            "type": "fixed",
+            "amount": 650
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m008": {
+        "name": "バナナブレッド",
+        "description": "しっとりと焼いた、自家製のケーキです。",
+        "prices": [
+          {
+            "id": "prc_m008",
+            "type": "fixed",
+            "amount": 380
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 1
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 2
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 3
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 4
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 5
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 6
+      },
+      "plc_m007": {
+        "itemId": "itm_m007",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 7
+      },
+      "plc_m008": {
+        "itemId": "itm_m008",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 8
+      }
+    }
+  }
+}

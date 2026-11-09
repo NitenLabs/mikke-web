@@ -1,0 +1,47 @@
+{
+  "nameEn": "TIDE",
+  "shortName": "TIDE COFFEE STAND",
+  "copyright": "© TIDE COFFEE STAND",
+  "fvCopy": "朝の海辺に、一杯のコーヒーを。",
+  "facts": [
+    ["ご住所", ["/location", "address"]],
+    ["営業時間", "7:30〜17:00"],
+    ["定休日", "月曜日（祝日は営業）"]
+  ],
+  "aboutHead": ["Morning,", "by the sea."],
+  "aboutJa": "お店について",
+  "aboutBody": [
+    "豆は自家焙煎の浅煎りから中煎りまで。エスプレッソは、季節ごとに豆を替えています。",
+    "朝の散歩の途中に、海を眺めながらどうぞ。"
+  ],
+  "menuJa": "メニュー",
+  "menuNote": "表示の値段はすべて税込みです。",
+  "standJa": "お店のこと",
+  "standBody": [
+    "浜芦屋町の小さなスタンドです。お持ち帰りが中心で、店先にベンチを4席ご用意しています。",
+    "朝は7時半から開けています。お持ち帰りは紙カップで、ベンチではマグカップでお出しします。"
+  ],
+  "infoJa": "ご案内",
+  "infoRows": [
+    ["ご住所", ["/location", "address"]],
+    ["営業時間", "7:30〜17:00"],
+    ["定休日", "月曜日（祝日は営業）"],
+    ["お席", "ベンチ4席（お持ち帰り中心）"],
+    ["お電話", ["/contact/phone", "phone"]]
+  ],
+  "telLabel": "お電話する",
+  "mapLabel": "地図で開く",
+  "footHours": ["7:30〜17:00", "月曜定休（祝日は営業）"],
+  "nav": [["About", "about"], ["Menu", "menu"], ["Stand", "stand"], ["Information", "information"]],
+  "photos": {
+    "fv": { "slot": "interior", "alt": "夜明けの浜に寄せる波と、足あとの残る砂浜", "page": "https://unsplash.com/photos/mSA585Y0Na0" },
+    "ab1": { "slot": "product", "alt": "エスプレッソマシンから白いカップに抽出されるコーヒー", "page": "https://unsplash.com/photos/SwmUmhrFr54" },
+    "mn1": { "slot": "signature", "alt": "カフェラテ。木の卓の上の、葉の模様を描いた一杯", "page": "https://unsplash.com/photos/Nw8wbiDE3gU" },
+    "mn2": { "slot": "signature", "alt": "ハンドドリップ（シングルオリジン）。ガラスのサーバーからマグカップに注ぐ", "page": "https://unsplash.com/photos/N3btvQ51dL0" },
+    "mn3": { "slot": "signature", "alt": "コールドブリュー。氷の入ったグラス", "page": "https://unsplash.com/photos/87fHq2C24IU" },
+    "mn4": { "slot": "signature", "alt": "エスプレッソ。白いカップに注いだ一杯", "page": "https://unsplash.com/photos/xIcg61GWav8" },
+    "st1": { "slot": "product", "alt": "白い台の上の、グラスのアイスコーヒーとコーヒー豆", "page": "https://unsplash.com/photos/DTxxKUj5Xoc" },
+    "st2": { "slot": "interior", "alt": "海を望む芝生の上の木のベンチ", "page": "https://unsplash.com/photos/T64_Ysj_EMQ" },
+    "bn": { "slot": "signature", "alt": "朝の光を映す穏やかな海の水面", "page": "https://unsplash.com/photos/CF89rOvKcsQ" }
+  }
+}
