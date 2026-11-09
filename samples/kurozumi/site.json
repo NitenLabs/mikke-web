@@ -67,8 +67,8 @@
         "color": "theme:background"
       },
       "minHeight": {
-        "pc": 720,
-        "sp": 640
+        "pc": 620,
+        "sp": 540
       },
       "anchor": "about",
       "nav": {
@@ -817,7 +817,8 @@
         "fx": 50,
         "fy": 50,
         "zoom": 1
-      }
+      },
+      "darken": 22
     },
     "sb_lb": {
       "type": "text",
@@ -2205,7 +2206,7 @@
         "fy": 50,
         "zoom": 1
       },
-      "darken": 15
+      "darken": 32
     },
     "se_ph": {
       "type": "photo",
@@ -2235,7 +2236,7 @@
         "fy": 50,
         "zoom": 1
       },
-      "darken": 40
+      "darken": 52
     },
     "se_lb": {
       "type": "text",

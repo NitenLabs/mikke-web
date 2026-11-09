@@ -1,8 +1,8 @@
 # wa-12 炭火焼肉 くろ炭（架空のお店）の使用写真（Unsplash License）
 # 書式：枠 紹介ページの短いID 取得URL（ref-verify が行末の URL を読むので URL を最後に置く）。rect は写り込み（指・レタス・卓）を外し、肉と炭に寄せるための切り抜き
-fv FR24wE03tz8 https://images.unsplash.com/photo-1622641146379-2672c7437900?rect=0,712,3324,3800&w=1440&q=80&fm=webp
-sb1 QDJkDebZBsQ https://images.unsplash.com/photo-1586058584813-3e324b9f9aee?rect=301,953,3211,4816&w=1200&q=80&fm=webp
-sb2 SckH8spaAtk https://images.unsplash.com/photo-1728042359930-c0145f0fd442?rect=484,532,2226,3339&w=1200&q=80&fm=webp
+fv FR24wE03tz8 https://images.unsplash.com/photo-1622641146379-2672c7437900?rect=0,712,3324,3800&w=1200&q=68&fm=webp
+sb1 QDJkDebZBsQ https://images.unsplash.com/photo-1586058584813-3e324b9f9aee?rect=301,953,3211,4816&w=1000&q=68&fm=webp
+sb2 SckH8spaAtk https://images.unsplash.com/photo-1728042359930-c0145f0fd442?rect=560,590,2150,3225&w=1200&q=80&fm=webp
 mn1 LQeavijwPBA https://images.unsplash.com/photo-1639716553235-a8275d845fd7?rect=263,1429,3474,4343&w=800&q=80&fm=webp
 mn2 K6Pz7chOo94 https://images.unsplash.com/photo-1708388464878-5df2d66b758e?rect=0,403,4698,5872&w=800&q=80&fm=webp
 mn3 pjUAvCR07UM https://images.unsplash.com/photo-1774652765882-82b95247de82?rect=1106,0,1814,2268&w=800&q=80&fm=webp

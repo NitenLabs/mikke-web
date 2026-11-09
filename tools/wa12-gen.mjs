@@ -122,7 +122,7 @@ tT("fv_cp", "calc(75vw + 8.4rem)", { "font-size": "7.2rem", "line-height": "9.6r
 tablet.secs.sec_firstv = "calc(75vw + 44.8rem)";
 
 // ---- 2 紹介
-sec("sec_about", "お店について", 720, 640, { anchor: "about", nav: NAV(C.labels.about, 1) });
+sec("sec_about", "お店について", 620, 540, { anchor: "about", nav: NAV(C.labels.about, 1) });
 rect("ab_vl", "sec_about", GY, 2, { x: 720, y: 0, w: 1, h: 160 }, { x: 195, y: 0, w: 1, h: 96 }, { opacity: 40 });
 t("ab_lb", "sec_about", C.labels.about, LB, A, GY, [{ x: 240, y: 224, w: 640, h: 28 }, { x: 40, y: 120, w: 310, h: 20 }], { weight: 500 });
 t("ab_h", "sec_about", C.about.heading, [[48, 72, 0], [32, 48, 0]], H, WH, [{ x: 240, y: 268, w: 960, h: 72 }, { x: 40, y: 148, w: 310, h: 144 }], { ...HEAD, hidden: { sp: true } });
@@ -139,7 +139,7 @@ tablet.secs.sec_about = "46.4rem";
 sec("sec_story", "炭と肉", 2080, 2000);
 const K = `${col} * 1.25`, yB = `${K} + 38.4rem`;
 function storyCols(p, id, pcPh, spPh, pcTx, spTx, asset, c, label, top) {
-  photo(`${p}_ph`, "sec_story", asset, 2, pcPh, spPh, {}, p === "sa" ? 15 : undefined);
+  photo(`${p}_ph`, "sec_story", asset, 2, pcPh, spPh, {}, p === "sa" ? 15 : 22);
   t(`${p}_lb`, "sec_story", label, LB, A, GY, [{ ...pcTx, h: 28 }, { ...spTx, y: spTx.y, h: 20 }], { weight: 500 });
   t(`${p}_h`, "sec_story", { lines: c.heading }, [[40, 60, 0], [32, 48, 0]], H, WH, [{ x: pcTx.x, y: pcTx.y + 52, w: pcTx.w, h: 120 }, { x: spTx.x, y: spTx.y + 28, w: spTx.w, h: 96 }], HEAD);
   t(`${p}_p`, "sec_story", c.body, [[16, 32, 0.64], [16, 32, 0.64]], B, WH, [{ x: pcTx.x, y: pcTx.y + 204, w: pcTx.w, h: 128 }, { x: spTx.x, y: spTx.y + 148, w: spTx.w, h: 128 }]);
@@ -188,14 +188,14 @@ const pY = 888, pS = yS.v + 24, pT = yT.v + 4.8;
 const w3 = `(${col} - 4.8rem) / 3`;
 photo("mn_ph1", "sec_menu", "ast_phmn1", 2, { x: 240, y: pY, w: 304, h: 380 }, { x: 40, y: pS, w: 310, h: 388 });
 photo("mn_ph2", "sec_menu", "ast_phmn2", 2, { x: 568, y: pY, w: 304, h: 380 }, { x: 40, y: pS + 400, w: 149, h: 186 });
-photo("mn_ph3", "sec_menu", "ast_phmn3", 2, { x: 896, y: pY, w: 304, h: 380 }, { x: 201, y: pS + 400, w: 149, h: 186 }, {}, 15);
+photo("mn_ph3", "sec_menu", "ast_phmn3", 2, { x: 896, y: pY, w: 304, h: 380 }, { x: 201, y: pS + 400, w: 149, h: 186 }, {}, 32);
 ["mn_ph1", "mn_ph2", "mn_ph3"].forEach((id, i) => tb(id, { left: `calc(4.8rem + (${w3} + 2.4rem) * ${i})`, width: `calc(${w3})`, top: `${r(pT)}rem`, height: `calc((${w3}) * 1.25)` }));
 secs.sec_menu.minHeight = { pc: pY + 380 + 160, sp: pS + 400 + 186 + 96 };
 tablet.secs.sec_menu = `calc(${r(pT)}rem + (${w3}) * 1.25 + 9.6rem)`;
 
 // ---- 5 お席（全面の写真＋覆い）
 sec("sec_seats", "お席", 720, 520, { anchor: "seats", nav: NAV(C.labels.seats, 3) });
-photo("se_ph", "sec_seats", "ast_phse1", 1, { x: 0, y: 0, w: 1440, h: 720, fullBleed: true }, { x: 0, y: 0, w: 390, h: 520, fullBleed: true }, { fx: 50, fy: 50 }, 40);
+photo("se_ph", "sec_seats", "ast_phse1", 1, { x: 0, y: 0, w: 1440, h: 720, fullBleed: true }, { x: 0, y: 0, w: 390, h: 520, fullBleed: true }, { fx: 50, fy: 50 }, 52);
 t("se_lb", "sec_seats", C.labels.seats, LB, A, WH, [{ x: 240, y: 440, w: 640, h: 28 }, { x: 40, y: 270, w: 310, h: 20 }], { weight: 500 });
 t("se_h", "sec_seats", C.seats.heading, [[48, 72, 0], [32, 48, 0]], H, WH, [{ x: 240, y: 480, w: 960, h: 72 }, { x: 40, y: 300, w: 310, h: 96 }], HEAD);
 t("se_p", "sec_seats", C.seats.body, [[16, 32, 0.64], [16, 32, 0.64]], B, WH, [{ x: 240, y: 568, w: 640, h: 32 }, { x: 40, y: 408, w: 310, h: 64 }]);

@@ -6,9 +6,9 @@
       "file": {
         "key": "ast_phfv.webp",
         "mime": "image/webp",
-        "width": 1440,
-        "height": 1646,
-        "bytes": 955472,
+        "width": 1200,
+        "height": 1372,
+        "bytes": 582420,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T12:00:00+09:00",
@@ -32,9 +32,9 @@
       "file": {
         "key": "ast_phsb1.webp",
         "mime": "image/webp",
-        "width": 1200,
-        "height": 1800,
-        "bytes": 978082,
+        "width": 1000,
+        "height": 1500,
+        "bytes": 596450,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T12:00:00+09:00",
@@ -60,7 +60,7 @@
         "mime": "image/webp",
         "width": 1200,
         "height": 1800,
-        "bytes": 607372,
+        "bytes": 608484,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T12:00:00+09:00",
