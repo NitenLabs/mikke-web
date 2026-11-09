@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 240374,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/8QDQMcghI0E"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "暗い背景で氷のミルクに注がれるコーヒー"
+    },
+    "ast_fv02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1599,
+        "bytes": 637828,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/BBFRIGifYQ8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "抽出されたエスプレッソのショット"
+    },
+    "ast_st01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3599,
+        "bytes": 1197114,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/2whtlgdJxzI"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "暗い中に置かれたチョコドーナツとかご"
+    },
+    "ast_st02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 1302541,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/RZJRWMnd0DM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "ポルタフィルターから落ちるエスプレッソ"
+    },
+    "ast_st03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 513040,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/lqII6R4hHmY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒いカップのラテアート"
+    },
+    "ast_mn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3000,
+        "bytes": 717444,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/SAcEWGdT0SM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "アイスコーヒー"
+    },
+    "ast_mn02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 499731,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_sii6-ed508"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "カフェラテ"
+    },
+    "ast_mn03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 715049,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/1EV6hDgDpFM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "キャラメルラテ"
+    },
+    "ast_mn04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn04.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1602,
+        "bytes": 337837,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/L-sm1B4L1Ns"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "アイスカフェオレ"
+    },
+    "ast_mn05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn05.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 626670,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Ic0E0y6Zo20"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "きなこのドーナツ"
+    },
+    "ast_mn06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn06.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1590,
+        "bytes": 386446,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/XjyH9_hXEyA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "チョコレートのドーナツ"
+    },
+    "ast_mn07": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn07.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3200,
+        "bytes": 1641260,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/NH2S3zVPMaE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "プレーンのドーナツ"
+    },
+    "ast_mn08": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn08.jpg",
+        "mime": "image/jpeg",
+        "width": 1575,
+        "height": 1005,
+        "bytes": 450480,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_ZaKDm5iJfU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "皿にのったドーナツとコーヒーのセット"
+    },
+    "ast_sr01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 507570,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/LPDn9x-F6GM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "アイスラテ"
+    },
+    "ast_sr02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 1396523,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/YC06tYOZqGo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "チョコドーナツ"
+    },
+    "ast_sr03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 2313,
+        "bytes": 743035,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/9pf74eJrb74"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "ドーナツ2つ"
+    },
+    "ast_sr04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr04.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 549653,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/3b2tADGAWnU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "窓辺の卓"
+    },
+    "ast_sr05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr05.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 1330574,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/nBJHO6wmRWw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "白いマグカップ"
+    },
+    "ast_sr06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr06.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1830,
+        "bytes": 925988,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T21:40:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/TD4DBagg2wE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T21:40:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "焙煎したコーヒー豆"
+    }
+  }
+}

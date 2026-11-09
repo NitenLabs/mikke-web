@@ -1,0 +1,434 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_amet",
+  "salesDraft": true,
+  "updatedAt": "2026-11-09T21:40:00+09:00",
+  "basic": {
+    "name": "AMET COFFEE ASHIYA",
+    "nameKana": "あめっと こーひー あしや",
+    "genre": {
+      "template": "restaurant",
+      "detail": "コーヒースタンド"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "上宮川町",
+    "street": "2-8",
+    "building": "103",
+    "access": {
+      "acc_jrashiya": {
+        "station": "JR芦屋駅（南口）",
+        "method": "walk",
+        "minutes": 3,
+        "order": 1
+      }
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:30",
+            "end": "18:00"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:30",
+            "end": "18:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:30",
+            "end": "18:00"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:30",
+            "end": "18:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:30",
+            "end": "18:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:30",
+            "end": "18:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "08:30",
+            "end": "18:00"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "080-1122-6498",
+      "digits": "08011226498"
+    },
+    "sns": {
+      "instagram": "amet_coffee_ashiya"
+    }
+  },
+  "payment": {
+    "note": "カード・電子マネー・QR 決済可（種類は要確認）"
+  },
+  "facilities": {
+    "seats": {
+      "total": 5
+    },
+    "smoking": "none",
+    "note": "テイクアウト可"
+  },
+  "catalog": {
+    "menus": {
+      "mnu_food": {
+        "order": 1
+      }
+    },
+    "categories": {
+      "cat_menu": {
+        "menuId": "mnu_food",
+        "name": "お品書き",
+        "order": 1,
+        "draft": true
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_m001": {
+        "name": "アイスコーヒー",
+        "description": "TAOCA COFFEE の豆で淹れる、すっきりとした一杯。",
+        "photos": [
+          "ast_mn01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m001",
+            "type": "fixed",
+            "amount": 530
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m002": {
+        "name": "カフェラテ",
+        "description": "エスプレッソとミルクの、やさしい味わい。",
+        "photos": [
+          "ast_mn02"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m003": {
+        "name": "キャラメルラテ",
+        "description": "ほんのり甘い、キャラメルのラテ。",
+        "photos": [
+          "ast_mn03"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m004": {
+        "name": "アイスカフェオレ",
+        "description": "コーヒーとミルクを、冷たくすっきりと。",
+        "photos": [
+          "ast_mn04"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m005": {
+        "name": "きなこドーナツ",
+        "description": "香ばしいきな粉をまとった、素朴なドーナツ。",
+        "photos": [
+          "ast_mn05"
+        ],
+        "prices": [
+          {
+            "id": "prc_m005",
+            "type": "fixed",
+            "amount": 250
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m006": {
+        "name": "チョコドーナツ",
+        "description": "チョコレートをかけた、人気のドーナツ。",
+        "photos": [
+          "ast_mn06"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m007": {
+        "name": "プレーン・シュガー",
+        "description": "生地のおいしさが分かる、定番のドーナツ。",
+        "photos": [
+          "ast_mn07"
+        ],
+        "prices": [],
+        "status": "onSale",
+        "draft": true
+      },
+      "itm_m008": {
+        "name": "モーニングセット",
+        "description": "12時まで。ドーナツとカフェオレのセット。",
+        "photos": [
+          "ast_mn08"
+        ],
+        "prices": [
+          {
+            "id": "prc_m008",
+            "type": "fixed",
+            "amount": 680
+          }
+        ],
+        "status": "onSale",
+        "draft": true
+      }
+    },
+    "placements": {
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 1
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 2
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 3
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 4
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 5
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 6
+      },
+      "plc_m007": {
+        "itemId": "itm_m007",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 7
+      },
+      "plc_m008": {
+        "itemId": "itm_m008",
+        "menuId": "mnu_food",
+        "categoryId": "cat_menu",
+        "order": 8
+      }
+    }
+  },
+  "review": {
+    "/basic/name": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "AMET COFFEE ASHIYA",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/location/street": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "上宮川町2-8 103",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/location/access/acc_jrashiya": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "JR芦屋駅（南口）から徒歩3分",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/hours/weekly": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "8:30〜18:00（毎日営業の表示。定休日は要確認）",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/contact/phone": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "080-1122-6498",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/contact/sns/instagram": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "amet_coffee_ashiya",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/payment": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "カード・電子マネー・QR 決済可",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/facilities/seats": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "5席",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/facilities/smoking": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "全席禁煙",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/catalog/items/itm_m001/prices": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "アイスコーヒー 530円（2026/06 の口コミ）",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/catalog/items/itm_m005/prices": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "きなこ 250円（2026/06 の口コミ）",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    },
+    "/catalog/items/itm_m008/prices": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28075589/",
+          "value": "モーニング ドーナツ＋カフェオレ 680円（2026/06 の口コミ）",
+          "fetchedAt": "2026-11-09T21:20:00+09:00"
+        }
+      ]
+    }
+  },
+  "story": {
+    "draft": true,
+    "answers": {
+      "q_catch": {
+        "question": "見出し（仮）",
+        "answer": "一杯のコーヒーと、\nドーナツをひとつ。"
+      },
+      "q_body": {
+        "question": "お店の紹介（仮）",
+        "answer": "2026年2月、JR芦屋駅の南口からすぐの場所に開いた、小さなコーヒースタンドです。\nコーヒーは西宮の TAOCA COFFEE の豆を使い、一杯ずつお淹れします。外はカリッと、中はしっかり詰まった SHICT のドーナツと一緒にどうぞ。\n朝8時半から開いているので、通勤前の一杯にも。12時まではお得なモーニングもあります。店内に5席、テイクアウトもできます。"
+      }
+    }
+  }
+}
