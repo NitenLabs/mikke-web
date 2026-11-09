@@ -20,6 +20,7 @@ export const FONT_REGISTRY = {
   "manrope": { family: "Manrope", generic: "sans-serif", param: "Manrope:wght@400;500;600;700;800" },
   "fraunces": { family: "Fraunces", generic: "serif", param: "Fraunces:opsz,wght@9..144,400;9..144,600" },
   "caveat": { family: "Caveat", generic: "cursive", param: "Caveat:wght@500" },
+  "zen-maru-gothic": { family: "Zen Maru Gothic", generic: "sans-serif", param: "Zen+Maru+Gothic:wght@400;500;700" },
 };
 
 // フォントID → CSS の font-family スタック
