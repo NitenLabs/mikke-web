@@ -26,6 +26,7 @@ export const FONT_REGISTRY = {
   "cormorant-infant": { family: "Cormorant Infant", generic: "serif", param: "Cormorant+Infant:ital,wght@0,400;0,500;1,400" },
   "libre-caslon-display": { family: "Libre Caslon Display", generic: "serif", param: "Libre+Caslon+Display" },
   "oswald": { family: "Oswald", generic: "sans-serif", param: "Oswald:wght@400;500;700" },
+  "dela-gothic-one": { family: "Dela Gothic One", generic: "sans-serif", param: "Dela+Gothic+One" },
 };
 
 // フォントID → CSS の font-family スタック
