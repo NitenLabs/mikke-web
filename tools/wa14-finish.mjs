@@ -10,7 +10,7 @@ const loc = shop.location, addr = `${loc.prefecture}${loc.city}${loc.town}`;
 const IV = "#F4EEE6", WI = "#6B1E2B", INK = "#1A1617", MS = "#C89B3C";
 const pos = (sel, rules) => `${sel}{${rules}}`;
 const cut = (n) => `clip-path:polygon(${n} 0,calc(100% - ${n}) 0,100% ${n},100% calc(100% - ${n}),calc(100% - ${n}) 100%,${n} 100%,0 calc(100% - ${n}),0 ${n})`;
-const PH = "[data-el=fv_ph],[data-el=ab_ph],[data-el=ca_ph],[data-cel=a_ph],[data-cel=b_ph],[data-cel=c_ph]";
+const PH = "[data-el=fv_ph],[data-el=ab_ph],[data-cel=d_ph],[data-cel=a_ph],[data-cel=b_ph],[data-cel=c_ph]";
 const css = `<style>
 html{scroll-padding-top:8rem}
 ${PH}{${cut("2.8rem")}}
@@ -69,7 +69,11 @@ ${pos("[data-el=pl_note]", `left:${L};width:88%;top:83rem`)}
 ${pos("[data-sec=sec_carte]", "min-height:54rem")}
 ${pos("[data-el=ca_en],[data-el=ca_ja]", `left:${L};width:46%`)}
 ${pos('[data-el="ca_rows"]', `left:${L};width:46%`)}
-${pos("[data-el=ca_ph]", "left:58%;width:36%;top:5rem;height:44rem")}
+${pos('[data-el="ca_ph"]', "left:58%;width:36%;top:5rem;height:44rem")}
+${pos('[data-el="ca_ph"] .rep-card', "width:100%!important;height:44rem!important")}
+${pos("[data-cel=d_ph]", "height:37rem!important")}
+${pos("[data-cel=d_nm]", "top:38.2rem!important;width:68%!important;font-size:1.8rem!important")}
+${pos("[data-cel=d_pr]", "top:37.8rem!important;left:68%!important;width:32%!important")}
 ${pos("[data-sec=sec_wine]", "min-height:60rem")}
 ${pos("[data-el=vn_ph]", "left:52%;width:48%;top:0;height:60rem")}
 ${pos("[data-el=vn_en]", `left:${L};width:90%;top:3.5rem;height:16.25rem;font-size:12.5rem!important;line-height:16.25rem!important`)}

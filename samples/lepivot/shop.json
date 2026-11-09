@@ -224,6 +224,20 @@
           }
         ],
         "status": "onSale"
+      },
+      "itm_m009": {
+        "name": "牛頬肉の赤ワイン煮込み",
+        "photos": [
+          "ast_st01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m009",
+            "type": "fixed",
+            "amount": 2800
+          }
+        ],
+        "status": "onSale"
       }
     },
     "placements": {
@@ -261,19 +275,25 @@
         "itemId": "itm_m006",
         "menuId": "mnu_food",
         "categoryId": "cat_food",
-        "order": 6
+        "order": 7
       },
       "plc_m007": {
         "itemId": "itm_m007",
         "menuId": "mnu_wine",
         "categoryId": "cat_wine",
-        "order": 7
+        "order": 8
       },
       "plc_m008": {
         "itemId": "itm_m008",
         "menuId": "mnu_wine",
         "categoryId": "cat_wine",
-        "order": 8
+        "order": 9
+      },
+      "plc_m009": {
+        "itemId": "itm_m009",
+        "menuId": "mnu_food",
+        "categoryId": "cat_food",
+        "order": 6
       }
     }
   }

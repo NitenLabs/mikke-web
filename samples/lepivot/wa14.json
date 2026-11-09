@@ -47,7 +47,7 @@
     "ch": { "slot": "signature", "alt": "シャルキュトリーの盛り合わせ。木の板にチーズとオリーブを添えて", "page": "https://unsplash.com/photos/Tw2cU6VvTZo" },
     "cf": { "slot": "signature", "alt": "黒い皿にのせた鴨もものコンフィ", "page": "https://unsplash.com/photos/kSEeyYcSrt8" },
     "sk": { "slot": "signature", "alt": "牛ハラミのステーキ フリット添え", "page": "https://unsplash.com/photos/74Yok80QXyY" },
-    "st": { "slot": "product", "alt": "黒い器に盛った煮込み", "page": "https://unsplash.com/photos/WgrOML7JhSU" },
+    "st": { "slot": "product", "alt": "黒い器に盛った牛頬肉の赤ワイン煮込み", "page": "https://unsplash.com/photos/WgrOML7JhSU" },
     "wn": { "slot": "product", "alt": "灯りに透ける、グラスのワイン", "page": "https://unsplash.com/photos/YkIPdbDRc74" }
   }
 }

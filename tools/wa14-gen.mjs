@@ -103,11 +103,11 @@ t("bd_ja", "sec_band", C.bandJa, [[18, 30, 2], [14, 23.3, 1]], H, IV, [{ x: X0 +
 // ---- 品のカード
 const allIds = Object.keys(shop.catalog.items);
 const cell = (path, fmt, pc, sp, opts) => ({ type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path, format: fmt } }] }], style: { font: opts.font || B, weight: opts.weight || 400, color: opts.color, lineHeight: r(opts.lh / opts.sz[0]), letterSpacing: r((opts.ls || 0) / opts.sz[0]), ...(opts.align ? { align: opts.align } : {}) }, layout: { pc: { ...pc, size: opts.sz[0] }, sp: { ...sp, size: opts.sz[1] } } });
-const feature = (id, itemId, p, sect, pc, sp) => {
+const feature = (id, itemId, p, sect, pc, sp, nc = INK, prc = WI) => {
   const nameEls = {
     [`${p}_ph`]: { type: "photo", z: 1, bind: { scope: "item", path: "/photos" }, layout: { pc: { x: 0, y: 0, w: 100, h: pc.ph, ratio: "custom" }, sp: { x: 0, y: 0, w: 100, h: sp.ph, ratio: "custom" } } },
-    [`${p}_nm`]: cell("/name", "plain", { x: 0, y: pc.ph + 16, w: 72, h: 32 }, { x: 0, y: sp.ph + 12, w: 72, h: 48 }, { color: INK, lh: 32, weight: 400, font: H, sz: [21, 16] }),
-    [`${p}_pr`]: cell("/prices", "priceAll", { x: 72, y: pc.ph + 14, w: 28, h: 36 }, { x: 72, y: sp.ph + 10, w: 28, h: 36 }, { color: WI, lh: 36, font: A, align: "right", sz: [28, 24] }) };
+    [`${p}_nm`]: cell("/name", "plain", { x: 0, y: pc.ph + 16, w: 72, h: 32 }, { x: 0, y: sp.ph + 12, w: 72, h: 48 }, { color: nc, lh: 32, weight: 400, font: H, sz: [21, 16] }),
+    [`${p}_pr`]: cell("/prices", "priceAll", { x: 72, y: pc.ph + 14, w: 28, h: 36 }, { x: 72, y: sp.ph + 10, w: 28, h: 36 }, { color: prc, lh: 36, font: A, align: "right", sz: [28, 24] }) };
   add(id, { type: "repeater", z: 3, section: sect, source: { kind: "catalog", menuId: "mnu_food", pick: [itemId] }, display: { mode: "grid", columns: { pc: 1, sp: 1 }, gap: { pc: 0, sp: 0 }, photoless: "sameCard" }, card: { height: { pc: pc.h, sp: sp.h }, elements: nameEls }, layout: lay({ x: pc.x, y: pc.y, w: pc.w, h: pc.h }, { x: XS, y: sp.y, w: WS, h: sp.h }) });
 };
 const rowEls = (p, color, lnc) => ({
@@ -126,7 +126,7 @@ t("pl_note", "sec_plats", C.note, [[13, 22, 0.4], [12, 20, 0.3]], B, MU, [{ x: X
 
 // ---- 5 ほかの品（ワインレッドの面に、写真と行）
 sec("sec_carte", "ほかの品", WI, 760, 860);
-photo("ca_ph", "sec_carte", "ast_st01", 1, { x: X0, y: 80, w: 520, h: 600 }, { x: XS, y: 420, w: WS, h: 400 });
+feature("ca_ph", "itm_m009", "d", "sec_carte", { x: X0, y: 80, w: 520, h: 610, ph: 540 }, { y: 420, h: 400, ph: 336 }, IV, MT);
 t("ca_en", "sec_carte", C.carteEn, [[120, 130, 0], [60, 65, 0]], A, IV, [{ x: 680, y: 80, w: 680, h: 130 }, { x: XS, y: 40, w: WS, h: 65 }], { role: "heading", big: true });
 t("ca_ja", "sec_carte", C.carteJa, [[15, 24, 1.2], [13, 20.8, 0.8]], B, MT, [{ x: 684, y: 220, w: 640, h: 24 }, { x: XS, y: 112, w: WS, h: 22 }], { weight: 500 });
 rows("ca_rows", "sec_carte", "mnu_food", ["itm_m002", "itm_m003", "itm_m006"], "r", IV, { x: 680, y: 290, w: 680 }, { x: XS, y: 152, w: WS }, { pc: 96, sp: 72 });

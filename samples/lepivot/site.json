@@ -1888,30 +1888,156 @@
       }
     },
     "ca_ph": {
-      "type": "photo",
-      "z": 1,
+      "type": "repeater",
+      "z": 3,
       "section": "sec_carte",
-      "asset": "ast_st01",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "pick": [
+          "itm_m009"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 1,
+          "sp": 1
+        },
+        "gap": {
+          "pc": 0,
+          "sp": 0
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 610,
+          "sp": 400
+        },
+        "elements": {
+          "d_ph": {
+            "type": "photo",
+            "z": 1,
+            "bind": {
+              "scope": "item",
+              "path": "/photos"
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 540,
+                "ratio": "custom"
+              },
+              "sp": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 336,
+                "ratio": "custom"
+              }
+            }
+          },
+          "d_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:heading",
+              "weight": 400,
+              "color": "#F4EEE6",
+              "lineHeight": 1.5238,
+              "letterSpacing": 0
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 556,
+                "w": 72,
+                "h": 32,
+                "size": 21
+              },
+              "sp": {
+                "x": 0,
+                "y": 348,
+                "w": 72,
+                "h": 48,
+                "size": 16
+              }
+            }
+          },
+          "d_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:accent",
+              "weight": 400,
+              "color": "#D2A74A",
+              "lineHeight": 1.2857,
+              "letterSpacing": 0,
+              "align": "right"
+            },
+            "layout": {
+              "pc": {
+                "x": 72,
+                "y": 554,
+                "w": 28,
+                "h": 36,
+                "size": 28
+              },
+              "sp": {
+                "x": 72,
+                "y": 346,
+                "w": 28,
+                "h": 36,
+                "size": 24
+              }
+            }
+          }
+        }
+      },
       "layout": {
         "pc": {
           "x": 5.5556,
           "y": 80,
           "w": 36.1111,
-          "h": 600,
-          "ratio": "custom"
+          "h": 610
         },
         "sp": {
           "x": 6.1538,
           "y": 420,
           "w": 87.6923,
-          "h": 400,
-          "ratio": "custom"
+          "h": 400
         }
-      },
-      "crop": {
-        "fx": 50,
-        "fy": 50,
-        "zoom": 1
       }
     },
     "ca_en": {
