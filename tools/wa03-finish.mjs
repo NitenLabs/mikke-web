@@ -19,7 +19,9 @@ ${Array.from({ length: N }, (_, i) => `[data-el=sr_${i + 1}]{--i:${i}}`).join(""
 @media (max-width:767.98px){[data-el^=sr_]{--step:35.1rem;--dur:45s}[data-el=ft_div]{display:none}[data-el=ft_name],[data-el^=ft_n]{text-align:center}[data-el=fv_en]{text-align:left}}
 [data-cel=c_nm]{word-break:keep-all}
 .nav-row{justify-content:flex-end;gap:2rem!important;height:100%;align-items:center}
-.nav-row a{letter-spacing:.16rem;font-weight:400}
+.nav-row a{letter-spacing:.16rem;font-weight:500}
+[data-el=fv_script],[data-el=st_script]{font-style:italic}
+[data-cel=c_pr]{font-family:"Cormorant Garamond","Shippori Mincho",serif;font-variant-numeric:lining-nums}
 .nav-sp summary{color:transparent!important;list-style:none;height:100%}
 .nav-sp[open] summary{color:#DDDCD4!important}
 .nav-menu a{color:#DDDCD4!important}

@@ -12,9 +12,9 @@
     "paper": { "value": "#1A1918" }
   },
   "fonts": {
-    "heading": "la-belle-aurore",
-    "body": "zen-kaku-gothic-new",
-    "accent": "montserrat"
+    "heading": "cormorant-garamond",
+    "body": "shippori-mincho",
+    "accent": "cormorant-garamond"
   },
   "textStyles": {
     "pageTitle": { "font": "font:body", "size": { "pc": 32, "sp": 22.4 }, "lineHeight": 1.7, "color": "theme:text" },

@@ -141,7 +141,7 @@
       ],
       "style": {
         "font": "font:body",
-        "weight": 400,
+        "weight": 500,
         "color": "theme:text",
         "lineHeight": 1.5385,
         "letterSpacing": 0.1,
@@ -332,7 +332,7 @@
       ],
       "style": {
         "font": "font:body",
-        "weight": 400,
+        "weight": 500,
         "color": "theme:text",
         "lineHeight": 1.4,
         "letterSpacing": 0.1
@@ -371,7 +371,7 @@
       ],
       "style": {
         "font": "font:accent",
-        "weight": 300,
+        "weight": 500,
         "color": "theme:textMuted",
         "lineHeight": 1.2,
         "letterSpacing": 0.05,
@@ -410,7 +410,7 @@
       ],
       "style": {
         "font": "font:heading",
-        "weight": 400,
+        "weight": 300,
         "color": "#D0D0C6",
         "lineHeight": 1,
         "letterSpacing": -0.05
@@ -448,7 +448,7 @@
       ],
       "style": {
         "font": "font:accent",
-        "weight": 300,
+        "weight": 400,
         "color": "theme:text",
         "lineHeight": 1,
         "letterSpacing": -0.01
@@ -486,7 +486,7 @@
       ],
       "style": {
         "font": "font:body",
-        "weight": 400,
+        "weight": 500,
         "color": "theme:accent",
         "lineHeight": 1.4,
         "letterSpacing": 0.05
@@ -531,7 +531,7 @@
       ],
       "style": {
         "font": "font:body",
-        "weight": 400,
+        "weight": 500,
         "color": "theme:text",
         "lineHeight": 1.7,
         "letterSpacing": 0
@@ -703,7 +703,7 @@
       ],
       "style": {
         "font": "font:heading",
-        "weight": 400,
+        "weight": 300,
         "color": "#D0D0C6",
         "lineHeight": 1.4,
         "letterSpacing": -0.05
@@ -711,7 +711,7 @@
       "layout": {
         "pc": {
           "x": 0,
-          "y": 790,
+          "y": 740,
           "w": 71.875,
           "h": 224,
           "size": 160
@@ -741,7 +741,7 @@
       ],
       "style": {
         "font": "font:accent",
-        "weight": 300,
+        "weight": 400,
         "color": "theme:text",
         "lineHeight": 1,
         "letterSpacing": -0.01
@@ -779,7 +779,7 @@
       ],
       "style": {
         "font": "font:body",
-        "weight": 400,
+        "weight": 500,
         "color": "theme:accent",
         "lineHeight": 1.4,
         "letterSpacing": 0.05
@@ -880,7 +880,7 @@
             ],
             "style": {
               "font": "font:body",
-              "weight": 400,
+              "weight": 500,
               "color": "theme:text",
               "lineHeight": 1.6,
               "letterSpacing": 0.05
@@ -961,8 +961,8 @@
               }
             ],
             "style": {
-              "font": "font:body",
-              "weight": 400,
+              "font": "font:accent",
+              "weight": 500,
               "color": "theme:accent",
               "lineHeight": 1.5,
               "letterSpacing": 0.05
@@ -1017,7 +1017,7 @@
       ],
       "style": {
         "font": "font:accent",
-        "weight": 300,
+        "weight": 400,
         "color": "theme:text",
         "lineHeight": 1,
         "letterSpacing": -0.01
@@ -1055,7 +1055,7 @@
       ],
       "style": {
         "font": "font:body",
-        "weight": 400,
+        "weight": 500,
         "color": "theme:accent",
         "lineHeight": 1.4,
         "letterSpacing": 0.05
@@ -1093,7 +1093,7 @@
       ],
       "style": {
         "font": "font:body",
-        "weight": 400,
+        "weight": 500,
         "color": "theme:text",
         "lineHeight": 1.875,
         "letterSpacing": 0.1
@@ -1788,7 +1788,7 @@
       ],
       "style": {
         "font": "font:body",
-        "weight": 400,
+        "weight": 500,
         "color": "theme:text",
         "lineHeight": 1.875,
         "letterSpacing": 0.1
@@ -1849,7 +1849,7 @@
       ],
       "style": {
         "font": "font:accent",
-        "weight": 300,
+        "weight": 500,
         "color": "theme:text",
         "lineHeight": 1.4,
         "letterSpacing": 0.05,
@@ -1891,7 +1891,7 @@
       ],
       "style": {
         "font": "font:accent",
-        "weight": 300,
+        "weight": 500,
         "color": "theme:text",
         "lineHeight": 1.4,
         "letterSpacing": 0.05,
@@ -1933,7 +1933,7 @@
       ],
       "style": {
         "font": "font:accent",
-        "weight": 300,
+        "weight": 500,
         "color": "theme:text",
         "lineHeight": 1.4,
         "letterSpacing": 0.05,
@@ -2397,7 +2397,7 @@
       ],
       "style": {
         "font": "font:accent",
-        "weight": 300,
+        "weight": 500,
         "color": "theme:lineSoft",
         "lineHeight": 1.2,
         "letterSpacing": 0.05
