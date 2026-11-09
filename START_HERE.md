@@ -29,9 +29,9 @@
 4. 本物のお店1軒で作って売る
 
 ### 進め方（2026-11-09 にユーザーと決めた。必ずこれで進める）
-- **相談役**＝claude.ai のプロジェクト「芦屋みっけ」のチャット。ユーザーと相談し、決まったら実行役に `SendMessage` で指示する。ユーザーにコピペはさせない
-- **実行役**＝ユーザーのパソコンのターミナルの Claude Code。`C:\Users\sea_p\GitHub` で `claude --remote-control "mikke"` として起動しておく
-- 実行役は、終わったら `C:\Users\sea_p\GitHub\_reports\latest.md` に結果を数行で上書きし、ターミナルにも出す。ユーザーはターミナルが止まったら相談役に話しかける
+- **相談役**＝claude.ai のプロジェクト「芦屋みっけ」のチャット。ユーザーと相談し、決まったら指示ファイルを `C:\Users\sea_p\GitHub\_mailbox\inbox\` に置く（受信箱方式。ユーザーにコピペはさせない）
+- **実行役**＝ユーザーのパソコンのターミナルの Claude Code。`C:\Users\sea_p\GitHub\mikke-start.bat` で起動し、受信箱を見張って実行する。ルールは `C:\Users\sea_p\GitHub\CLAUDE.md`
+- 実行役は、終わったら `_mailbox\reports\latest.md` に結果を書き、ターミナルにも出す。ユーザーはターミナルが止まったら相談役に話しかける
 - 詳しくはプロジェクトの `claude/進め方_相談と実行.md`
 
 ### 進み具合（2026-11-09 15:05）
