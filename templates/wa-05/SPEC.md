@@ -67,8 +67,8 @@ G002「日本料理 澄」（架空の割烹）の型。実測は `refs/houzente
 | 枠 | 場所 | PC | SP | 写したいもの | 雰囲気 | 検索語 |
 |---|---|---|---|---|---|---|
 | fv | 1 | 860×900 | 310×413 | 黒い椀の白いご飯と奥の朱塗りの汁椀（暗めの静物） | 静か・余白 | japanese soup bowl dark, kaiseki |
-| st1〜5 | 3 の帯 | 400 角 | 310 角 | 刺身の盛り合わせと朱の椀（st1）、蓋付きの漆の椀（st2）、土ものの皿の焼き魚（st3）、土ものの器（st4）、棚の皿と鉢（st5） | 暗い地に器 | kaiseki, japanese cuisine plating |
-| sn1〜4 | 5 | 270 角 | 310 角 | 白身魚の西京焼き（sn1）、止め椀（若布と豆腐、sn2）、揚げ出し豆腐 舞茸の餡（sn3）、季節の炊き込みご飯（白い器、sn4） | 冬 | grilled fish japanese, miso soup wakame tofu, agedashi tofu, takikomi gohan |
+| st1〜5 | 3 の帯 | 400 角 | 310 角 | 刺身の盛り合わせと朱の椀（st1）、蓋付きの漆の椀（st2）、土ものの皿の焼き魚（st3）、金継ぎの古い器（st4）、棚の皿と鉢（st5） | 暗い地に器 | kaiseki, japanese cuisine plating |
+| sn1〜4 | 5 | 270 角 | 310 角 | 白身魚の西京焼き（sn1）、止め椀（若布と豆腐、sn2）、冬の八寸（sn3）、季節の炊き込みご飯（白い器、sn4） | 冬 | grilled fish japanese, miso soup wakame tofu, agedashi tofu, takikomi gohan |
 | se1 | 6 | 600×400 | 310×207 | 白木のカウンター（人なし） | 静か | japanese counter restaurant wood |
 | se2 | 6 | 600×400 | 310×207 | 畳の個室（人なし） | 静か | tatami private room |
 

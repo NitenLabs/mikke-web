@@ -112,7 +112,7 @@
         "mime": "image/webp",
         "width": 1200,
         "height": 800,
-        "bytes": 51582,
+        "bytes": 253184,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -120,7 +120,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://images.unsplash.com/photo-1610701596007-11502861dcfa"
+        "pageUrl": "https://unsplash.com/photos/lifThcZxg3I"
       },
       "rights": {
         "basis": "licensed",
@@ -129,7 +129,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "product",
-      "alt": "土ものの小さな器の取り合わせ"
+      "alt": "金継ぎを施した古い器の取り合わせ"
     },
     "ast_st05": {
       "kind": "photo",
@@ -215,8 +215,8 @@
         "key": "ast_sn03.webp",
         "mime": "image/webp",
         "width": 1200,
-        "height": 1800,
-        "bytes": 241800,
+        "height": 1200,
+        "bytes": 292984,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-09T23:30:00+09:00",
@@ -224,7 +224,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/d5bdtWUbFkM"
+        "pageUrl": "https://unsplash.com/photos/murXCdRx3CA"
       },
       "rights": {
         "basis": "licensed",
@@ -233,7 +233,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "signature",
-      "alt": "揚げ出し豆腐 舞茸の餡（黒い鉢）"
+      "alt": "黒い石の皿に小さな肴を並べた冬の八寸"
     },
     "ast_sn04": {
       "kind": "photo",

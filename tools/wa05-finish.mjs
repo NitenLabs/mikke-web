@@ -26,19 +26,21 @@ ${Array.from({ length: N }, (_, i) => `[data-el=st_${i + 1}]{--i:${i}}`).join(""
 .el-nav .nav-sp[open] summary{top:0;right:1.6rem;background:transparent;color:#F4F0E8!important}
 .el-nav .nav-menu{background:#1F1E1C}
 .el-nav .nav-menu a{color:#F4F0E8!important;font-family:var(--f-body)}
+[data-el=gr_p] .pg+.pg{margin-top:2.8rem}
+@media (min-width:768px){.el-nav .nav-sp summary{transition:opacity .25s}html.wa05-fv .el-nav .nav-sp:not([open]) summary{opacity:0;visibility:hidden}[data-sec=sec_cuisine]::before,[data-sec=sec_cuisine]::after{content:"";position:absolute;top:64rem;width:16rem;height:40rem;z-index:3;pointer-events:none}[data-sec=sec_cuisine]::before{left:0;background:linear-gradient(90deg,#F4F0E8,rgba(244,240,232,0))}[data-sec=sec_cuisine]::after{right:0;background:linear-gradient(270deg,#F4F0E8,rgba(244,240,232,0))}}
 @media (min-width:768px){[data-el^=st_],[data-clone]{--step:44rem;--dur:110s}[data-clone]{left:0;top:64rem;width:27.778%;height:40rem;z-index:2}}
 @media (max-width:767.98px){[data-el^=st_],[data-clone]{--step:35rem;--dur:88s}[data-clone]{left:0;top:76rem;width:79.487%;height:31rem;z-index:2}}
 @media (prefers-reduced-motion:reduce){[data-el^=st_]{animation:none}}
 </style>`;
 // 続けて流すために、写真の帯を JavaScript で1周分増やす。動きを減らす設定の人には増やさない
-const js = `<script>(function(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;for(var i=1;i<=${N};i++){var e=document.querySelector('[data-el="st_'+i+'"]');if(!e)continue;var c=e.cloneNode(true);c.removeAttribute('data-el');c.setAttribute('data-clone','');c.setAttribute('aria-hidden','true');c.querySelectorAll('img').forEach(function(m){m.alt=''});c.style.setProperty('--i',${N}+i-1);e.parentNode.appendChild(c);}})();</script>`;
+const js = `<script>(function(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;for(var i=1;i<=${N};i++){var e=document.querySelector('[data-el="st_'+i+'"]');if(!e)continue;var c=e.cloneNode(true);c.removeAttribute('data-el');c.setAttribute('data-clone','');c.setAttribute('aria-hidden','true');c.querySelectorAll('img').forEach(function(m){m.alt=''});c.style.setProperty('--i',${N}+i-1);e.parentNode.appendChild(c);}})();(function(){var d=document.documentElement,t=document.querySelector('[data-el="fv_tel_b"]');if(!t)return;function u(){d.classList.toggle("wa05-fv",t.getBoundingClientRect().bottom>0)}u();addEventListener("scroll",u,{passive:true});addEventListener("resize",u);})();</script>`;
 // タブレット（768〜1024）：sp のデータを画面幅いっぱいの入れ物に広げ（本文の列は sp の左右余白の比率のまま約 80%）、段ごとの配置だけ上書きする。
 // 高さの補正（build の correct）は sp の折り返し前提でずれるので止める。帯の写真だけは transform で動くので除く
 const pos = (sel, rules) => `${sel}{${rules}}`;
 const L = "10.256%"; // sp の左余白の比率
 const fnav = Array.from({ length: 5 }, (_, i) => pos(`[data-el=ft_n${i}]`, `left:40%;width:18%;top:${6 + 3.6 * i}rem`)).join("");
 const cards = [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y], i) => pos(`[data-el="sn_cards"] [data-card="plc_s00${i + 1}"]`, `left:${x ? "calc(50% + 2rem)" : "0"};top:${y * 48}rem;width:calc(50% - 2rem)`)).join("");
-const tablet = `<style>@media (min-width:${TAB}px) and (max-width:${BP - 0.02}px){
+const tablet = `<style>@media (max-width:767.98px){[data-el=gr_p]{text-align:left!important}}@media (min-width:${TAB}px) and (max-width:${BP - 0.02}px){
 :root{font-size:10px}
 .cbox{width:100%}
 .cbox>.el:not([data-el^=st_]):not([data-clone]){transform:none!important}

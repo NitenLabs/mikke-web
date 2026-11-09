@@ -11,13 +11,13 @@ const NOW = "2026-11-09T23:30:00+09:00";
 const SLOTS = {
   fv: ["signature", "朱の折敷にガラスの器、海老と紅葉の前菜"],
   st1: ["signature", "黒い盆の刺身の盛り合わせと朱の椀"], st2: ["signature", "蓋付きの漆の椀が並ぶ様子"], st3: ["signature", "土ものの皿に盛った焼き魚"],
-  st4: ["product", "土ものの小さな器の取り合わせ"], st5: ["product", "木の棚に重ねた皿と鉢"],
-  sn1: ["signature", "白身魚の西京焼きと甘酢の生姜"], sn2: ["signature", "若布と豆腐の止め椀（朱の木椀）"], sn3: ["signature", "揚げ出し豆腐 舞茸の餡（黒い鉢）"], sn4: ["signature", "白い器によそった季節の炊き込みご飯"],
+  st4: ["product", "金継ぎを施した古い器の取り合わせ"], st5: ["product", "木の棚に重ねた皿と鉢"],
+  sn1: ["signature", "白身魚の西京焼きと甘酢の生姜"], sn2: ["signature", "若布と豆腐の止め椀（朱の木椀）"], sn3: ["signature", "黒い石の皿に小さな肴を並べた冬の八寸"], sn4: ["signature", "白い器によそった季節の炊き込みご飯"],
   se1: ["interior", "白木のカウンターと奥の棚の器"], se2: ["interior", "障子から光の入る畳の個室"],
 };
 // 検索で確かめた枠は、紹介ページの URL を台帳に書く
 const PAGES = {
-  sn1: "https://unsplash.com/photos/WosJwI5F23Q", sn2: "https://unsplash.com/photos/Mk3NKQboQkA", sn3: "https://unsplash.com/photos/d5bdtWUbFkM",
+  sn1: "https://unsplash.com/photos/WosJwI5F23Q", sn2: "https://unsplash.com/photos/Mk3NKQboQkA", sn3: "https://unsplash.com/photos/murXCdRx3CA", st4: "https://unsplash.com/photos/lifThcZxg3I",
   se1: "https://unsplash.com/photos/wCrSi4mSsxM", se2: "https://unsplash.com/photos/ITx82kndvm0",
   fv: "https://unsplash.com/photos/aGgqumYHbpc", st1: "https://unsplash.com/photos/XzdUHwAun9Q", st2: "https://unsplash.com/photos/_r6X-QA-KfQ", st3: "https://unsplash.com/photos/Ur0yp5xOi7o", sn4: "https://unsplash.com/photos/qM8PlclZGg4",
 };
@@ -98,24 +98,16 @@ FM.forEach(([l, id], i) => t(`fv_m${i}`, "sec_firstv", l, [[14, 36, 2.8], [14, 3
 btn("fv_tel", "sec_firstv", "ご予約", TEL, { x: 214, y: 732, w: 152, h: 48 }, { x: 119, y: 797, w: 152, h: 48 });
 
 // ---- 2 ご挨拶
-const GREET = [
-  "芦屋の住宅街の一角に、八席のカウンターと、ひとつの個室だけの店を構えました。",
-  "朝いちばんに昆布を水に沈め、鰹を削るところから、澄の一日は始まります。",
-  "濁りのない出汁がひけた日は、それだけで料理の半分ができたようなものです。",
-  "魚は明石や淡路の浜から、野菜は丹波と北摂の畑から。",
-  "盛りの少し手前、香りがいちばん立つ頃を見計らって仕入れています。",
-  "焼く、炊く、蒸す。手数はなるべく少なく、素材の輪郭を残すように。",
-  "器は作家のものと古いものを取り合わせ、季節ごとに入れ替えます。",
-  "一皿ごとに間をとって、お出しします。",
-  "カウンターでは、料理の話もお酒の話も、どうぞお気軽に。",
-  "大切な方との節目の席には、奥の個室をご用意しています。",
-  "急がず、ゆっくりと、冬の時間を召し上がっていただけましたら幸いです。",
+const GREET = [ // 意味のまとまりで段落に（段落の間は finish の CSS）
+  "芦屋の住宅街の一角に、八席のカウンターと、ひとつの個室だけの店を構えました。朝いちばんに昆布を水に沈め、鰹を削るところから、澄の一日は始まります。濁りのない出汁がひけた日は、それだけで料理の半分ができたようなものです。",
+  "魚は明石や淡路の浜から、野菜は丹波と北摂の畑から。盛りの少し手前、香りがいちばん立つ頃を見計らって仕入れています。焼く、炊く、蒸す。手数はなるべく少なく、素材の輪郭を残すように。器は作家のものと古いものを取り合わせ、季節ごとに入れ替えます。",
+  "一皿ごとに間をとって、お出しします。カウンターでは、料理の話もお酒の話も、どうぞお気軽に。大切な方との節目の席には、奥の個室をご用意しています。急がず、ゆっくりと、冬の時間を召し上がっていただけましたら幸いです。",
   "店主",
 ];
 sec("sec_greeting", "ご挨拶", 1184, 1400);
 t("gr_h", "sec_greeting", "出汁の一滴に、季節を聴く。", [[24, 48, 2.4], [20, 36, 2]], H, INK, [{ x: 120, y: 240, w: 1200, h: 48 }, { x: 40, y: 160, w: 310, h: 36 }], { ...C, role: "heading" });
 t("gr_en", "sec_greeting", "Greeting", [[11, 18, 1.1], [11, 18, 1.1]], A, MOSS, [{ x: 120, y: 302, w: 1200, h: 18 }, { x: 40, y: 206, w: 310, h: 18 }], C);
-t("gr_p", "sec_greeting", { lines: GREET }, [[14, 42, 1.4], [14, 34, 1.4]], B, INK, [{ x: 120, y: 440, w: 1200, h: 504 }, { x: 40, y: 280, w: 310, h: 970 }], C);
+t("gr_p", "sec_greeting", { lines: GREET }, [[14, 42, 1.4], [14, 34, 1.4]], B, INK, [{ x: 340, y: 440, w: 760, h: 504 }, { x: 40, y: 280, w: 310, h: 970 }], C);
 
 // ---- 3 お料理（写真の帯は wa05-finish で流す）
 sec("sec_cuisine", "お料理", 1040, 1083, { anchor: "cuisine", nav: { label: "お料理", order: 1 } });
@@ -128,24 +120,25 @@ t("cu_v2", "sec_cuisine", "冬を澄ます。", [[32, 38, 6.4], [24, 28, 4.8]], 
 for (let i = 1; i <= 5; i++) photo(`st_${i}`, "sec_cuisine", `ast_st0${i}`, 2, { x: 0, y: 640, w: 400, h: 400 }, { x: 0, y: 760, w: 310, h: 310 });
 
 // ---- 4 お献立（SPEC 6章）
-sec("sec_course", "お献立", 860, 900, { anchor: "course", nav: { label: "お献立", order: 2 } });
+sec("sec_course", "お献立", 908, 996, { anchor: "course", nav: { label: "お献立", order: 2 } });
 head("co", "sec_course", "お献立", "Course", INK, 200, 160);
 const COURSE = [
-  { k: "昼", en: "Lunch", time: "11:30〜14:00（L.O. 13:00）", rows: [["おまかせ", "6,600円"], ["おまかせ 季節の椀つき", "8,800円"]] },
-  { k: "夜", en: "Dinner", time: "17:30〜22:00（L.O. 20:00）", rows: [["おまかせ", "15,400円"], ["おまかせ 特選", "22,000円"]] },
+  { k: "昼", en: "Lunch", time: "11:30〜14:00（L.O. 13:00）", rows: [["おまかせ", "八寸・お造り・焼物・食事", "6,600円"], ["おまかせ 品数多め", "八寸・お椀・お造り・煮物・焼物・食事", "8,800円"]] },
+  { k: "夜", en: "Dinner", time: "17:30〜22:00（L.O. 20:00）", rows: [["おまかせ", "八寸・お椀・お造り・焼物・炊き合わせ・食事", "15,400円"], ["おまかせ 冬の特選", "蟹・河豚など、冬の食材を加えて", "22,000円"]] },
 ];
 COURSE.forEach((c, i) => {
-  const xP = i ? 745 : 278, yS0 = i ? 520 : 290, W = 420;
+  const xP = i ? 745 : 278, yS0 = i ? 556 : 290, W = 420;
   t(`co_h${i}`, "sec_course", c.k, [[18, 36, 1.8], [18, 36, 1.8]], H, INK, [{ x: xP, y: 340, w: W, h: 36 }, { x: 40, y: yS0, w: 310, h: 36 }], { role: "subheading" });
-  c.rows.forEach(([n, p], j) => {
-    const yP = 392 + 56 * j, yS = yS0 + 48 + 56 * j;
+  c.rows.forEach(([n, d, p], j) => {
+    const yP = 392 + 80 * j, yS = yS0 + 48 + 80 * j;
     rect(`co_l${i}${j}`, "sec_course", "theme:lineSoft", 2, { x: xP, y: yP, w: W, h: 1 }, { x: 40, y: yS, w: 310, h: 1 });
     t(`co_n${i}${j}`, "sec_course", n, [[16, 40, 0], [16, 40, 0]], B, INK, [{ x: xP, y: yP + 8, w: 290, h: 40 }, { x: 40, y: yS + 8, w: 210, h: 40 }]);
+    t(`co_d${i}${j}`, "sec_course", d, [[13, 22, 0], [13, 22, 0]], B, MOSS, [{ x: xP, y: yP + 48, w: W, h: 22 }, { x: 40, y: yS + 48, w: 310, h: 22 }]);
     t(`co_p${i}${j}`, "sec_course", p, [[16, 40, 0], [16, 40, 0]], B, INK, [{ x: xP + 290, y: yP + 8, w: 130, h: 40 }, { x: 250, y: yS + 8, w: 100, h: 40 }], { align: "right" });
   });
-  t(`co_t${i}`, "sec_course", c.time, [[14, 28, 0], [14, 28, 0]], B, MOSS, [{ x: xP, y: 512, w: W, h: 28 }, { x: 40, y: yS0 + 168, w: 310, h: 28 }]);
+  t(`co_t${i}`, "sec_course", c.time, [[14, 28, 0], [14, 28, 0]], B, MOSS, [{ x: xP, y: 560, w: W, h: 28 }, { x: 40, y: yS0 + 216, w: 310, h: 28 }]);
 });
-t("co_note", "sec_course", "完全予約制です。値段は税込み、サービス料はいただいておりません。", [[14, 28, 0], [14, 28, 0]], B, INK, [{ x: 278, y: 580, w: 887, h: 28 }, { x: 40, y: 740, w: 310, h: 56 }]);
+t("co_note", "sec_course", "完全予約制です。値段は税込み、サービス料はいただいておりません。", [[14, 28, 0], [14, 28, 0]], B, INK, [{ x: 278, y: 628, w: 887, h: 28 }, { x: 40, y: 836, w: 310, h: 56 }]);
 
 // ---- 5 季節の一品（墨の帯 x40〜1400）
 sec("sec_seasonal", "季節の一品", 840, 2160, { anchor: "seasonal", nav: { label: "季節の一品", order: 3 } });
@@ -176,7 +169,7 @@ sec("sec_info", "ご案内", 1240, 1300, { anchor: "information", nav: { label: 
 head("in", "sec_info", "ご案内", "Information", INK, 0, 0);
 btn("in_tel", "sec_info", "お電話でご予約", TEL, { x: 278, y: 130, w: 200, h: 48 }, { x: 40, y: 100, w: 200, h: 48 });
 rect("in_mapbox", "sec_info", "theme:lineSoft", 2, { x: 745, y: 240, w: 420, h: 760 }, { x: 40, y: 880, w: 310, h: 340 });
-const ROWS = [["ご住所", ["/location", "address"]], ["交通", ["/location/access", "access"]], ["昼の部", "11:30〜14:00（L.O. 13:00）"], ["夜の部", "17:30〜22:00（L.O. 20:00）"], ["定休日", "水曜日・第3火曜日"], ["お席", "カウンター8席・個室1室"], ["ご予約", "完全予約制"], ["お電話", ["/contact/phone", "phone"]]];
+const ROWS = [["ご住所", ["/location", "address"]], ["交通", ["/location/access", "access"]], ["昼の部", "11:30〜14:00（L.O. 13:00）"], ["夜の部", "17:30〜22:00（L.O. 20:00）"], ["定休日", "水曜日・第3火曜日"], ["お席", "カウンター八席・個室一室"], ["ご予約", "完全予約制"], ["お電話", ["/contact/phone", "phone"]]];
 ROWS.forEach(([k, v], i) => {
   const yP = 240 + 95 * i, yS = 180 + 84 * i;
   rect(`in_l${i}`, "sec_info", "theme:lineSoft", 2, { x: 278, y: yP, w: 420, h: 1 }, { x: 40, y: yS, w: 310, h: 1 });
