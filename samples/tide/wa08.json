@@ -11,8 +11,8 @@
   "aboutHead": ["Morning,", "by the sea."],
   "aboutJa": "お店について",
   "aboutBody": [
-    "豆は自家焙煎の浅煎りから中煎りまで。エスプレッソは、季節ごとに豆を替えています。",
-    "朝の散歩の途中に、海を眺めながらどうぞ。"
+    "豆は自家焙煎の浅煎りから中煎りまで。エチオピアやグアテマラなど、産地ごとの果実の香りが残るよう、少しずつ焼いています。エスプレッソの豆は、季節ごとに替えています。",
+    "お持ち帰りのカップは、浜まで歩くあいだ冷めにくい二重の紙カップです。朝の散歩の途中に、海を眺めながらどうぞ。"
   ],
   "menuJa": "メニュー",
   "menuNote": "表示の値段はすべて税込みです。",
@@ -39,7 +39,7 @@
     "mn1": { "slot": "signature", "alt": "カフェラテ。木の卓の上の、葉の模様を描いた一杯", "page": "https://unsplash.com/photos/Nw8wbiDE3gU" },
     "mn2": { "slot": "signature", "alt": "ハンドドリップ（シングルオリジン）。ガラスのサーバーからマグカップに注ぐ", "page": "https://unsplash.com/photos/N3btvQ51dL0" },
     "mn3": { "slot": "signature", "alt": "コールドブリュー。氷の入ったグラス", "page": "https://unsplash.com/photos/87fHq2C24IU" },
-    "mn4": { "slot": "signature", "alt": "エスプレッソ。白いカップに注いだ一杯", "page": "https://unsplash.com/photos/xIcg61GWav8" },
+    "mn4": { "slot": "signature", "alt": "エスプレッソ。白い小さなカップにクレマの乗った一杯とスプーン", "page": "https://unsplash.com/photos/l59fmhtprIE" },
     "st1": { "slot": "product", "alt": "白い台の上の、グラスのアイスコーヒーとコーヒー豆", "page": "https://unsplash.com/photos/DTxxKUj5Xoc" },
     "st2": { "slot": "interior", "alt": "海を望む芝生の上の木のベンチ", "page": "https://unsplash.com/photos/T64_Ysj_EMQ" },
     "bn": { "slot": "signature", "alt": "朝の光を映す穏やかな海の水面", "page": "https://unsplash.com/photos/CF89rOvKcsQ" }

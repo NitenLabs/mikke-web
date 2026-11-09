@@ -82,10 +82,10 @@ C.facts.forEach(([k, v], i) => {
 });
 
 // ---- 2 紹介（左の列に札、中央に欧文の大きな見出しと本文、右に写真）
-sec("sec_about", "紹介", "theme:background", 640, 700, { anchor: "about", nav: { label: "About", order: 1 } });
+sec("sec_about", "紹介", "theme:background", 640, 770, { anchor: "about", nav: { label: "About", order: 1 } });
 label("ab", "sec_about", "About", C.aboutJa, 100, 48);
 t("ab_h", "sec_about", L(C.aboutHead), [[64, 76, -1.2], [40, 50, -0.6]], H, INK, [{ x: XC, y: 100, w: 500, h: 152 }, { x: XS, y: 124, w: 360, h: 100 }], { role: "heading", weight: 700 });
-t("ab_p", "sec_about", L(C.aboutBody), [[16, 32, 0.4], [15, 30, 0.3]], B, INK, [{ x: XC, y: 290, w: 480, h: 230 }, { x: XS, y: 480, w: 360, h: 170 }], { gap: 14 });
+t("ab_p", "sec_about", L(C.aboutBody), [[16, 32, 0.4], [15, 30, 0.3]], B, INK, [{ x: XC, y: 290, w: 480, h: 230 }, { x: XS, y: 480, w: 360, h: 240 }], { gap: 14 });
 photo("ab_ph", "sec_about", "ast_ab01", 1, { x: 960, y: 100, w: 480, h: 420 }, { x: 90, y: 240, w: 300, h: 220 });
 
 // ---- 3 メニュー（左に札、写真つき 4 品＋行のみ 4 品）
@@ -109,12 +109,12 @@ add("mn_rows", { type: "repeater", z: 3, section: "sec_menu", source: { kind: "c
 t("mn_note", "sec_menu", C.menuNote, [[13, 22, 0.4], [12, 20, 0.3]], B, MU, [{ x: XC, y: 880, w: 990, h: 22 }, { x: XS, y: 1196, w: 360, h: 20 }]);
 
 // ---- 4 お店のこと（グレーの帯。右へ抜ける写真 2 枚と全幅の海）
-sec("sec_stand", "お店のこと", "theme:surface", 1240, 850, { anchor: "stand", nav: { label: "Stand", order: 3 } });
+sec("sec_stand", "お店のこと", "theme:surface", 1000, 770, { anchor: "stand", nav: { label: "Stand", order: 3 } });
 label("st", "sec_stand", "Stand", C.standJa, 100, 48);
 photo("st_ph1", "sec_stand", "ast_st01", 1, { x: XC, y: 100, w: 624, h: 400 }, { x: XS, y: 130, w: 236, h: 200 });
 photo("st_ph2", "sec_stand", "ast_st02", 1, { x: 1054, y: 100, w: 386, h: 400 }, { x: 263, y: 130, w: 127, h: 200 }, { fx: 62 });
 t("st_p", "sec_stand", L(C.standBody), [[16, 32, 0.4], [15, 30, 0.3]], B, INK, [{ x: XC, y: 540, w: 620, h: 150 }, { x: XS, y: 356, w: 360, h: 210 }], { gap: 14 });
-photo("st_bn", "sec_stand", "ast_bn01", 1, { x: 0, y: 720, w: 1440, h: 520 }, { x: 0, y: 590, w: 390, h: 260 }, { fy: 62 });
+photo("st_bn", "sec_stand", "ast_bn01", 1, { x: 0, y: 720, w: 1440, h: 280 }, { x: 0, y: 590, w: 390, h: 180 }, { fy: 62 });
 
 // ---- 5 ご案内と地図（白）
 sec("sec_info", "ご案内", "theme:background", 680, 940, { anchor: "information", nav: { label: "Information", order: 4 } });

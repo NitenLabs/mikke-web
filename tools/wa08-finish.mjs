@@ -39,21 +39,21 @@ ${pos("[data-el=fv_ph]", "left:50%;width:50%;top:0;height:66rem")}
 ${pos("[data-el=fv_tide]", `left:${L};width:46%;top:7rem;height:14rem;font-size:14rem;line-height:14rem`)}
 ${pos("[data-el=fv_copy]", `left:${L};width:44%;top:26rem;height:7rem;font-size:2rem;line-height:3.4rem`)}
 ${[0, 1, 2].map((i) => pos(`[data-el=fv_k${i}]`, `left:${L};width:7.5rem;top:${40 + i * 4}rem`) + pos(`[data-el=fv_v${i}]`, `left:calc(${L} + 8rem);width:33%;top:${40 + i * 4}rem`)).join("")}
-${pos("[data-sec=sec_about]", "min-height:51.5rem")}
+${pos("[data-sec=sec_about]", "min-height:58.5rem")}
 ${pos("[data-el=ab_h]", `left:${L};width:44%;top:13.5rem`)}
-${pos("[data-el=ab_p]", `left:${L};width:44%;top:25.5rem;height:20rem`)}
-${pos("[data-el=ab_ph]", "left:50%;width:50%;top:13.5rem;height:32rem")}
+${pos("[data-el=ab_p]", `left:${L};width:44%;top:25.5rem;height:27rem`)}
+${pos("[data-el=ab_ph]", "left:50%;width:50%;top:13.5rem;height:39rem")}
 ${pos("[data-sec=sec_menu]", "min-height:91rem")}
 ${pos('[data-el="mn_cards"]', "height:33rem;top:10rem")}
 ${pos('[data-el="mn_rows"] .rep-card', "width:100%!important;left:0!important")}
 ${cards}
 ${pos('[data-el="mn_rows"]', "top:46rem")}
 ${pos("[data-el=mn_note]", "top:85.4rem")}
-${pos("[data-sec=sec_stand]", "min-height:92rem")}
+${pos("[data-sec=sec_stand]", "min-height:80rem")}
 ${pos("[data-el=st_ph1]", `left:${L};width:60%;top:13rem;height:30rem`)}
 ${pos("[data-el=st_ph2]", "left:66%;width:34%;top:13rem;height:30rem")}
 ${pos("[data-el=st_p]", `left:${L};width:70%;top:46rem;height:16rem`)}
-${pos("[data-el=st_bn]", "top:64rem;height:28rem")}
+${pos("[data-el=st_bn]", "top:64rem;height:16rem")}
 ${pos("[data-sec=sec_info]", "min-height:64rem")}
 ${pos("[data-el^=in_l],[data-el^=in_k],[data-el^=in_v]", "width:44%")}
 ${pos("[data-el=in_tel_b],[data-el=in_tel_t]", `left:${L};width:21%`)}
@@ -71,7 +71,8 @@ ${pos("[data-el=ft_copy]", `left:${L};width:42%;top:26rem`)}
 }</style>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
-const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : encodeURIComponent(addr); // 緯度経度＋拡大率なら Google の場所の札が出にくい
+const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");
 // 大きな欧文は CSS で拡大しているので、組み上がりの伸びの基準（data-mh）も実寸に合わせ、下の要素を押し下げないようにする

@@ -4,7 +4,7 @@ ab1 https://images.unsplash.com/photo-1582572426223-d152057ba012?w=1200&h=945&fi
 mn1 https://images.unsplash.com/photo-1559001724-fbad036dbc9e?w=800&h=1000&fit=crop&q=75&fm=webp
 mn2 https://images.unsplash.com/photo-1522012188892-24beb302783d?w=800&h=1000&fit=crop&crop=bottom&q=75&fm=webp
 mn3 https://images.unsplash.com/photo-1629561585871-41a27c86e825?w=800&h=1000&fit=crop&q=75&fm=webp
-mn4 https://images.unsplash.com/photo-1766616460814-c92cec58f898?w=800&h=1000&fit=crop&q=75&fm=webp
+mn4 https://images.unsplash.com/photo-1508088405209-fbd63b6a4f50?w=800&h=1000&fit=crop&q=75&fm=webp
 st1 https://images.unsplash.com/photo-1585100567532-938b767c97bc?w=1300&q=75&fm=webp
 st2 https://images.unsplash.com/photo-1544794577-fa8d9fe4c9b6?w=1000&q=75&fm=webp
 bn https://images.unsplash.com/photo-1769254072802-01e644e27a34?w=2000&q=72&fm=webp
