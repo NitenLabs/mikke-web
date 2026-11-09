@@ -24,6 +24,7 @@ export const FONT_REGISTRY = {
   "hina-mincho": { family: "Hina Mincho", generic: "serif", param: "Hina+Mincho" },
   "cinzel": { family: "Cinzel", generic: "serif", param: "Cinzel:wght@400;500" },
   "cormorant-infant": { family: "Cormorant Infant", generic: "serif", param: "Cormorant+Infant:ital,wght@0,400;0,500;1,400" },
+  "libre-caslon-display": { family: "Libre Caslon Display", generic: "serif", param: "Libre+Caslon+Display" },
 };
 
 // フォントID → CSS の font-family スタック
