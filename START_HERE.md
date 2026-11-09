@@ -29,7 +29,7 @@
 4. 本物のお店1軒で作って売る
 
 ### 1本目の中身（2026-11-09 にユーザーが決めた）
-- お店：**炭火焼肉 李杏（りあん）**（芦屋、JR芦屋の近く。食べログ https://tabelog.com/hyogo/A2803/A280302/28022584/ ）。東山町の「炭火焼肉RIAN」とは別の店
+- お店：**炭火焼肉 李杏（りあん）**（芦屋市東山町2-6。食べログ https://tabelog.com/hyogo/A2803/A280302/28022584/ ）。「炭火焼肉RIAN」と同じ店で、**既にお店のサイトがある**（http://www.rian13.com/ 。https でない古いサイト）。なので営業は「新しく作る」でなく「作り直す」の話になる
 - 参考：Studio テンプレート https://preview.studio.site/templates/b91aP9Wlw2 （和食居酒屋向け。セクションは news・about・menu・infomation・access、PC の高さ約 8,070px。書体は黎ミンY10 M・中ゴシックBBB（どちらも Studio 専用の有料書体）・Lora・Noto Sans JP。写真は Unsplash）
 - 書体の扱いはユーザーに確認中（有料書体は無料の近い書体に置き換える案：Zen Old Mincho／Zen Kaku Gothic New）
 - クラウドの Claude Code からは参考サイトに届かない（許可するドメインを足しても、その会話のうちは効かなかった）。撮影は手元のパソコン（`C:\Users\sea_p\GitHub\mikke-web`）の Claude Code か、新しい会話で
