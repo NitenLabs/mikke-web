@@ -12,6 +12,7 @@ refs/compare/clone-*.png
 # 参考サイトの撮影画像は公開リポジトリに置かない（手順書 9章。数値の report.md・measure-*.json は残す）
 refs/**/*.jpg
 refs/**/*.png
+refs/**/*.webp
 templates/wa-01/spec-check-result.json
 experiments/layout/playground*/index.html
 experiments/layout/playground/_bundle_test.html

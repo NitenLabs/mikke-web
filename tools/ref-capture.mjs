@@ -21,6 +21,7 @@ fs.mkdirSync(out, { recursive: true });
 const VIEWPORTS = { pc: { width: 1440, height: 900 }, sp: { width: 390, height: 844 } };
 const MAX_CROP_H = 1400;   // 1枚の切り抜きの最大の高さ（これを超えるセクションは上部だけ）
 const OVERVIEW_W = 360;    // 全体像の縮小幅
+const RENDER_TIMEOUT = 20000;   // 本文の描画を待つ上限（ミリ秒）
 
 // ---------- ブラウザ内で実行する実測（要約してから返す） ----------
 const MEASURE = () => {
@@ -192,6 +193,19 @@ const HIDE_OVERLAYS = () => {
   return hidden;
 };
 
+// 描画待ち：読み込み画面の裏で実測しないよう、本文の文字が出て、ページの高さが落ち着くまで待つ（時間切れなら false）
+const WAIT_RENDERED = async (timeoutMs) => {
+  const t0 = performance.now(); let last = -1, stable = 0;
+  while (performance.now() - t0 < timeoutMs) {
+    const h = document.documentElement.scrollHeight;
+    const chars = (document.body.innerText || '').replace(/\s/g, '').length;
+    stable = chars >= 20 && h === last ? stable + 1 : 0;
+    if (stable >= 4) return true;   // 250ms × 4 回、変わらなければ描画済み
+    last = h; await new Promise(r => setTimeout(r, 250));
+  }
+  return false;
+};
+
 async function slowScroll(page) {
   await page.evaluate(async () => {
     const step = innerHeight * 0.7;
@@ -210,6 +224,7 @@ for (const [name, vp] of Object.entries(VIEWPORTS)) {
   let status = 0;
   try { const res = await page.goto(url, { waitUntil: 'networkidle', timeout: 45000 }); status = res ? res.status() : 0; }
   catch { try { const res = await page.goto(url, { waitUntil: 'load', timeout: 45000 }); status = res ? res.status() : 0; } catch (e) { console.error(`[${name}] 開けませんでした: ${e.message}`); await ctx.close(); continue; } }
+  const rendered = await page.evaluate(WAIT_RENDERED, RENDER_TIMEOUT);
   await page.waitForTimeout(800);
   const hidden = await page.evaluate(HIDE_OVERLAYS);
   await slowScroll(page);
@@ -218,6 +233,7 @@ for (const [name, vp] of Object.entries(VIEWPORTS)) {
   const m = await page.evaluate(MEASURE);
   m.status = status; m.hiddenOverlays = hidden;
   if (status >= 400) m.flags.unshift(`HTTP ${status} が返りました`);
+  if (!rendered) m.flags.unshift(`描画待ちが${RENDER_TIMEOUT / 1000}秒で時間切れになりました（読み込み途中を実測した可能性。もう一度実行）`);
   if (hidden.length) m.flags.push(`撮影のため覆いを${hidden.length}件隠しました（${hidden.join(' / ')}）`);
 
   // 全体像（ページ全体を撮り、縮小して保存）
