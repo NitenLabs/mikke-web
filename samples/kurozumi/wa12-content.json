@@ -3,6 +3,7 @@
   "nameKana": "すみびやきにく くろずみ",
   "genreDetail": "焼肉・七輪の炭火",
   "town": "大桝町",
+  "geo": { "lat": 34.7303, "lng": 135.306 },
   "phone": { "display": "0797-00-0000", "digits": "0797000000" },
   "closedDay": "wed",
   "periods": [{ "start": "17:00", "end": "23:00", "lastOrder": "22:30" }],
@@ -33,7 +34,7 @@
         { "id": "rare", "name": "本日の希少部位", "price": 2480, "from": true },
         { "id": "horumon", "name": "ホルモン盛り合わせ", "price": 1280 }
       ] },
-      { "id": "shime", "name": "〆", "rows": [
+      { "id": "shime", "name": "お食事", "rows": [
         { "id": "reimen", "name": "冷麺", "price": 980 },
         { "id": "bibimbap", "name": "石焼ビビンバ", "price": 1100 }
       ] },
@@ -69,6 +70,6 @@
     "mn1": ["signature", "網の上で焼ける肉"],
     "mn2": ["interior", "トングで肉を返す手元"],
     "mn3": ["signature", "冷麺"],
-    "se1": ["signature", "網の上で焼ける肉と立ちのぼる煙"]
+    "se1": ["interior", "無煙ロースターのあるテーブル席"]
   }
 }

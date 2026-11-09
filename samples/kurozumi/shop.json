@@ -15,7 +15,11 @@
   "location": {
     "prefecture": "兵庫県",
     "city": "芦屋市",
-    "town": "大桝町"
+    "town": "大桝町",
+    "geo": {
+      "lat": 34.7303,
+      "lng": 135.306
+    }
   },
   "hours": {
     "weekly": {
@@ -105,7 +109,7 @@
       },
       "cat_shime": {
         "menuId": "mnu_main",
-        "name": "〆",
+        "name": "お食事",
         "order": 2
       },
       "cat_course": {

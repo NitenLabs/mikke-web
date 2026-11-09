@@ -162,9 +162,9 @@
       "file": {
         "key": "ast_phse1.webp",
         "mime": "image/webp",
-        "width": 2400,
-        "height": 1800,
-        "bytes": 752428,
+        "width": 2000,
+        "height": 1333,
+        "bytes": 579532,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T12:00:00+09:00",
@@ -172,7 +172,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/PlkexG0nqQQ"
+        "pageUrl": "https://unsplash.com/photos/atxpfPEW0EE"
       },
       "rights": {
         "basis": "licensed",
@@ -180,8 +180,8 @@
         "confirmedBy": "producer",
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
-      "slot": "signature",
-      "alt": "網の上で焼ける肉と立ちのぼる煙"
+      "slot": "interior",
+      "alt": "無煙ロースターのあるテーブル席"
     }
   }
 }

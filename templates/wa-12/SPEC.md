@@ -162,7 +162,7 @@ G012「炭火焼肉 くろ炭」（架空の焼肉店、七輪の炭火、テー
 | mn1 | 4 左 | 304×380 | 310×388 | 網の上で焼ける肉 | 脂の艶 | yakiniku beef grilling, beef on charcoal grill close up |
 | mn2 | 4 中 | 304×380 | 149×186 | トングで肉を返す手元（顔なし） | 手元のみ・暗い | tongs grilling meat hand, korean bbq tongs close up |
 | mn3 | 4 右 | 304×380 | 149×186 | 冷麺（文字の入らない器） | 暗い地 | naengmyeon cold noodles dark, cold noodles bowl |
-| se1 | 5 全面 | 1440×720 | 390×520 | 焼ける瞬間の煙（横長） | 黒い地に煙 | smoke over grill dark, meat grilling smoke, barbecue smoke black background |
+| se1 | 5 全面 | 1440×720 | 390×520 | 暗めの店内の、無煙ロースターのあるテーブル（横長。G018 で焼ける煙の写真から替えた） | 暗い木の卓に金の光 | yakiniku restaurant table roaster, korean bbq table dark |
 
 合計 7 枠。写真に合わせて品名を変えるときは、焼肉の品としてもっともらしいものだけにする。
 
