@@ -1,0 +1,20 @@
+# wa-03 珈琲 麓（営業用の見本）の使用写真
+fv-left https://images.unsplash.com/photo-1587955245893-389f2215c6eb?w=2400&q=80&fm=jpg
+fv-right https://images.unsplash.com/photo-1636259673302-d9bc62e88ece?w=2400&q=80&fm=jpg
+story-1 https://images.unsplash.com/photo-1694532297471-a6e2bb054c03?w=2400&q=80&fm=jpg
+story-2 https://images.unsplash.com/photo-1758789900629-8d18c35e9d27?w=2400&q=80&fm=jpg
+story-3 https://images.unsplash.com/photo-1780245991182-e51caa9f06ca?w=2400&q=80&fm=jpg
+menu-1 https://images.unsplash.com/photo-1611162458324-aae1eb4129a4?w=2400&q=80&fm=jpg
+menu-2 https://images.unsplash.com/photo-1610632380989-680fe40816c6?w=2400&q=80&fm=jpg
+menu-3 https://images.unsplash.com/photo-1706251150220-43c659b5ad97?w=2400&q=80&fm=jpg
+menu-4 https://images.unsplash.com/photo-1595434091143-b375ced5fe5c?w=2400&q=80&fm=jpg
+menu-5 https://images.unsplash.com/photo-1527678357412-ef45dfbd9ecc?w=2400&q=80&fm=jpg
+menu-6 https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=2400&q=80&fm=jpg
+menu-7 https://images.unsplash.com/photo-1628024634012-39a1bdd0741d?w=2400&q=80&fm=jpg
+menu-8 https://images.unsplash.com/photo-1584776296944-ab6fb57b0bdd?w=2400&q=80&fm=jpg
+strip-1 https://images.unsplash.com/photo-1442512595331-e89e73853f31?w=2400&q=80&fm=jpg
+strip-2 https://images.unsplash.com/photo-1595827295672-97a059484442?w=2400&q=80&fm=jpg
+strip-3 https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=2400&q=80&fm=jpg
+strip-4 https://images.unsplash.com/photo-1780246031877-9bfe3be0a5b7?w=2400&q=80&fm=jpg
+strip-5 https://images.unsplash.com/photo-1792863537867-b78f0aed6434?w=2400&q=80&fm=jpg
+strip-6 https://images.unsplash.com/photo-1790715100736-ee0450bdb26b?w=2400&q=80&fm=jpg

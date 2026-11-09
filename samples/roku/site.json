@@ -1,0 +1,2423 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_roku",
+  "templateId": "tpl_wa_03",
+  "canvas": {
+    "pcContentWidth": 1440,
+    "spDesignWidth": 390
+  },
+  "pages": {
+    "pg_home": {
+      "kind": "home",
+      "slug": "/",
+      "navLabel": "TOP",
+      "navOrder": 1,
+      "showInNav": false,
+      "published": true,
+      "sections": [
+        "sec_firstv",
+        "sec_story",
+        "sec_menu",
+        "sec_access",
+        "sec_strip"
+      ]
+    },
+    "pg_404": {
+      "kind": "notFound",
+      "slug": "/404",
+      "navLabel": "404",
+      "navOrder": 9,
+      "showInNav": false,
+      "published": true,
+      "sections": []
+    }
+  },
+  "regions": {
+    "header": "sec_header",
+    "footer": "sec_footer",
+    "headerBehavior": "sticky"
+  },
+  "sections": {
+    "sec_header": {
+      "name": "ヘッダー",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 110,
+        "sp": 80
+      }
+    },
+    "sec_firstv": {
+      "name": "最初の画面",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 810,
+        "sp": 675
+      }
+    },
+    "sec_story": {
+      "name": "Our story",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 1498,
+        "sp": 1290
+      },
+      "anchor": "story",
+      "nav": {
+        "label": "About",
+        "order": 1
+      }
+    },
+    "sec_menu": {
+      "name": "Menu",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 1045,
+        "sp": 1784
+      },
+      "anchor": "menu",
+      "nav": {
+        "label": "Menu",
+        "order": 2
+      }
+    },
+    "sec_access": {
+      "name": "Access",
+      "background": {
+        "color": "theme:background"
+      },
+      "minHeight": {
+        "pc": 939,
+        "sp": 1057
+      },
+      "anchor": "access",
+      "nav": {
+        "label": "Access",
+        "order": 3
+      }
+    },
+    "sec_strip": {
+      "name": "写真の帯",
+      "background": {
+        "color": "theme:surface"
+      },
+      "minHeight": {
+        "pc": 580,
+        "sp": 380
+      }
+    },
+    "sec_footer": {
+      "name": "フッター",
+      "background": {
+        "color": "theme:paper"
+      },
+      "minHeight": {
+        "pc": 914,
+        "sp": 1038
+      }
+    }
+  },
+  "elements": {
+    "hd_name": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_header",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "珈琲 麓"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.5385,
+        "letterSpacing": 0.1,
+        "link": {
+          "kind": "page",
+          "value": "pg_home"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 3.4722,
+          "y": 35,
+          "w": 15.2778,
+          "h": 40,
+          "size": 26
+        },
+        "sp": {
+          "x": 5.1282,
+          "y": 20,
+          "w": 51.2821,
+          "h": 40,
+          "size": 24
+        }
+      }
+    },
+    "hd_nav": {
+      "type": "nav",
+      "z": 4,
+      "section": "sec_header",
+      "style": {
+        "color": "theme:text",
+        "font": "font:accent",
+        "spMenuBackground": "theme:paper"
+      },
+      "layout": {
+        "pc": {
+          "x": 48.6111,
+          "y": 43.8,
+          "w": 47.9167,
+          "h": 22.4,
+          "size": 16
+        },
+        "sp": {
+          "x": 85.641,
+          "y": 18,
+          "w": 11.2821,
+          "h": 44
+        }
+      }
+    },
+    "hd_b1": {
+      "type": "shape",
+      "z": 3,
+      "kind": "rect",
+      "fill": "theme:text",
+      "section": "sec_header",
+      "layout": {
+        "pc": {
+          "x": 99.9,
+          "y": 80,
+          "w": 0.01,
+          "h": 1
+        },
+        "sp": {
+          "x": 87.1795,
+          "y": 29,
+          "w": 7.6923,
+          "h": 2
+        }
+      }
+    },
+    "hd_b2": {
+      "type": "shape",
+      "z": 3,
+      "kind": "rect",
+      "fill": "theme:text",
+      "section": "sec_header",
+      "layout": {
+        "pc": {
+          "x": 99.9,
+          "y": 80,
+          "w": 0.01,
+          "h": 1
+        },
+        "sp": {
+          "x": 87.1795,
+          "y": 39,
+          "w": 7.6923,
+          "h": 2
+        }
+      }
+    },
+    "hd_b3": {
+      "type": "shape",
+      "z": 3,
+      "kind": "rect",
+      "fill": "theme:text",
+      "section": "sec_header",
+      "layout": {
+        "pc": {
+          "x": 99.9,
+          "y": 80,
+          "w": 0.01,
+          "h": 1
+        },
+        "sp": {
+          "x": 87.1795,
+          "y": 49,
+          "w": 7.6923,
+          "h": 2
+        }
+      }
+    },
+    "fv_1": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_firstv",
+      "asset": "ast_fv01",
+      "layout": {
+        "pc": {
+          "x": 30,
+          "y": 0,
+          "w": 35,
+          "h": 810,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 270.1,
+          "w": 50,
+          "h": 404.9,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "fv_2": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_firstv",
+      "asset": "ast_fv02",
+      "layout": {
+        "pc": {
+          "x": 65,
+          "y": 0,
+          "w": 35,
+          "h": 810,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 50,
+          "y": 270.1,
+          "w": 50,
+          "h": 404.9,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "fv_copy": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "草屋根の下の、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "ちいさな喫茶店。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.1
+      },
+      "layout": {
+        "pc": {
+          "x": 12.2014,
+          "y": 251,
+          "w": 5.5972,
+          "h": 260,
+          "size": 28.8,
+          "writingMode": "vertical"
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 63.3,
+          "w": 84.6154,
+          "h": 71.7,
+          "size": 25.6
+        }
+      }
+    },
+    "fv_en": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "A little coffee house under a grass roof, in Ashiya."
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 300,
+        "color": "theme:textMuted",
+        "lineHeight": 1.2,
+        "letterSpacing": 0.05,
+        "align": "center"
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5833,
+          "y": 524,
+          "w": 18.8333,
+          "h": 34.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 154.9,
+          "w": 69.5385,
+          "h": 34.6,
+          "size": 14.4
+        }
+      }
+    },
+    "fv_script": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_firstv",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Coffee Roku"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#D0D0C6",
+        "lineHeight": 1,
+        "letterSpacing": -0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 666,
+          "w": 69.2361,
+          "h": 144,
+          "size": 144
+        },
+        "sp": {
+          "x": 2.0513,
+          "y": 603,
+          "w": 95.8974,
+          "h": 64,
+          "size": 64
+        }
+      }
+    },
+    "st_en": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_story",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Our story"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 300,
+        "color": "theme:text",
+        "lineHeight": 1,
+        "letterSpacing": -0.01
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 140,
+          "w": 44.4444,
+          "h": 41.6,
+          "size": 41.6
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 100,
+          "w": 84.6154,
+          "h": 44.8,
+          "size": 44.8
+        }
+      }
+    },
+    "st_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_story",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "珈琲 麓について"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:accent",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 197.6,
+          "w": 44.4444,
+          "h": 20.2,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 155,
+          "w": 84.6154,
+          "h": 20.2,
+          "size": 14.4
+        }
+      }
+    },
+    "st_catch": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_story",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "草屋根の下で、"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "ゆっくり一杯を"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.7,
+        "letterSpacing": 0
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 295.6,
+          "w": 27.7778,
+          "h": 108.8,
+          "size": 32
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 205.1,
+          "w": 84.6154,
+          "h": 76.2,
+          "size": 22.4
+        }
+      }
+    },
+    "st_body": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_story",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "芦屋の閑静な住宅街。緑に覆われた草屋根が目印の、小さな喫茶店です。"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "カウンターやテーブル、柱や梁には古木を使い、木と漆喰のぬくもりに包まれた店内には、ゆったりとした時間が流れます。屋根裏の小部屋のような2階席もあります。"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "珈琲は萩原珈琲の炭火焙煎の豆を、一杯ずつ丁寧に淹れています。カップは並んだ中からお好きなものを。芦屋の焼菓子店 Feu のケーキと一緒にどうぞ。"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03,
+        "paragraphGap": 14
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 434.4,
+          "w": 40.2778,
+          "h": 345.6,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 301.3,
+          "w": 84.6154,
+          "h": 316.1,
+          "size": 16
+        }
+      }
+    },
+    "st_ph1": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_story",
+      "asset": "ast_st01",
+      "layout": {
+        "pc": {
+          "x": 54.1667,
+          "y": 267.8,
+          "w": 40.2778,
+          "h": 540,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 667.4,
+          "w": 84.6154,
+          "h": 253.2,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "st_ph2": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_story",
+      "asset": "ast_st02",
+      "layout": {
+        "pc": {
+          "x": -1.3889,
+          "y": 907.8,
+          "w": 57.5,
+          "h": 450,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": -7.6923,
+          "y": 970.5999999999999,
+          "w": 63.0769,
+          "h": 219.4,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "st_ph3": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_story",
+      "asset": "ast_st03",
+      "layout": {
+        "pc": {
+          "x": 63.0556,
+          "y": 1007.8,
+          "w": 31.3889,
+          "h": 450,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 63.0769,
+          "y": 1030.6,
+          "w": 44.6154,
+          "h": 219.4,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "st_script": {
+      "type": "text",
+      "z": 5,
+      "role": "body",
+      "section": "sec_story",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Coffee Roku"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:heading",
+        "weight": 400,
+        "color": "#D0D0C6",
+        "lineHeight": 1.4,
+        "letterSpacing": -0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 790,
+          "w": 71.875,
+          "h": 224,
+          "size": 160
+        },
+        "sp": {
+          "x": 2.0513,
+          "y": 1200.4,
+          "w": 95.8974,
+          "h": 89.6,
+          "size": 64
+        }
+      }
+    },
+    "mn_en": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Menu"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 300,
+        "color": "theme:text",
+        "lineHeight": 1,
+        "letterSpacing": -0.01
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 139.8,
+          "w": 44.4444,
+          "h": 41.6,
+          "size": 41.6
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 100.1,
+          "w": 84.6154,
+          "h": 44.8,
+          "size": 44.8
+        }
+      }
+    },
+    "mn_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_menu",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "お品書き"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:accent",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 197.3,
+          "w": 44.4444,
+          "h": 20.2,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 154.9,
+          "w": 84.6154,
+          "h": 20.2,
+          "size": 14.4
+        }
+      }
+    },
+    "mn_cards": {
+      "type": "repeater",
+      "z": 3,
+      "section": "sec_menu",
+      "source": {
+        "kind": "catalog",
+        "menuId": "mnu_food",
+        "pick": [
+          "itm_m001",
+          "itm_m002",
+          "itm_m003",
+          "itm_m004",
+          "itm_m005",
+          "itm_m006",
+          "itm_m007",
+          "itm_m008"
+        ]
+      },
+      "display": {
+        "mode": "grid",
+        "columns": {
+          "pc": 4,
+          "sp": 2
+        },
+        "gap": {
+          "pc": 50,
+          "sp": 30
+        },
+        "photoless": "sameCard"
+      },
+      "card": {
+        "height": {
+          "pc": 293.5,
+          "sp": 347.1
+        },
+        "elements": {
+          "c_ph": {
+            "type": "photo",
+            "z": 1,
+            "bind": {
+              "scope": "item",
+              "path": "/photos"
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 180,
+                "ratio": "custom"
+              },
+              "sp": {
+                "x": 0,
+                "y": 0,
+                "w": 100,
+                "h": 160,
+                "ratio": "custom"
+              }
+            }
+          },
+          "c_nm": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/name",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "theme:text",
+              "lineHeight": 1.6,
+              "letterSpacing": 0.05
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 190,
+                "w": 100,
+                "h": 30.7,
+                "size": 19.2
+              },
+              "sp": {
+                "x": 0,
+                "y": 170,
+                "w": 100,
+                "h": 61.4,
+                "size": 19.2
+              }
+            }
+          },
+          "c_ds": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/description",
+                      "format": "plain"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "theme:textMuted",
+              "lineHeight": 1.5,
+              "letterSpacing": 0.05
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 224.7,
+                "w": 100,
+                "h": 43.2,
+                "size": 14.4
+              },
+              "sp": {
+                "x": 0,
+                "y": 235.1,
+                "w": 100,
+                "h": 86.4,
+                "size": 14.4
+              }
+            }
+          },
+          "c_pr": {
+            "type": "text",
+            "z": 2,
+            "role": "body",
+            "paragraphs": [
+              {
+                "runs": [
+                  {
+                    "bind": {
+                      "scope": "item",
+                      "path": "/prices",
+                      "format": "priceAll"
+                    }
+                  }
+                ]
+              }
+            ],
+            "style": {
+              "font": "font:body",
+              "weight": 400,
+              "color": "theme:accent",
+              "lineHeight": 1.5,
+              "letterSpacing": 0.05
+            },
+            "layout": {
+              "pc": {
+                "x": 0,
+                "y": 271.9,
+                "w": 100,
+                "h": 21.6,
+                "size": 14.4
+              },
+              "sp": {
+                "x": 0,
+                "y": 325.5,
+                "w": 100,
+                "h": 21.6,
+                "size": 14.4
+              }
+            }
+          }
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 267.5,
+          "w": 88.8889,
+          "h": 637
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 205,
+          "w": 84.6154,
+          "h": 1478.4
+        }
+      }
+    },
+    "ac_en": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Access"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 300,
+        "color": "theme:text",
+        "lineHeight": 1,
+        "letterSpacing": -0.01
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 140.2,
+          "w": 44.4444,
+          "h": 41.6,
+          "size": 41.6
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 100,
+          "w": 84.6154,
+          "h": 44.8,
+          "size": 44.8
+        }
+      }
+    },
+    "ac_ja": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "店舗情報"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:accent",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 197.8,
+          "w": 44.4444,
+          "h": 20.2,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 155.2,
+          "w": 84.6154,
+          "h": 20.2,
+          "size": 14.4
+        }
+      }
+    },
+    "ac_name": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "珈琲 麓"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.875,
+        "letterSpacing": 0.1
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 268,
+          "w": 24.3056,
+          "h": 60,
+          "size": 32
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 488.5,
+          "w": 64.1026,
+          "h": 60,
+          "size": 28
+        }
+      }
+    },
+    "ac_k0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "住所"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 358,
+          "w": 7.6389,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 558.5,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_v0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 358,
+          "w": 34.0278,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 587.3,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_k1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 406.8,
+          "w": 7.6389,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 626.1,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_v1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "hoursShort"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 406.8,
+          "w": 34.0278,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 654.9,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_k2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "定休日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 455.6,
+          "w": 7.6389,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 693.7,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_v2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 455.6,
+          "w": 34.0278,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 722.5,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_k3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "電話番号"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 504.4,
+          "w": 7.6389,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 761.3,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_v3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 504.4,
+          "w": 34.0278,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 790.0999999999999,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_k4": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "アクセス"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 553.2,
+          "w": 7.6389,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 828.9,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_v4": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location/access",
+                "format": "access"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.8,
+        "letterSpacing": 0.03
+      },
+      "layout": {
+        "pc": {
+          "x": 13.8889,
+          "y": 553.2,
+          "w": 34.0278,
+          "h": 28.8,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 857.6999999999999,
+          "w": 84.6154,
+          "h": 28.8,
+          "size": 16
+        }
+      }
+    },
+    "ac_btn": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "theme:background",
+      "radius": 100,
+      "stroke": {
+        "width": 1,
+        "color": "theme:accent"
+      },
+      "section": "sec_access",
+      "link": {
+        "kind": "url",
+        "value": "https://www.google.com/maps/search/?api=1&query=%E5%85%B5%E5%BA%AB%E7%9C%8C%E8%8A%A6%E5%B1%8B%E5%B8%82%E6%9D%B1%E5%B1%B1%E7%94%BA7-32%20%E7%8F%88%E7%90%B2%20%E9%BA%93",
+        "newTab": true
+      },
+      "layout": {
+        "pc": {
+          "x": 5.5556,
+          "y": 602,
+          "w": 9.7847,
+          "h": 47.6
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 906.5,
+          "w": 38.1795,
+          "h": 50
+        }
+      }
+    },
+    "ac_btnt": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_access",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Google Map"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05,
+        "link": {
+          "kind": "url",
+          "value": "https://www.google.com/maps/search/?api=1&query=%E5%85%B5%E5%BA%AB%E7%9C%8C%E8%8A%A6%E5%B1%8B%E5%B8%82%E6%9D%B1%E5%B1%B1%E7%94%BA7-32%20%E7%8F%88%E7%90%B2%20%E9%BA%93",
+          "newTab": true
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 8.125,
+          "y": 615,
+          "w": 6.5972,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 19.2308,
+          "y": 920.7,
+          "w": 24.359,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ac_mapbox": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "theme:surface",
+      "section": "sec_access",
+      "layout": {
+        "pc": {
+          "x": 53.4722,
+          "y": 268,
+          "w": 40.9722,
+          "h": 530.8
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 205.3,
+          "w": 84.6154,
+          "h": 253.2
+        }
+      }
+    },
+    "sr_1": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_strip",
+      "asset": "ast_sr01",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 70,
+          "w": 43.8889,
+          "h": 440,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 50,
+          "w": 87.9487,
+          "h": 280,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "sr_2": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_strip",
+      "asset": "ast_sr02",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 70,
+          "w": 43.8889,
+          "h": 440,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 50,
+          "w": 87.9487,
+          "h": 280,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "sr_3": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_strip",
+      "asset": "ast_sr03",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 70,
+          "w": 43.8889,
+          "h": 440,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 50,
+          "w": 87.9487,
+          "h": 280,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "sr_4": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_strip",
+      "asset": "ast_sr04",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 70,
+          "w": 43.8889,
+          "h": 440,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 50,
+          "w": 87.9487,
+          "h": 280,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "sr_5": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_strip",
+      "asset": "ast_sr05",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 70,
+          "w": 43.8889,
+          "h": 440,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 50,
+          "w": 87.9487,
+          "h": 280,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "sr_6": {
+      "type": "photo",
+      "z": 1,
+      "section": "sec_strip",
+      "asset": "ast_sr06",
+      "layout": {
+        "pc": {
+          "x": 0,
+          "y": 70,
+          "w": 43.8889,
+          "h": 440,
+          "ratio": "custom"
+        },
+        "sp": {
+          "x": 0,
+          "y": 50,
+          "w": 87.9487,
+          "h": 280,
+          "ratio": "custom"
+        }
+      },
+      "crop": {
+        "fx": 50,
+        "fy": 50,
+        "zoom": 1
+      }
+    },
+    "ft_name": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "珈琲 麓"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.875,
+        "letterSpacing": 0.1
+      },
+      "layout": {
+        "pc": {
+          "x": 8.5556,
+          "y": 180,
+          "w": 24.3056,
+          "h": 60,
+          "size": 32
+        },
+        "sp": {
+          "x": 17.9487,
+          "y": 100,
+          "w": 64.1026,
+          "h": 60,
+          "size": 28
+        }
+      }
+    },
+    "ft_div": {
+      "type": "shape",
+      "z": 2,
+      "kind": "line",
+      "fill": "theme:accent",
+      "section": "sec_footer",
+      "layout": {
+        "pc": {
+          "x": 50.0347,
+          "y": 140,
+          "w": 0.0694,
+          "h": 536.4,
+          "strokeWidth": 1
+        },
+        "sp": {
+          "x": 0,
+          "y": 0,
+          "w": 0.0026,
+          "h": 1,
+          "strokeWidth": 1
+        }
+      }
+    },
+    "ft_n0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "About"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 300,
+        "color": "theme:text",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.05,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#story"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 8.5556,
+          "y": 290,
+          "w": 13.8889,
+          "h": 22.4,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 210,
+          "w": 84.6154,
+          "h": 22.4,
+          "size": 16
+        }
+      }
+    },
+    "ft_n1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Menu"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 300,
+        "color": "theme:text",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.05,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#menu"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 8.5556,
+          "y": 332.4,
+          "w": 13.8889,
+          "h": 22.4,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 252.4,
+          "w": 84.6154,
+          "h": 22.4,
+          "size": 16
+        }
+      }
+    },
+    "ft_n2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "Access"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 300,
+        "color": "theme:text",
+        "lineHeight": 1.4,
+        "letterSpacing": 0.05,
+        "link": {
+          "kind": "anchor",
+          "value": "pg_home#access"
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 8.5556,
+          "y": 374.8,
+          "w": 13.8889,
+          "h": 22.4,
+          "size": 16
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 294.8,
+          "w": 84.6154,
+          "h": 22.4,
+          "size": 16
+        }
+      }
+    },
+    "ft_mapbox": {
+      "type": "shape",
+      "z": 2,
+      "kind": "rect",
+      "fill": "theme:surface",
+      "section": "sec_footer",
+      "layout": {
+        "pc": {
+          "x": 56.9792,
+          "y": 180,
+          "w": 34.4653,
+          "h": 280
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 387,
+          "w": 84.6154,
+          "h": 280
+        }
+      }
+    },
+    "ft_k0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "住所"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 56.9792,
+          "y": 490,
+          "w": 7.2153,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 697,
+          "w": 21.7949,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_v0": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/location",
+                "format": "address"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 65.5833,
+          "y": 490,
+          "w": 25.8611,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 34.6154,
+          "y": 697,
+          "w": 57.6923,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_k1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業時間"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 56.9792,
+          "y": 531.6,
+          "w": 7.2153,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 738.6,
+          "w": 21.7949,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_v1": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "hoursShort"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 65.5833,
+          "y": 531.6,
+          "w": 25.8611,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 34.6154,
+          "y": 738.6,
+          "w": 57.6923,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_k2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "定休日"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 56.9792,
+          "y": 573.2,
+          "w": 7.2153,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 780.2,
+          "w": 21.7949,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_v2": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 65.5833,
+          "y": 573.2,
+          "w": 25.8611,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 34.6154,
+          "y": 780.2,
+          "w": 57.6923,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_k3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "電話番号"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:textMuted",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 56.9792,
+          "y": 614.8,
+          "w": 7.2153,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 821.8,
+          "w": 21.7949,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_v3": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/contact/phone",
+                "format": "phone"
+              }
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:text",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 65.5833,
+          "y": 614.8,
+          "w": 25.8611,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 34.6154,
+          "y": 821.8,
+          "w": 57.6923,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_mikke": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "芦屋みっけ 掲載店"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:lineSoft",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05,
+        "link": {
+          "kind": "url",
+          "value": "https://ashiya-mikke.pages.dev/spot/roku-coffee/",
+          "newTab": true
+        }
+      },
+      "layout": {
+        "pc": {
+          "x": 8.5556,
+          "y": 610,
+          "w": 34.7222,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 883.4,
+          "w": 84.6154,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_draft": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "営業用の見本（写真・品は仮）"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:body",
+        "weight": 400,
+        "color": "theme:lineSoft",
+        "lineHeight": 1.5,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 8.5556,
+          "y": 636,
+          "w": 38.8889,
+          "h": 21.6,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 909.4,
+          "w": 84.6154,
+          "h": 21.6,
+          "size": 14.4
+        }
+      }
+    },
+    "ft_copy": {
+      "type": "text",
+      "z": 3,
+      "role": "body",
+      "section": "sec_footer",
+      "paragraphs": [
+        {
+          "runs": [
+            {
+              "text": "© Coffee ROKU"
+            }
+          ]
+        }
+      ],
+      "style": {
+        "font": "font:accent",
+        "weight": 300,
+        "color": "theme:lineSoft",
+        "lineHeight": 1.2,
+        "letterSpacing": 0.05
+      },
+      "layout": {
+        "pc": {
+          "x": 8.5556,
+          "y": 816.4,
+          "w": 34.7222,
+          "h": 17.3,
+          "size": 14.4
+        },
+        "sp": {
+          "x": 7.6923,
+          "y": 980,
+          "w": 84.6154,
+          "h": 17.3,
+          "size": 14.4
+        }
+      }
+    }
+  }
+}

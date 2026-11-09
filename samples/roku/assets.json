@@ -1,0 +1,499 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3601,
+        "bytes": 566905,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/WbdkFHDFbTg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "暗い背景でハンドドリップで淹れるコーヒー"
+    },
+    "ast_fv02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 4094,
+        "bytes": 1230776,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Q0FLPtBpaRk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "古い木のカウンターとランプ"
+    },
+    "ast_st01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 875512,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/7QQqbd30FaM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "苔と草に覆われた屋根"
+    },
+    "ast_st02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1361,
+        "bytes": 307880,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/erzd5vtgef8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "絵柄のアンティークのカップ"
+    },
+    "ast_st03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_st03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3200,
+        "bytes": 1784356,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/duH2odCo0aQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "濃い木の壁の小部屋と窓"
+    },
+    "ast_mn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3599,
+        "bytes": 946376,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/JJeb7OHQ7a8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒い背景の白いコーヒーカップ"
+    },
+    "ast_mn02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 731462,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/lsmu0rUhUOk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "コーヒー豆とカップ"
+    },
+    "ast_mn03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 302086,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/DAiPTiM42Ng"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "赤いカップとソーサー"
+    },
+    "ast_mn04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn04.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3200,
+        "bytes": 1556451,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/dQdyO9jsixA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "木の卓に置いた白いカップ"
+    },
+    "ast_mn05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn05.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 843472,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/ZuHjaQcYhDY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "グラスのアイスカフェオレ"
+    },
+    "ast_mn06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn06.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 281348,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/s8_7AqkzCWY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒い皿のチーズケーキ"
+    },
+    "ast_mn07": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn07.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 482122,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/-ZbSWuzMors"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "いちじくのケーキ"
+    },
+    "ast_mn08": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_mn08.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1623,
+        "bytes": 615130,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/5C2JmojQ6hQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "黒い皿の厚切りトースト"
+    },
+    "ast_sr01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr01.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1600,
+        "bytes": 462860,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/TYIzeCiZ_60"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "ケトルで注ぐドリップコーヒー"
+    },
+    "ast_sr02": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr02.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 576582,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/qXLReVbjxvg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "ドリッパーとサーバー"
+    },
+    "ast_sr03": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr03.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1830,
+        "bytes": 926566,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/TD4DBagg2wE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "焙煎したコーヒー豆"
+    },
+    "ast_sr04": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr04.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 1800,
+        "bytes": 808213,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/uwwH7vNGTc0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "木の棚に並ぶ器と灯り"
+    },
+    "ast_sr05": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr05.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3600,
+        "bytes": 1817461,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/y8GPLvAnoWA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "蔦に覆われた緑の扉"
+    },
+    "ast_sr06": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr06.jpg",
+        "mime": "image/jpeg",
+        "width": 2400,
+        "height": 3200,
+        "bytes": 949489,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-09T20:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/b9a5YCUu0cw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-09T20:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（営業用の見本。公開前に実物へ差し替え）"
+      },
+      "slot": "signature",
+      "alt": "暖かい灯りの木の本棚"
+    }
+  }
+}

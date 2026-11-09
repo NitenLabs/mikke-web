@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_roku",
+  "salesDraft": true,
+  "updatedAt": "2026-11-09T20:00:00+09:00",
+  "basic": {
+    "name": "珈琲 麓",
+    "nameKana": "こーひー ろく",
+    "genre": { "template": "restaurant", "detail": "喫茶店" }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "東山町",
+    "street": "7-32",
+    "access": {
+      "acc_jrashiya": { "station": "JR芦屋駅", "method": "walk", "minutes": 10, "order": 1 }
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": { "status": "open", "periods": [{ "start": "11:00", "end": "21:00" }] },
+      "tue": { "status": "closed" },
+      "wed": { "status": "open", "periods": [{ "start": "11:00", "end": "21:00" }] },
+      "thu": { "status": "open", "periods": [{ "start": "11:00", "end": "21:00" }] },
+      "fri": { "status": "open", "periods": [{ "start": "11:00", "end": "21:00" }] },
+      "sat": { "status": "open", "periods": [{ "start": "11:00", "end": "21:00" }] },
+      "sun": { "status": "open", "periods": [{ "start": "11:00", "end": "21:00" }] }
+    }
+  },
+  "contact": {
+    "phone": { "display": "0797-23-6684", "digits": "0797236684" }
+  },
+  "catalog": {
+    "menus": { "mnu_food": { "order": 1 } },
+    "categories": { "cat_menu": { "menuId": "mnu_food", "name": "お品書き", "order": 1, "draft": true } },
+    "labels": { "lbl_recommend": { "name": "おすすめ", "system": "recommended", "order": 1 } },
+    "items": {
+      "itm_m001": { "name": "ブレンド", "description": "萩原珈琲の炭火焙煎豆で淹れる、店の定番。", "photos": ["ast_mn01"], "prices": [{ "id": "prc_m001", "type": "fixed", "amount": 550 }], "status": "onSale", "draft": true },
+      "itm_m002": { "name": "コロンビア スプレモ", "description": "まろやかな甘みと、ほどよいコク。", "photos": ["ast_mn02"], "prices": [{ "id": "prc_m002", "type": "fixed", "amount": 550 }], "status": "onSale", "draft": true },
+      "itm_m003": { "name": "サントス ニブラ", "description": "香ばしく、すっきりとした後味。", "photos": ["ast_mn03"], "prices": [{ "id": "prc_m003", "type": "fixed", "amount": 550 }], "status": "onSale", "draft": true },
+      "itm_m004": { "name": "ロイヤルミルクティー", "description": "ミルクでじっくり煮出した、濃いめの一杯。", "photos": ["ast_mn04"], "prices": [{ "id": "prc_m004", "type": "fixed", "amount": 550 }], "status": "onSale", "draft": true },
+      "itm_m005": { "name": "アイスカフェオレ", "description": "夏にうれしい、冷たいカフェオレ。", "photos": ["ast_mn05"], "prices": [{ "id": "prc_m005", "type": "fixed", "amount": 550 }], "status": "onSale", "draft": true },
+      "itm_m006": { "name": "ベイクドチーズケーキ", "description": "Feu のケーキ。お好きな飲み物とセットで。", "photos": ["ast_mn06"], "prices": [{ "id": "prc_m006", "name": "ケーキセット", "type": "fixed", "amount": 1000 }], "status": "onSale", "draft": true },
+      "itm_m007": { "name": "いちじくのパウンドケーキ", "description": "Feu のケーキ。黒ごまのパウンドケーキもあります。", "photos": ["ast_mn07"], "prices": [{ "id": "prc_m007", "name": "ケーキセット", "type": "fixed", "amount": 1000 }], "status": "onSale", "draft": true },
+      "itm_m008": { "name": "チーズトースト", "description": "厚切りのパンにチーズをのせて。", "photos": ["ast_mn08"], "prices": [], "status": "onSale", "draft": true }
+    },
+    "placements": {
+      "plc_m001": { "itemId": "itm_m001", "menuId": "mnu_food", "categoryId": "cat_menu", "order": 1 },
+      "plc_m002": { "itemId": "itm_m002", "menuId": "mnu_food", "categoryId": "cat_menu", "order": 2 },
+      "plc_m003": { "itemId": "itm_m003", "menuId": "mnu_food", "categoryId": "cat_menu", "order": 3 },
+      "plc_m004": { "itemId": "itm_m004", "menuId": "mnu_food", "categoryId": "cat_menu", "order": 4 },
+      "plc_m005": { "itemId": "itm_m005", "menuId": "mnu_food", "categoryId": "cat_menu", "order": 5 },
+      "plc_m006": { "itemId": "itm_m006", "menuId": "mnu_food", "categoryId": "cat_menu", "order": 6 },
+      "plc_m007": { "itemId": "itm_m007", "menuId": "mnu_food", "categoryId": "cat_menu", "order": 7 },
+      "plc_m008": { "itemId": "itm_m008", "menuId": "mnu_food", "categoryId": "cat_menu", "order": 8 }
+    }
+  },
+  "review": {
+    "/basic/name": { "status": "pending", "sources": [
+      { "kind": "reviewSite", "url": "https://tabelog.com/hyogo/A2803/A280302/28005993/", "value": "珈琲 麓", "fetchedAt": "2026-11-09T19:00:00+09:00" },
+      { "kind": "reviewSite", "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100000046452/", "value": "珈琲 麓", "fetchedAt": "2026-11-09T19:00:00+09:00" } ] },
+    "/location/street": { "status": "pending", "sources": [
+      { "kind": "reviewSite", "url": "https://tabelog.com/hyogo/A2803/A280302/28005993/", "value": "東山町7-32", "fetchedAt": "2026-11-09T19:00:00+09:00" } ] },
+    "/location/access/acc_jrashiya": { "status": "pending", "sources": [
+      { "kind": "reviewSite", "url": "https://tabelog.com/hyogo/A2803/A280302/28005993/", "value": "JR芦屋駅から約 580m", "fetchedAt": "2026-11-09T19:00:00+09:00" },
+      { "kind": "producer", "url": "https://www.pretty-online.jp/news/3448/", "value": "徒歩約10分", "fetchedAt": "2026-11-09T19:00:00+09:00" } ] },
+    "/hours/weekly": { "status": "pending", "sources": [
+      { "kind": "reviewSite", "url": "https://tabelog.com/hyogo/A2803/A280302/28005993/", "value": "11:00〜21:00・火曜定休", "fetchedAt": "2026-11-09T19:00:00+09:00" } ] },
+    "/contact/phone": { "status": "pending", "sources": [
+      { "kind": "reviewSite", "url": "https://tabelog.com/hyogo/A2803/A280302/28005993/", "value": "0797-23-6684（電話受付休止の表示あり）", "fetchedAt": "2026-11-09T19:00:00+09:00" } ] },
+    "/catalog/items/itm_m001/prices": { "status": "pending", "sources": [
+      { "kind": "reviewSite", "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100000046452/", "value": "飲み物 550円均一（2026年の口コミ）", "fetchedAt": "2026-11-09T19:00:00+09:00" } ] },
+    "/catalog/items/itm_m006/prices": { "status": "pending", "sources": [
+      { "kind": "producer", "url": "https://ameblo.jp/samemoon917/entry-12943060142.html", "value": "ケーキセット 1,000円（税込・2025年）", "fetchedAt": "2026-11-09T19:00:00+09:00" } ] }
+  },
+  "story": {
+    "draft": true,
+    "answers": {
+      "q_catch": { "question": "見出し（仮）", "answer": "草屋根の下で、\nゆっくり一杯を" },
+      "q_body": { "question": "お店の紹介（仮）", "answer": "芦屋の閑静な住宅街。緑に覆われた草屋根が目印の、小さな喫茶店です。\nカウンターやテーブル、柱や梁には古木を使い、木と漆喰のぬくもりに包まれた店内には、ゆったりとした時間が流れます。屋根裏の小部屋のような2階席もあります。\n珈琲は萩原珈琲の炭火焙煎の豆を、一杯ずつ丁寧に淹れています。カップは並んだ中からお好きなものを。芦屋の焼菓子店 Feu のケーキと一緒にどうぞ。" }
+    }
+  }
+}

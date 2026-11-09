@@ -6,6 +6,9 @@ export const FONT_REGISTRY = {
   "noto-sans-jp": { family: "Noto Sans JP", generic: "sans-serif", param: "Noto+Sans+JP:wght@400;500;700" },
   "shippori-mincho": { family: "Shippori Mincho", generic: "serif", param: "Shippori+Mincho:wght@400;500;700" },
   "zen-kaku-gothic-new": { family: "Zen Kaku Gothic New", generic: "sans-serif", param: "Zen+Kaku+Gothic+New:wght@400;500;700" },
+  "lora": { family: "Lora", generic: "serif", param: "Lora:wght@400;600" },
+  "montserrat": { family: "Montserrat", generic: "sans-serif", param: "Montserrat:wght@300;400" },
+  "la-belle-aurore": { family: "La Belle Aurore", generic: "cursive", param: "La+Belle+Aurore" },
   "eb-garamond": { family: "EB Garamond", generic: "serif", param: "EB+Garamond:ital,wght@0,400;0,500;1,400" },
   "space-mono": { family: "Space Mono", generic: "monospace", param: "Space+Mono:wght@400;700" },
 };

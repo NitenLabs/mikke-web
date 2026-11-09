@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "colors": {
+    "background": { "value": "#242322" },
+    "surface": { "value": "#2E2C2A" },
+    "text": { "value": "#DDDCD4" },
+    "textMuted": { "value": "#D0D0C6" },
+    "primary": { "value": "#DDDCD4" },
+    "accent": { "value": "#8A9474" },
+    "line": { "value": "#D0D0C6" },
+    "lineSoft": { "value": "#8B8C84" },
+    "paper": { "value": "#1A1918" }
+  },
+  "fonts": {
+    "heading": "la-belle-aurore",
+    "body": "zen-kaku-gothic-new",
+    "accent": "montserrat"
+  },
+  "textStyles": {
+    "pageTitle": { "font": "font:body", "size": { "pc": 32, "sp": 22.4 }, "lineHeight": 1.7, "color": "theme:text" },
+    "heading": { "font": "font:body", "size": { "pc": 28.8, "sp": 25.6 }, "lineHeight": 1.4, "color": "theme:text" },
+    "subheading": { "font": "font:body", "size": { "pc": 19.2, "sp": 19.2 }, "lineHeight": 1.6, "color": "theme:text" },
+    "body": { "font": "font:body", "size": { "pc": 16, "sp": 16 }, "lineHeight": 1.8, "color": "theme:text" },
+    "caption": { "font": "font:body", "size": { "pc": 14.4, "sp": 14.4 }, "lineHeight": 1.5, "color": "theme:textMuted" }
+  }
+}
