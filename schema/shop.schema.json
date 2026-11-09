@@ -29,6 +29,10 @@
       "type": "boolean",
       "description": "架空のサンプルのお店だけ true。素材サイトの写真（origin.kind=stock）を実物の枠（外観・品・人など）に使えるのは、このお店だけ。実在のお店では実物と誤解させないため使えない"
     },
+    "salesDraft": {
+      "type": "boolean",
+      "description": "営業用の見本（公開しない）のお店だけ true。実在のお店でも素材サイトの写真（origin.kind=stock）を実物の枠に使える（検査は「公開前に実物の写真へ差し替え」の警告になる）。この印があるお店は、公開用の書き出し（publish）がエラーになり本番に出せない。公開するときは実物の写真に差し替えて、この印を外す"
+    },
     "basic": {
       "type": "object",
       "required": [

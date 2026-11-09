@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "shopId": "shp_rian",
+  "salesDraft": true,
   "updatedAt": "2026-11-09T15:16:00+09:00",
   "basic": {
     "name": "炭火焼肉 李杏",

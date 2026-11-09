@@ -55,6 +55,7 @@ function documentHtml({ head, body }) {
  */
 export function buildBundle(input) {
   const shop = input.shop || {}; const assets = input.assets || {};
+  if (shop.salesDraft === true) throw new Error("営業用の見本（salesDraft）は公開できません。実物の写真に差し替えて、salesDraft を外してください");
   const origin = String(input.origin || "").replace(/\/+$/, "");
   const date = input.date || jstDate(new Date()).date;
   const warnings = [];
