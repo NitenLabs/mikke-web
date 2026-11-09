@@ -1,0 +1,538 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_rian",
+  "updatedAt": "2026-11-09T15:16:00+09:00",
+  "basic": {
+    "name": "炭火焼肉 李杏",
+    "nameKana": "すみびやきにく りあん",
+    "genre": {
+      "template": "restaurant",
+      "detail": "焼肉"
+    }
+  },
+  "location": {
+    "postalCode": "659-0091",
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "東山町",
+    "street": "2-6",
+    "access": {
+      "acc_jrashiya": {
+        "station": "JR芦屋駅",
+        "method": "walk",
+        "order": 1
+      },
+      "acc_hkashiya": {
+        "station": "阪急芦屋川駅",
+        "method": "walk",
+        "minutes": 12,
+        "order": 2
+      },
+      "acc_hsuchide": {
+        "station": "阪神打出駅",
+        "method": "walk",
+        "minutes": 15,
+        "order": 3
+      }
+    },
+    "parking": {
+      "status": "no"
+    }
+  },
+  "hours": {
+    "weekly": {
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "17:00",
+            "end": "23:00"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-38-8549",
+      "digits": "0797388549"
+    }
+  },
+  "reservation": {
+    "note": "ご予約を承っています"
+  },
+  "payment": {
+    "cards": [
+      "jcb",
+      "amex",
+      "diners"
+    ],
+    "eMoney": [],
+    "qr": []
+  },
+  "facilities": {
+    "seats": {
+      "total": 42,
+      "privateRooms": 0
+    },
+    "smoking": "none",
+    "note": "貸切はできません"
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1
+      }
+    },
+    "categories": {
+      "cat_drink": {
+        "menuId": "mnu_main",
+        "name": "お飲み物",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_sapporo": {
+        "name": "サッポロ黒ラベル",
+        "prices": [
+          {
+            "id": "prc_sapporo",
+            "type": "fixed",
+            "amount": 550
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_sapporos": {
+        "name": "サッポロ黒ラベル小",
+        "prices": [
+          {
+            "id": "prc_sapporos",
+            "type": "fixed",
+            "amount": 480
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_lemon": {
+        "name": "レモン",
+        "prices": [
+          {
+            "id": "prc_lemon",
+            "type": "fixed",
+            "amount": 480
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_sapporo": {
+        "itemId": "itm_sapporo",
+        "menuId": "mnu_main",
+        "categoryId": "cat_drink",
+        "order": 1
+      },
+      "plc_sapporos": {
+        "itemId": "itm_sapporos",
+        "menuId": "mnu_main",
+        "categoryId": "cat_drink",
+        "order": 2
+      },
+      "plc_lemon": {
+        "itemId": "itm_lemon",
+        "menuId": "mnu_main",
+        "categoryId": "cat_drink",
+        "order": 3
+      }
+    }
+  },
+  "review": {
+    "/basic/name": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "炭火焼肉 李杏",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "炭火焼肉 李杏",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://r.gnavi.co.jp/g2173f4r0000/",
+          "value": "炭火焼肉 李杏",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/basic/nameKana": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "すみびやきにく りあん",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "りあん",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/location/postalCode": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://r.gnavi.co.jp/g2173f4r0000/",
+          "value": "659-0091",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/location/street": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "兵庫県芦屋市東山町2-6",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "兵庫県芦屋市東山町2-6",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://r.gnavi.co.jp/g2173f4r0000/",
+          "value": "兵庫県芦屋市東山町2-6",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/contact/phone": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "0797-38-8549",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "0797-38-8549",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://r.gnavi.co.jp/g2173f4r0000/",
+          "value": "0797-38-8549",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/location/parking": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "無",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/reservation/note": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "予約可",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/facilities/seats/total": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "42席",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "42席",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/facilities/seats/privateRooms": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "無",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/facilities/smoking": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "全席禁煙",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/facilities/note": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "貸切不可",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/payment/eMoney": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "電子マネー不可",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/payment/qr": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "QRコード決済不可",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/location/access/acc_hkashiya/minutes": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "阪急芦屋川駅 徒歩12分（960m）",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/location/access/acc_hsuchide/minutes": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "阪神打出駅 徒歩15分（1.2km）",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/catalog/items/itm_sapporo": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "550円（税込）。2024-02-27 更新の情報",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/catalog/items/itm_sapporos": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "480円（税込）。2024-02-27 更新の情報",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/catalog/items/itm_lemon": {
+      "status": "pending",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "480円（税込）。品名は掲載のまま。2024-02-27 更新の情報",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/hours/weekly": {
+      "status": "conflict",
+      "question": "月曜は定休ですか。閉店は23時と24時のどちらですか。ラストオーダーは22時で合っていますか（月曜は未記入）。",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "月〜日 17:00-23:00、定休日の記載なし（店舗情報の編集 2026-02-16）",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/dtlmap/",
+          "value": "17:00-23:00、定休日の記載なし",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://hitosara.com/0031083568/tel.html",
+          "value": "月〜日 17:00-23:00、定休日の記載なし",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "火〜日・祝 17:00-23:00 L.O.22:00、毎週月曜定休（2024-02-27 更新）",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://ashiyashi.com/yakiniku-rian/",
+          "value": "17:00-24:00、定休日 月（2026-04 の記事）",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/location/access/acc_jrashiya": {
+      "status": "conflict",
+      "question": "JR芦屋駅からは徒歩何分ですか（掲載は8分と10分。分は未記入）。",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": "徒歩8分（630m）",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://r.gnavi.co.jp/g2173f4r0000/",
+          "value": "北口 徒歩10分",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": "芦屋駅（JR）から605m",
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    },
+    "/payment/cards": {
+      "status": "conflict",
+      "question": "VISA と Mastercard は使えますか（本文は両方の掲載が一致する3種だけ）。",
+      "sources": [
+        {
+          "kind": "reviewSite",
+          "url": "https://tabelog.com/hyogo/A2803/A280302/28022584/",
+          "value": [
+            "jcb",
+            "amex",
+            "diners"
+          ],
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        },
+        {
+          "kind": "reviewSite",
+          "url": "https://retty.me/area/PRE28/ARE103/SUB10302/100001129312/",
+          "value": [
+            "visa",
+            "mastercard",
+            "amex",
+            "diners",
+            "jcb"
+          ],
+          "fetchedAt": "2026-11-09T15:16:00+09:00"
+        }
+      ]
+    }
+  }
+}
