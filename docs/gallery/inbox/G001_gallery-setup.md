@@ -30,6 +30,9 @@
 - 取り消せない操作はしない。Cloudflare への配置はしない
 - 検査を通して rebase し、`git push origin HEAD:main`
 
+## 終わったら
+- `docs/gallery/inbox/README.md` の受け方で、次の指示（G002・G003）を受ける（自分のレーンの受信箱に実在のお店の指示が無いとき）
+
 ## 報告に書くこと
 - どのレーンで受けたか、コミット番号
 - 架空の印の項目名と、どこを直したか（schema・DATA_SPEC・validate・共通の部品）
