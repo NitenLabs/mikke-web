@@ -142,7 +142,7 @@ for (const [dev, vp] of Object.entries(VIEWPORTS)) {
   const SEG = 1400;
   for (let i = 0, y = 0; y < docH; i++, y += SEG) {
     const h = Math.min(SEG, docH - y);
-    await page.screenshot({ path: path.join(out, `${dev}-${String(i + 1).padStart(2, "0")}.jpg`), clip: { x: 0, y, width: vp.width, height: h }, type: "jpeg", quality: 78 });
+    await page.screenshot({ path: path.join(out, `${dev}-${String(i + 1).padStart(2, "0")}.jpg`), fullPage: true, clip: { x: 0, y, width: vp.width, height: h }, type: "jpeg", quality: 78, timeout: 180000 });
   }
   console.log(`${dev}: docH=${docH}, 文字/写真${collected.elements.length}件, 面${collected.surfaces.length}件, 切り抜き${Math.ceil(docH / SEG)}枚`);
   await ctx.close();
