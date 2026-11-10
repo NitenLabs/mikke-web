@@ -1,0 +1,278 @@
+{
+  "name": "Restaurant Lueur",
+  "nameKana": "れすとらん りゅうーる",
+  "shortName": "Lueur",
+  "subName": "RESTAURANT",
+  "genreDetail": "フレンチ",
+  "town": "山芦屋町",
+  "geo": {
+    "lat": 34.7405,
+    "lng": 135.2965
+  },
+  "phone": {
+    "display": "0797-00-0000",
+    "digits": "0797000000"
+  },
+  "closedDay": "mon",
+  "closedRules": [
+    {
+      "type": "nthWeekday",
+      "weekday": "tue",
+      "nth": [
+        2
+      ]
+    }
+  ],
+  "periods": [
+    {
+      "start": "12:00",
+      "end": "15:00",
+      "lastOrder": "13:00"
+    },
+    {
+      "start": "18:00",
+      "end": "22:00",
+      "lastOrder": "19:30"
+    }
+  ],
+  "labels": {
+    "about": "店のこと",
+    "course": "コースの流れ",
+    "plates": "お料理",
+    "menu": "お品書き",
+    "info": "ご案内",
+    "menuButton": "メニュー",
+    "reserveButton": "ご予約"
+  },
+  "fv": {
+    "en": "Restaurant Française ─ Ashiya",
+    "h1Hidden": "Restaurant ",
+    "catchCopyLines": [
+      "六甲の麓で、",
+      "季節を一皿に。"
+    ],
+    "facts": [
+      "兵庫県芦屋市山芦屋町",
+      "昼 12:00〜15:00　夜 18:00〜22:00",
+      "月曜日・第2火曜日 定休"
+    ],
+    "caption": "Plat du jour"
+  },
+  "about": {
+    "en": "Philosophie",
+    "lead": "土地の恵みを、フランス料理の技で。",
+    "sub": "From the fields and shores of Hyogo",
+    "texts": [
+      "兵庫の生産者を訪ね、届いた食材から献立を考えます。淡路の玉ねぎ、丹波の栗、明石の魚。畑や港で聞いた話も、料理の手がかりにしています。",
+      "昼は光の入るダイニングで、夜は静かな灯りのもとで。白いクロスのテーブル席と、個室を一室ご用意しています。",
+      "ワインは料理に合わせてお選びし、お酒を召し上がらない方にはノンアルコールのペアリングもございます。記念日のご利用も承ります。お祝いのご希望は、ご予約の際にお知らせください。"
+    ]
+  },
+  "course": {
+    "en": "Le Déroulé",
+    "heading": "コースの流れ",
+    "body": "五つの皿を、この順にお出しします。昼の四皿のコースでは、魚料理か肉料理のどちらかをお選びください。",
+    "note": "皿の内容は、その日の仕入れで替わります。",
+    "rows": [
+      {
+        "num": "I",
+        "en": "Amuse",
+        "kind": "季節のひと口",
+        "text": "最初に、指でつまめる小さな品をいくつか。"
+      },
+      {
+        "num": "II",
+        "en": "Entrée",
+        "kind": "前菜",
+        "text": "フォアグラのテリーヌに、焼きたてのブリオッシュを添えて。"
+      },
+      {
+        "num": "III",
+        "en": "Poisson",
+        "kind": "魚料理",
+        "text": "明石の白身魚をポワレに。仕上げに、温かいソースを卓でかけます。"
+      },
+      {
+        "num": "IV",
+        "en": "Viande",
+        "kind": "肉料理",
+        "text": "鴨の胸肉をロゼに焼き上げ、柑橘のピュレと。"
+      },
+      {
+        "num": "V",
+        "en": "Dessert",
+        "kind": "デザート",
+        "text": "ピスタチオのシューに、軽いアイスクリームを。"
+      }
+    ]
+  },
+  "plates": {
+    "en": "Les Assiettes",
+    "lead": "ある日のコースから。",
+    "sub": "Entrée, Poisson, Viande, Dessert",
+    "note": "器と盛りつけは、季節ごとに改めます。",
+    "items": [
+      {
+        "photo": "pl1",
+        "en": "Entrée",
+        "name": "フォアグラのテリーヌとブリオッシュ"
+      },
+      {
+        "photo": "pl2",
+        "en": "Poisson",
+        "name": "白身魚のポワレ"
+      },
+      {
+        "photo": "pl3",
+        "en": "Viande",
+        "name": "鴨の胸肉のロースト"
+      },
+      {
+        "photo": "pl4",
+        "en": "Dessert",
+        "name": "ピスタチオのシュー"
+      }
+    ]
+  },
+  "menu": {
+    "en": "Menu",
+    "lead": "お品書き",
+    "sub": "Déjeuner & Dîner",
+    "heading": "お品書き",
+    "groups": [
+      {
+        "id": "dejeuner",
+        "en": "Déjeuner",
+        "name": "昼",
+        "sub": "12:00〜15:00（L.O. 13:00）",
+        "rows": [
+          {
+            "id": "dej4",
+            "name": "四皿のコース",
+            "desc": "Amuse・Entrée・魚料理か肉料理・Dessert",
+            "price": 6600
+          },
+          {
+            "id": "dej5",
+            "name": "五皿のコース",
+            "desc": "Amuse・Entrée・Poisson・Viande・Dessert",
+            "price": 9900
+          }
+        ]
+      },
+      {
+        "id": "diner",
+        "en": "Dîner",
+        "name": "夜",
+        "sub": "18:00〜22:00（L.O. 19:30）",
+        "rows": [
+          {
+            "id": "din5",
+            "name": "五皿のコース",
+            "desc": "Amuse から Dessert まで、食後の小菓子つき",
+            "price": 13200
+          },
+          {
+            "id": "din7",
+            "name": "七皿のコース",
+            "desc": "五皿に、スープと口直しを加えて",
+            "price": 19800
+          }
+        ]
+      }
+    ],
+    "pairing": {
+      "id": "pairing",
+      "en": "Accords",
+      "name": "ペアリング",
+      "rows": [
+        {
+          "id": "wine",
+          "name": "ワインペアリング",
+          "desc": "皿ごとに、グラスで。",
+          "price": 7700
+        },
+        {
+          "id": "nonalc",
+          "name": "ノンアルコールペアリング",
+          "desc": "果実やハーブ、お茶を使った飲みもので。",
+          "price": 4400
+        }
+      ]
+    },
+    "note": "価格はすべて税込です。夜のみ、別にサービス料10%を頂戴します。"
+  },
+  "info": {
+    "en": "Information",
+    "heading": "ご案内",
+    "rows": [
+      [
+        "所在地",
+        "$address"
+      ],
+      [
+        "お電話",
+        "$phone"
+      ],
+      [
+        "営業時間",
+        [
+          "昼 12:00〜15:00（L.O. 13:00）",
+          "夜 18:00〜22:00（L.O. 19:30）"
+        ]
+      ],
+      [
+        "定休日",
+        "月曜日・第2火曜日"
+      ],
+      [
+        "お席",
+        "テーブル16席・個室1室"
+      ]
+    ]
+  },
+  "reserve": {
+    "en": "Réservation",
+    "text": "ご予約は、お電話で承ります。",
+    "button": "電話をかける"
+  },
+  "footerHours": [
+    "昼 12:00〜15:00（L.O. 13:00）",
+    "夜 18:00〜22:00（L.O. 19:30）",
+    "定休日 月曜日・第2火曜日"
+  ],
+  "photos": {
+    "fv": [
+      "signature",
+      "白い皿に盛った焼いた肉とヘーゼルナッツ、青菜"
+    ],
+    "ab1": [
+      "interior",
+      "窓の光が落ちた、白いクロスの卓とグラス"
+    ],
+    "ab2": [
+      "other",
+      "白ワインを注いだグラス"
+    ],
+    "ab3": [
+      "work",
+      "ピンセットで皿に葉を盛りつける料理人の手元"
+    ],
+    "pl1": [
+      "signature",
+      "フォアグラのテリーヌとブリオッシュ"
+    ],
+    "pl2": [
+      "signature",
+      "白身魚のポワレにソースを注ぐところ"
+    ],
+    "pl3": [
+      "signature",
+      "鴨の胸肉のロースト、柑橘のピュレ添え"
+    ],
+    "pl4": [
+      "signature",
+      "ピスタチオのシューとアイスクリーム"
+    ]
+  }
+}

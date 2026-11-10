@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_lueur",
+  "updatedAt": "2026-11-10T12:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "Restaurant Lueur",
+    "nameKana": "れすとらん りゅうーる",
+    "genre": {
+      "template": "restaurant",
+      "detail": "フレンチ"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "山芦屋町",
+    "geo": {
+      "lat": 34.7405,
+      "lng": 135.2965
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "closed"
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "15:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "18:00",
+            "end": "22:00",
+            "lastOrder": "19:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "15:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "18:00",
+            "end": "22:00",
+            "lastOrder": "19:30"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "15:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "18:00",
+            "end": "22:00",
+            "lastOrder": "19:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "15:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "18:00",
+            "end": "22:00",
+            "lastOrder": "19:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "15:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "18:00",
+            "end": "22:00",
+            "lastOrder": "19:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "12:00",
+            "end": "15:00",
+            "lastOrder": "13:00"
+          },
+          {
+            "start": "18:00",
+            "end": "22:00",
+            "lastOrder": "19:30"
+          }
+        ]
+      }
+    },
+    "closedRules": [
+      {
+        "type": "nthWeekday",
+        "weekday": "tue",
+        "nth": [
+          2
+        ]
+      }
+    ]
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "お品書き"
+      }
+    },
+    "categories": {
+      "cat_dejeuner": {
+        "menuId": "mnu_main",
+        "name": "昼",
+        "order": 1
+      },
+      "cat_diner": {
+        "menuId": "mnu_main",
+        "name": "夜",
+        "order": 2
+      },
+      "cat_pairing": {
+        "menuId": "mnu_main",
+        "name": "ペアリング",
+        "order": 3
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_dej4": {
+        "name": "四皿のコース",
+        "description": "Amuse・Entrée・魚料理か肉料理・Dessert",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_dej4",
+            "type": "fixed",
+            "amount": 6600
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_dej5": {
+        "name": "五皿のコース",
+        "description": "Amuse・Entrée・Poisson・Viande・Dessert",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_dej5",
+            "type": "fixed",
+            "amount": 9900
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_din5": {
+        "name": "五皿のコース",
+        "description": "Amuse から Dessert まで、食後の小菓子つき",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_din5",
+            "type": "fixed",
+            "amount": 13200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_din7": {
+        "name": "七皿のコース",
+        "description": "五皿に、スープと口直しを加えて",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_din7",
+            "type": "fixed",
+            "amount": 19800
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_wine": {
+        "name": "ワインペアリング",
+        "description": "皿ごとに、グラスで。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_wine",
+            "type": "fixed",
+            "amount": 7700
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_nonalc": {
+        "name": "ノンアルコールペアリング",
+        "description": "果実やハーブ、お茶を使った飲みもので。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_nonalc",
+            "type": "fixed",
+            "amount": 4400
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      }
+    },
+    "placements": {
+      "plc_dej4": {
+        "itemId": "itm_dej4",
+        "categoryId": "cat_dejeuner",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_dej5": {
+        "itemId": "itm_dej5",
+        "categoryId": "cat_dejeuner",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_din5": {
+        "itemId": "itm_din5",
+        "categoryId": "cat_diner",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_din7": {
+        "itemId": "itm_din7",
+        "categoryId": "cat_diner",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_wine": {
+        "itemId": "itm_wine",
+        "categoryId": "cat_pairing",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_nonalc": {
+        "itemId": "itm_nonalc",
+        "categoryId": "cat_pairing",
+        "order": 2,
+        "menuId": "mnu_main"
+      }
+    }
+  }
+}

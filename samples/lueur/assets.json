@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_phfv": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfv.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1600,
+        "bytes": 146264,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/gVvSNWuw6kQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "白い皿に盛った焼いた肉とヘーゼルナッツ、青菜"
+    },
+    "ast_phab1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab1.webp",
+        "mime": "image/webp",
+        "width": 1120,
+        "height": 747,
+        "bytes": 87628,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/gVkAiPchYhY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "窓の光が落ちた、白いクロスの卓とグラス"
+    },
+    "ast_phab2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab2.webp",
+        "mime": "image/webp",
+        "width": 840,
+        "height": 560,
+        "bytes": 42454,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/saw2ahar17s"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "白ワインを注いだグラス"
+    },
+    "ast_phab3": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab3.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1090,
+        "bytes": 79292,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Bq44jpoeFf4"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "work",
+      "alt": "ピンセットで皿に葉を盛りつける料理人の手元"
+    },
+    "ast_phpl1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phpl1.webp",
+        "mime": "image/webp",
+        "width": 920,
+        "height": 1210,
+        "bytes": 127570,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/1cc0iUASg2I"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "フォアグラのテリーヌとブリオッシュ"
+    },
+    "ast_phpl2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phpl2.webp",
+        "mime": "image/webp",
+        "width": 920,
+        "height": 920,
+        "bytes": 49052,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/RAUGKcReU8A"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "白身魚のポワレにソースを注ぐところ"
+    },
+    "ast_phpl3": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phpl3.webp",
+        "mime": "image/webp",
+        "width": 920,
+        "height": 1150,
+        "bytes": 60400,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/yXX10Yaokhg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "鴨の胸肉のロースト、柑橘のピュレ添え"
+    },
+    "ast_phpl4": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phpl4.webp",
+        "mime": "image/webp",
+        "width": 920,
+        "height": 920,
+        "bytes": 52210,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/hKL4xUCymVM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ピスタチオのシューとアイスクリーム"
+    }
+  }
+}
