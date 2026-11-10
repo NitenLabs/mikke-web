@@ -3,7 +3,7 @@
 import { computeSectionBackgrounds } from "./sections.mjs";
 import { repeaterLayout, designWidth, esc, rem, pct, boxWidthPx, ratioHeightPx } from "./render.mjs";
 import {
-  makeLinkResolver, makePageHref, layoutSection, elementHtml, repeaterHtml, elementCss, mq, elToReflow,
+  makeLinkResolver, makePageHref, layoutSection, elementHtml, repeaterHtml, elementCss, mq, elToReflow, editAttr,
 } from "./emit.mjs";
 import { colorCss, themeRootVars, textStyle } from "./theme.mjs";
 import { googleFontsUrl } from "./fonts.mjs";
@@ -259,12 +259,12 @@ function renderSectionHtml(secId, site, resolved, linkResolver, readingOrder) {
     const bp = secDef.background.photo;
     const src = `${resolved.assetPrefix}assets/${resolved.assetFiles?.[bp.asset] || `${bp.asset}.svg`}`;
     const dk = bp.darken ? `<div class="darken" style="opacity:${bp.darken / 100}"></div>` : "";
-    bgPhoto = `<div class="bleed sec-bg"><img src="${src}" alt="">${dk}</div>`;
+    bgPhoto = `<div class="bleed sec-bg"${editAttr([bp.asset && `photo:${bp.asset}`])}><img src="${src}" alt="">${dk}</div>`;
   }
   const bleedHtml = bleed.map((el) => bleedPhotoHtml(el, resolved)).join("");
   const boxHtml = inBox.map((el) => (el.type === "repeater" ? repeaterHtml(el, resolved, linkResolver) : elementHtml(el, resolved, linkResolver))).join("");
   const idAttr = secDef.anchor ? ` id="${secDef.anchor}"` : "";
-  return `<section${idAttr} data-sec="${secId}" class="sec">${bgPhoto}${bleedHtml}<div class="cbox">${boxHtml}</div></section>`;
+  return `<section${idAttr} data-sec="${secId}" class="sec"${editAttr([`sec:${secId}`])}>${bgPhoto}${bleedHtml}<div class="cbox">${boxHtml}</div></section>`;
 }
 
 function bleedPhotoHtml(el, resolved) {
@@ -276,7 +276,8 @@ function bleedPhotoHtml(el, resolved) {
   const dk = p.darken ? `<div class="darken" style="opacity:${p.darken / 100}"></div>` : "";
   // fullBleed は端末で切り替わることがある（PC=全面／SP=cbox内）→ ここは両端末とも全面として置き、
   // SP で全面でない場合は elementCss 側で cbox 幅に収める。サンプルは PC 全面・SP は w100%=全幅で同じ見え方。
-  return `<div data-el="${el.id}" class="bleed" style="${p.radius ? `border-radius:${p.radius}%;overflow:hidden;` : ""}"><img src="${src}" alt="${alt}" style="${crop}">${dk}</div>`;
+  const ed = editAttr(resolved.site.elements?.[el.id]?.edit === false ? [] : [p.asset && `photo:${p.asset}`]);
+  return `<div data-el="${el.id}" class="bleed" style="${p.radius ? `border-radius:${p.radius}%;overflow:hidden;` : ""}"${ed}><img src="${src}" alt="${alt}" style="${crop}">${dk}</div>`;
 }
 
 // ページ全体を描画。resolved は resolveSite + heights を持つ。

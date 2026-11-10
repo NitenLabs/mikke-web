@@ -402,6 +402,10 @@
         "locked": {
           "type": "boolean"
         },
+        "edit": {
+          "type": "boolean",
+          "description": "店主が直せる所の印（書き出しの data-edit）を付けるか。省略は true。飾りの文字などは false（DATA_SPEC 4.12）"
+        },
         "onlySample": {
           "type": "boolean",
           "description": "見本の店（shop.isSample=true）のときだけ出す要素。実在の店では描かない（fix05 §5：見本の断り書き）"

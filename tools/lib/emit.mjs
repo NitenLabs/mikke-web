@@ -30,6 +30,49 @@ function mhAttr(resolved, keyPc, keySp) {
   return `${pc != null ? ` data-mh-pc="${pc}"` : ""}${sp != null ? ` data-mh-sp="${sp}"` : ""}`;
 }
 
+// ---------- 店主が直せる所の印（data-edit。DATA_SPEC 4.12） ----------
+// 要素のデータ（bind・要素ID・素材ID・menuId）から自動で決める。edit:false の要素には付けない。
+// 属性はタグの最後に足す（finish の data-el="x"[^>]* の置き換えを壊さない）。
+export function editAttr(tokens) {
+  const t = [...new Set((tokens || []).filter(Boolean))];
+  return t.length ? ` data-edit="${esc(t.join(" "))}"` : "";
+}
+const noEdit = (def) => def?.edit === false;
+// 文字の要素の定義（paragraphs）にある連動（bind）を集める
+function textBinds(def) {
+  const out = [];
+  for (const p of def?.paragraphs || []) for (const r of p.runs || []) if (r.bind) out.push(r.bind);
+  return out;
+}
+// 置いた文字の箱：① と連動していれば shop:<path>、自由な文字だけなら text:<要素ID>
+function textEditTokens(id, def) {
+  if (!def || noEdit(def)) return [];
+  const binds = textBinds(def).filter((b) => b.scope === "shop");
+  if (binds.length) return binds.map((b) => `shop:${b.path}`);
+  return textBinds(def).length ? [] : [`text:${id}`];
+}
+// 繰り返す部品の1件（カード）の印。品は品ID（placement の itemId）、よくある質問・人はその ID
+function itemTarget(it) {
+  if (it.scope === "item") return `item:${it.placement?.itemId ?? it.id}`;
+  if (it.scope === "faq") return `faq:${it.id}`;
+  if (it.scope === "person") return `person:${it.id}`;
+  return "";
+}
+// カードの中の連動している文字（scope=item/faq/person）→ 直す先
+function itemBindTokens(def, it) {
+  if (!def || noEdit(def) || !it) return [];
+  return textBinds(def).filter((b) => b.scope !== "shop").map((b) => {
+    const p = b.path || "";
+    if (it.scope === "item" && p.startsWith("/category/")) return `category:${it.categoryId}${p.slice("/category".length)}`;
+    if (it.scope === "item" && p.startsWith("/menu/")) return `menu:${it.placement?.menuId}${p.slice("/menu".length)}`;
+    return `${itemTarget(it)}${p}`;
+  });
+}
+function listToken(source) {
+  if (!source) return "";
+  return source.kind === "catalog" ? `list:catalog:${source.menuId}` : `list:${source.kind}`;
+}
+
 // ---------- リンクの解決 ----------
 function makeLinkResolver(shop, site, page, pageHref) {
   const svc = shop.externalServices || {};
@@ -126,13 +169,14 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
     const mh = mhAttr(resolved, `t:pc:${el.id}`, `t:sp:${el.id}`);
     const rowCls = el.style?.rowLines ? " row-table" : "";
     const cls = `el el-text${lbCls(el.style, el.box, el.role, resolved.site)}${rowCls}`;
+    const ed = editAttr(textEditTokens(el.id, resolved.site.elements?.[el.id]));
     if (boxLink) {
       const attrs = linkAttrs(boxLink);
       // data-el を先頭の属性にしない：finish の「<タグ data-el=…> の中身を <a> で包む」回避の置き換えに当たらないようにする（当たると <a> が入れ子になる）
-      if (/^h[1-6]$/.test(tag)) return `<${tag} class="${cls}" data-el="${el.id}"${mh}><a class="el-link"${attrs}>${inner}</a></${tag}>`; // 見出しは見出しのまま、中に <a>
-      return `<a${attrs} data-el="${el.id}" class="${cls}"${mh}>${inner}</a>`;
+      if (/^h[1-6]$/.test(tag)) return `<${tag} class="${cls}" data-el="${el.id}"${mh}${ed}><a class="el-link"${attrs}>${inner}</a></${tag}>`; // 見出しは見出しのまま、中に <a>
+      return `<a${attrs} data-el="${el.id}" class="${cls}"${mh}${ed}>${inner}</a>`;
     }
-    return `<${tag} data-el="${el.id}" class="${cls}"${mh}>${inner}</${tag}>`;
+    return `<${tag} data-el="${el.id}" class="${cls}"${mh}${ed}>${inner}</${tag}>`;
   }
   if (el.type === "photo") return photoHtml(el, resolved);
   if (el.type === "shape") {
@@ -183,7 +227,8 @@ function photoHtml(el, resolved) {
   const src = assetSrc(resolved, p.asset);
   const darken = p.darken ? `<div class="darken" style="opacity:${p.darken / 100}"></div>` : "";
   const radius = p.radius ? `border-radius:${p.radius}%;` : "";
-  return `<div data-el="${el.id}" class="el el-photo" style="${radius}"><img src="${src}" alt="${alt}" style="${crop}">${darken}</div>`;
+  const ed = editAttr(noEdit(resolved.site.elements?.[el.id]) ? [] : [p.asset && `photo:${p.asset}`]);
+  return `<div data-el="${el.id}" class="el el-photo" style="${radius}"${ed}><img src="${src}" alt="${alt}" style="${crop}">${darken}</div>`;
 }
 
 // セクションに表示される中身（飾りでない）があるか。空ならナビからも消す。
@@ -240,12 +285,15 @@ function repeaterHtml(el, resolved, linkResolver) {
     const qCe = rp.card.elements[qCid], aCe = rp.card.elements[aCid];
     const qStyle = qCe.style, aStyle = aCe.style;
     const qLb = lbEnabled(qStyle, qCe.layout, resolved.site), aLb = lbEnabled(aStyle, aCe.layout, resolved.site);
+    const off = noEdit(resolved.site.elements?.[el.id]);
     const parts = rp.items.map((it) => {
       const q = paragraphsHtml(it.cels[qCid], qStyle, { lb: qLb, lbKey: `c:${el.id}:${it.id}:${qCid}`, keep: resolved.lineBreakKeep });
       const a = paragraphsHtml(it.cels[aCid], aStyle, { linkResolver: (l) => linkResolver(l), lb: aLb, lbKey: `c:${el.id}:${it.id}:${aCid}`, keep: resolved.lineBreakKeep });
-      return `<details class="acc-item"><summary><span class="acc-q${qLb ? " lb" : ""}">${q}</span></summary><div class="acc-a${aLb ? " lb" : ""}">${a}</div></details>`;
+      const edI = off ? "" : editAttr([itemTarget(it)]);
+      const edQ = off ? "" : editAttr(itemBindTokens(qCe, it)), edA = off ? "" : editAttr(itemBindTokens(aCe, it));
+      return `<details class="acc-item"${edI}><summary><span class="acc-q${qLb ? " lb" : ""}"${edQ}>${q}</span></summary><div class="acc-a${aLb ? " lb" : ""}"${edA}>${a}</div></details>`;
     }).join("");
-    return `<div data-el="${el.id}" class="el el-rep el-acc">${parts}</div>`;
+    return `<div data-el="${el.id}" class="el el-rep el-acc"${off ? "" : editAttr([listToken(rp.source)])}>${parts}</div>`;
   }
   // カード・見出しの並びは PC のレイアウト順（読む順）に合わせる
   const layPc = resolved.repLayouts[`${el.id}:pc`];
@@ -259,18 +307,21 @@ function repeaterHtml(el, resolved, linkResolver) {
       const rt = resolveText(gh, { item: it.view }, { refYear: resolved.refDate.year });
       const mh = mhAttr(resolved, `g:pc:${el.id}:${pl.catId}`, `g:sp:${el.id}:${pl.catId}`);
       const ghLb = lbEnabled(gh.style, gh.layout, resolved.site);
-      parts.push(`<${tag} data-head="${pl.catId}" class="rep-head el-text${lbCls(gh.style, gh.layout, gh.role, resolved.site)}"${mh}>${paragraphsHtml(rt, gh.style, { lb: ghLb, lbKey: `g:${el.id}:${pl.catId}`, keep: resolved.lineBreakKeep })}</${tag}>`);
+      const edH = noEdit(resolved.site.elements?.[el.id]) ? "" : editAttr(itemBindTokens(gh, it));
+      parts.push(`<${tag} data-head="${pl.catId}" class="rep-head el-text${lbCls(gh.style, gh.layout, gh.role, resolved.site)}"${mh}${edH}>${paragraphsHtml(rt, gh.style, { lb: ghLb, lbKey: `g:${el.id}:${pl.catId}`, keep: resolved.lineBreakKeep })}</${tag}>`);
     } else {
       const it = rp.items.find((x) => x.id === pl.id);
       parts.push(cardHtml(el, it, resolved, linkResolver));
     }
   }
-  return `<div data-el="${el.id}" class="el el-rep">${parts.join("")}</div>`;
+  const edL = noEdit(resolved.site.elements?.[el.id]) ? "" : editAttr([listToken(rp.source)]);
+  return `<div data-el="${el.id}" class="el el-rep"${edL}>${parts.join("")}</div>`;
 }
 
 function cardHtml(el, it, resolved, linkResolver) {
   const rp = el.repeater;
   const cardEls = rp.card.elements;
+  const off = noEdit(resolved.site.elements?.[el.id]); // 繰り返す部品ごと edit:false なら中も付けない
   // カード内の要素を z 順（＝DOM順は読む順で top 順）に
   const entries = Object.entries(cardEls);
   const inner = entries.map(([cid, ce]) => {
@@ -280,7 +331,8 @@ function cardHtml(el, it, resolved, linkResolver) {
       const tag = ROLE_TAG[ce.role] || "div";
       const mh = mhAttr(resolved, `c:pc:${el.id}:${it.id}:${cid}`, `c:sp:${el.id}:${it.id}:${cid}`);
       const lb = lbEnabled(ce.style, ce.layout, resolved.site);
-      return `<${tag} data-cel="${cid}" class="el el-text${lbCls(ce.style, ce.layout, ce.role, resolved.site)}"${mh}>${paragraphsHtml(rt, ce.style, { linkResolver: (l) => linkResolver(l, it), lb, lbKey: `c:${el.id}:${it.id}:${cid}`, keep: resolved.lineBreakKeep })}</${tag}>`;
+      const ed = off ? "" : editAttr(itemBindTokens(ce, it));
+      return `<${tag} data-cel="${cid}" class="el el-text${lbCls(ce.style, ce.layout, ce.role, resolved.site)}"${mh}${ed}>${paragraphsHtml(rt, ce.style, { linkResolver: (l) => linkResolver(l, it), lb, lbKey: `c:${el.id}:${it.id}:${cid}`, keep: resolved.lineBreakKeep })}</${tag}>`;
     }
     if (ce.type === "photo") {
       if (!it.hasPhoto) return "";
@@ -288,14 +340,15 @@ function cardHtml(el, it, resolved, linkResolver) {
       const asset = resolved.assets.assets[assetId];
       const src = assetSrc(resolved, assetId);
       const crop = ce.crop ? `object-position:${ce.crop.fx}% ${ce.crop.fy}%;` : "";
-      return `<div data-cel="${cid}" class="el el-photo"><img src="${src}" alt="${esc(asset?.alt || it.item.name)}" style="${crop}"></div>`;
+      const ed = off || noEdit(ce) ? "" : editAttr([`photo:${assetId}`]);
+      return `<div data-cel="${cid}" class="el el-photo"${ed}><img src="${src}" alt="${esc(asset?.alt || it.item.name)}" style="${crop}"></div>`;
     }
     if (ce.type === "shape") {
       return `<div data-cel="${cid}" class="el el-shape el-shape-${ce.kind}"></div>`;
     }
     return "";
   }).join("");
-  return `<div data-card="${it.id}" class="rep-card">${inner}</div>`;
+  return `<div data-card="${it.id}" class="rep-card"${off ? "" : editAttr([itemTarget(it)])}>${inner}</div>`;
 }
 
 // ---------- 要素のCSS（位置＋文字スタイル、端末別） ----------
