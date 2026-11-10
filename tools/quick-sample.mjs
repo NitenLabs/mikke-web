@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // 下見の見本（指示 0041・0041-add）：ギャラリーの架空のお店の書き出し（_preview/<型>/）を型にして、
 // 実のお店の情報（名前・ジャンル・町・住所・電話・営業時間・Instagram）を差し込んだ軽い見本を作る。
-// 使い方：node tools/quick-sample.mjs <入力の json> [--root 型の置き場（既定 C:/Users/sea_p/GitHub/_preview）] [--out 書き出し先の根（既定 --root と同じ）] [--id 12文字]
+// 使い方：node tools/quick-sample.mjs <入力の json> [--root 型の置き場（既定 C:/Users/sea_p/GitHub/_preview）] [--out 書き出し先の根（既定 --root と同じ）] [--id 12文字] [--index 記録の json（既定 <out の親>/_quick/index.json。<out> の中には置けない）]
 //         node tools/quick-sample.mjs --check-map [--root …]   … 型の表（色の組の明暗差・書体・入れ替える段）を全部確かめる
 //   入力：{ "name", "genre", "town", "address", "phone"?, "hours"?, "closed"?, "access"?, "instagram"?, "nameEn"?, "template"? }
-//   出力：<out>/q/<推測できない12文字>/ に index.html と assets/。<out>/q/index.json に記録。標準出力に json（path・template・variation など）
+//   出力：<out>/q/<推測できない12文字>/ に index.html と assets/。<out>/../_quick/index.json に記録（<out> は丸ごと配置されるので、実の店名・住所の入る記録は外に置く）。標準出力に json（path・template・variation など）
 // 型の選び方・揺らぎ・言葉は tools/quick-sample-map.json。共通の道具（build・*-gen・preview-export・gallery-export）は使わず、書き出し済みの HTML を読むだけ。
 // 揺らぎ（色の組・書体の組・段の並び・表紙の写真の切り抜き）は店名＋住所の hash で決まる。同じ店（店名＋住所）は記録の id・型・揺らぎを使い直す。
 // 新しい店は、同じ町・同じジャンルの記録にある型と、直近の型＋揺らぎを避ける。
@@ -79,9 +79,14 @@ const input = JSON.parse(fs.readFileSync(inputPath, "utf8").replace(/^\uFEFF/, "
 // 電話は任意（美容の店は一覧に電話の無い所が多い）。無ければ電話の文とボタンを隠す
 for (const k of ["name", "genre", "town", "address"]) if (!String(input[k] || "").trim()) die(`入力に ${k} がありません`);
 
-// ---- 記録（q/index.json） ----
+// ---- 記録（既定 <out の親>/_quick/index.json） ----
 const qRoot = path.join(OUT_ROOT, "q");
-const IDX = path.join(qRoot, "index.json");
+// 記録には実の店名・住所と全部の id が入る。<out> は丸ごと配置されるので、<out> の中には決して置かない
+const IDX = path.resolve(opt("--index", path.join(path.dirname(path.resolve(OUT_ROOT)), "_quick", "index.json")));
+{
+  const o = path.resolve(OUT_ROOT).toLowerCase(), x = IDX.toLowerCase();
+  if (x === o || x.startsWith(o.endsWith(path.sep) ? o : o + path.sep)) die(`記録 ${IDX} が書き出し先 ${OUT_ROOT} の中にあります（配置すると見えてしまうので、--index で外に置いてください）`, 2);
+}
 const index = fs.existsSync(IDX) ? JSON.parse(fs.readFileSync(IDX, "utf8")) : { entries: [] };
 const norm = (s) => String(s || "").normalize("NFKC").replace(/\s+/g, "").toLowerCase();
 const shopKey = `${norm(input.name)}|${norm(input.address)}`;
@@ -301,7 +306,8 @@ function decide(e) {
   if (t.match(PRICE)) {
     stats.prices++;
     const rest = t.replace(PRICE, "").trim();
-    if (!rest || /^[\s〜~・\/／+＋\-–:：]*$/.test(rest) || rest.length <= 2) return { text: "" };
+    // 値段だけの要素は空にするが、行の高さは残す（流れで並ぶ型＝ichinoshio のスマホなどで、下の行が上に詰まって重なるため）
+    if (!rest || /^[\s〜~・\/／+＋\-–:：]*$/.test(rest) || rest.length <= 2) return { text: "", keepLine: true };
     return { text: rest.replace(/\s{2,}/g, " ") };
   }
   if (latin) {
@@ -342,12 +348,15 @@ function decide(e) {
 // 上から順に決め（「載せます」の数え方・文の使い回しを上から）、後ろから置き換える（位置がずれないように）
 const decisions = els.map((e) => decide(e));
 const hideIds = new Set();
+// 値段を消した要素の高さを残す（ページの中の詰め直し＝correct() が、同じ列の下の要素だけを上へ動かして重ねてしまうため）
+const keepLine = [];
 for (let i = els.length - 1; i >= 0; i--) {
   const e = els[i];
   let d = decisions[i];
   if (d?.hide) { if (e.id) hideIds.add(e.id); stats.hidden++; d = { text: "" }; }
   if (!d) { const sw = applySwaps(e.t); if (sw === e.t) continue; d = { text: sw, nPara: e.nPara }; }
   else d.text = applySwaps(d.text);
+  if (!d.text && d.keepLine && e.id) keepLine.push({ id: e.id, pc: (e.attrs.match(/data-mh-pc="([\d.]+)"/) || [])[1], sp: (e.attrs.match(/data-mh-sp="([\d.]+)"/) || [])[1] });
   let inner = render(d.text, d.nPara || 1);
   const link = e.inner.match(/^(<a\b[^>]*>)[\s\S]*(<\/a>)$/);
   if (link) inner = link[1] + inner + link[2];
@@ -448,6 +457,9 @@ const CSS = `<style>
 .qs-ig a{display:inline-block;padding:2px 12px;background:rgba(255,255,255,.88);color:#2B2926;text-decoration:underline}
 </style>
 ${fontLink}<style data-qs-variation="${vTag}">${varCss}</style>`;
+const keepCss = keepLine.map((k) => [k.pc && `@media (min-width:1025px){[data-el="${k.id}"]{min-height:${+k.pc / 10}rem}}`, k.sp && `@media (max-width:1024.98px){[data-el="${k.id}"]{min-height:${+k.sp / 10}rem}}`].filter(Boolean).join("")).join("");
+if (keepCss) head = head.replace("</head>", `<style>${keepCss}</style>
+</head>`);
 head = head.replace(/<meta charset="utf-8">/, `<meta charset="utf-8">\n<meta name="robots" content="noindex,nofollow">`).replace("</head>", `${CSS}\n</head>`);
 if (!head.includes('content="noindex,nofollow"')) head = head.replace("<head>", `<head>\n<meta name="robots" content="noindex,nofollow">`);
 const outHtml = head + body;
@@ -522,6 +534,7 @@ const now = new Date().toISOString();
 const entry = { key: shopKey, name: N.name, address: N.address, town: N.town, genre: input.genre, genreKey: G.key, id, template: tplId, variation: V, variationNames: vNames, createdAt: prev?.createdAt || now };
 if (prev) { entry.updatedAt = now; index.entries[index.entries.indexOf(prev)] = entry; } else index.entries.push(entry);
 index._about = "下見の見本の記録（tools/quick-sample.mjs が書く）。key は店名＋住所。同じ店を作り直すと、この id・型・揺らぎを使い直す。variation の数は quick-sample-map.json の palettes・fonts・swap（0 は型のまま）・common.crops の番号";
+fs.mkdirSync(path.dirname(IDX), { recursive: true });
 const tmp = IDX + ".tmp";
 fs.writeFileSync(tmp, JSON.stringify({ _about: index._about, entries: index.entries }, null, 1) + "\n");
 fs.renameSync(tmp, IDX);
