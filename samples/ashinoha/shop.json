@@ -1,0 +1,310 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_ashinoha",
+  "updatedAt": "2026-11-10T12:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "中華そば 芦の葉",
+    "nameKana": "ちゅうかそば あしのは",
+    "genre": {
+      "template": "restaurant",
+      "detail": "ラーメン（中華そば）"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "南宮町",
+    "geo": {
+      "lat": 34.7291,
+      "lng": 135.3191
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "18:00",
+            "end": "21:00",
+            "label": "夜"
+          }
+        ]
+      },
+      "tue": {
+        "status": "closed"
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "18:00",
+            "end": "21:00",
+            "label": "夜"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "18:00",
+            "end": "21:00",
+            "label": "夜"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "18:00",
+            "end": "21:00",
+            "label": "夜"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "18:00",
+            "end": "21:00",
+            "label": "夜"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "18:00",
+            "end": "21:00",
+            "label": "夜"
+          }
+        ]
+      }
+    },
+    "note": "スープがなくなり次第終了"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 9,
+      "counter": 9
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "お品書き"
+      }
+    },
+    "categories": {
+      "cat_soba": {
+        "menuId": "mnu_main",
+        "name": "そば",
+        "order": 1
+      },
+      "cat_more": {
+        "menuId": "mnu_main",
+        "name": "ほかのそば",
+        "order": 2
+      },
+      "cat_sides": {
+        "menuId": "mnu_main",
+        "name": "追加とごはん",
+        "order": 3
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_shoyu": {
+        "name": "醤油そば",
+        "description": "小豆島の醤油のかえしで。チャーシューとメンマ、白髪ねぎをのせています。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_shoyu",
+            "type": "fixed",
+            "amount": 950
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_shio": {
+        "name": "塩そば",
+        "description": "赤穂の焼き塩で、スープの色を淡く仕上げました。薄切りのチャーシューとメンマを添えて。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_shio",
+            "type": "fixed",
+            "amount": 950
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_tokusei": {
+        "name": "特製醤油そば",
+        "description": "醤油そばに、チャーシューを三枚と味玉、海苔を加えて。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_tokusei",
+            "type": "fixed",
+            "amount": 1350
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_niboshi": {
+        "name": "煮干しそば",
+        "description": "長崎の煮干しを、鶏のスープに重ねました。香りの立つ醤油味です。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_niboshi",
+            "type": "fixed",
+            "amount": 1000
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_tsukesoba": {
+        "name": "つけそば",
+        "description": "冷水でしめた麺を、温かい醤油のつけ汁で召し上がってください。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_tsukesoba",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_ajitama": {
+        "name": "味玉",
+        "description": "醤油だれに一晩漬けた、半熟の卵です。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_ajitama",
+            "type": "fixed",
+            "amount": 150
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_donburi": {
+        "name": "炙りチャーシュー丼",
+        "description": "小さめの丼。炙ったチャーシューに、目玉焼きをのせて。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_donburi",
+            "type": "fixed",
+            "amount": 400
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      }
+    },
+    "placements": {
+      "plc_shoyu": {
+        "itemId": "itm_shoyu",
+        "categoryId": "cat_soba",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_shio": {
+        "itemId": "itm_shio",
+        "categoryId": "cat_soba",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_tokusei": {
+        "itemId": "itm_tokusei",
+        "categoryId": "cat_soba",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_niboshi": {
+        "itemId": "itm_niboshi",
+        "categoryId": "cat_more",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_tsukesoba": {
+        "itemId": "itm_tsukesoba",
+        "categoryId": "cat_more",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_ajitama": {
+        "itemId": "itm_ajitama",
+        "categoryId": "cat_sides",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_donburi": {
+        "itemId": "itm_donburi",
+        "categoryId": "cat_sides",
+        "order": 2,
+        "menuId": "mnu_main"
+      }
+    }
+  }
+}

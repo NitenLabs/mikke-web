@@ -1,0 +1,343 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_phfv": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfv.webp",
+        "mime": "image/webp",
+        "width": 1600,
+        "height": 1067,
+        "bytes": 286546,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/arFb72Zid48"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "藍の縁の丼に、淡い色の澄んだスープと細い麺、チャーシューと味玉、海苔"
+    },
+    "ast_phshoyu": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phshoyu.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 600,
+        "bytes": 67378,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/-LJmvGXl6yg"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "チャーシューと白髪ねぎ、メンマをのせた醤油そば"
+    },
+    "ast_phshio": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phshio.webp",
+        "mime": "image/webp",
+        "width": 680,
+        "height": 680,
+        "bytes": 49408,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/G0T7sSiSyKo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "薄切りのチャーシューとメンマをのせた塩そば"
+    },
+    "ast_phtokusei": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phtokusei.webp",
+        "mime": "image/webp",
+        "width": 680,
+        "height": 1023,
+        "bytes": 104248,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/s5p35h9lu8g"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "チャーシュー三枚と味玉、海苔をのせた特製醤油そば"
+    },
+    "ast_phlift": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phlift.webp",
+        "mime": "image/webp",
+        "width": 680,
+        "height": 850,
+        "bytes": 54126,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/KRYuPwvyEys"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "箸で持ち上げた細いまっすぐの麺"
+    },
+    "ast_phajitama": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phajitama.webp",
+        "mime": "image/webp",
+        "width": 320,
+        "height": 479,
+        "bytes": 14748,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/xZXGgrRppaA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "半分に切った半熟の味玉"
+    },
+    "ast_phdonburi": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phdonburi.webp",
+        "mime": "image/webp",
+        "width": 520,
+        "height": 293,
+        "bytes": 41726,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/7TARyyHQos8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "炙ったチャーシューに目玉焼きをのせた丼"
+    },
+    "ast_phmsoup": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmsoup.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 600,
+        "bytes": 76244,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/J2pXPoDZE5k"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "まな板の上の丸鶏と玉ねぎ"
+    },
+    "ast_phmkaeshi": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmkaeshi.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 506,
+        "bytes": 32850,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/uaMwBQ_wjng"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "小鉢から皿へ注ぐ醤油"
+    },
+    "ast_phmmen": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmmen.webp",
+        "mime": "image/webp",
+        "width": 640,
+        "height": 958,
+        "bytes": 67734,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/L7POzOAoaQY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "打ち立ての細い生麺"
+    },
+    "ast_phmgu": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmgu.webp",
+        "mime": "image/webp",
+        "width": 640,
+        "height": 640,
+        "bytes": 86642,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Qhr3xNxnBDk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "炙ったチャーシューと白髪ねぎ、青ねぎ"
+    },
+    "ast_phniboshi": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phniboshi.webp",
+        "mime": "image/webp",
+        "width": 300,
+        "height": 411,
+        "bytes": 55948,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/CuhcdKmHt9A"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "煮干し"
+    },
+    "ast_phcounter": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phcounter.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 674,
+        "bytes": 76686,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/QiA43Y5AJCU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "人のいないカウンターと、積んだ丼"
+    }
+  }
+}
