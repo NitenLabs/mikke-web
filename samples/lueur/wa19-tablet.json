@@ -200,115 +200,115 @@
   "cs_s2": {
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
-   "top": "63.6rem",
+   "top": "61.2rem",
    "height": "1px"
   },
   "cs_n2": {
    "left": "4.8rem",
    "width": "4.8rem",
-   "top": "66.6rem",
+   "top": "64.2rem",
    "font-size": "1.4rem",
    "line-height": "2rem"
   },
   "cs_d2": {
    "left": "9.6rem",
    "width": "calc((100vw - 9.6rem) * 0.3214 + -0.48rem)",
-   "top": "65.6rem",
+   "top": "63.2rem",
    "font-size": "3.6rem",
    "line-height": "4.4rem"
   },
   "cs_k2": {
    "left": "calc(4.8rem + (100vw - 9.6rem) * .3929)",
    "width": "calc((100vw - 9.6rem) * 0.6071)",
-   "top": "66.2rem",
+   "top": "63.8rem",
    "font-size": "1.5rem",
    "line-height": "2.4rem"
   },
   "cs_t2": {
    "left": "calc(4.8rem + (100vw - 9.6rem) * .3929)",
    "width": "calc((100vw - 9.6rem) * 0.6071)",
-   "top": "69.6rem",
+   "top": "67.2rem",
    "font-size": "1.4rem",
    "line-height": "2.8rem"
   },
   "cs_s3": {
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
-   "top": "78rem",
+   "top": "75.6rem",
    "height": "1px"
   },
   "cs_n3": {
    "left": "4.8rem",
    "width": "4.8rem",
-   "top": "81rem",
+   "top": "78.6rem",
    "font-size": "1.4rem",
    "line-height": "2rem"
   },
   "cs_d3": {
    "left": "9.6rem",
    "width": "calc((100vw - 9.6rem) * 0.3214 + -0.48rem)",
-   "top": "80rem",
+   "top": "77.6rem",
    "font-size": "3.6rem",
    "line-height": "4.4rem"
   },
   "cs_k3": {
    "left": "calc(4.8rem + (100vw - 9.6rem) * .3929)",
    "width": "calc((100vw - 9.6rem) * 0.6071)",
-   "top": "80.6rem",
+   "top": "78.2rem",
    "font-size": "1.5rem",
    "line-height": "2.4rem"
   },
   "cs_t3": {
    "left": "calc(4.8rem + (100vw - 9.6rem) * .3929)",
    "width": "calc((100vw - 9.6rem) * 0.6071)",
-   "top": "84rem",
+   "top": "81.6rem",
    "font-size": "1.4rem",
    "line-height": "2.8rem"
   },
   "cs_s4": {
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
-   "top": "90rem",
+   "top": "87.6rem",
    "height": "1px"
   },
   "cs_n4": {
    "left": "4.8rem",
    "width": "4.8rem",
-   "top": "93rem",
+   "top": "90.6rem",
    "font-size": "1.4rem",
    "line-height": "2rem"
   },
   "cs_d4": {
    "left": "9.6rem",
    "width": "calc((100vw - 9.6rem) * 0.3214 + -0.48rem)",
-   "top": "92rem",
+   "top": "89.6rem",
    "font-size": "3.6rem",
    "line-height": "4.4rem"
   },
   "cs_k4": {
    "left": "calc(4.8rem + (100vw - 9.6rem) * .3929)",
    "width": "calc((100vw - 9.6rem) * 0.6071)",
-   "top": "92.6rem",
+   "top": "90.2rem",
    "font-size": "1.5rem",
    "line-height": "2.4rem"
   },
   "cs_t4": {
    "left": "calc(4.8rem + (100vw - 9.6rem) * .3929)",
    "width": "calc((100vw - 9.6rem) * 0.6071)",
-   "top": "96rem",
+   "top": "93.6rem",
    "font-size": "1.4rem",
    "line-height": "2.8rem"
   },
   "cs_v0": {
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
-   "top": "102rem",
+   "top": "99.6rem",
    "height": "1px"
   },
   "cs_note": {
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
-   "top": "104.4rem",
+   "top": "102rem",
    "font-size": "1.3rem",
    "line-height": "2.4rem"
   },
@@ -321,7 +321,7 @@
   "cs_bot": {
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
-   "top": "118.7rem",
+   "top": "116.3rem",
    "height": "1px"
   },
   "pl_en": {
@@ -887,9 +887,9 @@
   "ft_sub": {
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
-   "top": "13.2rem",
-   "font-size": "1.2rem",
-   "line-height": "1.4rem"
+   "top": "13.1rem",
+   "font-size": "1.3rem",
+   "line-height": "1.6rem"
   },
   "ft_a": {
    "left": "4.8rem",
@@ -918,7 +918,7 @@
  "secs": {
   "sec_firstv": "calc(64rem + (100vw - 9.6rem) * 1.1333)",
   "sec_about": "calc(89.4rem + (100vw - 9.6rem) * 1.6334)",
-  "sec_course": "118.8rem",
+  "sec_course": "116.4rem",
   "sec_plates": "calc(62.55rem + (100vw - 9.6rem) * 1.2813)",
   "sec_menu": "151rem",
   "sec_info": "116.6rem",

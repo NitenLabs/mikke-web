@@ -117,14 +117,14 @@ const tT = (id, top, css = {}) => tb(id, { left: rem(M), width: COL, top: ex(top
 const font = (size, lh) => ({ "font-size": rem(size), "line-height": rem(lh) });
 const wk = (k, p = 0) => (p ? `calc(${W} * ${r(k)} + ${rem(p)})` : `calc(${W} * ${r(k)})`);
 
-// 共通の数：段の上下の余白（PC 160、SP 96、タブレット 120）
-const PT = 160, ST = 96, TT = 120;
+// 共通の数：段の上下の余白（PC 128、SP 96、タブレット 120）
+const PT = 128, ST = 96, TT = 120;
 
 // ---- 0 ヘッダー（sticky、PC 88／SP 64、地は白の不透明）
 sec("sec_header", "ヘッダー", 88, 64);
 add("hd_nav", { type: "nav", z: 5, section: "sec_header", style: { color: INK, font: B, spMenuBackground: PAPER }, layout: lay({ x: 520, y: 0, w: 660, h: 88, size: 14 }, { x: 290, y: 0, w: 84, h: 64 }) });
 t("hd_name", "sec_header", C.shortName, [[30, 36], [24, 28.8]], E, INK, [{ x: 80, y: 14, w: 200, h: 36 }, { x: 24, y: 17, w: 180, h: 29 }], { link: TOP, noWrap: true, ls: 0.04 });
-t("hd_sub", "sec_header", C.subName, [[12, 14], [12, 14]], E, MUTE, [{ x: 80, y: 56, w: 200, h: 14 }, { x: 24, y: 48, w: 180, h: 14 }], { link: TOP, noWrap: true, ls: 0.32, only: "pc" });
+t("hd_sub", "sec_header", C.subName, [[13, 16], [13, 16]], E, MUTE, [{ x: 80, y: 55, w: 200, h: 16 }, { x: 24, y: 47, w: 180, h: 16 }], { link: TOP, noWrap: true, ls: 0.32, only: "pc" });
 rect("hd_btn", "sec_header", BLUE, 2, { x: 1220, y: 22, w: 140, h: 44 }, { x: 0, y: 0, w: 100, h: 20 }, { link: RESERVE, only: "pc" });
 t("hd_btn_t", "sec_header", C.labels.reserveButton, [[14, 20], [14, 20]], B, WH, [{ x: 1220, y: 34, w: 140, h: 20 }, { x: 0, y: 0, w: 100, h: 20 }], { weight: 500, ls: 0.12, ...CT, only: "pc", z: 3 });
 tb("hd_name", { left: rem(M), top: rem(17) });
@@ -175,14 +175,14 @@ function head(S, pre, en, lead, sub) {
   photo("ab_ph3", S, "ast_phab3", 2, { x: 124, y: y(320), w: 440, h: 600 }, { x: 0, y: hs.sp + 48, w: 300, h: 410 });
   photo("ab_ph2", S, "ast_phab2", 3, { x: 383, y: y(760), w: 360, h: 240 }, { x: 174, y: hs.sp + 48 + 370, w: 216, h: 144 });
   const sp1 = hs.sp + 48 + 370 + 144 + 40;
-  t("ab_p1", S, x1, [[17, 40], [15, 35.3]], B, INK, [{ x: 809, y: y(440), w: 320, h: pcH(x1) }, { x: 48, y: sp1, w: 294, h: spH(x1) }], { weight: 300 });
+  t("ab_p1", S, x1, [[17, 40], [15, 35.3]], B, INK, [{ x: 809, y: y(440), w: 320, h: pcH(x1) }, { x: 48, y: sp1, w: 280, h: spH(x1) }], { weight: 300 });
   const spPh1 = sp1 + spH(x1) + 40;
   photo("ab_ph1", S, "ast_phab1", 2, { x: 704, y: y(1080), w: 600, h: 400 }, { x: 24, y: spPh1, w: 366, h: 244 });
   const sp2 = spPh1 + 244 + 40;
   t("ab_p2", S, x2, [[17, 40], [15, 35.3]], B, INK, [{ x: 200, y: y(1180), w: 320, h: pcH(x2) }, { x: 48, y: sp2, w: 294, h: spH(x2) }], { weight: 300 });
   const sp3 = sp2 + spH(x2) + 32;
   const pc3 = Math.max(1560, 1180 + pcH(x2) + 80);
-  t("ab_p3", S, x3, [[17, 40], [15, 35.3]], B, INK, [{ x: 200, y: y(pc3), w: 320, h: pcH(x3) }, { x: 48, y: sp3, w: 294, h: spH(x3) }], { weight: 300 });
+  t("ab_p3", S, x3, [[17, 40], [15, 35.3]], B, INK, [{ x: 809, y: y(pc3), w: 320, h: pcH(x3) }, { x: 48, y: sp3, w: 294, h: spH(x3) }], { weight: 300 });
   sec(S, "店のこと", y(Math.max(1480, pc3 + pcH(x3))) + PT, sp3 + spH(x3) + ST, { anchor: "about", nav: NAV(C.labels.about, 1) });
   // タブレット：ab3 を左（幅 55%、縦長）、ab2 を右下に重ね、文は全幅
   const T0 = hs.tab + 48;
@@ -433,7 +433,7 @@ if (F.length) {
   const S = "sec_footer", FH = C.footerHours;
   sec(S, "フッター", 340 + 26 * (FH.length - 3), 420 + 26 * (FH.length - 3), { bg: INK });
   t("ft_n", S, C.shortName, [[64, 64], [48, 48]], E, PAPER, [{ x: 80, y: 72, w: 400, h: 68 }, { x: 24, y: 56, w: 342, h: 52 }], { noWrap: true, ls: 0.02 });
-  t("ft_sub", S, C.subName, [[12, 14], [12, 14]], E, LINE, [{ x: 80, y: 148, w: 400, h: 14 }, { x: 24, y: 116, w: 342, h: 14 }], { noWrap: true, ls: 0.32 });
+  t("ft_sub", S, C.subName, [[13, 16], [13, 16]], E, LINE, [{ x: 80, y: 147, w: 400, h: 16 }, { x: 24, y: 115, w: 342, h: 16 }], { noWrap: true, ls: 0.32 });
   const F13 = [[13, 26], [13, 26]];
   t("ft_a", S, ADDR, F13, B, FT_TX, [{ x: 80, y: 188, w: 560, h: 26 }, { x: 24, y: 156, w: 342, h: 26 }]);
   t("ft_t", S, PHONE, F13, B, FT_TX, [{ x: 80, y: 214, w: 560, h: 26 }, { x: 24, y: 182, w: 342, h: 26 }], { link: TEL, noWrap: true });
@@ -441,7 +441,7 @@ if (F.length) {
   const cY = 240 + 26 * FH.length - 20;
   t("ft_c", S, `© ${C.name}`, [[12, 20], [12, 20]], B, LINE, [{ x: 840, y: cY, w: 520, h: 20 }, { x: 24, y: 208 + 26 * FH.length + 40, w: 342, h: 20 }], { ...RT });
   tT("ft_n", 64, font(56, 60));
-  tT("ft_sub", 132, font(12, 14));
+  tT("ft_sub", 131, font(13, 16));
   tT("ft_a", 172);
   tT("ft_t", 198);
   tT("ft_hr", 224);

@@ -40,7 +40,7 @@ body{font-synthesis:none}
 a[data-el=rs_t],a[data-el=ft_t],a[data-el^=in_v]{text-decoration:underline;text-underline-offset:.28em;text-decoration-thickness:1px}
 [data-el=in_map]{overflow:hidden}
 [data-el=in_map] iframe{width:100%;height:100%;border:0;display:block;filter:grayscale(1)}
-@media (max-width:767.98px){[data-el$=_en],[data-el$=_lead],[data-el$=_sub]{text-align:left!important}html{scroll-padding-top:6.4rem}}
+@media (max-width:767.98px){[data-el$=_en],[data-el$=_lead],[data-el$=_sub],[data-el=ft_c]{text-align:left!important}html{scroll-padding-top:6.4rem}}
 </style>`;
 const js = `<script>(function(){document.querySelectorAll('.nav-menu a').forEach(function(a){a.addEventListener('click',function(){var d=a.closest('details');if(d)d.open=false;});});})();</script>`;
 const rule = (sel, o) => `${sel}{${Object.entries(o).map(([k, v]) => `${k}:${v}`).join(";")}}`;
