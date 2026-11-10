@@ -53,10 +53,11 @@ ${sel(D.nametag)}{background:${INK}}
 ${sel(D.chip)}{background:${CREAM}}
 ${sel(D.polka)}{background:radial-gradient(circle,${TUR} .3rem,transparent .32rem) 0 0/2.8rem 2.8rem}
 ${sel(D.band)}{user-select:none;pointer-events:none}
+.el-shape-circle{border-radius:50%}
 [data-el=in_map]{overflow:hidden}
 [data-el=in_map] iframe{width:100%;height:100%;border:0;display:block}
 ${MQ.pc}{${devRules.pc.join("")}}
-${MQ.sp}{${devRules.sp.join("")}html{scroll-padding-top:6rem}[data-el=ft_c]{text-align:left!important}}
+${MQ.sp}{${devRules.sp.join("")}${D.hideSp?.length ? `${sel(D.hideSp)}{display:none!important}` : ""}html{scroll-padding-top:6rem}[data-el=ft_c]{text-align:left!important}}
 ${MQ.tab}{${devRules.tab.join("")}html{scroll-padding-top:6rem}}
 </style>`;
 const js = `<script>(function(){document.querySelectorAll('.nav-menu a').forEach(function(a){a.addEventListener('click',function(){var d=a.closest('details');if(d)d.open=false;});});})();</script>`;

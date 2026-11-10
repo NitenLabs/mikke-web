@@ -165,7 +165,7 @@ T("hd_btn_t", "sec_header", C.labels.telButton, B, PAPER, { pc: { x: 1180, y: 26
   T("fv_cp", S, { lines: f.copyLines }, H, INK, { pc: { x: 120, y: 392, w: 520, s: 40, lh: 60 }, sp: { x: 24, y: 628, w: 342, s: 28 }, tab: { x: 48, y: 276, w: 672, s: 36, lh: 54 } }, { weight: 700, ls: 0.06, noWrap: true, role: "heading" });
   const ff = T("fv_f", S, { lines: f.facts }, B, INK, { pc: { x: 120, y: 548, w: 520, s: 15, lh: 28 }, sp: { x: 24, y: 736, w: 342, s: 14 }, tab: { x: 48, y: 408, w: 672, s: 15, lh: 28 } }, { ls: 0.04 });
   // 写真の群
-  R("fv_pd", S, PAPER, 1, at({ x: 840, y: 40, w: 520, h: 480 }, { x: 150, y: 192, w: 240, h: 200 }, { x: 452, y: 528, w: 268, h: 240 }));
+  R("fv_pd", S, PAPER, 1, at({ x: 840, y: 40, w: 520, h: 480 }, { x: 166, y: 176, w: 224, h: 196 }, { x: 452, y: 528, w: 268, h: 240 }));
   TB.deco.polka.push("fv_pd");
   P("fv_ph", S, "ast_phfv", 2, at({ x: 760, y: 96, w: 520, h: 520 }, { x: 24, y: 204, w: 330, h: 330 }, { x: 248, y: 560, w: 440, h: 440 }), { fx: 55, fy: 50 });
   shadow("fv_ph", 14, 8, 12, TUR);
@@ -191,7 +191,9 @@ if (SPI.length) {
   let py = PAD.pc, ty = ph.tab.y + ph.tab.h + 56, sy = ph.sp.y + ph.sp.h + 48;
   const yPc = [], yTab = [], ySp = [];
   for (let i = 0; i < SPI.length; i += 2) { const h1 = rowH("pc", SPI[i], SPI[i + 1]), h2 = rowH("tab", SPI[i], SPI[i + 1]); yPc.push(py, py); yTab.push(ty, ty); py += h1; ty += h2; }
-  SPI.forEach((it, i) => { ySp.push(sy); sy += rowH("sp", it); });
+  // SP の行は 1 行・2 行の一言で高さが揃わず不揃いに見えたので、いちばん高い行に揃える（STEP 4）
+  const spRow = max(...SPI.map((it) => rowH("sp", it)));
+  SPI.forEach(() => { ySp.push(sy); sy += spRow; });
   SPI.forEach((it, i) => {
     const c = i % 2, X = { pc: cols.pc[c], tab: cols.tab[c], sp: 24 }, Y = { pc: yPc[i], tab: yTab[i], sp: ySp[i] }, Wd = { pc: 320, tab: 316, sp: 342 };
     R(`sp_l${i}`, S, RULE, 2, at({ x: X.pc, y: Y.pc, w: Wd.pc, h: 1 }, { x: 24, y: Y.sp, w: 342, h: 1 }, { x: X.tab, y: Y.tab, w: Wd.tab, h: 1 }));
@@ -311,9 +313,11 @@ if (SPI.length) {
   const p1 = T("ab_p1", S, K.texts[0], B, INK, { pc: { x: 680, y: hb.pc + 24, w: 520, s: 16, lh: 32 }, sp: { x: 24, y: hb.sp + 20, w: 342, s: 15 }, tab: { x: 48, y: hb.tab + 24, w: 672, s: 16, lh: 32 } }, { ls: 0.06 });
   const p2 = T("ab_p2", S, K.texts[1], B, INK, { pc: { x: 680, y: p1.pc + 16, w: 520, s: 16, lh: 32 }, sp: { x: 24, y: p1.sp + 14, w: 342, s: 15 }, tab: { x: 48, y: p1.tab + 16, w: 672, s: 16, lh: 32 } }, { ls: 0.06 });
   const bY = at(max(p2.pc, ph.pc.y + 550) + 72, p2.sp + 48, p2.tab + 56);
-  const bb = T("ab_band", S, K.band, E, BAND, { pc: { x: 0, y: bY.pc, w: 1440, s: 112, lh: 112, n: 1 }, sp: { x: 0, y: bY.sp, w: 390, s: 64, n: 1 }, tab: { x: 0, y: bY.tab, w: 768, s: 88, lh: 88, n: 1 } }, { weight: 700, noWrap: true, z: 1 });
-  TB.deco.band.push("ab_band");
-  sec(S, "店のこと", bb.pc + 64, bb.sp + 40, bb.tab + 56, { anchor: "about", nav: NAV(C.labels.about, 4) });
+  // 帯は店名の英字を切らない大きさに（PC 72・タブレット 44 で「SPICE CURRY · TSUKI TO BASIL ·」の 1 回分が画面に収まり、その先は繰り返しが切れる）。
+  // スマホは 1 回分が収まる大きさだと帯に見えないので出さない（STEP 4）
+  const bb = T("ab_band", S, K.band, E, BAND, { pc: { x: 0, y: bY.pc, w: 1440, s: 72, lh: 72, n: 1 }, sp: { x: 0, y: p2.sp, w: 390, s: 24, n: 1 }, tab: { x: 0, y: bY.tab, w: 768, s: 44, lh: 44, n: 1 } }, { weight: 700, noWrap: true, z: 1 });
+  TB.deco.band.push("ab_band"); TB.deco.hideSp = ["ab_band"];
+  sec(S, "店のこと", bb.pc + 64, p2.sp + PAD.sp, bb.tab + 56, { anchor: "about", nav: NAV(C.labels.about, 4) });
 }
 
 // ---- 6 ご案内（左に札・見出し・罫線の行・電話のボタン、右に地図）

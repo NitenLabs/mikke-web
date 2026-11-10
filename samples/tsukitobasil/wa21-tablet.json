@@ -952,8 +952,8 @@
    "left": "0%",
    "width": "100%",
    "top": "101.1rem",
-   "font-size": "8.8rem",
-   "line-height": "8.8rem"
+   "font-size": "4.4rem",
+   "line-height": "4.4rem"
   },
   "in_tagbg": {
    "left": "7.2917%",
@@ -1150,7 +1150,7 @@
   "sec_spice": "155.8rem",
   "sec_curry": "134rem",
   "sec_aigake": "119.6rem",
-  "sec_about": "115.5rem",
+  "sec_about": "111.1rem",
   "sec_info": "124.8rem",
   "sec_footer": "39.8rem"
  },
@@ -1321,6 +1321,9 @@
    "ab_band",
    "in_tag",
    "ft_en"
+  ],
+  "hideSp": [
+   "ab_band"
   ]
  }
 }
