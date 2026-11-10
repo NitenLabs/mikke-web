@@ -318,14 +318,14 @@
         {
           "runs": [
             {
-              "text": "駅の南口に、"
+              "text": "深呼吸のかわりに、"
             }
           ]
         },
         {
           "runs": [
             {
-              "text": "ちいさなコーヒースタンド。"
+              "text": "一杯。"
             }
           ]
         }
@@ -364,13 +364,20 @@
         {
           "runs": [
             {
-              "text": "A little coffee stand by Ashiya Station."
+              "text": "店内5席とテイクアウト。"
+            }
+          ]
+        },
+        {
+          "runs": [
+            {
+              "text": "JR芦屋駅 南口から3分。"
             }
           ]
         }
       ],
       "style": {
-        "font": "font:accent",
+        "font": "font:body",
         "weight": 500,
         "color": "theme:textMuted",
         "lineHeight": 1.2,

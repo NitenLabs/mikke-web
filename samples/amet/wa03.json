@@ -2,10 +2,13 @@
   "name": "AMET COFFEE",
   "nameEn": "Amet Coffee",
   "fvCopy": [
-    "駅の南口に、",
-    "ちいさなコーヒースタンド。"
+    "深呼吸のかわりに、",
+    "一杯。"
   ],
-  "fvEn": "A little coffee stand by Ashiya Station.",
+  "fvSub": [
+    "店内5席とテイクアウト。",
+    "JR芦屋駅 南口から3分。"
+  ],
   "storyJa": "AMET COFFEE について",
   "storySpDelta": 202,
   "mikkeUrl": "https://ashiya-mikke.pages.dev/spot/amet-coffee/",
