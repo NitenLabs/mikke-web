@@ -29,6 +29,8 @@ export const FONT_REGISTRY = {
   "dela-gothic-one": { family: "Dela Gothic One", generic: "sans-serif", param: "Dela+Gothic+One" },
   "zen-antique-soft": { family: "Zen Antique Soft", generic: "serif", param: "Zen+Antique+Soft" },
   "shippori-antique-b1": { family: "Shippori Antique B1", generic: "sans-serif", param: "Shippori+Antique+B1" },
+  "rocknroll-one": { family: "RocknRoll One", generic: "sans-serif", param: "RocknRoll+One" },
+  "archivo-black": { family: "Archivo Black", generic: "sans-serif", param: "Archivo+Black" },
 };
 
 // フォントID → CSS の font-family スタック
