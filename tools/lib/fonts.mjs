@@ -28,6 +28,7 @@ export const FONT_REGISTRY = {
   "oswald": { family: "Oswald", generic: "sans-serif", param: "Oswald:wght@400;500;700" },
   "dela-gothic-one": { family: "Dela Gothic One", generic: "sans-serif", param: "Dela+Gothic+One" },
   "zen-antique-soft": { family: "Zen Antique Soft", generic: "serif", param: "Zen+Antique+Soft" },
+  "shippori-antique-b1": { family: "Shippori Antique B1", generic: "sans-serif", param: "Shippori+Antique+B1" },
 };
 
 // フォントID → CSS の font-family スタック
