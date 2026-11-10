@@ -31,6 +31,8 @@ export const FONT_REGISTRY = {
   "shippori-antique-b1": { family: "Shippori Antique B1", generic: "sans-serif", param: "Shippori+Antique+B1" },
   "rocknroll-one": { family: "RocknRoll One", generic: "sans-serif", param: "RocknRoll+One" },
   "archivo-black": { family: "Archivo Black", generic: "sans-serif", param: "Archivo+Black" },
+  "kaisei-decol": { family: "Kaisei Decol", generic: "serif", param: "Kaisei+Decol:wght@400;500;700" },
+  "marcellus": { family: "Marcellus", generic: "serif", param: "Marcellus" },
 };
 
 // フォントID → CSS の font-family スタック
