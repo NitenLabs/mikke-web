@@ -157,7 +157,7 @@ if (F.length) {
   t("fl_h", S, C.flow.heading, [[40, 56], [28, 39.2]], H, AI, [{ x: 200, y: y(0), w: 56, h: 336 }, { x: 32, y: ys(0), w: 326, h: 40 }], { vp: true, ls: 0.12, role: "heading" });
   t("fl_en", S, C.flow.en, [[13, 16], [13, 16]], E, MUTE, [{ x: 160, y: y(360), w: 136, h: 16 }, { x: 32, y: ys(52), w: 326, h: 16 }], { italic: true, ...CT });
   t("fl_p", S, C.flow.body, [[15, 30], [15, 30]], B, INK, [{ x: 117, y: y(408), w: 260, h: 150 }, { x: 32, y: ys(84), w: 326, h: 90 }]);
-  photo("fl_ph", S, "ast_phfr2", 2, { x: 137, y: y(600), w: 240, h: 480 }, { x: 32, y: ys(spPh), w: 326, h: 240 });
+  photo("fl_ph", S, "ast_phfr2", 2, { x: 137, y: y(600), w: 240, h: 480 }, { x: 32, y: ys(spPh), w: 326, h: 240 }, { fy: 72 });
   const tRows = TT + 56 + 28 + 64 + 32;
   tT("fl_h", TT, TAB_H);
   tT("fl_en", TT + 52, font(13, 16));
@@ -179,8 +179,8 @@ if (F.length) {
   const tNote = tRows + TRH * n + 32;
   tT("fl_note", tNote, font(13, 24));
   const tPh = tNote + 24 + 40;
-  tT("fl_ph", tPh, { height: `calc(${W} * .5)` });
-  tablet.secs[S] = ex({ p: tPh + TT, k: 0.5 });
+  tT("fl_ph", tPh, { height: `calc(${W} * .75)` });
+  tablet.secs[S] = ex({ p: tPh + TT, k: 0.75 });
 }
 
 // ---- 3 軽やかな衣（左に大きな写真、右に縦書きの見出し・文・小さな写真）
@@ -312,12 +312,10 @@ if (F.length) {
   sec(S, "ご予約", 320, 400, { anchor: "reserve", bg: AI });
   t("rs_h", S, C.reserve.heading, [[36, 52], [24, 34.7]], H, WH, [{ x: 200, y: 96, w: 760, h: 52 }, { x: 32, y: 88, w: 326, h: 70 }], { role: "heading" });
   t("rs_t", S, PHONE, [[32, 44], [28, 38.5]], B, WH, [{ x: 200, y: 168, w: 600, h: 44 }, { x: 32, y: 176, w: 326, h: 39 }], { weight: 700, link: TEL, noWrap: true });
-  gline("rs_ln", S, { x: 200, y: 232, w: 24 }, { x: 32, y: 232, w: 24 });
   rect("rs_btn", S, KI, 2, { x: 1040, y: 128, w: 320, h: 64 }, { x: 32, y: 264, w: 326, h: 56 }, { link: TEL, radius: 2 });
   t("rs_btn_t", S, C.reserve.button, [[16, 24], [16, 24]], B, AI, [{ x: 1040, y: 148, w: 320, h: 24 }, { x: 32, y: 280, w: 326, h: 24 }], { weight: 700, ...CT, z: 3 });
   tT("rs_h", 64, font(32, 44));
   tT("rs_t", 124, font(30, 42));
-  tT("rs_ln", 184, { width: rem(24), height: "1px" });
   tT("rs_btn", 216, { height: rem(64) });
   tT("rs_btn_t", 236, font(16, 24));
   tablet.secs[S] = rem(216 + 64 + 64);

@@ -317,7 +317,7 @@
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
    "top": "108.4rem",
-   "height": "calc((100vw - 9.6rem) * .5)"
+   "height": "calc((100vw - 9.6rem) * .75)"
   },
   "ab_ph1": {
    "left": "4.8rem",
@@ -782,12 +782,6 @@
    "font-size": "3rem",
    "line-height": "4.2rem"
   },
-  "rs_ln": {
-   "left": "4.8rem",
-   "width": "2.4rem",
-   "top": "18.4rem",
-   "height": "1px"
-  },
   "rs_btn": {
    "left": "4.8rem",
    "width": "calc((100vw - 9.6rem))",
@@ -852,7 +846,7 @@
  },
  "secs": {
   "sec_firstv": "calc(19.2rem + (100vw - 9.6rem) * 1)",
-  "sec_flow": "calc(113.2rem + (100vw - 9.6rem) * 0.5)",
+  "sec_flow": "calc(113.2rem + (100vw - 9.6rem) * 0.75)",
   "sec_about": "calc(61.6rem + (100vw - 9.6rem) * 0.8)",
   "sec_counter": "calc(33.6rem + (100vw - 9.6rem) * 0.8)",
   "sec_menu": "calc(123.48rem + (((100vw - 9.6rem) - 2.4rem) / 2) * .75)",
