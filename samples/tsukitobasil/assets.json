@@ -111,8 +111,8 @@
         "key": "ast_phc2.webp",
         "mime": "image/webp",
         "width": 760,
-        "height": 1139,
-        "bytes": 71894,
+        "height": 507,
+        "bytes": 105056,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T12:00:00+09:00",
@@ -120,7 +120,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/1lAIRAsv3C4"
+        "pageUrl": "https://unsplash.com/photos/5sYZVpylync"
       },
       "rights": {
         "basis": "licensed",
@@ -129,7 +129,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "signature",
-      "alt": "牛すじのカレー、青唐辛子と人参"
+      "alt": "クローブとカルダモンを添えた、牛すじの黒いカレー"
     },
     "ast_phc3": {
       "kind": "photo",
@@ -164,7 +164,7 @@
         "mime": "image/webp",
         "width": 800,
         "height": 533,
-        "bytes": 131542,
+        "bytes": 65894,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T12:00:00+09:00",
@@ -172,7 +172,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/yAI3iv8rlzU"
+        "pageUrl": "https://unsplash.com/photos/JNGQdUcFrCc"
       },
       "rights": {
         "basis": "licensed",
@@ -181,7 +181,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "other",
-      "alt": "紫玉ねぎと人参のアチャール"
+      "alt": "陶器の小鉢に盛った、青マンゴーのアチャール"
     },
     "ast_phlassi": {
       "kind": "photo",
