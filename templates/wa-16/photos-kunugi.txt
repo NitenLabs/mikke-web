@@ -1,11 +1,11 @@
 # wa-16 手打ち蕎麦 くぬぎ（架空のお店）の使用写真
 fv https://images.unsplash.com/photo-1753071963638-7e83f348f19a?w=1200&h=1170&fit=crop&crop=focalpoint&fp-x=.55&fp-y=.55&q=72&fm=webp
 ab https://images.unsplash.com/photo-1719060038791-012d4a471d91?w=960&h=1160&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.6&q=72&fm=webp
-s1 https://images.unsplash.com/photo-1763809677023-4f3450645dee?rect=1370,1000,1362,1702&w=768&h=960&fit=crop&q=72&fm=webp
+s1 https://images.unsplash.com/photo-1771520331542-e5dd60d372f6?w=768&h=960&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.42&fp-z=1.1&q=72&fm=webp
 s2 https://images.unsplash.com/photo-1606854428857-5121b55a2661?w=768&h=960&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.42&q=72&fm=webp
-s3 https://images.unsplash.com/photo-1608604897815-a0788ac86b48?w=768&h=960&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.6&q=72&fm=webp
-sr https://images.unsplash.com/photo-1736660058617-275fe55ad8ab?w=1176&h=800&fit=crop&crop=focalpoint&fp-x=.62&fp-y=.5&fp-z=1.3&q=72&fm=webp
+s3 https://images.unsplash.com/photo-1714802145664-d70405029ced?w=768&h=960&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.58&q=72&fm=webp
+sr https://images.unsplash.com/photo-1571478601279-7268c1f57439?w=1176&h=800&fit=crop&crop=focalpoint&fp-x=.56&fp-y=.5&fp-z=1.1&bri=8&q=72&fm=webp
 tn https://images.unsplash.com/photo-1788416636598-3c03f71d2cc5?w=1176&h=800&fit=crop&crop=focalpoint&fp-x=.55&fp-y=.62&fp-z=1.25&q=72&fm=webp
 kk https://images.unsplash.com/photo-1636933242310-15d6318326f5?w=1176&h=800&fit=crop&crop=focalpoint&fp-x=.5&fp-y=.6&fp-z=1.1&q=72&fm=webp
 kw https://images.unsplash.com/photo-1771308457245-36bda18c21d9?w=1176&h=800&fit=crop&crop=focalpoint&fp-x=.55&fp-y=.5&q=72&fm=webp
-sk https://images.unsplash.com/photo-1782874651724-7a132272b876?w=960&h=1000&fit=crop&crop=focalpoint&fp-x=.56&fp-y=.45&q=72&fm=webp
+sk https://images.unsplash.com/photo-1525974160448-038dacadcc71?w=960&h=1000&fit=crop&crop=focalpoint&fp-x=.64&fp-y=.55&q=72&fm=webp

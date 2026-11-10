@@ -60,7 +60,7 @@
         "mime": "image/webp",
         "width": 768,
         "height": 960,
-        "bytes": 131526,
+        "bytes": 109116,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T09:00:00+09:00",
@@ -68,7 +68,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/9I_d5t0dwrc"
+        "pageUrl": "https://unsplash.com/photos/EGp_5wloSNY"
       },
       "rights": {
         "basis": "licensed",
@@ -77,7 +77,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "interior",
-      "alt": "粉が積もった石臼"
+      "alt": "穴のあいた上石を重ねた、古い石臼"
     },
     "ast_s201": {
       "kind": "photo",
@@ -112,7 +112,7 @@
         "mime": "image/webp",
         "width": 768,
         "height": 960,
-        "bytes": 90562,
+        "bytes": 93702,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T09:00:00+09:00",
@@ -120,7 +120,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/dgAHenVGfuA"
+        "pageUrl": "https://unsplash.com/photos/R6U1j6lzafY"
       },
       "rights": {
         "basis": "licensed",
@@ -129,7 +129,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "interior",
-      "alt": "釜に掛けた麺の湯切りざる"
+      "alt": "竹のすのこを敷いたせいろに盛った蕎麦と、刻み海苔"
     },
     "ast_sr01": {
       "kind": "photo",
@@ -138,7 +138,7 @@
         "mime": "image/webp",
         "width": 1176,
         "height": 800,
-        "bytes": 278824,
+        "bytes": 77416,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T09:00:00+09:00",
@@ -146,7 +146,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/j9SSv1QK74Y"
+        "pageUrl": "https://unsplash.com/photos/C2oA6RBxiJA"
       },
       "rights": {
         "basis": "licensed",
@@ -155,7 +155,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "signature",
-      "alt": "丸いせいろに盛った蕎麦と、そばちょこのつゆ"
+      "alt": "丸いせいろに盛った蕎麦と、そばちょこのつゆ、薬味"
     },
     "ast_tn01": {
       "kind": "photo",
@@ -242,7 +242,7 @@
         "mime": "image/webp",
         "width": 960,
         "height": 1000,
-        "bytes": 166022,
+        "bytes": 59794,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T09:00:00+09:00",
@@ -250,7 +250,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/lt7vhcc-Sjo"
+        "pageUrl": "https://unsplash.com/photos/NLcLjLNUJbY"
       },
       "rights": {
         "basis": "licensed",
@@ -259,7 +259,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "product",
-      "alt": "日本酒のぐい呑みを、鉢にいくつも集めて"
+      "alt": "日本酒の白い徳利と、猪口ふたつ"
     }
   }
 }

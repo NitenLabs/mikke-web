@@ -19,7 +19,8 @@ html{scroll-padding-top:8rem}
 [data-el=in_map_b]{box-shadow:inset 0 0 0 1.5px ${AI}}
 [data-sec=sec_info]:has([data-el=in_tel_t]:hover) [data-el=in_tel_b]{background:${INK}!important}
 [data-sec=sec_info]:has([data-el=in_map_t]:hover) [data-el=in_map_b]{background:${HOV}!important}
-[data-el=st_ph2] img{filter:sepia(.28) brightness(1.1) contrast(.95)}
+[data-el=st_ph0] img{filter:sepia(.3) brightness(1.08) contrast(.95)}
+[data-el=ip_sake] img{filter:sepia(.18) brightness(1.03)}
 [data-el=in_mapbox]{overflow:hidden}
 [data-el=in_mapbox] iframe{width:100%;height:100%;border:0;display:block;filter:saturate(.7) sepia(.08)}
 .el-nav .nav-menu a{color:${BG}!important}
