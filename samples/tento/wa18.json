@@ -43,11 +43,11 @@
   "photos": {
     "fv": { "slot": "interior", "alt": "湯気の立つ蒸籠の点心と、たれの小皿", "page": "https://unsplash.com/photos/q66grqqHpDQ" },
     "d1": { "slot": "product", "alt": "蒸籠に並んだ小籠包を上から", "page": "https://unsplash.com/photos/YfcopF96Nf0" },
-    "d2": { "slot": "product", "alt": "蒸籠に並んだ蒸し餃子を上から", "page": "https://unsplash.com/photos/EIBi5qVrMqo" },
+    "d2": { "slot": "product", "alt": "蒸籠に並んだ、皮の透けた海老の蒸し餃子", "page": "https://unsplash.com/photos/ueLr65yEd6U" },
     "d3": { "slot": "product", "alt": "蒸籠の焼売。とびこをのせて", "page": "https://unsplash.com/photos/BnDPpaHR9RQ" },
     "p1": { "slot": "product", "alt": "青ねぎをたっぷりのせた麻婆豆腐", "page": "https://unsplash.com/photos/zEY4cH_QADs" },
     "p2": { "slot": "product", "alt": "黒酢の酢豚。青ねぎと赤唐辛子を合わせて", "page": "https://unsplash.com/photos/sfa5-CbN_4w" },
     "ab": { "slot": "interior", "alt": "黒い卓に置いた急須と二つの茶杯", "page": "https://unsplash.com/photos/_Ycnch2Ez5o" },
-    "rm": { "slot": "interior", "alt": "回転台のある円卓の個室", "page": "https://unsplash.com/photos/DKxbjOa4hd0" }
+    "rm": { "slot": "interior", "alt": "山水画の壁と円卓の個室", "page": "https://unsplash.com/photos/EQvUkUyB6Ao" }
   }
 }

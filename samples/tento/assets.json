@@ -60,7 +60,7 @@
         "mime": "image/webp",
         "width": 800,
         "height": 800,
-        "bytes": 119518,
+        "bytes": 38044,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T09:00:00+09:00",
@@ -68,7 +68,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/EIBi5qVrMqo"
+        "pageUrl": "https://unsplash.com/photos/ueLr65yEd6U"
       },
       "rights": {
         "basis": "licensed",
@@ -77,7 +77,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "product",
-      "alt": "蒸籠に並んだ蒸し餃子を上から"
+      "alt": "蒸籠に並んだ、皮の透けた海老の蒸し餃子"
     },
     "ast_d301": {
       "kind": "photo",
@@ -190,7 +190,7 @@
         "mime": "image/webp",
         "width": 1280,
         "height": 912,
-        "bytes": 116004,
+        "bytes": 136038,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T09:00:00+09:00",
@@ -198,7 +198,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/DKxbjOa4hd0"
+        "pageUrl": "https://unsplash.com/photos/EQvUkUyB6Ao"
       },
       "rights": {
         "basis": "licensed",
@@ -207,7 +207,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "interior",
-      "alt": "回転台のある円卓の個室"
+      "alt": "山水画の壁と円卓の個室"
     }
   }
 }
