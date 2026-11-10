@@ -44,6 +44,9 @@ export const FONT_REGISTRY = {
   "yuji-syuku": { family: "Yuji Syuku", generic: "serif", param: "Yuji+Syuku" },
   // 既存の "archivo" は 400 だけ（hamasyou が使用）。数字を太さ違いで組む型のための別の ID
   "archivo-numerals": { family: "Archivo", generic: "sans-serif", param: "Archivo:wght@400;500;600;700" },
+  // wa-24（BAR KAIRO）：店名・英字の札は Italiana（400 だけ）、和文は Kaisei Tokumin
+  "italiana": { family: "Italiana", generic: "serif", param: "Italiana" },
+  "kaisei-tokumin": { family: "Kaisei Tokumin", generic: "serif", param: "Kaisei+Tokumin:wght@400;500;700" },
 };
 
 // フォントID → CSS の font-family スタック
