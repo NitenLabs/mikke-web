@@ -15,7 +15,11 @@
   "location": {
     "prefecture": "兵庫県",
     "city": "芦屋市",
-    "town": "西山町"
+    "town": "西山町",
+    "geo": {
+      "lat": 34.736481,
+      "lng": 135.29863
+    }
   },
   "hours": {
     "weekly": {

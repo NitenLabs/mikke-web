@@ -17,6 +17,10 @@
     "city": "芦屋市",
     "town": "東山町",
     "street": "2-6",
+    "geo": {
+      "lat": 34.739609,
+      "lng": 135.308731
+    },
     "access": {
       "acc_jrashiya": {
         "station": "JR芦屋駅",

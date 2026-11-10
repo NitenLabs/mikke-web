@@ -16,7 +16,7 @@ html{scroll-padding-top:8rem}
 [data-el=ab_ph],[data-el=cf_ph1],[data-el=cf_ph2],[data-cel=c_ph]{border-radius:1.2rem;overflow:hidden}
 [data-el=in_tel_b]:hover,[data-el=in_map_b]:hover{background:${OL}!important}
 [data-el=in_mapbox]{overflow:hidden;border-radius:1.2rem}
-[data-el=in_mapbox] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block;filter:sepia(.25) saturate(.8)}
+[data-el=in_mapbox] iframe{width:100%;height:100%;border:0;display:block;filter:sepia(.25) saturate(.8)}
 .el-nav .nav-menu a{color:${CR}!important}
 .el-nav .nav-menu{background:${INK}}
 .nav-sp summary{color:${INK}}
@@ -81,7 +81,8 @@ ${pos("[data-el=ft_copy]", `left:${L};width:42%;top:26rem`)}
 }</style>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
-const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${encodeURIComponent(addr)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（G020。地図の上を切り落として隠す形はやめた）
+const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");
 h = h.replace(re, `$1${map}`).replace("</head>", css + "</head>");

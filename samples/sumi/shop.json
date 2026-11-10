@@ -16,6 +16,10 @@
     "prefecture": "兵庫県",
     "city": "芦屋市",
     "town": "業平町",
+    "geo": {
+      "lat": 34.732704,
+      "lng": 135.305099
+    },
     "access": {
       "acc_jr": {
         "station": "JR芦屋駅",

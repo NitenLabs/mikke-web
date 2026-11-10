@@ -17,6 +17,10 @@
     "town": "上宮川町",
     "street": "2-8",
     "building": "103",
+    "geo": {
+      "lat": 34.733093,
+      "lng": 135.308945
+    },
     "access": {
       "acc_jrashiya": {
         "station": "JR芦屋駅（南口）",

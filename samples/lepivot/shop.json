@@ -15,7 +15,11 @@
   "location": {
     "prefecture": "兵庫県",
     "city": "芦屋市",
-    "town": "大原町"
+    "town": "大原町",
+    "geo": {
+      "lat": 34.736961,
+      "lng": 135.308426
+    }
   },
   "hours": {
     "weekly": {

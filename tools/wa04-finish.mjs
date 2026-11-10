@@ -15,7 +15,7 @@ ${Array.from({ length: N }, (_, i) => `[data-el=sr_${i + 1}]{--i:${i}}`).join(""
 @keyframes wa04s{from{transform:translateX(calc(var(--i)*var(--step)))}to{transform:translateX(calc((var(--i) - ${N})*var(--step)))}}
 [data-clone]{animation:wa04s var(--dur) linear infinite;position:absolute}
 [data-el=in_mapbox]{overflow:hidden}
-[data-el=in_mapbox] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block;filter:grayscale(1)}
+[data-el=in_mapbox] iframe{width:100%;height:100%;border:0;display:block;filter:grayscale(1)}
 [data-el=mn_cards] .rep-card{border:1px solid rgba(255,255,255,.5);border-radius:.7rem;box-sizing:border-box}
 [data-cel=c_ph]{border-radius:0}
 [data-el=mn_cards] [data-cel=c_ph]{border-radius:50%;background:#D9D0C2}
@@ -31,7 +31,8 @@ ${Array.from({ length: N }, (_, i) => `[data-el=sr_${i + 1}]{--i:${i}}`).join(""
 const js = `<script>(function(){if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;for(var i=1;i<=${N};i++){var e=document.querySelector('[data-el="sr_'+i+'"]');if(!e)continue;var c=e.cloneNode(true);c.removeAttribute('data-el');c.setAttribute('data-clone','');c.setAttribute('aria-hidden','true');c.querySelectorAll('img').forEach(function(m){m.alt=''});c.style.setProperty('--i',${N}+i-1);e.parentNode.appendChild(c);}})();</script>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
-const map = `<iframe title="${shop.basic.name}の地図" src="https://www.google.com/maps?q=${encodeURIComponent(`${addr} ${shop.basic.name}`)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(`${addr} ${shop.basic.name}`)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（G020。地図の上を切り落として隠す形はやめた）
+const map = `<iframe title="${shop.basic.name}の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");
 h = h.replace(re, `$1${map}`);

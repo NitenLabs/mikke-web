@@ -14,7 +14,7 @@ html{scroll-padding-top:8rem}
 [data-el=mn_rows] .rep-card{border-top:1px solid ${SOFT};box-sizing:border-box}
 [data-el=in_tel_b]:hover,[data-el=in_map_b]:hover{background:#4A6A7A!important}
 [data-el=in_mapbox]{overflow:hidden}
-[data-el=in_mapbox] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block;filter:grayscale(1) contrast(.95)}
+[data-el=in_mapbox] iframe{width:100%;height:100%;border:0;display:block;filter:grayscale(1) contrast(.95)}
 .el-nav .nav-row a{font-weight:600;letter-spacing:.02rem}
 .el-nav .nav-menu a{color:#fff!important}
 .el-nav .nav-menu{background:${INK}}
@@ -70,7 +70,7 @@ ${pos("[data-el=ft_copy]", `left:${L};width:42%;top:26rem`)}
 }</style>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
-const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : encodeURIComponent(addr); // 緯度経度＋拡大率なら Google の場所の札が出にくい
+const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（G020。地図の上を切り落として隠す形はやめた）
 const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");

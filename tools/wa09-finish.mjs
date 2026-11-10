@@ -33,7 +33,7 @@ html:not(.wa09-past) .site-header.overlay.scrolled .el-text,html:not(.wa09-past)
 [data-el=hd_name] a,[data-el=in_v5] a,[data-el=ft_t] a{color:inherit;text-decoration:none}
 [data-el=in_v5] a,[data-el=ft_t] a{text-decoration:underline;text-underline-offset:.3em;text-decoration-thickness:1px}
 [data-el=in_map]{overflow:hidden}
-[data-el=in_map] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block;filter:grayscale(1) invert(.92)}
+[data-el=in_map] iframe{width:100%;height:100%;border:0;display:block;filter:grayscale(1) invert(.92)}
 [data-el=ct_bg]{white-space:nowrap}
 @media (min-width:768px){.site-header.overlay,.site-header.overlay.scrolled{margin-bottom:-9.5rem}[data-el=fv_cp2]{display:none}}
 @media (max-width:767.98px){html{scroll-padding-top:5.6rem}.site-header.overlay,.site-header.overlay.scrolled{margin-bottom:-5.6rem}[data-el=fv_cp]{display:none}}
@@ -63,7 +63,7 @@ function apply(file, isHome) {
   }
   h = h.replace(/(<div class="nav-menu">)([\s\S]*?)(<\/div>)/, `$1$2<a class="wa09-tel" href="tel:${TEL.digits}">${TEL.display}</a>$3`);
   if (isHome) {
-    const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（札の位置は上の CSS でも隠す）
+    const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（G020 で地図の上を切り落とす形はやめた）
     const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
     const re = /(<div data-el="in_map"[^>]*>)/;
     if (!re.test(h)) throw new Error("in_map が見つかりません");

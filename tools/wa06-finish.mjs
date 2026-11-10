@@ -32,7 +32,7 @@ html:not(.wa06-past) .site-header.overlay.scrolled .el-text,html:not(.wa06-past)
 .cbox>.el[data-el=ab_hand]{transform:rotate(-4deg)!important}
 [data-el=ab_p] .pg+.pg{margin-top:2.4rem}
 [data-el=ac_map]{overflow:hidden}
-[data-el=ac_map] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block}
+[data-el=ac_map] iframe{width:100%;height:100%;border:0;display:block}
 @media (min-width:768px){.site-header.overlay,.site-header.overlay.scrolled{margin-bottom:-9.3rem}[data-el=fv_name],[data-el=ft_name]{font-size:35.6rem!important;line-height:37.2rem!important}}
 [data-el=fv_name],[data-el=ft_name]{white-space:nowrap}
 @media (max-width:767.98px){[data-el=hd_tel_b],[data-el=hd_tel_t]{display:none}[data-el=hd_name]{text-align:left!important}.el-nav .nav-sp:not([open]) summary{line-height:7.5rem}html{scroll-padding-top:7.5rem}.site-header.overlay,.site-header.overlay.scrolled{margin-bottom:-7.5rem}}
@@ -71,7 +71,7 @@ function apply(file, isHome) {
   // build.mjs は文字の要素の link を出さないので、電話番号の文字をここでリンクにする
   for (const id of ["in_v5", "ft_t"]) h = h.replace(new RegExp(`(<([a-z0-9]+) data-el="${id}"[^>]*>)([\\s\\S]*?)(</\\2>)`), `$1<a href="tel:${TEL.digits}">$3</a>$4`);
   if (isHome) {
-    const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（wa-07・wa-13 と同じ。札の位置は上の CSS でも隠す）
+    const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（wa-07・wa-13 と同じ。G020 で地図の上を切り落とす形はやめた）
     const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
     const re = /(<div data-el="ac_map"[^>]*>)/;
     if (!re.test(h)) throw new Error("ac_map が見つかりません");

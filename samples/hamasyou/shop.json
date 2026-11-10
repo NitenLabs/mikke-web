@@ -17,6 +17,10 @@
     "town": "東芦屋町",
     "street": "2-14",
     "building": "エクセレント芦屋 1F",
+    "geo": {
+      "lat": 34.738449,
+      "lng": 135.304214
+    },
     "access": {
       "acc_hankyu": {
         "station": "阪急芦屋川駅",

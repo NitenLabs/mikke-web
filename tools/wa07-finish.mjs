@@ -17,7 +17,7 @@ html{scroll-padding-top:9rem}
 [data-el=in_tel_b],[data-el=in_map_b]{background:transparent!important;border:1px solid ${BRASS};box-sizing:border-box}
 [data-el=in_tel_b]:hover,[data-el=in_map_b]:hover{background:rgba(168,135,78,.18)!important}
 [data-el=in_mapbox]{overflow:hidden}
-[data-el=in_mapbox] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block;filter:grayscale(1) contrast(.95)}
+[data-el=in_mapbox] iframe{width:100%;height:100%;border:0;display:block;filter:grayscale(1) contrast(.95)}
 .el-nav .nav-row a{font-style:italic;letter-spacing:.04rem;font-weight:400}
 .el-nav .nav-menu a{font-family:var(--nav-font,serif);font-style:italic;color:${CR}!important}
 .el-nav .nav-menu{background:${G}}
@@ -69,7 +69,7 @@ ${pos("[data-el=ft_copy]", `left:${L};width:40%;top:27rem`)}
 }</style>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
-const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : encodeURIComponent(addr); // 緯度経度＋拡大率なら Google の場所の札が出にくい
+const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（G020。地図の上を切り落として隠す形はやめた）
 const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");

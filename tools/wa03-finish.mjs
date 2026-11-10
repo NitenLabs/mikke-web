@@ -11,7 +11,7 @@ const N = 6;
 const css = `<style>
 html{scroll-padding-top:12rem}
 [data-el=ac_mapbox],[data-el=ft_mapbox]{overflow:hidden}
-[data-el=ac_mapbox] iframe,[data-el=ft_mapbox] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block}
+[data-el=ac_mapbox] iframe,[data-el=ft_mapbox] iframe{width:100%;height:100%;border:0;display:block}
 [data-sec=sec_strip]{position:relative;overflow:hidden}
 [data-el^=sr_]{transform:translateX(calc(var(--i)*var(--step)));animation:wa03s var(--dur) linear infinite}
 ${Array.from({ length: N }, (_, i) => `[data-el=sr_${i + 1}]{--i:${i}}`).join("")}
@@ -39,7 +39,8 @@ let h = fs.readFileSync(f, "utf8");
 // 品名は語の切れ目だけで折り返す（1字だけ次の行に落ちないように）
 const BREAKS = JSON.parse(fs.readFileSync(`samples/${ID}/wa03.json`, "utf8")).nameBreaks || {};
 for (const [n, b] of Object.entries(BREAKS)) { const from = `data-cel="c_nm"`; const re = new RegExp(`(<p ${from}[^>]*><span class="pg"><span>)${n}(</span>)`); if (!re.test(h)) throw new Error("品名が見つかりません: " + n); h = h.replace(re, `$1${b.split("|").join("<wbr>")}$2`); }
-const map = (t) => `<iframe title="${shop.basic.name}の${t}" src="https://www.google.com/maps?q=${encodeURIComponent(`${addr} ${shop.basic.name}`)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(`${addr} ${shop.basic.name}`)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（G020。地図の上を切り落として隠す形はやめた）
+const map = (t) => `<iframe title="${shop.basic.name}の${t}" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 for (const [id, t] of [["ac_mapbox", "地図"], ["ft_mapbox", "地図（フッター）"]]) {
   const re = new RegExp(`(<div data-el="${id}"[^>]*>)`);
   if (!re.test(h)) throw new Error(id + " が見つかりません");

@@ -14,7 +14,7 @@ html{scroll-padding-top:9rem}
 [data-el=rv_pill]{background:transparent!important}
 .rep-head{background:#000;width:auto!important;padding:0 1rem;white-space:nowrap}
 [data-el=ac_mapbox]{overflow:hidden}
-[data-el=ac_mapbox] iframe{width:100%;height:calc(100% + 150px);margin-top:-150px;border:0;display:block}
+[data-el=ac_mapbox] iframe{width:100%;height:100%;border:0;display:block}
 [data-el=fv_2],[data-el=fv_3]{opacity:0}
 [data-el=fv_2]{animation:wa02b 18s linear infinite}
 [data-el=fv_3]{animation:wa02c 18s linear infinite}
@@ -40,7 +40,8 @@ function S(d){var o=c;c=(c+d+n)%n;E.forEach(function(e,i){var b=i-3,s=((b-c+3)%n
 setInterval(function(){S(1)},5000);})();</script>`;
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
-const map = `<iframe title="${shop.basic.name}の地図" src="https://www.google.com/maps?q=${encodeURIComponent(`${addr} ${shop.basic.name}`)}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
+const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(`${addr} ${shop.basic.name}`)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（G020。地図の上を切り落として隠す形はやめた）
+const map = `<iframe title="${shop.basic.name}の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 h = h.replace(/(<div data-el="ac_mapbox"[^>]*>)/, `$1${map}`);
 h = h.replace("</head>", css + "</head>").replace("</body>", js + "</body>");
 const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
