@@ -35,6 +35,8 @@ export const FONT_REGISTRY = {
   "marcellus": { family: "Marcellus", generic: "serif", param: "Marcellus" },
   "bodoni-moda": { family: "Bodoni Moda", generic: "serif", param: "Bodoni+Moda:ital,wght@0,400;0,500;1,400" },
   "noto-serif-jp-light": { family: "Noto Serif JP", generic: "serif", param: "Noto+Serif+JP:wght@300;400;500" },
+  "dm-serif-display": { family: "DM Serif Display", generic: "serif", param: "DM+Serif+Display:ital@0;1" },
+  "kaisei-opti": { family: "Kaisei Opti", generic: "serif", param: "Kaisei+Opti:wght@400;500;700" },
 };
 
 // フォントID → CSS の font-family スタック
