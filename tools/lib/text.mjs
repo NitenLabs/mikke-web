@@ -46,10 +46,26 @@ function resolveParagraph(paragraph, scopes, ctx) {
   return { visible, runs: outRuns };
 }
 
+// format="paragraphs"：連動した文字（① の紹介文など）を改行で段落に分ける。
+//   段落の run がこの連動1つだけのとき、値を改行で区切り、空でない行ごとに同じ段落を写して1段落ずつにする
+//   （段落の間は要素の paragraphGap）。値が空なら元の段落のまま（連動先が空なので段落ごと消える）。
+function expandParagraphs(paragraphs, scopes) {
+  const out = [];
+  for (const p of paragraphs) {
+    const b = p.runs?.length === 1 ? p.runs[0].bind : null;
+    if (!b || b.format !== "paragraphs") { out.push(p); continue; }
+    const v = getPointer(scopes[b.scope], b.path);
+    const parts = typeof v === "string" ? v.split(/\r?\n/).filter((x) => x.trim() !== "") : [];
+    if (!parts.length) { out.push(p); continue; }
+    for (const x of parts) out.push({ ...p, runs: [{ text: x, marks: p.runs[0].marks }] });
+  }
+  return out;
+}
+
 // 文字要素を解決する。返り値 { visible, paragraphs:[{runs:[{text,marks}]}] }。
 //   visible=false は「箱ごと消える（全段落が消えた）」。表示の仕組みは reflow の hidden として扱う。
 export function resolveText(element, scopes, ctx = {}) {
-  const paras = element.paragraphs
+  const paras = expandParagraphs(element.paragraphs, scopes)
     .map((p) => resolveParagraph(p, scopes, ctx))
     .filter((p) => p.visible);
   return { visible: paras.length > 0, paragraphs: paras };

@@ -103,6 +103,14 @@ test("連動を含む段落：連動先がすべて空なら段落ごと消え�
   assert.equal(r.paragraphs[0].runs.map((x) => x.text).join(""), "電話　0797-00-0000");
 });
 
+test("format=paragraphs：連動した文字を改行で段落に分ける（空の行は捨てる・空なら消える）", () => {
+  const sc = { shop: { story: { answers: { q: { answer: ["一行目。", "", "二行目。"].join(String.fromCharCode(10)) }, e: { answer: "" } } } } };
+  const el = (path) => ({ type: "text", role: "body", paragraphs: [{ runs: [{ bind: { scope: "shop", path, format: "paragraphs" } }] }] });
+  const r = resolveText(el("/story/answers/q/answer"), sc);
+  assert.deepEqual(r.paragraphs.map((p) => p.runs.map((x) => x.text).join("")), ["一行目。", "二行目。"]);
+  assert.equal(resolveText(el("/story/answers/e/answer"), sc).visible, false);
+});
+
 test("自由な文字だけの段落は消えない", () => {
   const el = { type: "text", role: "body", paragraphs: [{ runs: [{ text: "季節を、ひと口に。" }] }] };
   const r = resolveText(el, scopes);

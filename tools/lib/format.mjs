@@ -210,6 +210,7 @@ export function evalFlag(value) {
 export function applyFormat(format, value, ctx = {}) {
   switch (format) {
     case "plain": return value == null ? "" : String(value);
+    case "paragraphs": return value == null ? "" : String(value); // 段落に分けるのは text.mjs の resolveText
     case "hoursShort": return formatHoursShort(value);
     case "hoursTable": return formatHoursTable(value); // 配列を返す（特別扱い）
     case "closedDays": return formatClosedDays(value);

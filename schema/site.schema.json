@@ -639,6 +639,7 @@
           "type": "string",
           "enum": [
             "plain",
+            "paragraphs",
             "hoursTable",
             "hoursShort",
             "closedDays",
@@ -654,7 +655,7 @@
             "seats",
             "flag"
           ],
-          "description": "複雑な値を文字にする書き方。例：hoursTable=曜日ごとの表、hoursShort=「9:00〜18:00（水曜定休）」、flag=true/false の項目（true なら段落の自由な文字だけを出し、false・空なら段落ごと消す。「できません」とは書かない）"
+          "description": "複雑な値を文字にする書き方。例：paragraphs=改行で段落に分ける（紹介文など）、hoursTable=曜日ごとの表、hoursShort=「9:00〜18:00（水曜定休）」、flag=true/false の項目（true なら段落の自由な文字だけを出し、false・空なら段落ごと消す。「できません」とは書かない）"
         }
       }
     },
