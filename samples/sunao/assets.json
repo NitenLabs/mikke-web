@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 1250,
+        "bytes": 142580,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/RWJ4Qkf0AVE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ショーケースの金属の容器に並ぶ、いちご・ミルク・ピスタチオなど色とりどりのジェラート"
+    },
+    "ast_s101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s101.webp",
+        "mime": "image/webp",
+        "width": 736,
+        "height": 1104,
+        "bytes": 87272,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Q6uTgpjlE7A"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "白い紙のカップに盛った、淡い緑のジェラートの一すくい（シングル）"
+    },
+    "ast_s201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s201.webp",
+        "mime": "image/webp",
+        "width": 736,
+        "height": 1104,
+        "bytes": 45882,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/TLD6iCOlyb0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "ワッフルコーンに、淡いピンクと白の二すくい（ダブル）"
+    },
+    "ast_s301": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s301.webp",
+        "mime": "image/webp",
+        "width": 736,
+        "height": 1104,
+        "bytes": 73200,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/xtVjWVCiE-U"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "ワッフルコーンに、赤・黄・淡い緑の三すくい（トリプル）"
+    },
+    "ast_k101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_k101.webp",
+        "mime": "image/webp",
+        "width": 880,
+        "height": 1100,
+        "bytes": 71778,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/iT4qcNMhYTQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "陶器の台に盛った、オレンジ色のみかんのジェラート"
+    },
+    "ast_c101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_c101.webp",
+        "mime": "image/webp",
+        "width": 600,
+        "height": 600,
+        "bytes": 101958,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_MYcIi9DgYQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "work",
+      "alt": "枝葉ごと積まれた、みかん"
+    },
+    "ast_c201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_c201.webp",
+        "mime": "image/webp",
+        "width": 640,
+        "height": 427,
+        "bytes": 59350,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/sAu3x9_Mg68"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "work",
+      "alt": "白い皿にのせた、半分に切ったいちじく"
+    },
+    "ast_c301": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_c301.webp",
+        "mime": "image/webp",
+        "width": 480,
+        "height": 640,
+        "bytes": 18374,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/8Ox_f0GKesw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "work",
+      "alt": "日差しの中の、ガラス瓶の牛乳"
+    },
+    "ast_c401": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_c401.webp",
+        "mime": "image/webp",
+        "width": 744,
+        "height": 496,
+        "bytes": 117910,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/GcruznrBh4g"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "work",
+      "alt": "殻つきのピスタチオ"
+    },
+    "ast_sea01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sea01.webp",
+        "mime": "image/webp",
+        "width": 1600,
+        "height": 400,
+        "bytes": 106892,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/kjIM_O4BIy0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "夕方の凪いだ海と、桃色から水色に移る空"
+    }
+  }
+}

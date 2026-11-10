@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_sunao",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "GELATO SUNAO",
+    "nameKana": "じぇらーと すなお",
+    "genre": {
+      "template": "restaurant",
+      "detail": "ジェラート"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "平田町",
+    "geo": {
+      "lat": 34.722126,
+      "lng": 135.303482
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "19:00"
+          }
+        ]
+      },
+      "tue": {
+        "status": "closed"
+      }
+    },
+    "note": "冬季は18:00まで。冬季は水曜日も定休"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 6,
+      "counter": 6
+    }
+  },
+  "genreInfo": {
+    "takeout": true
+  },
+  "catalog": {
+    "menus": {
+      "mnu_flavor": {
+        "order": 1,
+        "name": "今日の味"
+      },
+      "mnu_size": {
+        "order": 2,
+        "name": "サイズと値段"
+      }
+    },
+    "categories": {
+      "cat_classic": {
+        "menuId": "mnu_flavor",
+        "name": "定番",
+        "order": 1
+      },
+      "cat_season": {
+        "menuId": "mnu_flavor",
+        "name": "季節",
+        "order": 2
+      },
+      "cat_size": {
+        "menuId": "mnu_size",
+        "name": "サイズと値段",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_f001": {
+        "status": "onSale",
+        "name": "ピスタチオ",
+        "description": "殻から煎って挽いた、香ばしい緑。",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_f002": {
+        "status": "onSale",
+        "name": "ミルク",
+        "description": "牛乳の甘さだけで仕上げた、いちばん素直な味。"
+      },
+      "itm_f003": {
+        "status": "onSale",
+        "name": "塩キャラメル",
+        "description": "焦がしたカラメルに、ひとつまみの塩。"
+      },
+      "itm_f004": {
+        "status": "onSale",
+        "name": "黒胡麻",
+        "description": "炒りたてをすりつぶした、こくのある灰色。"
+      },
+      "itm_f005": {
+        "status": "onSale",
+        "name": "ヨーグルトとベリー",
+        "description": "さっぱりしたヨーグルトに、甘酸っぱいベリーを。"
+      },
+      "itm_f101": {
+        "status": "onSale",
+        "name": "早生みかん",
+        "description": "皮の薄い早生のみかんを、果汁ごと。"
+      },
+      "itm_f102": {
+        "status": "onSale",
+        "name": "紅玉りんご",
+        "description": "酸味の強い紅玉を、皮ごと煮てから。"
+      },
+      "itm_f103": {
+        "status": "onSale",
+        "name": "洋梨",
+        "description": "追熟させた洋梨の、とろりとした甘さ。"
+      },
+      "itm_f104": {
+        "status": "onSale",
+        "name": "いちじく",
+        "description": "熟したいちじくを、ミルクと合わせて。"
+      },
+      "itm_f105": {
+        "status": "onSale",
+        "name": "和栗",
+        "description": "蒸した和栗を裏ごしして、やさしい甘さに。"
+      },
+      "itm_s001": {
+        "status": "onSale",
+        "name": "シングル",
+        "description": "一種類を、たっぷりと。",
+        "photos": [
+          "ast_s101"
+        ],
+        "prices": [
+          {
+            "id": "prc_s001",
+            "type": "fixed",
+            "amount": 550
+          }
+        ]
+      },
+      "itm_s002": {
+        "status": "onSale",
+        "name": "ダブル",
+        "description": "二種類を、ひとつのコーンかカップに。",
+        "photos": [
+          "ast_s201"
+        ],
+        "prices": [
+          {
+            "id": "prc_s002",
+            "type": "fixed",
+            "amount": 700
+          }
+        ]
+      },
+      "itm_s003": {
+        "status": "onSale",
+        "name": "トリプル",
+        "description": "迷ったら、色の違う三つを。",
+        "photos": [
+          "ast_s301"
+        ],
+        "prices": [
+          {
+            "id": "prc_s003",
+            "type": "fixed",
+            "amount": 850
+          }
+        ]
+      },
+      "itm_s004": {
+        "status": "onSale",
+        "name": "持ち帰りカップ 500ml",
+        "description": "お好きな味を二種類まで。保冷剤をお付けします。",
+        "prices": [
+          {
+            "id": "prc_s004",
+            "type": "fixed",
+            "amount": 2400
+          }
+        ]
+      }
+    },
+    "placements": {
+      "plc_f001": {
+        "itemId": "itm_f001",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_classic",
+        "order": 1
+      },
+      "plc_f002": {
+        "itemId": "itm_f002",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_classic",
+        "order": 2
+      },
+      "plc_f003": {
+        "itemId": "itm_f003",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_classic",
+        "order": 3
+      },
+      "plc_f004": {
+        "itemId": "itm_f004",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_classic",
+        "order": 4
+      },
+      "plc_f005": {
+        "itemId": "itm_f005",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_classic",
+        "order": 5
+      },
+      "plc_f101": {
+        "itemId": "itm_f101",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_season",
+        "order": 1
+      },
+      "plc_f102": {
+        "itemId": "itm_f102",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_season",
+        "order": 2
+      },
+      "plc_f103": {
+        "itemId": "itm_f103",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_season",
+        "order": 3
+      },
+      "plc_f104": {
+        "itemId": "itm_f104",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_season",
+        "order": 4
+      },
+      "plc_f105": {
+        "itemId": "itm_f105",
+        "menuId": "mnu_flavor",
+        "categoryId": "cat_season",
+        "order": 5
+      },
+      "plc_s001": {
+        "itemId": "itm_s001",
+        "menuId": "mnu_size",
+        "categoryId": "cat_size",
+        "order": 1
+      },
+      "plc_s002": {
+        "itemId": "itm_s002",
+        "menuId": "mnu_size",
+        "categoryId": "cat_size",
+        "order": 2
+      },
+      "plc_s003": {
+        "itemId": "itm_s003",
+        "menuId": "mnu_size",
+        "categoryId": "cat_size",
+        "order": 3
+      },
+      "plc_s004": {
+        "itemId": "itm_s004",
+        "menuId": "mnu_size",
+        "categoryId": "cat_size",
+        "order": 4
+      }
+    }
+  }
+}

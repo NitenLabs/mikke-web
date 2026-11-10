@@ -1,0 +1,288 @@
+{
+  "name": "GELATO SUNAO",
+  "nameKana": "ジェラート すなお",
+  "copyright": "© GELATO SUNAO",
+  "topbar": [
+    "11:00〜19:00 営業（冬季は 18:00 まで）",
+    "火曜定休（冬季は水曜も）"
+  ],
+  "telLabel": "電話する",
+  "kicker": "芦屋・平田町のジェラート店",
+  "fvEn": [
+    "Fruit",
+    "of",
+    "the",
+    "day."
+  ],
+  "fvCopy": [
+    "その日の果物で、",
+    "その日のジェラート。"
+  ],
+  "fvLead": "毎朝、果物と牛乳から少しずつ作っています。",
+  "fvNote": "今日は十種類。季節の味は、なくなりしだい替わります。",
+  "fvBadge": [
+    "TODAY",
+    "10",
+    "FLAVORS"
+  ],
+  "flEn": "TODAY'S SHOWCASE",
+  "flHead": "今日の味",
+  "flLead": "定番の五つと、季節の五つ。季節の味は、果物がなくなりしだい次の味に替わります。",
+  "flGiant": "Today's Flavors",
+  "classic": {
+    "name": "定番",
+    "en": "CLASSICO",
+    "side": "いつでもあります"
+  },
+  "season": {
+    "name": "季節",
+    "en": "STAGIONE",
+    "side": "いまの五つ",
+    "pick": "今週のおすすめは、早生みかん。"
+  },
+  "flavors": {
+    "itm_f001": {
+      "color": "#A9C48A",
+      "en": "Pistacchio"
+    },
+    "itm_f002": {
+      "color": "#FFFFFF",
+      "ring": true,
+      "en": "Latte"
+    },
+    "itm_f003": {
+      "color": "#C98B4E",
+      "en": "Caramello salato"
+    },
+    "itm_f004": {
+      "color": "#5B5552",
+      "en": "Sesamo nero"
+    },
+    "itm_f005": {
+      "color": "#D9839B",
+      "en": "Yogurt e frutti di bosco"
+    },
+    "itm_f101": {
+      "color": "#F2A03D",
+      "en": "Mandarino",
+      "tag": "旬"
+    },
+    "itm_f102": {
+      "color": "#D2504A",
+      "en": "Mela",
+      "tag": "旬"
+    },
+    "itm_f103": {
+      "color": "#D9D27A",
+      "en": "Pera",
+      "tag": "はしり"
+    },
+    "itm_f104": {
+      "color": "#9C4F6E",
+      "en": "Fico",
+      "tag": "なごり"
+    },
+    "itm_f105": {
+      "color": "#B88A5A",
+      "en": "Castagna",
+      "tag": "なごり"
+    }
+  },
+  "classicPick": [
+    "itm_f001",
+    "itm_f002",
+    "itm_f003",
+    "itm_f004",
+    "itm_f005"
+  ],
+  "seasonPick": [
+    "itm_f101",
+    "itm_f102",
+    "itm_f103",
+    "itm_f104",
+    "itm_f105"
+  ],
+  "szEn": "SIZE & PRICE",
+  "szHead": "サイズと値段",
+  "szLead": "カップかコーンを選べます。値段は同じです。",
+  "sizes": [
+    {
+      "item": "itm_s001",
+      "en": "Single",
+      "tag": "1 FLAVOR"
+    },
+    {
+      "item": "itm_s002",
+      "en": "Double",
+      "tag": "2 FLAVORS"
+    },
+    {
+      "item": "itm_s003",
+      "en": "Triple",
+      "tag": "3 FLAVORS"
+    }
+  ],
+  "sizeTagLeft": "CUP or CONE",
+  "takeout": "itm_s004",
+  "szNote": "表示の値段はすべて税込みです。",
+  "crEn": "EVERY MORNING",
+  "crHead": [
+    "毎朝、",
+    "少しずつ。"
+  ],
+  "crBody": "毎朝、果物と牛乳から少しずつ作っています。ショーケースに並ぶのは十種類ほど。季節の果物の味は、なくなりしだい次の味に替わります。",
+  "craft": [
+    {
+      "photo": "c1",
+      "name": "その朝に届いた果物から",
+      "body": "近くの青果店と農家から、熟したものを少しずつ。その日の果物で、その日の味を決めます。"
+    },
+    {
+      "photo": "c2",
+      "name": "熟したものだけを",
+      "body": "いちじくは、皮がやわらかくなるまで待ってから。実の甘さを、ミルクで包みます。"
+    },
+    {
+      "photo": "c3",
+      "name": "土台は、牛乳",
+      "body": "どの味も、牛乳と砂糖を炊くところから。脂肪分を控えめにして、果物の香りを立たせます。"
+    },
+    {
+      "photo": "c4",
+      "name": "殻をむいて、煎って、挽く",
+      "body": "ピスタチオのペーストは店で挽いています。香りがいちばん立つのは、挽いたその日です。"
+    }
+  ],
+  "sea": "持ち帰りのカップを手に、海のほうまで歩いていく方もいます。",
+  "faqGiant": "Good to know",
+  "faqHead": "よくある質問",
+  "faq": [
+    [
+      [
+        "持ち帰りは、",
+        "どのくらいもちますか。"
+      ],
+      "保冷剤をお付けして、30分ほどが目安です。ご自宅の冷凍庫では、三日以内にお召し上がりください。"
+    ],
+    [
+      "店内で食べられますか。",
+      "6席の小さなカウンターがあります。混み合うときは、少しお待ちいただくことがあります。"
+    ],
+    [
+      [
+        "季節の味は、",
+        "いつ替わりますか。"
+      ],
+      "果物がなくなりしだい、次の味に替わります。気になる味は、お早めにどうぞ。"
+    ],
+    [
+      "試食はできますか。",
+      "ひと口ずつ、お試しいただけます。お気軽に声をおかけください。"
+    ]
+  ],
+  "acGiant": "Access",
+  "acRows": [
+    [
+      "(OPEN)",
+      "11:00〜19:00（冬季は 18:00 まで）"
+    ],
+    [
+      "(CLOSE)",
+      "火曜日（冬季は水曜日も）"
+    ],
+    [
+      "(PHONE)",
+      [
+        "/contact/phone",
+        "phone"
+      ]
+    ],
+    [
+      "(SEATS)",
+      "店内 6 席・テイクアウト"
+    ],
+    [
+      "(ADDRESS)",
+      [
+        "/location",
+        "address"
+      ]
+    ]
+  ],
+  "mapLabel": "地図アプリで開く",
+  "footLine": "芦屋・平田町の小さなジェラート店です。",
+  "nav": [
+    [
+      "今日の味",
+      "flavors"
+    ],
+    [
+      "サイズと値段",
+      "sizes"
+    ],
+    [
+      "毎朝のこと",
+      "craft"
+    ],
+    [
+      "よくある質問",
+      "faq"
+    ],
+    [
+      "お店の案内",
+      "access"
+    ]
+  ],
+  "photos": {
+    "fv": {
+      "slot": "signature",
+      "alt": "ショーケースの金属の容器に並ぶ、いちご・ミルク・ピスタチオなど色とりどりのジェラート",
+      "page": "https://unsplash.com/photos/RWJ4Qkf0AVE"
+    },
+    "s1": {
+      "slot": "product",
+      "alt": "白い紙のカップに盛った、淡い緑のジェラートの一すくい（シングル）",
+      "page": "https://unsplash.com/photos/Q6uTgpjlE7A"
+    },
+    "s2": {
+      "slot": "product",
+      "alt": "ワッフルコーンに、淡いピンクと白の二すくい（ダブル）",
+      "page": "https://unsplash.com/photos/TLD6iCOlyb0"
+    },
+    "s3": {
+      "slot": "product",
+      "alt": "ワッフルコーンに、赤・黄・淡い緑の三すくい（トリプル）",
+      "page": "https://unsplash.com/photos/xtVjWVCiE-U"
+    },
+    "k1": {
+      "slot": "product",
+      "alt": "陶器の台に盛った、オレンジ色のみかんのジェラート",
+      "page": "https://unsplash.com/photos/iT4qcNMhYTQ"
+    },
+    "c1": {
+      "slot": "work",
+      "alt": "枝葉ごと積まれた、みかん",
+      "page": "https://unsplash.com/photos/_MYcIi9DgYQ"
+    },
+    "c2": {
+      "slot": "work",
+      "alt": "白い皿にのせた、半分に切ったいちじく",
+      "page": "https://unsplash.com/photos/sAu3x9_Mg68"
+    },
+    "c3": {
+      "slot": "work",
+      "alt": "日差しの中の、ガラス瓶の牛乳",
+      "page": "https://unsplash.com/photos/8Ox_f0GKesw"
+    },
+    "c4": {
+      "slot": "work",
+      "alt": "殻つきのピスタチオ",
+      "page": "https://unsplash.com/photos/GcruznrBh4g"
+    },
+    "sea": {
+      "slot": "other",
+      "alt": "夕方の凪いだ海と、桃色から水色に移る空",
+      "page": "https://unsplash.com/photos/kjIM_O4BIy0"
+    }
+  }
+}
