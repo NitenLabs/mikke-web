@@ -33,6 +33,8 @@ export const FONT_REGISTRY = {
   "archivo-black": { family: "Archivo Black", generic: "sans-serif", param: "Archivo+Black" },
   "kaisei-decol": { family: "Kaisei Decol", generic: "serif", param: "Kaisei+Decol:wght@400;500;700" },
   "marcellus": { family: "Marcellus", generic: "serif", param: "Marcellus" },
+  "bodoni-moda": { family: "Bodoni Moda", generic: "serif", param: "Bodoni+Moda:ital,wght@0,400;0,500;1,400" },
+  "noto-serif-jp-light": { family: "Noto Serif JP", generic: "serif", param: "Noto+Serif+JP:wght@300;400;500" },
 };
 
 // フォントID → CSS の font-family スタック
