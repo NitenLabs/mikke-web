@@ -27,6 +27,7 @@ export const FONT_REGISTRY = {
   "libre-caslon-display": { family: "Libre Caslon Display", generic: "serif", param: "Libre+Caslon+Display" },
   "oswald": { family: "Oswald", generic: "sans-serif", param: "Oswald:wght@400;500;700" },
   "dela-gothic-one": { family: "Dela Gothic One", generic: "sans-serif", param: "Dela+Gothic+One" },
+  "zen-antique-soft": { family: "Zen Antique Soft", generic: "serif", param: "Zen+Antique+Soft" },
 };
 
 // フォントID → CSS の font-family スタック
