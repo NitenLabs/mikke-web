@@ -1,0 +1,10 @@
+# wa-19 Restaurant Lueur（架空のお店）の使用写真（Unsplash License。8 枚とも紹介ページで「Free to use under the Unsplash License」を確認）
+# 書式：枠 紹介ページの短いID 取得URL（ref-verify が行末の URL を読むので URL を最後に置く）。切り抜き（rect）は使っていない。表示の比に合わせるのは object-fit: cover
+fv gVvSNWuw6kQ https://images.unsplash.com/photo-1616671285410-2a676a9a433d?w=1200&q=72&fm=webp
+ab1 gVkAiPchYhY https://images.unsplash.com/photo-1562713682-cde79058b2b2?w=1120&q=72&fm=webp
+ab2 saw2ahar17s https://images.unsplash.com/photo-1596438214057-5ff7c7fa76b1?w=840&q=72&fm=webp
+ab3 Bq44jpoeFf4 https://images.unsplash.com/photo-1775497950071-965cf9e20b2f?w=800&q=72&fm=webp
+pl1 1cc0iUASg2I https://images.unsplash.com/photo-1673912401286-28ca0dbd17fd?w=920&q=74&fm=webp
+pl2 RAUGKcReU8A https://images.unsplash.com/photo-1676471926534-d5c9771909fa?w=920&q=74&fm=webp
+pl3 yXX10Yaokhg https://images.unsplash.com/photo-1718705149265-22cd3a73b33c?w=920&q=74&fm=webp
+pl4 hKL4xUCymVM https://images.unsplash.com/photo-1679434759462-d15a1de993c1?w=920&q=74&fm=webp
