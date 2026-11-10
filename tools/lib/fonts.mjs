@@ -39,6 +39,8 @@ export const FONT_REGISTRY = {
   "kaisei-opti": { family: "Kaisei Opti", generic: "serif", param: "Kaisei+Opti:wght@400;500;700" },
   "zen-kaku-gothic-antique": { family: "Zen Kaku Gothic Antique", generic: "sans-serif", param: "Zen+Kaku+Gothic+Antique:wght@400;500;700" },
   "bricolage-grotesque": { family: "Bricolage Grotesque", generic: "sans-serif", param: "Bricolage+Grotesque:wght@400;600;800" },
+  "kiwi-maru": { family: "Kiwi Maru", generic: "serif", param: "Kiwi+Maru:wght@400;500" },
+  "young-serif": { family: "Young Serif", generic: "serif", param: "Young+Serif" },
 };
 
 // フォントID → CSS の font-family スタック
