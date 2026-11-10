@@ -1,0 +1,16 @@
+# wa-23 中華そば 芦の葉（架空のお店。ID ashinoha）の使用写真（Unsplash License。13 枚とも検索の JSON で premium=false＝Unsplash+ でないことを確認。人の顔・ロゴ・読める文字・看板なし。700px で1枚ずつ確認）
+# 書式：枠 紹介ページの短いID 取得URL（ref-verify が行末の URL を読むので URL を最後に置く）
+# 切り抜きは imgix の fit=crop＋focalpoint（割合指定）。rect は使っていない（向きの補正で画素の座標がずれるため）。表示の比に合わせるのは object-fit: cover
+fv arFb72Zid48 https://images.unsplash.com/photo-1584739200850-dc2072fdfe04?w=1600&q=74&fm=webp
+shoyu -LJmvGXl6yg https://images.unsplash.com/photo-1668745989462-d6ad2ebd757e?w=900&q=74&fm=webp
+shio G0T7sSiSyKo https://images.unsplash.com/photo-1785031626942-5468584caf18?w=900&h=900&fit=crop&crop=focalpoint&fp-x=0.72&fp-y=0.6&q=74&fm=webp
+tokusei s5p35h9lu8g https://images.unsplash.com/photo-1706128998682-b32d1c1523a4?w=900&q=74&fm=webp
+lift KRYuPwvyEys https://images.unsplash.com/photo-1734313276354-75c96b3c0c36?w=800&h=1000&fit=crop&crop=focalpoint&fp-x=0.62&fp-y=0.52&fp-z=1.8&q=74&fm=webp
+ajitama xZXGgrRppaA https://images.unsplash.com/photo-1633364468491-b0df288c7da7?w=760&q=74&fm=webp
+donburi 7TARyyHQos8 https://images.unsplash.com/photo-1770966666358-e9f8c4f37daf?w=760&q=74&fm=webp
+m-soup J2pXPoDZE5k https://images.unsplash.com/photo-1672787153652-b3b9d92f3e8c?w=900&q=72&fm=webp
+m-kaeshi uaMwBQ_wjng https://images.unsplash.com/photo-1499126167718-c87f5c1387e8?w=900&q=72&fm=webp
+m-men L7POzOAoaQY https://images.unsplash.com/photo-1633352615955-f0c99e8b7e5a?w=800&q=72&fm=webp
+m-gu Qhr3xNxnBDk https://images.unsplash.com/photo-1775572761893-c67c76dcee91?w=800&h=800&fit=crop&crop=focalpoint&fp-x=0.5&fp-y=0.62&q=72&fm=webp
+niboshi CuhcdKmHt9A https://images.unsplash.com/photo-1763837986847-629f9623b02c?w=700&q=72&fm=webp
+counter QiA43Y5AJCU https://images.unsplash.com/photo-1780918912054-cce7073e9eda?w=1200&q=72&fm=webp
