@@ -37,8 +37,10 @@ const pin = `<svg class="wa03-pin" viewBox="0 0 24 24" aria-hidden="true"><path 
 const f = `${OUT}/index.html`;
 let h = fs.readFileSync(f, "utf8");
 // 品名は語の切れ目だけで折り返す（1字だけ次の行に落ちないように）
-const BREAKS = JSON.parse(fs.readFileSync(`samples/${ID}/wa03.json`, "utf8")).nameBreaks || {};
-for (const [n, b] of Object.entries(BREAKS)) { const from = `data-cel="c_nm"`; const re = new RegExp(`(<p ${from}[^>]*><span class="pg"><span>)${n}(</span>)`); if (!re.test(h)) throw new Error("品名が見つかりません: " + n); h = h.replace(re, `$1${b.split("|").join("<wbr>")}$2`); }
+const W3 = JSON.parse(fs.readFileSync(`samples/${ID}/wa03.json`, "utf8"));
+const BREAKS = W3.nameBreaks || {};
+// fromShop の店は品名を ① で直せるので、名前が変わって見つからない折り目は飛ばす（知らせるだけ）
+for (const [n, b] of Object.entries(BREAKS)) { const from = `data-cel="c_nm"`; const re = new RegExp(`(<p ${from}[^>]*><span class="pg"><span>)${n}(</span>)`); if (!re.test(h)) { if (W3.fromShop) { console.warn("wa03-finish: 品名が見つからないので折り目を飛ばします: " + n); continue; } throw new Error("品名が見つかりません: " + n); } h = h.replace(re, `$1${b.split("|").join("<wbr>")}$2`); }
 const mapQ = loc.geo ? `${loc.geo.lat},${loc.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(`${addr} ${shop.basic.name}`)}&hl=ja`; // 緯度経度＋拡大率で Google の場所の札を出さない（G020。地図の上を切り落として隠す形はやめた）
 const map = (t) => `<iframe title="${shop.basic.name}の${t}" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
 for (const [id, t] of [["ac_mapbox", "地図"], ["ft_mapbox", "地図（フッター）"]]) {

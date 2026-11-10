@@ -1,4 +1,5 @@
 {
+  "fromShop": true,
   "name": "AMET COFFEE",
   "nameEn": "Amet Coffee",
   "fvCopy": [
@@ -14,9 +15,7 @@
   "mikkeUrl": "https://ashiya-mikke.pages.dev/spot/amet-coffee/",
   "copyright": "© AMET COFFEE",
   "infoRow": {
-    "label": "お席",
-    "value": "5席・全席禁煙・テイクアウト可",
-    "valueShort": "5席・全席禁煙"
+    "label": "お席"
   },
   "extraNav": [
     {

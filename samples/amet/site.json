@@ -437,7 +437,8 @@
           "h": 64,
           "size": 64
         }
-      }
+      },
+      "edit": false
     },
     "st_en": {
       "type": "text",
@@ -475,7 +476,8 @@
           "h": 44.8,
           "size": 44.8
         }
-      }
+      },
+      "edit": false
     },
     "st_ja": {
       "type": "text",
@@ -524,14 +526,11 @@
         {
           "runs": [
             {
-              "text": "一杯のコーヒーと、"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "ドーナツをひとつ。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_catch/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -569,21 +568,11 @@
         {
           "runs": [
             {
-              "text": "2026年2月、JR芦屋駅の南口からすぐの場所に開いた、小さなコーヒースタンドです。"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "コーヒーは西宮の TAOCA COFFEE の豆を使い、一杯ずつお淹れします。外はカリッと、中はしっかり詰まった SHICT のドーナツと一緒にどうぞ。"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "朝8時半から開いているので、通勤前の一杯にも。12時まではお得なモーニングもあります。店内に5席、テイクアウトもできます。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_body/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -730,7 +719,8 @@
           "h": 89.6,
           "size": 64
         }
-      }
+      },
+      "edit": false
     },
     "mn_en": {
       "type": "text",
@@ -768,7 +758,8 @@
           "h": 44.8,
           "size": 44.8
         }
-      }
+      },
+      "edit": false
     },
     "mn_ja": {
       "type": "text",
@@ -815,15 +806,8 @@
       "source": {
         "kind": "catalog",
         "menuId": "mnu_food",
-        "pick": [
-          "itm_m001",
-          "itm_m002",
-          "itm_m003",
-          "itm_m004",
-          "itm_m005",
-          "itm_m006",
-          "itm_m007",
-          "itm_m008"
+        "categoryIds": [
+          "cat_menu"
         ]
       },
       "display": {
@@ -1044,7 +1028,8 @@
           "h": 44.8,
           "size": 44.8
         }
-      }
+      },
+      "edit": false
     },
     "ac_ja": {
       "type": "text",
@@ -1158,7 +1143,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v0": {
       "type": "text",
@@ -1238,7 +1224,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v1": {
       "type": "text",
@@ -1318,7 +1305,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v2": {
       "type": "text",
@@ -1329,7 +1317,21 @@
         {
           "runs": [
             {
-              "text": "5席・全席禁煙・テイクアウト可"
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/seats/total",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "席・全席禁煙・"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1394,7 +1396,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v3": {
       "type": "text",
@@ -1477,7 +1480,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v4": {
       "type": "text",
@@ -1593,7 +1597,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ac_mapbox": {
       "type": "shape",
@@ -1879,7 +1884,8 @@
           "h": 22.4,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_n1": {
       "type": "text",
@@ -1921,7 +1927,8 @@
           "h": 22.4,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_n2": {
       "type": "text",
@@ -1963,7 +1970,8 @@
           "h": 22.4,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_n3": {
       "type": "text",
@@ -2006,7 +2014,8 @@
           "h": 22.4,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_mapbox": {
       "type": "shape",
@@ -2065,7 +2074,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_v0": {
       "type": "text",
@@ -2145,7 +2155,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_v1": {
       "type": "text",
@@ -2225,7 +2236,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_v2": {
       "type": "text",
@@ -2236,7 +2248,14 @@
         {
           "runs": [
             {
-              "text": "5席・全席禁煙"
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/seats/total",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "席・全席禁煙"
             }
           ]
         }
@@ -2301,7 +2320,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_v3": {
       "type": "text",
@@ -2389,7 +2409,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_draft": {
       "type": "text",
@@ -2427,7 +2448,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_copy": {
       "type": "text",
