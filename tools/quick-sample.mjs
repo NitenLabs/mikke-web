@@ -2,7 +2,7 @@
 // 下見の見本（指示 0041・段1）：ギャラリーの架空のお店の書き出し（_preview/<型>/）を型にして、
 // 実のお店の情報（名前・ジャンル・町・住所・電話・営業時間・Instagram）を差し込んだ軽い見本を作る。
 // 使い方：node tools/quick-sample.mjs <入力の json> [--root 型の置き場（既定 C:/Users/sea_p/GitHub/_preview）] [--out 書き出し先の根（既定 --root と同じ）] [--id 12文字]
-//   入力：{ "name", "genre", "town", "address", "phone", "hours"?, "closed"?, "access"?, "instagram"?, "nameEn"?, "template"? }
+//   入力：{ "name", "genre", "town", "address", "phone"?, "hours"?, "closed"?, "access"?, "instagram"?, "nameEn"?, "template"? }
 //   出力：<out>/q/<推測できない12文字>/ に index.html と assets/。標準出力に json（path・template など）
 // 型の選び方と言葉は tools/quick-sample-map.json。共通の道具（build・*-gen・preview-export・gallery-export）は使わず、書き出し済みの HTML を読むだけ。
 // 最後に自己検査：型のお店の名前・電話・住所・町・地図の位置・値段が残っていたら、書き出しを消して失敗で終わる。
@@ -24,7 +24,8 @@ const ROOT = opt("--root", "C:/Users/sea_p/GitHub/_preview");
 const OUT_ROOT = opt("--out", ROOT);
 
 const input = JSON.parse(fs.readFileSync(inputPath, "utf8").replace(/^\uFEFF/, ""));
-for (const k of ["name", "genre", "town", "address", "phone"]) if (!String(input[k] || "").trim()) die(`入力に ${k} がありません`);
+// 電話は任意（美容の店は一覧に電話の無い所が多い）。無ければ「お店に合わせて載せます」にし、電話のリンクは外す
+for (const k of ["name", "genre", "town", "address"]) if (!String(input[k] || "").trim()) die(`入力に ${k} がありません`);
 const MAP = JSON.parse(fs.readFileSync(path.join(HERE, "quick-sample-map.json"), "utf8"));
 const C = MAP.common;
 const gallery = JSON.parse(fs.readFileSync(path.join(REPO, "data", "gallery.json"), "utf8")).shops;
@@ -42,7 +43,7 @@ const TS = JSON.parse(fs.readFileSync(path.join(REPO, "samples", tplId, "shop.js
 // ---- 置き換える値 ----
 const N = {
   name: input.name.trim(), nameEn: (input.nameEn || "").trim() || input.name.trim(), town: input.town.trim(),
-  address: input.address.trim(), phone: input.phone.trim(), digits: input.phone.replace(/\D/g, ""),
+  address: input.address.trim(), phone: String(input.phone || "").trim() || C.pending, digits: String(input.phone || "").replace(/\D/g, ""),
   hours: (input.hours || "").trim(), closed: (input.closed || "").trim(), access: (input.access || "").trim(),
   ig: String(input.instagram || "").trim().replace(/^@/, "").replace(/^https?:\/\/(www\.)?instagram\.com\//, "").replace(/\/.*$/, ""),
 };
@@ -211,6 +212,8 @@ for (const e of [...els].reverse()) {
 // 写真の説明：言葉を変える型（美容室など）は料理の説明を外す
 if (G.fallback) body = body.replace(/(<img\b[^>]*\balt=")[^"]*"/g, `$1見本の仮の写真"`);
 
+// 電話の無い店：電話のリンクを外す（型の番号の置き換えより先に）
+if (!N.digits) body = body.replace(/href="tel:[^"]*"/g, 'href="#top"');
 for (const [a, b] of swaps) body = body.split(a).join(b);
 // 文字の要素の外の文（メニューの開閉の中のリンクなど）にも型の名前の一部が残るので、地の文だけ置き換える
 body = body.split(/(<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>)/).map((part, i) => (i % 2 ? part : part.replace(/>([^<]+)</g, (m, t) => `>${esc(applySwaps(unesc(t)))}<`))).join("");
@@ -286,7 +289,7 @@ for (const f of files) {
     if (!/<meta name="robots" content="noindex,nofollow">/.test(h)) problems.push("index.html：robots の noindex がありません");
     if (!h.includes(C.banner)) problems.push("index.html：上の帯がありません");
     if (menuSecs.length && !h.includes(C.menuNote)) problems.push("index.html：品書きの上の一文がありません");
-    if (!h.includes(`tel:${N.digits}`) && /href="tel:/.test(fs.readFileSync(path.join(SRC, "index.html"), "utf8"))) problems.push("index.html：電話のリンクが差し替わっていません");
+    if (N.digits && !h.includes(`tel:${N.digits}`) && /href="tel:/.test(fs.readFileSync(path.join(SRC, "index.html"), "utf8"))) problems.push("index.html：電話のリンクが差し替わっていません");
     if (!visible.includes(N.name)) problems.push("index.html：店名が入っていません");
     if (!h.includes(encodeURIComponent(N.address)) && /maps\?q=/.test(fs.readFileSync(path.join(SRC, "index.html"), "utf8"))) problems.push("index.html：地図が差し替わっていません");
   }
