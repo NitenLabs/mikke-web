@@ -157,7 +157,7 @@ if (F.length) {
   t("fl_h", S, C.flow.heading, [[40, 56], [28, 39.2]], H, AI, [{ x: 200, y: y(0), w: 56, h: 336 }, { x: 32, y: ys(0), w: 326, h: 40 }], { vp: true, ls: 0.12, role: "heading" });
   t("fl_en", S, C.flow.en, [[13, 16], [13, 16]], E, MUTE, [{ x: 160, y: y(360), w: 136, h: 16 }, { x: 32, y: ys(52), w: 326, h: 16 }], { italic: true, ...CT });
   t("fl_p", S, C.flow.body, [[15, 30], [15, 30]], B, INK, [{ x: 117, y: y(408), w: 260, h: 150 }, { x: 32, y: ys(84), w: 326, h: 90 }]);
-  photo("fl_ph", S, "ast_phfr2", 2, { x: 137, y: y(600), w: 240, h: 480 }, { x: 32, y: ys(spPh), w: 326, h: 240 }, { fy: 72 });
+  photo("fl_ph", S, "ast_phfr2", 2, { x: 137, y: y(600), w: 240, h: 480 }, { x: 32, y: ys(spPh), w: 326, h: 240 }, { fy: 55 });
   const tRows = TT + 56 + 28 + 64 + 32;
   tT("fl_h", TT, TAB_H);
   tT("fl_en", TT + 52, font(13, 16));

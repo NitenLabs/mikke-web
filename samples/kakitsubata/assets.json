@@ -112,7 +112,7 @@
         "mime": "image/webp",
         "width": 960,
         "height": 1440,
-        "bytes": 135874,
+        "bytes": 183310,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T12:00:00+09:00",
@@ -120,7 +120,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/ErSmnThoeJI"
+        "pageUrl": "https://unsplash.com/photos/NnFxaf3mRm8"
       },
       "rights": {
         "basis": "licensed",
@@ -129,7 +129,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "signature",
-      "alt": "揚げたての天ぷらの衣"
+      "alt": "青もみじを添えた、茄子など季節の野菜の天ぷら"
     },
     "ast_phmn1": {
       "kind": "photo",
