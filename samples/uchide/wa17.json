@@ -1,0 +1,49 @@
+{
+  "name": "お好み焼き 鉄板焼き うちで",
+  "kicker": "お好み焼き・鉄板焼き",
+  "nameShort": "うちで",
+  "copyright": "© お好み焼き 鉄板焼き うちで",
+  "fvCopy": ["鉄板の前で、", "いつもの夜を。"],
+  "facts": [
+    ["昼", "11:30 – 14:00", "a"],
+    ["夜", "17:00 – 22:00 / L.O. 21:30", "a"],
+    ["定休日", "火曜日", "b"]
+  ],
+  "sigKicker": "看板の三品",
+  "sigHead": ["迷ったら、", "まずはこの三品を。"],
+  "sigPick": ["itm_m002", "itm_m007", "itm_m008"],
+  "menuKicker": "お品書き",
+  "menuHead": ["粉もん、鉄板焼き、", "お飲みもの。"],
+  "cards": [
+    { "id": "kona", "menu": "mnu_kona", "en": "KONAMON", "title": "粉もん", "desc": "生地には山芋をたっぷり。ふんわりと焼き上げます。", "photo": "ast_ck01" },
+    { "id": "teppan", "menu": "mnu_teppan", "en": "TEPPANYAKI", "title": "鉄板焼き", "desc": "焼きたてを、目の前の鉄板でお出しします。", "photo": "ast_ct01" },
+    { "id": "drink", "menu": "mnu_drink", "en": "DRINKS", "title": "お飲みもの", "desc": "焼き上がりを待つあいだに、まずは一杯。", "photo": "ast_cd01" }
+  ],
+  "note": "表示の値段はすべて税込みです。",
+  "aboutKicker": "うちでのこと",
+  "aboutHead": "焼くのは、こちらで。",
+  "aboutBody": "家族三代で通っていただける店を目指しています。生地には山芋をたっぷり使い、牛すじは毎朝炊いています。焼き上がりは、鉄板の上でそのまま熱いうちにどうぞ。",
+  "seats": [["8", "鉄板カウンター"], ["16", "テーブル"]],
+  "infoHead": "ご案内",
+  "infoRows": [
+    ["ご住所", ["/location", "address"]],
+    ["営業時間", ["昼 11:30〜14:00", "夜 17:00〜22:00（L.O. 21:30）"]],
+    ["定休日", "火曜日"],
+    ["お席", "鉄板カウンター8席・テーブル16席"],
+    ["お電話", ["/contact/phone", "phone"]]
+  ],
+  "telLabel": "電話をかける",
+  "mapLabel": "地図アプリで開く",
+  "footHours": ["昼 11:30〜14:00", "夜 17:00〜22:00（L.O. 21:30）", "火曜日 定休"],
+  "nav": [["看板の三品", "signature"], ["お品書き", "menu"], ["うちでのこと", "about"], ["ご案内", "info"]],
+  "photos": {
+    "fv": { "slot": "signature", "alt": "鉄板の上で焼き上がる、ソースを塗ったお好み焼き", "page": "https://unsplash.com/photos/_b7crTKUWJQ" },
+    "s1": { "slot": "signature", "alt": "いか玉。ソースとマヨネーズを網目に掛け、青のりをふって", "page": "https://unsplash.com/photos/IveJAkyk7q8" },
+    "s2": { "slot": "signature", "alt": "とん平焼き。薄焼きの卵にケチャップを掛けて", "page": "https://unsplash.com/photos/_h3ryw-rrgA" },
+    "s3": { "slot": "signature", "alt": "国産牛の鉄板ステーキ。ひと口の大きさに切って塩を添えて", "page": "https://unsplash.com/photos/EXfx1jB3SsM" },
+    "ck": { "slot": "interior", "alt": "鉄板の上でキャベツを返すコテ", "page": "https://unsplash.com/photos/LEgwpRoh76Q" },
+    "ct": { "slot": "interior", "alt": "湯気の立つ鉄板の肉と、脇に置いたコテ", "page": "https://unsplash.com/photos/-Wtr4LKbX54" },
+    "cd": { "slot": "product", "alt": "カウンターに置いた生ビールのグラス", "page": "https://unsplash.com/photos/frO8EMqYh6g" },
+    "ab": { "slot": "interior", "alt": "鉄板の上で、キャベツと豚肉を二本のコテで焼く手元", "page": "https://unsplash.com/photos/J28liJUJ5E4" }
+  }
+}

@@ -1,0 +1,359 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_uchide",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "お好み焼き 鉄板焼き うちで",
+    "nameKana": "おこのみやき てっぱんやき うちで",
+    "genre": {
+      "template": "restaurant",
+      "detail": "お好み焼き・鉄板焼き"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "打出小槌町",
+    "geo": {
+      "lat": 34.732311,
+      "lng": 135.313461
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "label": "昼"
+          },
+          {
+            "start": "17:00",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "tue": {
+        "status": "closed"
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "label": "昼"
+          },
+          {
+            "start": "17:00",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "label": "昼"
+          },
+          {
+            "start": "17:00",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "label": "昼"
+          },
+          {
+            "start": "17:00",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "label": "昼"
+          },
+          {
+            "start": "17:00",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "label": "昼"
+          },
+          {
+            "start": "17:00",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:30"
+          }
+        ]
+      }
+    },
+    "note": "夜のラストオーダーは21:30"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 24,
+      "counter": 8,
+      "table": 16
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_kona": {
+        "order": 1,
+        "name": "粉もん"
+      },
+      "mnu_teppan": {
+        "order": 2,
+        "name": "鉄板焼き"
+      },
+      "mnu_drink": {
+        "order": 3,
+        "name": "お飲みもの"
+      }
+    },
+    "categories": {
+      "cat_kona": {
+        "menuId": "mnu_kona",
+        "name": "粉もん",
+        "order": 1
+      },
+      "cat_teppan": {
+        "menuId": "mnu_teppan",
+        "name": "鉄板焼き",
+        "order": 1
+      },
+      "cat_drink": {
+        "menuId": "mnu_drink",
+        "name": "お飲みもの",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_m001": {
+        "name": "豚玉",
+        "prices": [
+          {
+            "id": "prc_m001",
+            "type": "fixed",
+            "amount": 900
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m002": {
+        "name": "いか玉",
+        "description": "山芋をたっぷり使った生地に、いかを合わせて。ソースとマヨネーズ、青のりで仕上げます。",
+        "photos": [
+          "ast_s101"
+        ],
+        "labels": [
+          "lbl_recommend"
+        ],
+        "prices": [
+          {
+            "id": "prc_m002",
+            "type": "fixed",
+            "amount": 1000
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m003": {
+        "name": "牛すじこん",
+        "prices": [
+          {
+            "id": "prc_m003",
+            "type": "fixed",
+            "amount": 1200
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m004": {
+        "name": "モダン焼き",
+        "prices": [
+          {
+            "id": "prc_m004",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m005": {
+        "name": "ねぎ焼き",
+        "prices": [
+          {
+            "id": "prc_m005",
+            "type": "fixed",
+            "amount": 1000
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m006": {
+        "name": "焼きそば",
+        "prices": [
+          {
+            "id": "prc_m006",
+            "type": "fixed",
+            "amount": 850
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m007": {
+        "name": "とん平焼き",
+        "description": "鉄板で焼いた豚肉を、薄焼きの卵でくるみました。仕上げにケチャップを掛けて。",
+        "photos": [
+          "ast_s201"
+        ],
+        "labels": [
+          "lbl_recommend"
+        ],
+        "prices": [
+          {
+            "id": "prc_m007",
+            "type": "fixed",
+            "amount": 750
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m008": {
+        "name": "国産牛の鉄板ステーキ",
+        "description": "国産牛を鉄板で焼き、ひと口の大きさに切ってお出しします。まずは塩で。",
+        "photos": [
+          "ast_s301"
+        ],
+        "labels": [
+          "lbl_recommend"
+        ],
+        "prices": [
+          {
+            "id": "prc_m008",
+            "type": "fixed",
+            "amount": 2800
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m009": {
+        "name": "生ビール",
+        "prices": [
+          {
+            "id": "prc_m009",
+            "type": "fixed",
+            "amount": 600
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_kona",
+        "categoryId": "cat_kona",
+        "order": 1
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_kona",
+        "categoryId": "cat_kona",
+        "order": 2
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_kona",
+        "categoryId": "cat_kona",
+        "order": 3
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_kona",
+        "categoryId": "cat_kona",
+        "order": 4
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_kona",
+        "categoryId": "cat_kona",
+        "order": 5
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_kona",
+        "categoryId": "cat_kona",
+        "order": 6
+      },
+      "plc_m007": {
+        "itemId": "itm_m007",
+        "menuId": "mnu_teppan",
+        "categoryId": "cat_teppan",
+        "order": 7
+      },
+      "plc_m008": {
+        "itemId": "itm_m008",
+        "menuId": "mnu_teppan",
+        "categoryId": "cat_teppan",
+        "order": 8
+      },
+      "plc_m009": {
+        "itemId": "itm_m009",
+        "menuId": "mnu_drink",
+        "categoryId": "cat_drink",
+        "order": 9
+      }
+    }
+  }
+}

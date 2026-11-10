@@ -1,0 +1,9 @@
+# wa-17 お好み焼き 鉄板焼き うちで（架空のお店）の使用写真
+fv https://images.unsplash.com/photo-1700324675741-f79f5bad651c?w=1360&h=1120&fit=crop&crop=focalpoint&fp-x=.47&fp-y=.55&q=72&fm=webp
+s1 https://images.unsplash.com/photo-1764520406362-b1673b2213bf?rect=700,450,4700,3550&w=1400&h=1120&fit=crop&q=72&fm=webp
+s2 https://images.unsplash.com/photo-1700324673015-52cddc228533?w=920&h=560&fit=crop&crop=focalpoint&fp-x=.42&fp-y=.62&q=72&fm=webp
+s3 https://images.unsplash.com/photo-1717815963424-7c5be47574cf?rect=0,1150,4000,2400&w=920&h=560&fit=crop&q=72&fm=webp
+ck https://images.unsplash.com/photo-1786328413186-ba8ac7573152?rect=0,520,4608,2072&w=1176&h=600&fit=crop&q=72&fm=webp
+ct https://images.unsplash.com/photo-1785733690836-6f4f638be83a?rect=0,1300,5472,1640&w=1176&h=352&fit=crop&q=72&fm=webp
+cd https://images.unsplash.com/photo-1738696386104-47b0f160ee66?rect=0,1880,6000,1620&w=1176&h=352&fit=crop&q=72&fm=webp
+ab https://images.unsplash.com/photo-1652591206004-957317c2d0bc?rect=2200,1000,2800,1867&w=1200&h=800&fit=crop&q=72&fm=webp

@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1360,
+        "height": 1120,
+        "bytes": 103294,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_b7crTKUWJQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "鉄板の上で焼き上がる、ソースを塗ったお好み焼き"
+    },
+    "ast_s101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s101.webp",
+        "mime": "image/webp",
+        "width": 1400,
+        "height": 1120,
+        "bytes": 212852,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/IveJAkyk7q8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "いか玉。ソースとマヨネーズを網目に掛け、青のりをふって"
+    },
+    "ast_s201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s201.webp",
+        "mime": "image/webp",
+        "width": 920,
+        "height": 560,
+        "bytes": 48330,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_h3ryw-rrgA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "とん平焼き。薄焼きの卵にケチャップを掛けて"
+    },
+    "ast_s301": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s301.webp",
+        "mime": "image/webp",
+        "width": 920,
+        "height": 560,
+        "bytes": 77302,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/EXfx1jB3SsM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "国産牛の鉄板ステーキ。ひと口の大きさに切って塩を添えて"
+    },
+    "ast_ck01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ck01.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 600,
+        "bytes": 48148,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/LEgwpRoh76Q"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "鉄板の上でキャベツを返すコテ"
+    },
+    "ast_ct01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ct01.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 352,
+        "bytes": 80212,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/-Wtr4LKbX54"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "湯気の立つ鉄板の肉と、脇に置いたコテ"
+    },
+    "ast_cd01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_cd01.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 352,
+        "bytes": 50024,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/frO8EMqYh6g"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "カウンターに置いた生ビールのグラス"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 178724,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/J28liJUJ5E4"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "鉄板の上で、キャベツと豚肉を二本のコテで焼く手元"
+    }
+  }
+}
