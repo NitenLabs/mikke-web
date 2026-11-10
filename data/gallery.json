@@ -1,81 +1,113 @@
 {
+  "hero": [
+    "luneclaire",
+    "lepivot",
+    "ichinoshio"
+  ],
+  "contact": {
+    "instagram": "",
+    "tel": "",
+    "email": ""
+  },
   "shops": [
-    {
-      "id": "ashiyado",
-      "name": "御菓子司 芦屋堂",
-      "genre": "和菓子店",
-      "mood": "季節の上生菓子と、甘味処のある和菓子店",
-      "path": "ashiyado"
-    },
     {
       "id": "sumi",
       "name": "日本料理 澄",
+      "cat": "和食",
       "genre": "日本料理店",
-      "mood": "白木のカウンターと個室で味わう、季節の献立の割烹",
+      "mood": "余白と縦書きで、季節の献立を静かに見せる割烹",
+      "stage": "#E7E1D5",
       "path": "sumi"
-    },
-    {
-      "id": "shirahae",
-      "name": "純喫茶 白南風",
-      "genre": "喫茶店",
-      "mood": "深緑の椅子と真鍮の灯り、ネルドリップの一杯を出す純喫茶",
-      "path": "shirahae"
-    },
-    {
-      "id": "tide",
-      "name": "TIDE COFFEE STAND",
-      "genre": "コーヒースタンド",
-      "mood": "白とグレーの余白に、大きな欧文。海辺の朝のコーヒースタンド",
-      "path": "tide"
-    },
-    {
-      "id": "mareluce",
-      "name": "Trattoria Mareluce",
-      "genre": "イタリアン",
-      "mood": "手打ちパスタと薪窯のピッツァ、自然派ワインの街のトラットリア",
-      "path": "mareluce"
-    },
-    {
-      "id": "luneclaire",
-      "name": "Pâtisserie Lune Claire",
-      "genre": "パティスリー",
-      "mood": "淡いピンクと白に、やわらかい欧文。生菓子と焼き菓子のパティスリー",
-      "path": "luneclaire"
     },
     {
       "id": "lepivot",
       "name": "Bistro à Vin Le Pivot",
+      "cat": "洋食・ビストロ",
       "genre": "ビストロ",
-      "mood": "ワインレッドと大きな欧文。雑誌のような組みの、夜のビストロ",
+      "mood": "ワインレッドと大きな欧文。雑誌のような、夜のビストロ",
+      "stage": "#EADCD8",
       "path": "lepivot"
+    },
+    {
+      "id": "tide",
+      "name": "TIDE COFFEE STAND",
+      "cat": "カフェ・喫茶",
+      "genre": "コーヒースタンド",
+      "mood": "白とグレーの余白に、大きな欧文。海辺のコーヒースタンド",
+      "stage": "#E2E6E8",
+      "path": "tide"
     },
     {
       "id": "kurozumi",
       "name": "炭火焼肉 くろ炭",
+      "cat": "焼肉・焼鳥",
       "genre": "焼肉店",
-      "mood": "黒毛和牛の一頭買いを、七輪の備長炭で焼く焼肉店",
+      "mood": "黒と炭火の赤。陰影で肉の旨みを見せる焼肉店",
+      "stage": "#E3DAD4",
       "path": "kurozumi"
+    },
+    {
+      "id": "luneclaire",
+      "name": "Pâtisserie Lune Claire",
+      "cat": "パン・お菓子",
+      "genre": "パティスリー",
+      "mood": "淡いピンクと白に、やわらかい欧文のパティスリー",
+      "stage": "#F1E2DF",
+      "path": "luneclaire"
+    },
+    {
+      "id": "shirahae",
+      "name": "純喫茶 白南風",
+      "cat": "カフェ・喫茶",
+      "genre": "喫茶店",
+      "mood": "深緑と真鍮、生成り。昭和から続くような純喫茶",
+      "stage": "#DFE3D9",
+      "path": "shirahae"
+    },
+    {
+      "id": "mareluce",
+      "name": "Trattoria Mareluce",
+      "cat": "洋食・ビストロ",
+      "genre": "イタリアン",
+      "mood": "テラコッタとオリーブ。薪窯ピッツァのにぎやかなトラットリア",
+      "stage": "#EEDDD0",
+      "path": "mareluce"
     },
     {
       "id": "ichinoshio",
       "name": "鮨 一之汐",
+      "cat": "和食",
       "genre": "鮨店",
-      "mood": "明石・淡路の魚で組み立てる、一枚板のカウンター8席のおまかせ",
+      "mood": "黒と金で静かに。一枚板のカウンター8席のおまかせ",
+      "stage": "#E4DED1",
       "path": "ichinoshio"
     },
     {
       "id": "mugitoakari",
       "name": "麦と灯",
+      "cat": "パン・お菓子",
       "genre": "ベーカリーカフェ",
-      "mood": "生成りと小麦色に、大きな写真。朝の焼きたてと2階の小さなカフェ",
+      "mood": "生成りと小麦色に、大きな写真。朝のベーカリーカフェ",
+      "stage": "#EDE3D1",
       "path": "mugitoakari"
     },
     {
       "id": "torinone",
       "name": "焼鳥 とりの音",
+      "cat": "焼肉・焼鳥",
       "genre": "焼鳥店",
-      "mood": "紀州備長炭で焼く朝びきの地鶏と、地酒の焼鳥店",
+      "mood": "朱と太い文字で元気よく。備長炭の焼鳥酒場",
+      "stage": "#EFDCCF",
       "path": "torinone"
+    },
+    {
+      "id": "ashiyado",
+      "name": "御菓子司 芦屋堂",
+      "cat": "パン・お菓子",
+      "genre": "和菓子店",
+      "mood": "季節の上生菓子と甘味処。白と墨で品よくまとめた和菓子店",
+      "stage": "#E6E4E0",
+      "path": "ashiyado"
     }
   ]
 }
