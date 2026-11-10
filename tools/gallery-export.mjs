@@ -131,7 +131,7 @@ const SHOPS = shops.map((s) => ({
   pc: `thumbs/${s.id}.jpg`, sp: `thumbs/${s.id}-sp.webp`, sw: swatches(s.id),
 }));
 
-let html = fs.readFileSync(templatePath, "utf8");
+let html = fs.readFileSync(templatePath, "utf8").replace(/\r\n/g, "\n"); // 改行が CRLF で取り出されても（Windows の checkout）同じに扱う
 const cut = (snippet, replacement = "") => {
   if (html.split(snippet).length !== 2) fail(`gallery-template.html に次の所が1つだけ見つかりません：${snippet.slice(0, 60)}…`);
   html = html.replace(snippet, () => replacement);
