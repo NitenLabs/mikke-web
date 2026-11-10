@@ -1,0 +1,9 @@
+# wa-24 BAR KAIRO（架空のお店。ID kairo）の使用写真（Unsplash。Unsplash+ は除外。人の顔・ロゴ・読める文字なし）
+fv https://images.unsplash.com/photo-1792670846245-09ef04789925?rect=0,1900,5068,3420&w=1600&h=1080&fit=crop&q=72&fm=webp
+k1 https://images.unsplash.com/photo-1778104960251-b1d82ac92ee9?rect=2700,0,2700,3375&w=800&h=1000&fit=crop&q=72&fm=webp
+k2 https://images.unsplash.com/photo-1673968872790-5164c8bcc660?rect=0,650,5266,6582&w=800&h=1000&fit=crop&q=72&fm=webp
+k3 https://images.unsplash.com/photo-1563223771-5fe4038fbfc9?rect=0,500,3334,4168&w=800&h=1000&fit=crop&q=72&fm=webp
+h1 https://images.unsplash.com/photo-1759358342585-23b516c4636e?rect=0,800,4160,5200&w=720&h=900&fit=crop&q=72&fm=webp
+h2 https://images.unsplash.com/photo-1681579289899-188bd52d51f4?rect=0,600,3456,4320&w=720&h=900&fit=crop&q=72&fm=webp
+w1 https://images.unsplash.com/photo-1767541865141-e4abf72e9dbc?w=720&h=900&fit=crop&q=72&fm=webp
+c1 https://images.unsplash.com/photo-1784571247873-55d2b4b05bbc?w=960&h=640&fit=crop&q=72&fm=webp
