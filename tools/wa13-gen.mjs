@@ -120,15 +120,10 @@ rect("hd_btn", "sec_header", SHU, 2, { x: 1240, y: 18, w: 160, h: 44 }, { x: 0, 
 t("hd_btn_t", "sec_header", C.labels.reserveButton, [[15, 22, 0], [15, 22, 0]], B, WH, [{ x: 1240, y: 29, w: 160, h: 22 }, { x: 0, y: 0, w: 10, h: 10 }], { weight: 700, ...CT, hidden: { sp: true } });
 tb("hd_name", { left: rem(M) });
 
-// ---- 1 最初の画面（PC：ヘッダーの下に 820、SP：780）。のれんの帯は矩形だけの飾りで、押せない
+// ---- 1 最初の画面（PC：ヘッダーの下に 820、SP：780）。朱の帯は矩形だけの飾りで、押せない（のれんの切れ目が細い線に見えたので、1枚の帯にした。G021）
 sec("sec_firstv", "最初の画面", 820, 780, { anchor: "top" });
 photo("fv_ph", "sec_firstv", "ast_phfv", 1, { x: 0, y: 0, w: 1440, h: 820, fullBleed: true }, { x: 0, y: 0, w: 390, h: 780, fullBleed: true }, { fx: 50, fy: 70 });
-rect("nr_top", "sec_firstv", SHU, 2, { x: 0, y: 0, w: 1440, h: 240 }, { x: 0, y: 0, w: 390, h: 184 });
-const NP = [[0, 286], [290, 284], [578, 284], [866, 284], [1154, 286]], NS = [[0, 128], [132, 126], [262, 128]];
-NP.forEach(([x, w], i) => {
-  const s = NS[i] ?? [0, 10];
-  rect(`nr${i + 1}`, "sec_firstv", SHU, 2, { x, y: 240, w, h: 120 }, { x: s[0], y: 184, w: s[1], h: 64 }, i > 2 ? { hidden: { sp: true } } : {});
-});
+rect("nr_top", "sec_firstv", SHU, 2, { x: 0, y: 0, w: 1440, h: 360 }, { x: 0, y: 0, w: 390, h: 248 });
 t("fv_cp", "sec_firstv", C.catchCopy, [[88, 112, 0], [52, 68, 0]], H, WH, [{ x: 124, y: 64, w: 1192, h: 112 }, { x: 20, y: 24, w: 350, h: 68 }], { role: "pageTitle", ...CT, hidden: { sp: true } });
 t("fv_cp2", "sec_firstv", { lines: C.catchCopyLines }, [[88, 112, 0], [52, 68, 0]], H, WH, [{ x: 124, y: 64, w: 1192, h: 224 }, { x: 20, y: 24, w: 350, h: 136 }], { role: "pageTitle", ...CT, hidden: { pc: true } });
 {
@@ -140,9 +135,7 @@ t("fv_cp2", "sec_firstv", { lines: C.catchCopyLines }, [[88, 112, 0], [52, 68, 0
   tT("fv_f2", 750, { left: rem(M + 24), width: `calc(100% - ${rem((M + 24) * 2)})`, "font-size": "1.4rem", "line-height": "2.4rem" });
 }
 tb("fv_ph", { left: "0", width: "100%", top: "0", height: rem(836) });
-tb("nr_top", { left: "0", width: "100%", top: "0", height: rem(208) });
-[[0, 24.74], [25.26, 24.48], [50.26, 24.48], [75.26, 24.74]].forEach(([l, w], i) => tb(`nr${i + 1}`, { left: `${l}%`, width: `${w}%`, top: rem(208), height: rem(88), display: "block" }));
-tb("nr5", { display: "none" });
+tb("nr_top", { left: "0", width: "100%", top: "0", height: rem(296) });
 tT("fv_cp", 56, { "font-size": "7.2rem", "line-height": "9.6rem", height: "9.6rem", display: "block" });
 tb("fv_cp2", { display: "none" });
 tablet.secs.sec_firstv = rem(836);
@@ -268,7 +261,7 @@ const val = (v) => (v === "$address" ? ADDR : v === "$phone" ? PHONE : v);
 C.info.rows.forEach(([k, v], i) => {
   const yp = irP + 72 * i, ys = irS + 72 * i, yt = irT + 72 * i;
   t(`in_k${i}`, "sec_info", k, [[14, 28, 0], [14, 28, 0]], B, INK, [{ x: 124, y: yp + 22, w: 104, h: 28 }, { x: 20, y: ys + 22, w: 80, h: 28 }], { weight: 700 });
-  t(`in_v${i}`, "sec_info", val(v), [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: 228, y: yp + 22, w: 432, h: 28 }, { x: 100, y: ys + 22, w: 270, h: 28 }]);
+  t(`in_v${i}`, "sec_info", val(v), [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: 228, y: yp + 22, w: 432, h: 28 }, { x: 100, y: ys + 22, w: 270, h: 28 }], v === "$phone" ? { link: TEL } : {});
   line(`in_l${i + 1}`, "sec_info", { x: 124, y: yp + 71, w: 536 }, { x: 20, y: ys + 71, w: 350 });
   tb(`in_k${i}`, { left: rem(M), width: rem(120), top: rem(yt + 22) });
   tb(`in_v${i}`, { left: rem(M + 120), width: `calc(100% - ${rem(M * 2 + 120)})`, top: rem(yt + 22) });
@@ -283,7 +276,7 @@ tablet.secs.sec_info = rem(mapT + 400 + 96);
 // ---- 8 ご予約（朱の全幅）
 sec("sec_reserve", "ご予約", 360, 400, { anchor: "reserve", bg: SHU });
 t("rs_h", "sec_reserve", C.reserve.heading, [[56, 76, 0], [34, 52, 0]], H, WH, [{ x: 124, y: 104, w: 880, h: 76 }, { x: 20, y: 88, w: 350, h: 52 }], { role: "heading" });
-t("rs_t", "sec_reserve", PHONE, [[40, 56, 0], [32, 44, 0]], B, WH, [{ x: 124, y: 188, w: 880, h: 56 }, { x: 20, y: 156, w: 350, h: 44 }], { weight: 700 });
+t("rs_t", "sec_reserve", PHONE, [[40, 56, 0], [32, 44, 0]], B, WH, [{ x: 124, y: 188, w: 880, h: 56 }, { x: 20, y: 156, w: 350, h: 44 }], { weight: 700, link: TEL });
 rect("rs_btn", "sec_reserve", KI, 2, { x: 1036, y: 148, w: 280, h: 64 }, { x: 20, y: 240, w: 350, h: 56 }, { link: TEL, radius: 50 });
 t("rs_btn_t", "sec_reserve", C.reserve.button, [[18, 28, 0], [16, 24, 0]], B, INK, [{ x: 1036, y: 166, w: 280, h: 28 }, { x: 20, y: 256, w: 350, h: 24 }], { weight: 700, ...CT });
 tT("rs_h", 64, { "font-size": "5.6rem", "line-height": "7.6rem", height: rem(76) });
@@ -298,7 +291,7 @@ const F14 = [[14, 24, 0], [14, 24, 0]], FT = "#EFE3CF";
 t("ft_n", "sec_footer", C.name, [[40, 56, 0], [40, 56, 0]], H, FT, [{ x: 124, y: 80, w: 800, h: 56 }, { x: 20, y: 56, w: 350, h: 56 }], { role: "heading" });
 t("ft_a", "sec_footer", ADDR, F14, B, FT, [{ x: 124, y: 168, w: 380, h: 24 }, { x: 20, y: 144, w: 350, h: 24 }]);
 t("ft_h", "sec_footer", { lines: C.footerHours }, F14, B, FT, [{ x: 540, y: 168, w: 380, h: 48 }, { x: 20, y: 184, w: 350, h: 48 }]);
-t("ft_t", "sec_footer", PHONE, F14, B, FT, [{ x: 956, y: 168, w: 360, h: 24 }, { x: 20, y: 248, w: 350, h: 24 }]);
+t("ft_t", "sec_footer", PHONE, F14, B, FT, [{ x: 956, y: 168, w: 360, h: 24 }, { x: 20, y: 248, w: 350, h: 24 }], { link: TEL });
 t("ft_c", "sec_footer", `© ${C.name}`, [[12, 18, 0], [12, 18, 0]], B, MUTE, [{ x: 124, y: 300, w: 800, h: 18 }, { x: 20, y: 400, w: 350, h: 18 }]);
 tb("ft_n", { left: rem(M), width: COL, top: rem(64) });
 tb("ft_a", { left: rem(M), width: `calc(50% - ${rem(M + 24)})`, top: rem(152) });

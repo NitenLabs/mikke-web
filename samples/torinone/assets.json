@@ -216,7 +216,7 @@
         "mime": "image/webp",
         "width": 1616,
         "height": 1010,
-        "bytes": 258342,
+        "bytes": 197784,
         "exifStripped": true
       },
       "uploadedAt": "2026-11-10T12:00:00+09:00",
@@ -224,7 +224,7 @@
       "origin": {
         "kind": "stock",
         "provider": "unsplash",
-        "pageUrl": "https://unsplash.com/photos/Eg2Dr6oebd0"
+        "pageUrl": "https://unsplash.com/photos/mLKQyF8y5UA"
       },
       "rights": {
         "basis": "licensed",
@@ -233,7 +233,7 @@
         "note": "Unsplash License（架空のお店のデザイン見本）"
       },
       "slot": "interior",
-      "alt": "木のカウンターに置かれたたれの瓶と器"
+      "alt": "煙の立つ焼き台と、ネタケースの並ぶカウンター"
     },
     "ast_phse2": {
       "kind": "photo",

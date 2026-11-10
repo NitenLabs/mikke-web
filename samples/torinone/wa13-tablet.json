@@ -45,38 +45,7 @@
    "left": "0",
    "width": "100%",
    "top": "0",
-   "height": "20.8rem"
-  },
-  "nr1": {
-   "left": "0%",
-   "width": "24.74%",
-   "top": "20.8rem",
-   "height": "8.8rem",
-   "display": "block"
-  },
-  "nr2": {
-   "left": "25.26%",
-   "width": "24.48%",
-   "top": "20.8rem",
-   "height": "8.8rem",
-   "display": "block"
-  },
-  "nr3": {
-   "left": "50.26%",
-   "width": "24.48%",
-   "top": "20.8rem",
-   "height": "8.8rem",
-   "display": "block"
-  },
-  "nr4": {
-   "left": "75.26%",
-   "width": "24.74%",
-   "top": "20.8rem",
-   "height": "8.8rem",
-   "display": "block"
-  },
-  "nr5": {
-   "display": "none"
+   "height": "29.6rem"
   },
   "fv_cp": {
    "left": "4.8rem",

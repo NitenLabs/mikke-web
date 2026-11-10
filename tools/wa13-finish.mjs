@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// wa-13：描画エンジンに無いものを dist/<店> に足す（メニューのボタン・全面のメニューの朱のボタン・電話のリンク・地図の埋め込み・覆い・タブレットの配置）。
+// wa-13：描画エンジンに無いものを dist/<店> に足す（メニューのボタン・全面のメニューの朱のボタン・地図の埋め込み・覆い・タブレットの配置）。
 // 使い方：node tools/build.mjs samples/<店のID> の後に node tools/wa13-finish.mjs <店のID>
 import fs from "node:fs";
 const ID = process.argv[2];
@@ -28,12 +28,11 @@ body{font-synthesis:none}
 [data-el=hd_btn],[data-el=rs_btn]{transition:filter .2s}
 [data-el=hd_btn]:hover,[data-el=rs_btn]:hover{filter:brightness(1.08)}
 [data-el=hd_btn_t],[data-el=rs_btn_t]{pointer-events:none}
-[data-el=hd_name] a,[data-el=rs_t] a,[data-el=ft_t] a,[data-el^=in_v] a{color:inherit;text-decoration:none}
-[data-el=rs_t] a,[data-el=ft_t] a,[data-el^=in_v] a{text-decoration:underline;text-underline-offset:.3em;text-decoration-thickness:1px}
+a[data-el=rs_t],a[data-el=ft_t],a[data-el^=in_v]{text-decoration:underline;text-underline-offset:.3em;text-decoration-thickness:1px}
 [data-el=in_map]{overflow:hidden}
 [data-el=in_map] iframe{width:100%;height:100%;border:0;display:block;filter:sepia(.25)}
 @media (min-width:768px){[data-el=fv_cp2]{display:none}}
-@media (max-width:767.98px){[data-el=fv_cp],[data-el=hd_btn],[data-el=hd_btn_t],[data-el=nr4],[data-el=nr5]{display:none}}
+@media (max-width:767.98px){[data-el=fv_cp],[data-el=hd_btn],[data-el=hd_btn_t]{display:none}}
 @media (max-width:767.98px){html{scroll-padding-top:6.4rem}}
 @media (max-width:359.98px){[data-el$=_o]{left:16px!important;width:calc(100% - 32px)!important}}
 </style>`;
@@ -54,13 +53,7 @@ html{scroll-padding-top:6.4rem}
 function apply(file, isHome) {
   let h = fs.readFileSync(file, "utf8");
   h = h.split(">☰</summary>").join(`>${C.labels.menuButton}</summary>`);
-  // build.mjs は文字の要素の link を出さないので、店名と電話番号の文字をここでリンクにする
-  const telRow = C.info.rows.findIndex(([, v]) => v === "$phone");
-  const links = [["hd_name", isHome ? "#top" : "./"], ["ft_t", `tel:${TEL.digits}`]];
-  if (isHome) links.push([`in_v${telRow}`, `tel:${TEL.digits}`], ["rs_t", `tel:${TEL.digits}`]);
-  for (const [id, href] of links) {
-    h = h.replace(new RegExp(`(<([a-z0-9]+) data-el="${id}"[^>]*>)([\\s\\S]*?)(</\\2>)`), `$1<a href="${href}">$3</a>$4`);
-  }
+  // 店名と電話番号の文字のリンクは site.json の style.link から build.mjs が <a> で出す（G021 で回避を外した）
   const resHref = isHome ? "#reserve" : "./#reserve";
   h = h.replace(/(<div class="nav-menu">)([\s\S]*?)(<\/div>)/, `$1$2<a class="wa13-res" href="${resHref}">${C.labels.reserveButton}</a>$3`);
   if (isHome) {
