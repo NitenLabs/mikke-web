@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_kakitsubata",
+  "updatedAt": "2026-11-10T12:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "天ぷら 杜若",
+    "nameKana": "てんぷら かきつばた",
+    "genre": {
+      "template": "restaurant",
+      "detail": "天ぷら"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "船戸町",
+    "geo": {
+      "lat": 34.7352,
+      "lng": 135.3058
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "closed"
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:30"
+          },
+          {
+            "start": "17:30",
+            "end": "21:30",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:30"
+          },
+          {
+            "start": "17:30",
+            "end": "21:30",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:30"
+          },
+          {
+            "start": "17:30",
+            "end": "21:30",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:30"
+          },
+          {
+            "start": "17:30",
+            "end": "21:30",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:30"
+          },
+          {
+            "start": "17:30",
+            "end": "21:30",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:00",
+            "lastOrder": "13:30"
+          },
+          {
+            "start": "17:30",
+            "end": "21:30",
+            "lastOrder": "20:30"
+          }
+        ]
+      }
+    }
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "お品書き"
+      }
+    },
+    "categories": {
+      "cat_lunch": {
+        "menuId": "mnu_main",
+        "name": "昼",
+        "order": 1
+      },
+      "cat_dinner": {
+        "menuId": "mnu_main",
+        "name": "夜",
+        "order": 2
+      },
+      "cat_alacarte": {
+        "menuId": "mnu_main",
+        "name": "単品",
+        "order": 3
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_teishoku": {
+        "name": "天ぷら定食",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_teishoku",
+            "type": "fixed",
+            "amount": 2200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_tendon": {
+        "name": "天丼",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_tendon",
+            "type": "fixed",
+            "amount": 1980
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_lunchomakase": {
+        "name": "おまかせ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_lunchomakase",
+            "type": "fixed",
+            "amount": 4400
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_omakase10": {
+        "name": "おまかせ（10品）",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_omakase10",
+            "type": "fixed",
+            "amount": 8800
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_tokusen13": {
+        "name": "特選おまかせ（13品・〆付き）",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_tokusen13",
+            "type": "fixed",
+            "amount": 13200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_kurumaebi": {
+        "name": "車海老",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_kurumaebi",
+            "type": "fixed",
+            "amount": 880
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_yasai": {
+        "name": "季節の野菜",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_yasai",
+            "type": "from",
+            "amount": 330
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_anago": {
+        "name": "穴子一本揚げ",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_anago",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      }
+    },
+    "placements": {
+      "plc_teishoku": {
+        "itemId": "itm_teishoku",
+        "categoryId": "cat_lunch",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_tendon": {
+        "itemId": "itm_tendon",
+        "categoryId": "cat_lunch",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_lunchomakase": {
+        "itemId": "itm_lunchomakase",
+        "categoryId": "cat_lunch",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_omakase10": {
+        "itemId": "itm_omakase10",
+        "categoryId": "cat_dinner",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_tokusen13": {
+        "itemId": "itm_tokusen13",
+        "categoryId": "cat_dinner",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_kurumaebi": {
+        "itemId": "itm_kurumaebi",
+        "categoryId": "cat_alacarte",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_yasai": {
+        "itemId": "itm_yasai",
+        "categoryId": "cat_alacarte",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_anago": {
+        "itemId": "itm_anago",
+        "categoryId": "cat_alacarte",
+        "order": 3,
+        "menuId": "mnu_main"
+      }
+    }
+  }
+}

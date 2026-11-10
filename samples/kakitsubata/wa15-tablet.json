@@ -1,0 +1,863 @@
+{
+ "els": {
+  "hd_name": {
+   "left": "4.8rem"
+  },
+  "fv_cp": {
+   "left": "4.8rem",
+   "top": "4.8rem",
+   "width": "13.6rem",
+   "height": "30rem",
+   "font-size": "4rem",
+   "line-height": "6rem"
+  },
+  "fv_ph": {
+   "left": "21.6rem",
+   "width": "calc(((100vw - 9.6rem) - 16.8rem))",
+   "top": "4.8rem",
+   "height": "calc(((100vw - 9.6rem) - 16.8rem))"
+  },
+  "fv_tag": {
+   "left": "20rem",
+   "width": "4rem",
+   "top": "calc(4.8rem + ((100vw - 9.6rem) - 16.8rem) * .66)",
+   "height": "16rem"
+  },
+  "fv_tag_t": {
+   "left": "21rem",
+   "width": "2rem",
+   "top": "calc(4.8rem + ((100vw - 9.6rem) - 16.8rem) * .66)",
+   "height": "16rem",
+   "font-size": "1.6rem",
+   "line-height": "1.92rem"
+  },
+  "fv_p": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "calc(-7.2rem + (100vw - 9.6rem) * 1)",
+   "font-size": "1.6rem",
+   "line-height": "3.2rem"
+  },
+  "fv_ln": {
+   "left": "4.8rem",
+   "width": "2.4rem",
+   "top": "calc(4.8rem + (100vw - 9.6rem) * 1)",
+   "height": "1px"
+  },
+  "fv_f": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "calc(6.4rem + (100vw - 9.6rem) * 1)",
+   "font-size": "1.3rem",
+   "line-height": "2.4rem"
+  },
+  "fv_en": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "calc(12.8rem + (100vw - 9.6rem) * 1)",
+   "font-size": "1.2rem",
+   "line-height": "1.6rem"
+  },
+  "fl_h": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "4.8rem",
+   "font-size": "3.2rem",
+   "line-height": "4.4rem"
+  },
+  "fl_en": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "10rem",
+   "font-size": "1.3rem",
+   "line-height": "1.6rem"
+  },
+  "fl_p": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "12.8rem",
+   "font-size": "1.6rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "22.8rem",
+   "height": "1px"
+  },
+  "fl_n0": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "24.8rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_k0": {
+   "left": "12rem",
+   "width": "6.4rem",
+   "top": "25.5rem",
+   "font-size": "1.3rem",
+   "line-height": "2rem"
+  },
+  "fl_t0": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "25rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "30.4rem",
+   "height": "1px"
+  },
+  "fl_n1": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "32.4rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_t1": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "32.6rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l2": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "38rem",
+   "height": "1px"
+  },
+  "fl_n2": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "40rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_t2": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "40.2rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l3": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "45.6rem",
+   "height": "1px"
+  },
+  "fl_n3": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "47.6rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_t3": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "47.8rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l4": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "53.2rem",
+   "height": "1px"
+  },
+  "fl_n4": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "55.2rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_t4": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "55.4rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l5": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "60.8rem",
+   "height": "1px"
+  },
+  "fl_n5": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "62.8rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_t5": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "63rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l6": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "68.4rem",
+   "height": "1px"
+  },
+  "fl_n6": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "70.4rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_t6": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "70.6rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l7": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "76rem",
+   "height": "1px"
+  },
+  "fl_n7": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "78rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_t7": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "78.2rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l8": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "83.6rem",
+   "height": "1px"
+  },
+  "fl_n8": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "85.6rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_k8": {
+   "left": "12rem",
+   "width": "6.4rem",
+   "top": "86.3rem",
+   "font-size": "1.3rem",
+   "line-height": "2rem"
+  },
+  "fl_t8": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "85.8rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l9": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "91.2rem",
+   "height": "1px"
+  },
+  "fl_n9": {
+   "left": "4.8rem",
+   "width": "7.2rem",
+   "top": "93.2rem",
+   "font-size": "2.4rem",
+   "line-height": "3.2rem"
+  },
+  "fl_k9": {
+   "left": "12rem",
+   "width": "6.4rem",
+   "top": "93.9rem",
+   "font-size": "1.3rem",
+   "line-height": "2rem"
+  },
+  "fl_t9": {
+   "left": "18.4rem",
+   "width": "calc((100vw - 9.6rem) - 13.6rem)",
+   "top": "93.4rem",
+   "font-size": "2.2rem",
+   "line-height": "3.2rem"
+  },
+  "fl_l10": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "98.8rem",
+   "height": "1px"
+  },
+  "fl_note": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "102rem",
+   "font-size": "1.3rem",
+   "line-height": "2.4rem"
+  },
+  "fl_ph": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "108.4rem",
+   "height": "calc((100vw - 9.6rem) * .5)"
+  },
+  "ab_ph1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "4.8rem",
+   "height": "calc((100vw - 9.6rem) * .8)"
+  },
+  "ab_h": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "calc(8.8rem + (100vw - 9.6rem) * 0.8)",
+   "font-size": "3.2rem",
+   "line-height": "4.4rem"
+  },
+  "ab_en": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "calc(14rem + (100vw - 9.6rem) * 0.8)",
+   "font-size": "1.3rem",
+   "line-height": "1.6rem"
+  },
+  "ab_p": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "calc(16.8rem + (100vw - 9.6rem) * 0.8)",
+   "font-size": "1.6rem",
+   "line-height": "3.2rem"
+  },
+  "ab_ph2": {
+   "left": "4.8rem",
+   "width": "24rem",
+   "top": "calc(32.8rem + (100vw - 9.6rem) * 0.8)",
+   "height": "24rem"
+  },
+  "ab_c": {
+   "left": "31.2rem",
+   "width": "calc((100vw - 9.6rem) - 26.4rem)",
+   "top": "calc(52.8rem + (100vw - 9.6rem) * 0.8)",
+   "font-size": "1.4rem",
+   "line-height": "2.4rem"
+  },
+  "ct_h": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "4.8rem",
+   "font-size": "3.2rem",
+   "line-height": "4.4rem"
+  },
+  "ct_en": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "10rem",
+   "font-size": "1.3rem",
+   "line-height": "1.6rem"
+  },
+  "ct_p": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "12.8rem",
+   "font-size": "1.6rem",
+   "line-height": "3.2rem"
+  },
+  "ct_f": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "21.6rem",
+   "font-size": "2rem",
+   "line-height": "3.2rem"
+  },
+  "ct_ph": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "28.8rem",
+   "height": "calc((100vw - 9.6rem) * .8)"
+  },
+  "mn_h": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "4.8rem",
+   "font-size": "3.2rem",
+   "line-height": "4.4rem"
+  },
+  "mn_bg": {
+   "left": "0",
+   "width": "100%",
+   "top": "12.48rem",
+   "height": "93.8rem"
+  },
+  "mg_0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "16.48rem",
+   "font-size": "2.8rem",
+   "line-height": "4rem"
+  },
+  "ms_0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "21.08rem",
+   "font-size": "1.3rem",
+   "line-height": "2rem"
+  },
+  "mt_0_0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem) - 18rem)",
+   "top": "26.48rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "mp_0_0": {
+   "left": "auto",
+   "right": "4.8rem",
+   "width": "16rem",
+   "top": "26.38rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "ml_0_0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "30.78rem",
+   "height": "1px"
+  },
+  "mt_0_1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem) - 18rem)",
+   "top": "32.88rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "mp_0_1": {
+   "left": "auto",
+   "right": "4.8rem",
+   "width": "16rem",
+   "top": "32.78rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "ml_0_1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "37.18rem",
+   "height": "1px"
+  },
+  "mt_0_2": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem) - 18rem)",
+   "top": "39.28rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "mp_0_2": {
+   "left": "auto",
+   "right": "4.8rem",
+   "width": "16rem",
+   "top": "39.18rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "ml_0_2": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "43.58rem",
+   "height": "1px"
+  },
+  "mg_1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "47.68rem",
+   "font-size": "2.8rem",
+   "line-height": "4rem"
+  },
+  "ms_1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "52.28rem",
+   "font-size": "1.3rem",
+   "line-height": "2rem"
+  },
+  "mt_1_0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem) - 18rem)",
+   "top": "57.68rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "mp_1_0": {
+   "left": "auto",
+   "right": "4.8rem",
+   "width": "16rem",
+   "top": "57.58rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "ml_1_0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "61.98rem",
+   "height": "1px"
+  },
+  "mt_1_1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem) - 18rem)",
+   "top": "64.08rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "mp_1_1": {
+   "left": "auto",
+   "right": "4.8rem",
+   "width": "16rem",
+   "top": "65.28rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "ml_1_1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "70.98rem",
+   "height": "1px"
+  },
+  "mg_2": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "75.08rem",
+   "font-size": "2.8rem",
+   "line-height": "4rem"
+  },
+  "ms_2": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "79.68rem",
+   "font-size": "1.3rem",
+   "line-height": "2rem"
+  },
+  "mt_2_0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem) - 18rem)",
+   "top": "85.08rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "mp_2_0": {
+   "left": "auto",
+   "right": "4.8rem",
+   "width": "16rem",
+   "top": "84.98rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "ml_2_0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "89.38rem",
+   "height": "1px"
+  },
+  "mt_2_1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem) - 18rem)",
+   "top": "91.48rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "mp_2_1": {
+   "left": "auto",
+   "right": "4.8rem",
+   "width": "16rem",
+   "top": "91.38rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "ml_2_1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "95.78rem",
+   "height": "1px"
+  },
+  "mt_2_2": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem) - 18rem)",
+   "top": "97.88rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "mp_2_2": {
+   "left": "auto",
+   "right": "4.8rem",
+   "width": "16rem",
+   "top": "97.78rem",
+   "font-size": "1.7rem",
+   "line-height": "2.6rem"
+  },
+  "ml_2_2": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "102.18rem",
+   "height": "1px"
+  },
+  "mn_n": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "108.68rem",
+   "font-size": "1.3rem",
+   "line-height": "2rem"
+  },
+  "mn_ph1": {
+   "left": "calc(4.8rem + ((((100vw - 9.6rem) - 2.4rem) / 2) + 2.4rem) * 0)",
+   "width": "calc((((100vw - 9.6rem) - 2.4rem) / 2))",
+   "top": "114.68rem",
+   "height": "calc((((100vw - 9.6rem) - 2.4rem) / 2) * .75)"
+  },
+  "mn_pn1": {
+   "left": "calc(4.8rem + ((((100vw - 9.6rem) - 2.4rem) / 2) + 2.4rem) * 0)",
+   "width": "calc((((100vw - 9.6rem) - 2.4rem) / 2))",
+   "top": "calc(115.88rem + (((100vw - 9.6rem) - 2.4rem) / 2) * .75)",
+   "font-size": "1.8rem",
+   "line-height": "2.8rem"
+  },
+  "mn_ph2": {
+   "left": "calc(4.8rem + ((((100vw - 9.6rem) - 2.4rem) / 2) + 2.4rem) * 1)",
+   "width": "calc((((100vw - 9.6rem) - 2.4rem) / 2))",
+   "top": "114.68rem",
+   "height": "calc((((100vw - 9.6rem) - 2.4rem) / 2) * .75)"
+  },
+  "mn_pn2": {
+   "left": "calc(4.8rem + ((((100vw - 9.6rem) - 2.4rem) / 2) + 2.4rem) * 1)",
+   "width": "calc((((100vw - 9.6rem) - 2.4rem) / 2))",
+   "top": "calc(115.88rem + (((100vw - 9.6rem) - 2.4rem) / 2) * .75)",
+   "font-size": "1.8rem",
+   "line-height": "2.8rem"
+  },
+  "in_l0": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "12.48rem",
+   "height": "1px"
+  },
+  "in_k0": {
+   "left": "4.8rem",
+   "width": "12rem",
+   "top": "14.58rem",
+   "font-size": "1.4rem",
+   "line-height": "2.6rem"
+  },
+  "in_v0": {
+   "left": "16.8rem",
+   "width": "calc((100vw - 9.6rem) - 12rem)",
+   "top": "14.58rem",
+   "font-size": "1.6rem",
+   "line-height": "2.6rem"
+  },
+  "in_l1": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "19.18rem",
+   "height": "1px"
+  },
+  "in_k1": {
+   "left": "4.8rem",
+   "width": "12rem",
+   "top": "21.38rem",
+   "font-size": "1.4rem",
+   "line-height": "2.6rem"
+  },
+  "in_v1": {
+   "left": "16.8rem",
+   "width": "calc((100vw - 9.6rem) - 12rem)",
+   "top": "21.38rem",
+   "font-size": "1.6rem",
+   "line-height": "2.6rem"
+  },
+  "in_l2": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "25.98rem",
+   "height": "1px"
+  },
+  "in_k2": {
+   "left": "4.8rem",
+   "width": "12rem",
+   "top": "28.18rem",
+   "font-size": "1.4rem",
+   "line-height": "2.6rem"
+  },
+  "in_v2": {
+   "left": "16.8rem",
+   "width": "calc((100vw - 9.6rem) - 12rem)",
+   "top": "28.18rem",
+   "font-size": "1.6rem",
+   "line-height": "2.6rem"
+  },
+  "in_l3": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "35.38rem",
+   "height": "1px"
+  },
+  "in_k3": {
+   "left": "4.8rem",
+   "width": "12rem",
+   "top": "37.58rem",
+   "font-size": "1.4rem",
+   "line-height": "2.6rem"
+  },
+  "in_v3": {
+   "left": "16.8rem",
+   "width": "calc((100vw - 9.6rem) - 12rem)",
+   "top": "37.58rem",
+   "font-size": "1.6rem",
+   "line-height": "2.6rem"
+  },
+  "in_l4": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "42.18rem",
+   "height": "1px"
+  },
+  "in_k4": {
+   "left": "4.8rem",
+   "width": "12rem",
+   "top": "44.38rem",
+   "font-size": "1.4rem",
+   "line-height": "2.6rem"
+  },
+  "in_v4": {
+   "left": "16.8rem",
+   "width": "calc((100vw - 9.6rem) - 12rem)",
+   "top": "44.38rem",
+   "font-size": "1.6rem",
+   "line-height": "2.6rem"
+  },
+  "in_l5": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "48.98rem",
+   "height": "1px"
+  },
+  "in_h": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "4.8rem",
+   "font-size": "3.2rem",
+   "line-height": "4.4rem"
+  },
+  "in_map": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "53.08rem",
+   "height": "40rem"
+  },
+  "rs_h": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "6.4rem",
+   "font-size": "3.2rem",
+   "line-height": "4.4rem"
+  },
+  "rs_t": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "12.4rem",
+   "font-size": "3rem",
+   "line-height": "4.2rem"
+  },
+  "rs_ln": {
+   "left": "4.8rem",
+   "width": "2.4rem",
+   "top": "18.4rem",
+   "height": "1px"
+  },
+  "rs_btn": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "21.6rem",
+   "height": "6.4rem"
+  },
+  "rs_btn_t": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "23.6rem",
+   "font-size": "1.6rem",
+   "line-height": "2.4rem"
+  },
+  "ft_bg": {
+   "left": "0",
+   "width": "100%",
+   "top": "0",
+   "height": "24rem"
+  },
+  "ft_v": {
+   "left": "calc(50% - 3.6rem)",
+   "width": "7.2rem",
+   "top": "3.2rem",
+   "height": "13.6rem",
+   "font-size": "4.8rem",
+   "line-height": "5.49rem"
+  },
+  "ft_ven": {
+   "left": "0",
+   "width": "100%",
+   "top": "18.4rem"
+  },
+  "ft_n": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "28rem",
+   "font-size": "2.8rem",
+   "line-height": "4rem"
+  },
+  "ft_a": {
+   "left": "4.8rem",
+   "width": "calc(50% - 7.2rem)",
+   "top": "34.4rem"
+  },
+  "ft_t": {
+   "left": "4.8rem",
+   "width": "calc(50% - 7.2rem)",
+   "top": "37.2rem"
+  },
+  "ft_hr": {
+   "left": "calc(50% + 2.4rem)",
+   "width": "calc(50% - 7.2rem)",
+   "top": "34.4rem"
+  },
+  "ft_c": {
+   "left": "4.8rem",
+   "width": "calc((100vw - 9.6rem))",
+   "top": "44rem",
+   "font-size": "1.2rem",
+   "line-height": "1.8rem"
+  }
+ },
+ "secs": {
+  "sec_firstv": "calc(19.2rem + (100vw - 9.6rem) * 1)",
+  "sec_flow": "calc(113.2rem + (100vw - 9.6rem) * 0.5)",
+  "sec_about": "calc(61.6rem + (100vw - 9.6rem) * 0.8)",
+  "sec_counter": "calc(33.6rem + (100vw - 9.6rem) * 0.8)",
+  "sec_menu": "calc(123.48rem + (((100vw - 9.6rem) - 2.4rem) / 2) * .75)",
+  "sec_info": "97.88rem",
+  "sec_reserve": "34.4rem",
+  "sec_footer": "50rem"
+ }
+}

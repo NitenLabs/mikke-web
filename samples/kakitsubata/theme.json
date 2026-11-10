@@ -1,0 +1,81 @@
+{
+  "schemaVersion": 1,
+  "colors": {
+    "background": {
+      "value": "#EFE6D6"
+    },
+    "surface": {
+      "value": "#F7F2E8"
+    },
+    "text": {
+      "value": "#1E1E1E"
+    },
+    "textMuted": {
+      "value": "#6B6152"
+    },
+    "primary": {
+      "value": "#2B4C6F"
+    },
+    "accent": {
+      "value": "#D8B25A"
+    },
+    "line": {
+      "value": "#D8B25A"
+    },
+    "lineSoft": {
+      "value": "#D8B25A"
+    }
+  },
+  "fonts": {
+    "heading": "shippori-antique-b1",
+    "body": "zen-kaku-gothic-new",
+    "accent": "eb-garamond"
+  },
+  "textStyles": {
+    "pageTitle": {
+      "font": "font:heading",
+      "size": {
+        "pc": 48,
+        "sp": 36
+      },
+      "lineHeight": 1.5,
+      "color": "theme:text"
+    },
+    "heading": {
+      "font": "font:heading",
+      "size": {
+        "pc": 40,
+        "sp": 28
+      },
+      "lineHeight": 1.4,
+      "color": "theme:primary"
+    },
+    "subheading": {
+      "font": "font:heading",
+      "size": {
+        "pc": 24,
+        "sp": 18
+      },
+      "lineHeight": 1.5,
+      "color": "theme:text"
+    },
+    "body": {
+      "font": "font:body",
+      "size": {
+        "pc": 15,
+        "sp": 15
+      },
+      "lineHeight": 2,
+      "color": "theme:text"
+    },
+    "caption": {
+      "font": "font:body",
+      "size": {
+        "pc": 13,
+        "sp": 13
+      },
+      "lineHeight": 1.6,
+      "color": "theme:textMuted"
+    }
+  }
+}

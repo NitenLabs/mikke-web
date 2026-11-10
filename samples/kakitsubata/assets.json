@@ -1,0 +1,187 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_phfv": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfv.webp",
+        "mime": "image/webp",
+        "width": 1526,
+        "height": 1526,
+        "bytes": 306020,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/O8y3zXnp-UE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "懐紙にのせた海老と青物の天ぷら、抹茶塩"
+    },
+    "ast_phab1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab1.webp",
+        "mime": "image/webp",
+        "width": 1600,
+        "height": 1280,
+        "bytes": 278492,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/s-f4dPzSBBs"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "白い角皿に盛った海老と野菜の天ぷらと天つゆ"
+    },
+    "ast_phab2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phab2.webp",
+        "mime": "image/webp",
+        "width": 560,
+        "height": 560,
+        "bytes": 70470,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/PmTJLzKLXH8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "かき揚げと葉ものの天ぷら、添えた塩"
+    },
+    "ast_phfr1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfr1.webp",
+        "mime": "image/webp",
+        "width": 1600,
+        "height": 1280,
+        "bytes": 264562,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Kjs5KxhC8iU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "銅の揚げ鍋で衣をつけた種を揚げる手元"
+    },
+    "ast_phfr2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfr2.webp",
+        "mime": "image/webp",
+        "width": 680,
+        "height": 1360,
+        "bytes": 107866,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/ErSmnThoeJI"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "揚げたての天ぷらの衣"
+    },
+    "ast_phmn1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmn1.webp",
+        "mime": "image/webp",
+        "width": 1040,
+        "height": 780,
+        "bytes": 166598,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/mLWMayuIUkc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "藍の染付の丼に盛った天丼と香の物"
+    },
+    "ast_phmn2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phmn2.webp",
+        "mime": "image/webp",
+        "width": 1040,
+        "height": 780,
+        "bytes": 86974,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/CJMOyoEWZo8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "懐紙にのせた車海老の天ぷら"
+    }
+  }
+}
