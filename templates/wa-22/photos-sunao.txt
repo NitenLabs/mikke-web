@@ -1,0 +1,11 @@
+# wa-22 GELATO SUNAO（架空のお店。ID sunao）の使用写真（Unsplash。Unsplash+ は除外。人の顔・ロゴ・読める文字なし）
+fv https://images.unsplash.com/photo-1752962638413-a2f2432b67f9?rect=2400,0,3930,4912&w=1000&h=1250&fit=crop&q=72&fm=webp
+s1 https://images.unsplash.com/photo-1534706936160-d5ee67737249?w=736&h=1104&fit=crop&q=72&fm=webp
+s2 https://images.unsplash.com/photo-1497034825429-c343d7c6a68f?w=736&h=1104&fit=crop&q=72&fm=webp
+s3 https://images.unsplash.com/photo-1629385697093-57be2cc97fa6?rect=1290,0,2667,4000&w=736&h=1104&fit=crop&q=72&fm=webp
+k1 https://images.unsplash.com/photo-1570197788417-0e82375c9371?rect=0,200,1912,2390&w=880&h=1100&fit=crop&q=72&fm=webp
+c1 https://images.unsplash.com/photo-1507598641400-ec3536ba81bc?rect=641,0,2569,2569&w=600&h=600&fit=crop&q=72&fm=webp
+c2 https://images.unsplash.com/photo-1633932850276-4382027c868a?rect=0,1550,4229,2819&w=640&h=427&fit=crop&q=72&fm=webp
+c3 https://images.unsplash.com/photo-1576186726188-c9d70843790f?rect=83,0,2488,3317&w=480&h=640&fit=crop&q=72&fm=webp
+c4 https://images.unsplash.com/photo-1784043436559-b54ef7c50d95?rect=0,168,4032,2688&w=744&h=496&fit=crop&q=72&fm=webp
+sea https://images.unsplash.com/photo-1764143458473-ffffec0bad84?rect=0,1150,2670,668&w=1600&h=400&fit=crop&q=72&fm=webp
