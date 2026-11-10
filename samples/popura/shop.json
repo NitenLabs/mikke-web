@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_popura",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "洋食の店 すずかけ",
+    "nameKana": "ようしょくのみせ すずかけ",
+    "genre": {
+      "template": "restaurant",
+      "detail": "洋食"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "松ノ内町",
+    "geo": {
+      "lat": 34.735214,
+      "lng": 135.302887
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼",
+            "lastOrder": "14:30"
+          },
+          {
+            "start": "17:00",
+            "end": "21:00",
+            "label": "夜",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼",
+            "lastOrder": "14:30"
+          },
+          {
+            "start": "17:00",
+            "end": "21:00",
+            "label": "夜",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼",
+            "lastOrder": "14:30"
+          },
+          {
+            "start": "17:00",
+            "end": "21:00",
+            "label": "夜",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "thu": {
+        "status": "closed"
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼",
+            "lastOrder": "14:30"
+          },
+          {
+            "start": "17:00",
+            "end": "21:00",
+            "label": "夜",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼",
+            "lastOrder": "14:30"
+          },
+          {
+            "start": "17:00",
+            "end": "21:00",
+            "label": "夜",
+            "lastOrder": "20:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:00",
+            "end": "15:00",
+            "label": "昼",
+            "lastOrder": "14:30"
+          },
+          {
+            "start": "17:00",
+            "end": "21:00",
+            "label": "夜",
+            "lastOrder": "20:30"
+          }
+        ]
+      }
+    },
+    "note": "ラストオーダーは昼14:30・夜20:30"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 28,
+      "table": 28
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "お料理"
+      },
+      "mnu_sweet": {
+        "order": 2,
+        "name": "デザート"
+      }
+    },
+    "categories": {
+      "cat_teiban": {
+        "menuId": "mnu_main",
+        "name": "当店の三つの定番",
+        "order": 1
+      },
+      "cat_grill": {
+        "menuId": "mnu_main",
+        "name": "揚げ物とご飯もの",
+        "order": 2
+      },
+      "cat_sweet": {
+        "menuId": "mnu_sweet",
+        "name": "デザート",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_t001": {
+        "name": "オムライス（デミグラス）",
+        "description": "ふんわり焼いた卵でチキンライスを包み、二週間かけたデミグラスソースをたっぷりと。",
+        "photos": [
+          "ast_t101"
+        ],
+        "prices": [
+          {
+            "id": "prc_t001",
+            "type": "fixed",
+            "amount": 1350
+          }
+        ],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_t002": {
+        "name": "ハンバーグ",
+        "description": "合いびきを手でこねて、ふっくら焼き上げます。デミグラスソースに目玉焼きをのせて。",
+        "photos": [
+          "ast_t201"
+        ],
+        "prices": [
+          {
+            "id": "prc_t002",
+            "type": "fixed",
+            "amount": 1500
+          }
+        ],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_t003": {
+        "name": "ビーフシチュー",
+        "description": "牛肉と人参を赤ワインとデミグラスソースで、箸で切れるやわらかさまで煮込みました。",
+        "photos": [
+          "ast_t301"
+        ],
+        "prices": [
+          {
+            "id": "prc_t003",
+            "type": "fixed",
+            "amount": 2600
+          }
+        ],
+        "status": "onSale",
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_g001": {
+        "name": "エビフライ",
+        "description": "大ぶりの海老に細かいパン粉をまとわせて。自家製のタルタルソースを添えます。",
+        "photos": [
+          "ast_m101"
+        ],
+        "prices": [
+          {
+            "id": "prc_g001",
+            "type": "fixed",
+            "amount": 1800
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_g002": {
+        "name": "カニクリームコロッケ",
+        "description": "蟹の身を混ぜたクリームを、さっくりと揚げました。トマトソースとタルタルで。",
+        "photos": [
+          "ast_m201"
+        ],
+        "prices": [
+          {
+            "id": "prc_g002",
+            "type": "fixed",
+            "amount": 1500
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_g003": {
+        "name": "ハヤシライス",
+        "prices": [
+          {
+            "id": "prc_g003",
+            "type": "fixed",
+            "amount": 1300
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_l001": {
+        "name": "ランチのスープ・サラダ付き",
+        "prices": [
+          {
+            "id": "prc_l001",
+            "name": "＋",
+            "type": "fixed",
+            "amount": 300
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_s001": {
+        "name": "プリン",
+        "description": "卵の味が濃い、固めの焼きプリン。ほろ苦いカラメルとともに。",
+        "photos": [
+          "ast_m401"
+        ],
+        "prices": [
+          {
+            "id": "prc_s001",
+            "type": "fixed",
+            "amount": 450
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_t001": {
+        "itemId": "itm_t001",
+        "menuId": "mnu_main",
+        "categoryId": "cat_teiban",
+        "order": 1
+      },
+      "plc_t002": {
+        "itemId": "itm_t002",
+        "menuId": "mnu_main",
+        "categoryId": "cat_teiban",
+        "order": 2
+      },
+      "plc_t003": {
+        "itemId": "itm_t003",
+        "menuId": "mnu_main",
+        "categoryId": "cat_teiban",
+        "order": 3
+      },
+      "plc_g001": {
+        "itemId": "itm_g001",
+        "menuId": "mnu_main",
+        "categoryId": "cat_grill",
+        "order": 1
+      },
+      "plc_g002": {
+        "itemId": "itm_g002",
+        "menuId": "mnu_main",
+        "categoryId": "cat_grill",
+        "order": 2
+      },
+      "plc_g003": {
+        "itemId": "itm_g003",
+        "menuId": "mnu_main",
+        "categoryId": "cat_grill",
+        "order": 3
+      },
+      "plc_l001": {
+        "itemId": "itm_l001",
+        "menuId": "mnu_main",
+        "categoryId": "cat_grill",
+        "order": 4
+      },
+      "plc_s001": {
+        "itemId": "itm_s001",
+        "menuId": "mnu_sweet",
+        "categoryId": "cat_sweet",
+        "order": 1
+      }
+    }
+  }
+}

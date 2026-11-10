@@ -1,0 +1,9 @@
+# wa-20 洋食の店 すずかけ（架空のお店。ID popura）の使用写真（ハヤシライスは合う写真が無く、写真なしの行で出す）
+t1 https://images.unsplash.com/photo-1703830755807-d6937a63c854?rect=2148,1500,5339,4004&w=1200&h=900&fit=crop&q=72&fm=webp
+t2 https://images.unsplash.com/photo-1719464453735-08166cde86d0?rect=324,0,5259,3944&w=1200&h=900&fit=crop&q=72&fm=webp
+t3 https://images.unsplash.com/photo-1667396702543-a239efa7a7f2?rect=204,0,5333,4000&w=1200&h=900&fit=crop&q=72&fm=webp
+fv https://images.unsplash.com/photo-1743148509702-2198b23ede1c?rect=2200,0,3738,4672&w=1000&h=1250&fit=crop&q=72&fm=webp
+ab https://images.unsplash.com/photo-1604931920035-e6316baed0e3?rect=0,0,5757,3838&w=1200&h=800&fit=crop&q=72&fm=webp
+m1 https://images.unsplash.com/photo-1677497387728-630eedc2f8e7?rect=60,0,1560,1560&w=640&h=640&fit=crop&q=72&fm=webp
+m2 https://images.unsplash.com/photo-1719789254388-c6c3dbc2b0ee?rect=520,0,2048,2048&w=640&h=640&fit=crop&q=72&fm=webp
+m4 https://images.unsplash.com/photo-1709880194932-8f33d90bdae8?rect=132,768,2721,2721&w=640&h=640&fit=crop&q=72&fm=webp

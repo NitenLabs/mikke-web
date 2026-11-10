@@ -1,0 +1,53 @@
+{
+  "name": "洋食の店 すずかけ",
+  "nameEn": "Suzukake",
+  "enTag": "WESTERN-STYLE KITCHEN",
+  "since": "SINCE 1978",
+  "copyright": "© 洋食の店 すずかけ",
+  "kicker": "昭和五十三年創業　芦屋・松ノ内町の洋食屋",
+  "fvCopy": ["三代目が守る、", "デミグラスの味。"],
+  "facts": [
+    ["昼", "11:00 – 15:00（L.O. 14:30）"],
+    ["夜", "17:00 – 21:00（L.O. 20:30）"],
+    ["定休日", "木曜日"],
+    ["お席", "テーブル28席"]
+  ],
+  "sigEn": "SIGNATURE",
+  "sigHead": "当店の三つの定番",
+  "sigLead": "創業のころから、品書きのいちばん上にある三皿です。",
+  "sigPick": ["itm_t001", "itm_t002", "itm_t003"],
+  "menuEn": "MENU",
+  "menuHead": "お品書き",
+  "menuLead": "揚げたての一皿と、食後の甘いものも。",
+  "menuPick": ["itm_g001", "itm_g002", "itm_s001"],
+  "rowPick": ["itm_g003", "itm_l001"],
+  "note": "表示の値段はすべて税込みです。",
+  "aboutEn": "OUR STORY",
+  "aboutYear": "1978",
+  "aboutHead": ["二週間かけて、", "ソースを継ぐ。"],
+  "aboutBody": "昭和五十三年の創業から継ぎ足してきたデミグラスソースは、仕上がるまでにおよそ二週間。オムライスもハンバーグも、変わらない味でお待ちしています。",
+  "aboutBody2": "いまは三代目が厨房に立ち、牛すじと香味野菜を炒めるところから、毎日少しずつ仕込みを続けています。",
+  "infoEn": "INFORMATION",
+  "infoHead": "ご案内",
+  "infoRows": [
+    ["ご住所", ["/location", "address"]],
+    ["営業時間", ["昼 11:00〜15:00（L.O. 14:30）", "夜 17:00〜21:00（L.O. 20:30）"]],
+    ["定休日", "木曜日"],
+    ["お席", "テーブル28席"],
+    ["お電話", ["/contact/phone", "phone"]]
+  ],
+  "telLabel": "電話をかける",
+  "mapLabel": "地図アプリで開く",
+  "footHours": ["昼 11:00〜15:00（L.O. 14:30）", "夜 17:00〜21:00（L.O. 20:30）", "木曜日 定休"],
+  "nav": [["三つの定番", "signature"], ["お品書き", "menu"], ["すずかけのこと", "story"], ["ご案内", "info"]],
+  "photos": {
+    "fv": { "slot": "interior", "alt": "デミグラスソースを添えた、ふんわり卵のオムライス", "page": "https://unsplash.com/photos/TdtoE7BE3z8" },
+    "t1": { "slot": "product", "alt": "オムライス（デミグラス）。デミグラスソースをたっぷりかけて", "page": "https://unsplash.com/photos/ZukOQ0oWs3c" },
+    "t2": { "slot": "product", "alt": "目玉焼きをのせた、デミグラスソースのハンバーグ", "page": "https://unsplash.com/photos/MEhNgwV9wEk" },
+    "t3": { "slot": "product", "alt": "牛肉と人参を煮込んだビーフシチュー", "page": "https://unsplash.com/photos/71gD9JoiPQY" },
+    "m1": { "slot": "product", "alt": "タルタルソースを添えたエビフライ", "page": "https://unsplash.com/photos/gVdA6JTWYdc" },
+    "m2": { "slot": "product", "alt": "レモンとタルタルソースを添えたカニクリームコロッケ", "page": "https://unsplash.com/photos/-mxsOYfmIZs" },
+    "m4": { "slot": "product", "alt": "ガラスの器に盛った、カラメルの固めのプリン", "page": "https://unsplash.com/photos/5G3_yxeAVY0" },
+    "ab": { "slot": "interior", "alt": "白いテーブルクロスと木の椅子の、静かな客席", "page": "https://unsplash.com/photos/FvgjdZ3hjkk" }
+  }
+}

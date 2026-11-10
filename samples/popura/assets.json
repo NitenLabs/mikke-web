@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 1250,
+        "bytes": 89192,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/TdtoE7BE3z8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "デミグラスソースを添えた、ふんわり卵のオムライス"
+    },
+    "ast_t101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_t101.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 900,
+        "bytes": 209384,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/ZukOQ0oWs3c"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "オムライス（デミグラス）。デミグラスソースをたっぷりかけて"
+    },
+    "ast_t201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_t201.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 900,
+        "bytes": 111818,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/MEhNgwV9wEk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "目玉焼きをのせた、デミグラスソースのハンバーグ"
+    },
+    "ast_t301": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_t301.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 900,
+        "bytes": 113204,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/71gD9JoiPQY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "牛肉と人参を煮込んだビーフシチュー"
+    },
+    "ast_m101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_m101.webp",
+        "mime": "image/webp",
+        "width": 640,
+        "height": 640,
+        "bytes": 64592,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/gVdA6JTWYdc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "タルタルソースを添えたエビフライ"
+    },
+    "ast_m201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_m201.webp",
+        "mime": "image/webp",
+        "width": 640,
+        "height": 640,
+        "bytes": 56006,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/-mxsOYfmIZs"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "レモンとタルタルソースを添えたカニクリームコロッケ"
+    },
+    "ast_m401": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_m401.webp",
+        "mime": "image/webp",
+        "width": 640,
+        "height": 640,
+        "bytes": 88542,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/5G3_yxeAVY0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "ガラスの器に盛った、カラメルの固めのプリン"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 800,
+        "bytes": 104602,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/FvgjdZ3hjkk"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "白いテーブルクロスと木の椅子の、静かな客席"
+    }
+  }
+}
