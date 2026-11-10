@@ -49,7 +49,8 @@ sec("sec_firstv", "最初の画面", "theme:background", 810, 675);
 photo("fv_1", "sec_firstv", "ast_fv01", 1, { x: 432, y: 0, w: 504, h: 810 }, { x: 0, y: 270.1, w: 195, h: 404.9 });
 photo("fv_2", "sec_firstv", "ast_fv02", 1, { x: 936, y: 0, w: 504, h: 810 }, { x: 195, y: 270.1, w: 195, h: 404.9 });
 t("fv_copy", "sec_firstv", lines(C.fvCopy), [[28.8, 40.32, 2.88], C.fvCopyBox?.sp ?? [25.6, 35.84, 1.28]], B, TX, [{ x: 175.7, y: C.fvCopyBox?.y ?? 251, w: 80.6, h: C.fvCopyBox?.h ?? 260 }, { x: 30, y: 63.3, w: 330, h: 71.7 }], { vp: 1, weight: 500 });
-t("fv_en", "sec_firstv", C.fvEn, [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], M, MU, [{ x: 80.4, y: 524, w: 271.2, h: 34.6 }, { x: 30, y: 154.9, w: 271.2, h: 34.6 }], { weight: 500, align: "center" });
+// 見出しの下の一行：fvSub（日本語・行の配列）があればそれを本文の書体で、無ければ fvEn（英語）
+t("fv_en", "sec_firstv", C.fvSub ? lines(C.fvSub) : C.fvEn, [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], C.fvSub ? B : M, MU, [{ x: 80.4, y: 524, w: 271.2, h: 34.6 }, { x: 30, y: 154.9, w: 271.2, h: 34.6 }], { weight: 500, align: "center" });
 t("fv_script", "sec_firstv", SITE_NAME_EN, [[144, 144, -7.2], [64, 64, -3.2]], SCRIPT, SCRIPT_C, [{ x: 200, y: 666, w: 997, h: 144 }, { x: 8, y: 603, w: 374, h: 64 }], { z: 5, weight: 300 });
 
 // ---- 2 Our story（PC 1498 / スマホは本文の長さで詰める）
