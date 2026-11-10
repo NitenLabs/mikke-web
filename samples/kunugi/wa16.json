@@ -1,0 +1,55 @@
+{
+  "name": "手打ち蕎麦 くぬぎ",
+  "kicker": "手打ち蕎麦",
+  "nameShort": "くぬぎ",
+  "copyright": "© 手打ち蕎麦 くぬぎ",
+  "fvCopy": ["石臼で挽く、", "その日の蕎麦。"],
+  "facts": [
+    ["昼", "11:30〜15:00（売り切れ次第終了）"],
+    ["夜", "17:30〜20:30（金・土曜日のみ）"],
+    ["定休日", "水曜日・木曜日"]
+  ],
+  "aboutKicker": "蕎麦のこと",
+  "aboutHead": ["まずは塩で、", "それからつゆで。"],
+  "aboutBody": "北海道と福井の玄蕎麦を店の石臼で挽き、毎朝、手で打っています。打つのは、昼と夜に出す分だけ。香りがいちばん立つうちに、お出しします。",
+  "seats": [["6", "カウンター"], ["12", "テーブル"]],
+  "stepsKicker": "三つの手仕事",
+  "stepsHead": "挽く、打つ、茹でる。",
+  "stepsLead": "一枚のせいろが卓に届くまでの、毎朝の仕事です。",
+  "steps": [
+    ["一", "挽く", "殻をむいた蕎麦の実を、石臼でゆっくりと挽きます。熱を持たせず、香りを残すために。"],
+    ["二", "打つ", "挽きたての粉に水を回してまとめ、薄く延して、包丁で細く切りそろえます。"],
+    ["三", "茹でる", "たっぷりの湯で手早く茹で、冷たい水で締めて、すぐに卓へお運びします。"]
+  ],
+  "menuKicker": "お品書き",
+  "menuHead": "冷たい蕎麦、温かい蕎麦。",
+  "menuMore": "ほかにも",
+  "note": "表示の値段はすべて税込みです。",
+  "ippinKicker": "一品と酒",
+  "ippinHead": ["蕎麦を待つあいだに、", "ひと皿と一合を。"],
+  "ippinBody": "「蕎麦前」と呼ばれる、蕎麦屋ならではの楽しみ方です。",
+  "infoHead": "ご案内",
+  "infoRows": [
+    ["ご住所", ["/location", "address"]],
+    ["営業時間", ["昼 11:30〜15:00（売り切れ次第終了）", "夜 17:30〜20:30（金・土曜日のみ）"]],
+    ["定休日", "水曜日・木曜日"],
+    ["お席", "カウンター6席・テーブル12席"],
+    ["お電話", ["/contact/phone", "phone"]]
+  ],
+  "telLabel": "電話をかける",
+  "mapLabel": "地図アプリで開く",
+  "footHours": ["昼 11:30〜15:00", "夜 17:30〜20:30（金・土曜日）", "水曜日・木曜日 定休"],
+  "nav": [["蕎麦のこと", "about"], ["三つの手仕事", "steps"], ["お品書き", "menu"], ["ご案内", "info"]],
+  "photos": {
+    "fv": { "slot": "signature", "alt": "黒い器に盛った蕎麦と、薬味とつゆの器", "page": "https://unsplash.com/photos/FSYShQGnbJc" },
+    "ab": { "slot": "product", "alt": "殻をむいた蕎麦の実", "page": "https://unsplash.com/photos/ttZcUhcEElw" },
+    "s1": { "slot": "interior", "alt": "粉が積もった石臼", "page": "https://unsplash.com/photos/9I_d5t0dwrc" },
+    "s2": { "slot": "interior", "alt": "木の台の上で粉と水をまとめる手", "page": "https://unsplash.com/photos/GHdWRQwrDNY" },
+    "s3": { "slot": "interior", "alt": "釜に掛けた麺の湯切りざる", "page": "https://unsplash.com/photos/dgAHenVGfuA" },
+    "sr": { "slot": "signature", "alt": "丸いせいろに盛った蕎麦と、そばちょこのつゆ", "page": "https://unsplash.com/photos/j9SSv1QK74Y" },
+    "tn": { "slot": "signature", "alt": "天せいろ。冷たい蕎麦に、海老と野菜の天ぷらを添えて", "page": "https://unsplash.com/photos/RXTcbk-cV3o" },
+    "kk": { "slot": "product", "alt": "青い器のかけ蕎麦と、刻みねぎ", "page": "https://unsplash.com/photos/ABay2MQlpPQ" },
+    "kw": { "slot": "product", "alt": "季節の変わり蕎麦（秋はきのこ）。きのこと青菜をのせた温かい蕎麦", "page": "https://unsplash.com/photos/K1FjDTRPhE0" },
+    "sk": { "slot": "product", "alt": "日本酒のぐい呑みを、鉢にいくつも集めて", "page": "https://unsplash.com/photos/lt7vhcc-Sjo" }
+  }
+}

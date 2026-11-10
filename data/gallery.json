@@ -101,6 +101,15 @@
       "path": "torinone"
     },
     {
+      "id": "kunugi",
+      "name": "手打ち蕎麦 くぬぎ",
+      "cat": "和食",
+      "genre": "手打ち蕎麦",
+      "mood": "生成りと墨に、蕎麦の実の色。挽く・打つ・茹でるを横に並べた、明るい蕎麦屋",
+      "stage": "#E9E3D7",
+      "path": "kunugi"
+    },
+    {
       "id": "ashiyado",
       "name": "御菓子司 芦屋堂",
       "cat": "パン・お菓子",

@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_kunugi",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "手打ち蕎麦 くぬぎ",
+    "nameKana": "てうちそば くぬぎ",
+    "genre": {
+      "template": "restaurant",
+      "detail": "手打ち蕎麦"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "岩園町",
+    "geo": {
+      "lat": 34.74588,
+      "lng": 135.313736
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          }
+        ]
+      },
+      "wed": {
+        "status": "closed"
+      },
+      "thu": {
+        "status": "closed"
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "17:30",
+            "end": "20:30",
+            "label": "夜"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "17:30",
+            "end": "20:30",
+            "label": "夜"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          }
+        ]
+      }
+    },
+    "note": "昼は売り切れ次第終了。夜は金・土曜日のみ"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 18,
+      "counter": 6,
+      "table": 12
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_soba": {
+        "order": 1,
+        "name": "お蕎麦"
+      },
+      "mnu_ippin": {
+        "order": 2,
+        "name": "一品と酒"
+      }
+    },
+    "categories": {
+      "cat_soba": {
+        "menuId": "mnu_soba",
+        "name": "お蕎麦",
+        "order": 1
+      },
+      "cat_ippin": {
+        "menuId": "mnu_ippin",
+        "name": "一品と酒",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_m001": {
+        "name": "せいろ",
+        "photos": [
+          "ast_sr01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m001",
+            "type": "fixed",
+            "amount": 950
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m002": {
+        "name": "田舎せいろ",
+        "prices": [
+          {
+            "id": "prc_m002",
+            "type": "fixed",
+            "amount": 1000
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m003": {
+        "name": "かけ",
+        "photos": [
+          "ast_kk01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m003",
+            "type": "fixed",
+            "amount": 950
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m004": {
+        "name": "鴨せいろ",
+        "prices": [
+          {
+            "id": "prc_m004",
+            "type": "fixed",
+            "amount": 1800
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m005": {
+        "name": "天せいろ",
+        "photos": [
+          "ast_tn01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m005",
+            "type": "fixed",
+            "amount": 2200
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m006": {
+        "name": "季節の変わり蕎麦（秋はきのこ）",
+        "photos": [
+          "ast_kw01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m006",
+            "type": "fixed",
+            "amount": 1600
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m007": {
+        "name": "蕎麦がき",
+        "prices": [
+          {
+            "id": "prc_m007",
+            "type": "fixed",
+            "amount": 900
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m008": {
+        "name": "出汁巻き",
+        "prices": [
+          {
+            "id": "prc_m008",
+            "type": "fixed",
+            "amount": 750
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m009": {
+        "name": "板わさ",
+        "prices": [
+          {
+            "id": "prc_m009",
+            "type": "fixed",
+            "amount": 600
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_m010": {
+        "name": "日本酒",
+        "photos": [
+          "ast_sk01"
+        ],
+        "prices": [
+          {
+            "id": "prc_m010",
+            "name": "1合",
+            "type": "from",
+            "amount": 900
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_soba",
+        "categoryId": "cat_soba",
+        "order": 1
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_soba",
+        "categoryId": "cat_soba",
+        "order": 2
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_soba",
+        "categoryId": "cat_soba",
+        "order": 3
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_soba",
+        "categoryId": "cat_soba",
+        "order": 4
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_soba",
+        "categoryId": "cat_soba",
+        "order": 5
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_soba",
+        "categoryId": "cat_soba",
+        "order": 6
+      },
+      "plc_m007": {
+        "itemId": "itm_m007",
+        "menuId": "mnu_ippin",
+        "categoryId": "cat_ippin",
+        "order": 7
+      },
+      "plc_m008": {
+        "itemId": "itm_m008",
+        "menuId": "mnu_ippin",
+        "categoryId": "cat_ippin",
+        "order": 8
+      },
+      "plc_m009": {
+        "itemId": "itm_m009",
+        "menuId": "mnu_ippin",
+        "categoryId": "cat_ippin",
+        "order": 9
+      },
+      "plc_m010": {
+        "itemId": "itm_m010",
+        "menuId": "mnu_ippin",
+        "categoryId": "cat_ippin",
+        "order": 10
+      }
+    }
+  }
+}

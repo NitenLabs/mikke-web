@@ -1,0 +1,265 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1170,
+        "bytes": 194012,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/FSYShQGnbJc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "黒い器に盛った蕎麦と、薬味とつゆの器"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.webp",
+        "mime": "image/webp",
+        "width": 960,
+        "height": 1160,
+        "bytes": 299586,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/ttZcUhcEElw"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "殻をむいた蕎麦の実"
+    },
+    "ast_s101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s101.webp",
+        "mime": "image/webp",
+        "width": 768,
+        "height": 960,
+        "bytes": 131526,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/9I_d5t0dwrc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "粉が積もった石臼"
+    },
+    "ast_s201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s201.webp",
+        "mime": "image/webp",
+        "width": 768,
+        "height": 960,
+        "bytes": 114334,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/GHdWRQwrDNY"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "木の台の上で粉と水をまとめる手"
+    },
+    "ast_s301": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_s301.webp",
+        "mime": "image/webp",
+        "width": 768,
+        "height": 960,
+        "bytes": 90562,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/dgAHenVGfuA"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "釜に掛けた麺の湯切りざる"
+    },
+    "ast_sr01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sr01.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 800,
+        "bytes": 278824,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/j9SSv1QK74Y"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "丸いせいろに盛った蕎麦と、そばちょこのつゆ"
+    },
+    "ast_tn01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_tn01.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 800,
+        "bytes": 136930,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/RXTcbk-cV3o"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "天せいろ。冷たい蕎麦に、海老と野菜の天ぷらを添えて"
+    },
+    "ast_kk01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_kk01.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 800,
+        "bytes": 114924,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/ABay2MQlpPQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "青い器のかけ蕎麦と、刻みねぎ"
+    },
+    "ast_kw01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_kw01.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 800,
+        "bytes": 126278,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/K1FjDTRPhE0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "季節の変わり蕎麦（秋はきのこ）。きのこと青菜をのせた温かい蕎麦"
+    },
+    "ast_sk01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_sk01.webp",
+        "mime": "image/webp",
+        "width": 960,
+        "height": 1000,
+        "bytes": 166022,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/lt7vhcc-Sjo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "日本酒のぐい呑みを、鉢にいくつも集めて"
+    }
+  }
+}
