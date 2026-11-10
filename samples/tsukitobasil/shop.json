@@ -1,0 +1,300 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_tsukitobasil",
+  "updatedAt": "2026-11-10T12:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "スパイスカレー 月とバジル",
+    "nameKana": "すぱいすかれー つきとばじる",
+    "genre": {
+      "template": "restaurant",
+      "detail": "スパイスカレー"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "精道町",
+    "geo": {
+      "lat": 34.7277,
+      "lng": 135.3068
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "closed"
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "18:00",
+            "end": "21:00",
+            "label": "夜"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "15:00",
+            "label": "昼"
+          },
+          {
+            "start": "18:00",
+            "end": "21:00",
+            "label": "夜"
+          }
+        ]
+      },
+      "sun": {
+        "status": "closed"
+      }
+    },
+    "note": "昼は売り切れ次第終了。夜は金曜日・土曜日のみ"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 8,
+      "counter": 8
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_main": {
+        "order": 1,
+        "name": "お品書き"
+      }
+    },
+    "categories": {
+      "cat_curry": {
+        "menuId": "mnu_main",
+        "name": "今日の鍋は、三つ。",
+        "order": 1
+      },
+      "cat_aigake": {
+        "menuId": "mnu_main",
+        "name": "二種か、三種か。",
+        "order": 2
+      },
+      "cat_extras": {
+        "menuId": "mnu_main",
+        "name": "トッピングと飲みもの",
+        "order": 3
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_keema": {
+        "name": "チキンキーマ",
+        "description": "鶏の粗挽きを、炒めた玉ねぎと合わせて汁気を飛ばしました。白髪ねぎとごま、きゅうりの漬物を添えて。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_keema",
+            "type": "fixed",
+            "amount": 1200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_beef": {
+        "name": "牛すじと黒胡椒",
+        "description": "やわらかく煮た牛すじを、クローブとシナモンの香るスープで。仕上げに黒胡椒と青唐辛子を。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_beef",
+            "type": "fixed",
+            "amount": 1400
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_yasai": {
+        "name": "季節の野菜",
+        "description": "いまはズッキーニとしめじ、ひよこ豆。ココナッツミルクでまろやかに、唐辛子をひとふり。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_yasai",
+            "type": "fixed",
+            "amount": 1300
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_aigake2": {
+        "name": "二種あいがけ",
+        "description": "三つの鍋から、二つを選んでください。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_aigake2",
+            "type": "fixed",
+            "amount": 1600
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_aigake3": {
+        "name": "三種あいがけ",
+        "description": "三つの鍋を、全部のせて。",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_aigake3",
+            "type": "fixed",
+            "amount": 1900
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_tamago": {
+        "name": "半熟卵",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_tamago",
+            "type": "fixed",
+            "amount": 150
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_achar": {
+        "name": "アチャール",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_achar",
+            "type": "fixed",
+            "amount": 200
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      },
+      "itm_lassi": {
+        "name": "ラッシー",
+        "photos": [],
+        "prices": [
+          {
+            "id": "prc_lassi",
+            "type": "fixed",
+            "amount": 450
+          }
+        ],
+        "status": "onSale",
+        "labels": []
+      }
+    },
+    "placements": {
+      "plc_keema": {
+        "itemId": "itm_keema",
+        "categoryId": "cat_curry",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_beef": {
+        "itemId": "itm_beef",
+        "categoryId": "cat_curry",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_yasai": {
+        "itemId": "itm_yasai",
+        "categoryId": "cat_curry",
+        "order": 3,
+        "menuId": "mnu_main"
+      },
+      "plc_aigake2": {
+        "itemId": "itm_aigake2",
+        "categoryId": "cat_aigake",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_aigake3": {
+        "itemId": "itm_aigake3",
+        "categoryId": "cat_aigake",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_tamago": {
+        "itemId": "itm_tamago",
+        "categoryId": "cat_extras",
+        "order": 1,
+        "menuId": "mnu_main"
+      },
+      "plc_achar": {
+        "itemId": "itm_achar",
+        "categoryId": "cat_extras",
+        "order": 2,
+        "menuId": "mnu_main"
+      },
+      "plc_lassi": {
+        "itemId": "itm_lassi",
+        "categoryId": "cat_extras",
+        "order": 3,
+        "menuId": "mnu_main"
+      }
+    }
+  }
+}

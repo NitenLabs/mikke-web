@@ -1,0 +1,239 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_phfv": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfv.webp",
+        "mime": "image/webp",
+        "width": 1100,
+        "height": 733,
+        "bytes": 101774,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/tP8dXmCHqBc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ご飯の周りに数種のカレーと副菜を盛ったひと皿"
+    },
+    "ast_phfv2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phfv2.webp",
+        "mime": "image/webp",
+        "width": 640,
+        "height": 480,
+        "bytes": 97246,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/fsMkFcIC3Eo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "カルダモンとクローブ"
+    },
+    "ast_phspice": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phspice.webp",
+        "mime": "image/webp",
+        "width": 1000,
+        "height": 667,
+        "bytes": 201938,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/NPrWYa69Mz0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "白い板に並べたホールスパイス"
+    },
+    "ast_phc1": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phc1.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 600,
+        "bytes": 162390,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/VsSLnEO2Jxo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ご飯にのせたキーマとねぎ、きゅうりの漬物"
+    },
+    "ast_phc2": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phc2.webp",
+        "mime": "image/webp",
+        "width": 760,
+        "height": 1139,
+        "bytes": 71894,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/1lAIRAsv3C4"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "牛すじのカレー、青唐辛子と人参"
+    },
+    "ast_phc3": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phc3.webp",
+        "mime": "image/webp",
+        "width": 760,
+        "height": 1140,
+        "bytes": 199442,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/duiZDJy-WWQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ズッキーニとしめじ、ひよこ豆の野菜カレー"
+    },
+    "ast_phachar": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phachar.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 533,
+        "bytes": 131542,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/yAI3iv8rlzU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "紫玉ねぎと人参のアチャール"
+    },
+    "ast_phlassi": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phlassi.webp",
+        "mime": "image/webp",
+        "width": 600,
+        "height": 928,
+        "bytes": 59504,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/D0DY3mA3T7Q"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "other",
+      "alt": "ナッツとミントをのせたラッシー"
+    },
+    "ast_phcounter": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_phcounter.webp",
+        "mime": "image/webp",
+        "width": 900,
+        "height": 1125,
+        "bytes": 163346,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T12:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/HPTEAmM09vM"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T12:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "木のカウンターと椅子"
+    }
+  }
+}
