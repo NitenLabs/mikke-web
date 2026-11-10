@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1200,
+        "height": 1278,
+        "bytes": 88848,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/q66grqqHpDQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "湯気の立つ蒸籠の点心と、たれの小皿"
+    },
+    "ast_d101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_d101.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 800,
+        "bytes": 107764,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/YfcopF96Nf0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "蒸籠に並んだ小籠包を上から"
+    },
+    "ast_d201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_d201.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 800,
+        "bytes": 119518,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/EIBi5qVrMqo"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "蒸籠に並んだ蒸し餃子を上から"
+    },
+    "ast_d301": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_d301.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 800,
+        "bytes": 151734,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/BnDPpaHR9RQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "蒸籠の焼売。とびこをのせて"
+    },
+    "ast_p101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_p101.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 880,
+        "bytes": 234178,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/zEY4cH_QADs"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "青ねぎをたっぷりのせた麻婆豆腐"
+    },
+    "ast_p201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_p201.webp",
+        "mime": "image/webp",
+        "width": 1176,
+        "height": 880,
+        "bytes": 124516,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/sfa5-CbN_4w"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "黒酢の酢豚。青ねぎと赤唐辛子を合わせて"
+    },
+    "ast_ab01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_ab01.webp",
+        "mime": "image/webp",
+        "width": 1120,
+        "height": 800,
+        "bytes": 53654,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_Ycnch2Ez5o"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "黒い卓に置いた急須と二つの茶杯"
+    },
+    "ast_rm01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_rm01.webp",
+        "mime": "image/webp",
+        "width": 1280,
+        "height": 912,
+        "bytes": 116004,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/DKxbjOa4hd0"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "回転台のある円卓の個室"
+    }
+  }
+}

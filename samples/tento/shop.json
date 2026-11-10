@@ -1,0 +1,378 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_tento",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "中華 天燈",
+    "nameKana": "ちゅうか てんとう",
+    "genre": {
+      "template": "restaurant",
+      "detail": "モダン中華"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "茶屋之町",
+    "geo": {
+      "lat": 34.730907,
+      "lng": 135.307602
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:30",
+            "label": "昼",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:00"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:30",
+            "label": "昼",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:00"
+          }
+        ]
+      },
+      "wed": {
+        "status": "closed"
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:30",
+            "label": "昼",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:00"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:30",
+            "label": "昼",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:00"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:30",
+            "label": "昼",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:00"
+          }
+        ]
+      },
+      "sun": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "11:30",
+            "end": "14:30",
+            "label": "昼",
+            "lastOrder": "14:00"
+          },
+          {
+            "start": "17:30",
+            "end": "22:00",
+            "label": "夜",
+            "lastOrder": "21:00"
+          }
+        ]
+      }
+    },
+    "note": "ラストオーダーは昼14:00・夜21:00"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 24,
+      "table": 24,
+      "privateRooms": 1
+    }
+  },
+  "catalog": {
+    "menus": {
+      "mnu_dimsum": {
+        "order": 1,
+        "name": "点心"
+      },
+      "mnu_plate": {
+        "order": 2,
+        "name": "一品料理と麺"
+      },
+      "mnu_course": {
+        "order": 3,
+        "name": "コース"
+      },
+      "mnu_drink": {
+        "order": 4,
+        "name": "お飲みもの"
+      }
+    },
+    "categories": {
+      "cat_dimsum": {
+        "menuId": "mnu_dimsum",
+        "name": "点心",
+        "order": 1
+      },
+      "cat_plate": {
+        "menuId": "mnu_plate",
+        "name": "一品料理と麺",
+        "order": 1
+      },
+      "cat_course": {
+        "menuId": "mnu_course",
+        "name": "コース",
+        "order": 1
+      },
+      "cat_drink": {
+        "menuId": "mnu_drink",
+        "name": "お飲みもの",
+        "order": 1
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_d001": {
+        "name": "小籠包",
+        "description": "豚のうまみが詰まったスープを、薄い皮で包みました。れんげにのせて、まずはひと口。",
+        "photos": [
+          "ast_d101"
+        ],
+        "prices": [
+          {
+            "id": "prc_d001",
+            "name": "4個",
+            "type": "fixed",
+            "amount": 880
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_d002": {
+        "name": "蒸し餃子",
+        "description": "もちっとした皮に、豚肉と白菜のあんをたっぷりと。黒酢を添えて。",
+        "photos": [
+          "ast_d201"
+        ],
+        "prices": [
+          {
+            "id": "prc_d002",
+            "name": "3個",
+            "type": "fixed",
+            "amount": 780
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_d003": {
+        "name": "焼売",
+        "description": "粗くたたいた豚肉と海老を包み、とびこをのせて蒸し上げます。",
+        "photos": [
+          "ast_d301"
+        ],
+        "prices": [
+          {
+            "id": "prc_d003",
+            "name": "3個",
+            "type": "fixed",
+            "amount": 660
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_p001": {
+        "name": "よだれ鶏",
+        "prices": [
+          {
+            "id": "prc_p001",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_p002": {
+        "name": "麻婆豆腐",
+        "description": "花椒の香りをきかせた、四川の麻婆豆腐です。",
+        "photos": [
+          "ast_p101"
+        ],
+        "prices": [
+          {
+            "id": "prc_p002",
+            "type": "fixed",
+            "amount": 1500
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_p003": {
+        "name": "黒酢の酢豚",
+        "description": "揚げた豚肉に、香りのよい黒酢をからめました。",
+        "photos": [
+          "ast_p201"
+        ],
+        "prices": [
+          {
+            "id": "prc_p003",
+            "type": "fixed",
+            "amount": 1800
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_p004": {
+        "name": "担々麺",
+        "prices": [
+          {
+            "id": "prc_p004",
+            "type": "fixed",
+            "amount": 1200
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_c001": {
+        "name": "季節のコース",
+        "description": "点心と前菜から、季節の一皿、麺またはご飯、甘味まで。",
+        "prices": [
+          {
+            "id": "prc_c001",
+            "type": "fixed",
+            "amount": 6600
+          }
+        ],
+        "status": "onSale"
+      },
+      "itm_k001": {
+        "name": "紹興酒",
+        "prices": [
+          {
+            "id": "prc_k001",
+            "name": "グラス",
+            "type": "fixed",
+            "amount": 700
+          }
+        ],
+        "status": "onSale"
+      }
+    },
+    "placements": {
+      "plc_d001": {
+        "itemId": "itm_d001",
+        "menuId": "mnu_dimsum",
+        "categoryId": "cat_dimsum",
+        "order": 1
+      },
+      "plc_d002": {
+        "itemId": "itm_d002",
+        "menuId": "mnu_dimsum",
+        "categoryId": "cat_dimsum",
+        "order": 2
+      },
+      "plc_d003": {
+        "itemId": "itm_d003",
+        "menuId": "mnu_dimsum",
+        "categoryId": "cat_dimsum",
+        "order": 3
+      },
+      "plc_p001": {
+        "itemId": "itm_p001",
+        "menuId": "mnu_plate",
+        "categoryId": "cat_plate",
+        "order": 1
+      },
+      "plc_p002": {
+        "itemId": "itm_p002",
+        "menuId": "mnu_plate",
+        "categoryId": "cat_plate",
+        "order": 2
+      },
+      "plc_p003": {
+        "itemId": "itm_p003",
+        "menuId": "mnu_plate",
+        "categoryId": "cat_plate",
+        "order": 3
+      },
+      "plc_p004": {
+        "itemId": "itm_p004",
+        "menuId": "mnu_plate",
+        "categoryId": "cat_plate",
+        "order": 4
+      },
+      "plc_c001": {
+        "itemId": "itm_c001",
+        "menuId": "mnu_course",
+        "categoryId": "cat_course",
+        "order": 1
+      },
+      "plc_k001": {
+        "itemId": "itm_k001",
+        "menuId": "mnu_drink",
+        "categoryId": "cat_drink",
+        "order": 1
+      }
+    }
+  }
+}

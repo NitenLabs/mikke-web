@@ -1,0 +1,9 @@
+# wa-18 中華 天燈（架空のお店）の使用写真
+fv https://images.unsplash.com/photo-1523905330026-b8bd1f5f320e?rect=1112,0,3446,3669&w=1200&h=1278&fit=crop&q=72&fm=webp
+d1 https://images.unsplash.com/photo-1794049244712-dc135bd6b7cd?rect=1028,69,3900,3900&w=800&h=800&fit=crop&q=72&fm=webp
+d2 https://images.unsplash.com/photo-1783521574330-a1614af76484?rect=0,490,2509,2509&w=800&h=800&fit=crop&q=72&fm=webp
+d3 https://images.unsplash.com/photo-1604632910793-c0601f361b34?rect=777,1600,1372,1372&w=800&h=800&fit=crop&q=72&fm=webp
+p1 https://images.unsplash.com/photo-1788603930622-636954e00065?rect=0,1647,5765,4324&w=1176&h=880&fit=crop&q=72&fm=webp
+p2 https://images.unsplash.com/photo-1702705497146-bbde3336a801?rect=889,0,3889,2920&w=1176&h=880&fit=crop&q=72&fm=webp
+ab https://images.unsplash.com/photo-1548386581-23b700b33be0?rect=420,70,4336,3097&w=1120&h=800&fit=crop&q=72&fm=webp
+rm https://images.unsplash.com/photo-1768397003905-a202ea6325f5?rect=799,1118,4314,3076&w=1280&h=912&fit=crop&q=72&fm=webp

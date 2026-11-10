@@ -1,0 +1,53 @@
+{
+  "name": "中華 天燈",
+  "kicker": "モダン中華　芦屋・茶屋之町",
+  "nameShort": "天燈",
+  "nameEn": "TENTO",
+  "copyright": "© 中華 天燈",
+  "fvCopy": "点心と、季節の一皿。",
+  "facts": [
+    ["昼", "11:30 – 14:30（L.O. 14:00）"],
+    ["夜", "17:30 – 22:00（L.O. 21:00）"],
+    ["定休日", "水曜日"],
+    ["お席", "テーブル24席・円卓の個室1室"]
+  ],
+  "dimEn": "DIM SUM",
+  "dimHead": "点心の品書き",
+  "dimLead": "皮から店で包み、蒸し上がりを蒸籠のままお出しします。",
+  "dimPick": ["itm_d001", "itm_d002", "itm_d003"],
+  "plateEn": "PLATES & NOODLES",
+  "plateHead": "一品料理と、麺。",
+  "platePick": ["itm_p002", "itm_p003"],
+  "rowPick": ["itm_p001", "itm_p004", "itm_k001"],
+  "note": "表示の値段はすべて税込みです。",
+  "aboutEn": "ABOUT",
+  "aboutHead": ["四川の香りと、", "広東のやさしさを。"],
+  "aboutBody": "点心は毎日、店で包んでいます。四川の香りと広東のやさしさを、ひとつのテーブルで。少人数のコースから、円卓を囲む会食まで。",
+  "courseEn": "COURSE",
+  "coursePick": "itm_c001",
+  "roomBody": "円卓の個室は一室。ご家族のお祝いや、少し改まった会食にもお使いいただけます。ご予約はお電話で承ります。",
+  "roomTel": "電話で予約する",
+  "infoEn": "INFORMATION",
+  "infoHead": "ご案内",
+  "infoRows": [
+    ["ご住所", ["/location", "address"]],
+    ["営業時間", ["昼 11:30〜14:30（L.O. 14:00）", "夜 17:30〜22:00（L.O. 21:00）"]],
+    ["定休日", "水曜日"],
+    ["お席", "テーブル24席・円卓の個室1室"],
+    ["お電話", ["/contact/phone", "phone"]]
+  ],
+  "telLabel": "電話をかける",
+  "mapLabel": "地図アプリで開く",
+  "footHours": ["昼 11:30〜14:30（L.O. 14:00）", "夜 17:30〜22:00（L.O. 21:00）", "水曜日 定休"],
+  "nav": [["点心", "dimsum"], ["一品と麺", "plates"], ["天燈のこと", "about"], ["ご案内", "info"]],
+  "photos": {
+    "fv": { "slot": "interior", "alt": "湯気の立つ蒸籠の点心と、たれの小皿", "page": "https://unsplash.com/photos/q66grqqHpDQ" },
+    "d1": { "slot": "product", "alt": "蒸籠に並んだ小籠包を上から", "page": "https://unsplash.com/photos/YfcopF96Nf0" },
+    "d2": { "slot": "product", "alt": "蒸籠に並んだ蒸し餃子を上から", "page": "https://unsplash.com/photos/EIBi5qVrMqo" },
+    "d3": { "slot": "product", "alt": "蒸籠の焼売。とびこをのせて", "page": "https://unsplash.com/photos/BnDPpaHR9RQ" },
+    "p1": { "slot": "product", "alt": "青ねぎをたっぷりのせた麻婆豆腐", "page": "https://unsplash.com/photos/zEY4cH_QADs" },
+    "p2": { "slot": "product", "alt": "黒酢の酢豚。青ねぎと赤唐辛子を合わせて", "page": "https://unsplash.com/photos/sfa5-CbN_4w" },
+    "ab": { "slot": "interior", "alt": "黒い卓に置いた急須と二つの茶杯", "page": "https://unsplash.com/photos/_Ycnch2Ez5o" },
+    "rm": { "slot": "interior", "alt": "回転台のある円卓の個室", "page": "https://unsplash.com/photos/DKxbjOa4hd0" }
+  }
+}
