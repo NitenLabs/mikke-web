@@ -92,6 +92,11 @@ try {
         for (let i = 0; i < bl.length; i++) for (let j = i + 1; j < bl.length; j++) { const a = bl[i][1], b = bl[j][1]; if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) out.block.push(bl[i][0] + "×" + bl[j][0]); }
         for (const e of s.querySelectorAll(".cbox>.el")) { if (!vis(e)) continue; const b = e.getBoundingClientRect(); if (b.bottom > sb.bottom + 1) out.cut.push(idOf(e)); }
       }
+      // カードの中で切れる物（.rep-card の overflow:hidden。scrollIntoView で中が送られると見逃すので scrollTop を 0 に戻して測る）と、ボタンの文字が札の外に出る物（*_t と *_b）
+      out.cardCut = [];
+      for (const c of document.querySelectorAll(".rep-card")) { c.scrollTop = 0; const cb = c.getBoundingClientRect(); for (const e of c.querySelectorAll("[data-cel]")) { if (!vis(e)) continue; const b = e.getBoundingClientRect(); if (b.height > 0 && b.bottom > cb.bottom + 1) out.cardCut.push(e.dataset.cel); } }
+      out.btnOut = [];
+      for (const tx of document.querySelectorAll("[data-el$=_t]")) { const bx = document.querySelector(`[data-el="${tx.dataset.el.replace(/_t$/, "_b")}"]`); if (!bx || !vis(tx) || !vis(bx)) continue; const r1 = document.createRange(); r1.selectNodeContents(tx); const a = r1.getBoundingClientRect(), b = bx.getBoundingClientRect(); if (a.top < b.top - 1 || a.bottom > b.bottom + 1 || a.left < b.left - 1 || a.right > b.right + 1) out.btnOut.push(tx.dataset.el); }
       out.demo = /架空のお店のデザイン見本/.test(document.body.textContent);
       out.age = document.querySelector("[data-sec=sec_footer]")?.textContent.includes(AGE);
       out.keisai = /掲載店/.test(document.body.textContent);
@@ -120,6 +125,8 @@ try {
     if (r.fakeBtn.length) ng(`${w}: 押せない飾りのボタン ${r.fakeBtn.join(",")}`);
     if (r.block.length) ng(`${w}: 写真・カードの重なり ${r.block.join(",")}`);
     if (r.cut.length) ng(`${w}: 段の下端からはみ出す ${r.cut.join(",")}`);
+    if (r.cardCut.length) ng(`${w}: カードの中で切れる ${r.cardCut.join(",")}`);
+    if (r.btnOut.length) ng(`${w}: ボタンの文字が札の外 ${r.btnOut.join(",")}`);
     if (!r.demo) ng(`${w}: 架空のお店の一文が無い`);
     if (!r.age) ng(`${w}: フッターに飲酒の断りが無い`);
     if (r.keisai) ng(`${w}: 「掲載店」が出ている`);

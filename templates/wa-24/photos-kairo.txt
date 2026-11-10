@@ -6,4 +6,4 @@ k3 https://images.unsplash.com/photo-1563223771-5fe4038fbfc9?rect=0,500,3334,416
 h1 https://images.unsplash.com/photo-1759358342585-23b516c4636e?rect=0,800,4160,5200&w=720&h=900&fit=crop&q=72&fm=webp
 h2 https://images.unsplash.com/photo-1681579289899-188bd52d51f4?rect=0,600,3456,4320&w=720&h=900&fit=crop&q=72&fm=webp
 w1 https://images.unsplash.com/photo-1767541865141-e4abf72e9dbc?w=720&h=900&fit=crop&q=72&fm=webp
-c1 https://images.unsplash.com/photo-1784571247873-55d2b4b05bbc?w=720&h=480&fit=crop&q=72&fm=webp
+c1 https://images.unsplash.com/photo-1784571247873-55d2b4b05bbc?w=720&h=900&fit=crop&q=72&fm=webp

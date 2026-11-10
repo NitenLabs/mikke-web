@@ -143,7 +143,7 @@ photo("ct_ph", "sec_counter", "ast_h101", 1, { x: 852, y: 140, w: 460, h: 575 },
 t("ct_cap", "sec_counter", C.counter.caption, [[14, 22, 0.4], [13, 20, 0.3]], B, MUTE, [{ x: 852, y: 731, w: 460, h: 22 }, { x: XS, y: 1000, w: WS, h: 20 }], { align: "right" });
 
 // ---- 4 品書き（紺。横書きの巨大欧文「Menu」、写真付きの 3 列のカード、1px の線で区切った 3 行）
-sec("sec_menu", "品書き", "theme:background", 1391, 2593, { anchor: C.nav[2][2] });
+sec("sec_menu", "品書き", "theme:background", 1391, 2798, { anchor: C.nav[2][2] });
 t("mn_giant", "sec_menu", C.menu.giant, [[112, 120, 1], [52, 56, 0.5]], A, BRASS, [{ x: X0 - 6, y: 128, w: 420, h: 120 }, { x: XS - 2, y: 72, w: WS, h: 56 }], { role: "heading" });
 t("mn_h", "sec_menu", C.menu.head, [[36, 52, 2], [28, 40, 1.5]], H, SMOKE, [{ x: 712, y: 150, w: 600, h: 52 }, { x: XS, y: 140, w: WS, h: 40 }], { align: "right", weight: 500 });
 t("mn_note", "sec_menu", C.menu.note, [[13, 22, 0.4], [13, 22, 0.3]], B, MUTE, [{ x: 712, y: 212, w: 600, h: 22 }, { x: XS, y: 188, w: WS, h: 44 }], { align: "right" });

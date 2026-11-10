@@ -37,7 +37,7 @@ html{scroll-padding-top:7.2rem}
 [data-cel$=_ds],[data-cel$=_ig],[data-el=ct_p],[data-el=tn_p],[data-el=tn_note],[data-el=fv_p],[data-el=ft_line]{text-wrap:pretty}
 @media (min-width:${BP}px){[data-el^=hd_t]:not([data-el^=hd_tel]),[data-el=hd_tl]{display:none!important}}
 @media (max-width:${BP - 0.02}px){[data-el=hd_hours],[data-el^=fv_v]{display:none!important}}
-@media (max-width:767.9px){.k-rail{display:none}[data-el=mn_h],[data-el=mn_note]{text-align:left!important}}
+@media (max-width:767.9px){.k-rail{display:none}[data-el=hd_tel_t]{top:1.8rem!important}[data-el=mn_h],[data-el=mn_note]{text-align:left!important}}
 </style>`;
 
 // ---- タブレット（768〜1024）：:root を 10px にしてスマホのデータを広げ、段ごとに配置を組み直す（1rem＝設計の 1px の 10 倍ではなく 10px）。
@@ -62,20 +62,20 @@ tb += pos("[data-el=fv_info]", `left:${TL};width:34%;top:46rem;height:auto`);
 tb += pos("[data-el=fv_ph]", `left:44%;width:${FVW * 100}%;top:6rem;height:${FVH}`);
 C.fv.en.forEach((_, i) => { tb += pos(`[data-el=fv_e${i}]`, `left:44%;width:${FVW * 100}%;top:calc(8rem + ${i * 2.8}rem + ${CB} * ${(FVW * 2) / 3})`); });
 // 今宵の一杯：2 列の千鳥（右列を 20rem 下げる）。写真は列の幅の 4:5（cqw）。巨大欧文は縦 96
-const COLW = `(${CB} * 0.44872 - 2.4rem)`, KPH = `${COLW} * 1.25`, KCH = `calc(${KPH} + 27.2rem)`;
-tb += pos("[data-sec=sec_tonight]", `min-height:calc(96.8rem + ${COLW} * 2.5)`);
+const COLW = `(${CB} * 0.44872 - 2.4rem)`, KPH = `${COLW} * 1.25`, KCH = `calc(${KPH} + 33.2rem)`;
+tb += pos("[data-sec=sec_tonight]", `min-height:calc(108.8rem + ${COLW} * 2.5)`);
 tb += pos("[data-el=tn_giant]", `left:calc(${TR} - 11.2rem);width:11.2rem;top:6rem;height:40rem;writing-mode:vertical-rl;white-space:nowrap;font-size:9.6rem;line-height:1`);
 tb += pos("[data-el=tn_en]", `left:${TL};width:50%;top:8rem`) + pos("[data-el=tn_h]", `left:${TL};width:50%;top:10.8rem`) + pos("[data-el=tn_p]", `left:${TL};width:50%;top:17rem;height:auto`);
-const KX = [TL, `calc(${TL} + (89.744% + 4.8rem) / 2)`, TL], KY = ["24rem", "48rem", `calc(59.2rem + ${KPH})`];
+const KX = [TL, `calc(${TL} + (89.744% + 4.8rem) / 2)`, TL], KY = ["24rem", "48rem", `calc(65.2rem + ${KPH})`];
 for (let i = 0; i < NT; i++) {
   const p = `k${i}`;
-  tb += pos(`[data-el=tn_c${i}]`, `left:${KX[i]};width:calc((89.744% - 4.8rem) / 2);top:${KY[i]};height:${KCH};container-type:inline-size`) + pos(`[data-el=tn_c${i}] .rep-card`, `width:100%!important;height:calc(125cqw + 27.2rem)!important`);
+  tb += pos(`[data-el=tn_c${i}]`, `left:${KX[i]};width:calc((89.744% - 4.8rem) / 2);top:${KY[i]};height:${KCH};container-type:inline-size`) + pos(`[data-el=tn_c${i}] .rep-card`, `width:100%!important;height:calc(125cqw + 33.2rem)!important`);
   tb += cel(`${p}_ph`, "top:5.2rem;height:125cqw");
   const at = (d) => `top:calc(125cqw + ${d}rem)`;
-  tb += cel(`${p}_nm`, `${at(6.8)};font-size:1.9rem`) + cel(`${p}_en`, at(10.4)) + cel(`${p}_il`, at(13.7)) + cel(`${p}_ig`, at(13.6)) + cel(`${p}_ds`, `${at(19.6)};height:8.4rem`) + cel(`${p}_pr`, at(29.4));
+  tb += cel(`${p}_nm`, `${at(6.8)};font-size:1.9rem`) + cel(`${p}_en`, at(10.4)) + cel(`${p}_il`, at(13.7)) + cel(`${p}_ig`, at(13.6)) + cel(`${p}_ds`, `${at(19.6)};height:8.8rem`) + cel(`${p}_pr`, at(29.4));
 }
-tb += pos("[data-el=tn_nb]", `left:${KX[1]};width:calc((89.744% - 4.8rem) / 2);top:calc(81.2rem + ${KPH});height:18rem`);
-tb += pos("[data-el=tn_note]", `left:calc(${KX[1]} + 2.4rem);width:calc((89.744% - 4.8rem) / 2 - 4.8rem);top:calc(83.8rem + ${KPH});height:auto`);
+tb += pos("[data-el=tn_nb]", `left:${KX[1]};width:calc((89.744% - 4.8rem) / 2);top:calc(87.2rem + ${KPH});height:18rem`);
+tb += pos("[data-el=tn_note]", `left:calc(${KX[1]} + 2.4rem);width:calc((89.744% - 4.8rem) / 2 - 4.8rem);top:calc(89.8rem + ${KPH});height:auto`);
 // カウンター：巨大欧文は横書きで上、左に縦書きの見出しと紹介文・数字の行、右に写真（中身の 45%）
 const CTW = 0.4038, CTPH = `${CB} * ${CTW * 1.25}`;
 tb += pos("[data-sec=sec_counter]", `min-height:max(74rem,calc(24rem + ${CTPH}))`);
