@@ -126,6 +126,15 @@
       "mood": "季節の上生菓子と甘味処。白と墨で品よくまとめた和菓子店",
       "stage": "#E6E4E0",
       "path": "ashiyado"
+    },
+    {
+      "id": "kakitsubata",
+      "name": "天ぷら 杜若",
+      "cat": "和食",
+      "genre": "天ぷら店",
+      "mood": "白木と藍に、胡麻油の金色。おまかせの品を順に見せる天ぷらのカウンター",
+      "stage": "#E6E0D3",
+      "path": "kakitsubata"
     }
   ]
 }
