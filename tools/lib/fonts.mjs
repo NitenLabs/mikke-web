@@ -41,6 +41,9 @@ export const FONT_REGISTRY = {
   "bricolage-grotesque": { family: "Bricolage Grotesque", generic: "sans-serif", param: "Bricolage+Grotesque:wght@400;600;800" },
   "kiwi-maru": { family: "Kiwi Maru", generic: "serif", param: "Kiwi+Maru:wght@400;500" },
   "young-serif": { family: "Young Serif", generic: "serif", param: "Young+Serif" },
+  "yuji-syuku": { family: "Yuji Syuku", generic: "serif", param: "Yuji+Syuku" },
+  // 既存の "archivo" は 400 だけ（hamasyou が使用）。数字を太さ違いで組む型のための別の ID
+  "archivo-numerals": { family: "Archivo", generic: "sans-serif", param: "Archivo:wght@400;500;600;700" },
 };
 
 // フォントID → CSS の font-family スタック
