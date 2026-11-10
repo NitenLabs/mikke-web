@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "assets": {
+    "ast_fv01": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_fv01.webp",
+        "mime": "image/webp",
+        "width": 1600,
+        "height": 1080,
+        "bytes": 501120,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/Dukn-t-d7UU"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "interior",
+      "alt": "暗い店内。真鍮の棚に小さなボトルが並び、黒いスツールの奥の窓から琥珀の光が差す"
+    },
+    "ast_k101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_k101.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 121006,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/R31OwFKbRdE"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "冬蜜柑のオールドファッションド。切子のロックグラスに琥珀色の一杯と大きな氷。オレンジ色の皮と半分の柑橘を添えて"
+    },
+    "ast_k201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_k201.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 49980,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/C-e4SyNNP_8"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "炙り柚子とローズマリーのサワー。脚付きのグラスに黄色い一杯。トングで炙った皮をのせ、煙が立つ。手前にローズマリー"
+    },
+    "ast_k301": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_k301.webp",
+        "mime": "image/webp",
+        "width": 800,
+        "height": 1000,
+        "bytes": 68234,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/vAkIPzXOSOc"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "signature",
+      "alt": "ブラックベリーのジンサワー。赤紫の一杯に桃色の泡。ブラックベリーとミントを添えて"
+    },
+    "ast_h101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_h101.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 152008,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/7DI9S8kCbOQ"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "work",
+      "alt": "琥珀の光のカウンターで、長い箸でマティーニにオリーブを添える手元"
+    },
+    "ast_h201": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_h201.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 52708,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/CyvVuIJ8YBI"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "シグネチャーカクテル。暗いカウンターで、両手がスプーンで赤い一杯に仕上げの粉をふる"
+    },
+    "ast_w101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_w101.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 900,
+        "bytes": 81248,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/_AqEYlX0e9o"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "ウイスキー。切子のグラスに琥珀色のウイスキーと四角い氷、斜めの光の筋"
+    },
+    "ast_c101": {
+      "kind": "photo",
+      "file": {
+        "key": "ast_c101.webp",
+        "mime": "image/webp",
+        "width": 720,
+        "height": 480,
+        "bytes": 16262,
+        "exifStripped": true
+      },
+      "uploadedAt": "2026-11-10T09:00:00+09:00",
+      "uploadedBy": "producer",
+      "origin": {
+        "kind": "stock",
+        "provider": "unsplash",
+        "pageUrl": "https://unsplash.com/photos/sBeJOZnCy0c"
+      },
+      "rights": {
+        "basis": "licensed",
+        "confirmedAt": "2026-11-10T09:00:00+09:00",
+        "confirmedBy": "producer",
+        "note": "Unsplash License（架空のお店のデザイン見本）"
+      },
+      "slot": "product",
+      "alt": "クラシックカクテル。紺の背景に、細い脚のグラスの琥珀色の一杯とピンに刺したオリーブ"
+    }
+  }
+}

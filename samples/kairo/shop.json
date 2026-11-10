@@ -1,0 +1,335 @@
+{
+  "schemaVersion": 1,
+  "shopId": "shp_kairo",
+  "updatedAt": "2026-11-10T09:00:00+09:00",
+  "isSample": true,
+  "demo": true,
+  "basic": {
+    "name": "BAR KAIRO",
+    "nameKana": "ばー かいろ",
+    "genre": {
+      "template": "restaurant",
+      "detail": "カクテルバー"
+    }
+  },
+  "location": {
+    "prefecture": "兵庫県",
+    "city": "芦屋市",
+    "town": "川西町",
+    "geo": {
+      "lat": 34.728985,
+      "lng": 135.301285
+    }
+  },
+  "hours": {
+    "weekly": {
+      "mon": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "19:00",
+            "end": "26:00",
+            "lastOrder": "25:30"
+          }
+        ]
+      },
+      "tue": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "19:00",
+            "end": "26:00",
+            "lastOrder": "25:30"
+          }
+        ]
+      },
+      "wed": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "19:00",
+            "end": "26:00",
+            "lastOrder": "25:30"
+          }
+        ]
+      },
+      "thu": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "19:00",
+            "end": "26:00",
+            "lastOrder": "25:30"
+          }
+        ]
+      },
+      "fri": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "19:00",
+            "end": "26:00",
+            "lastOrder": "25:30"
+          }
+        ]
+      },
+      "sat": {
+        "status": "open",
+        "periods": [
+          {
+            "start": "19:00",
+            "end": "26:00",
+            "lastOrder": "25:30"
+          }
+        ]
+      },
+      "sun": {
+        "status": "closed"
+      }
+    },
+    "note": "ラストオーダーは1:30"
+  },
+  "contact": {
+    "phone": {
+      "display": "0797-00-0000",
+      "digits": "0797000000"
+    }
+  },
+  "facilities": {
+    "seats": {
+      "total": 8,
+      "counter": 8
+    }
+  },
+  "genreInfo": {
+    "takeout": false
+  },
+  "catalog": {
+    "menus": {
+      "mnu_tonight": {
+        "order": 1,
+        "name": "今宵の一杯"
+      },
+      "mnu_menu": {
+        "order": 2,
+        "name": "品書き"
+      }
+    },
+    "categories": {
+      "cat_tonight": {
+        "menuId": "mnu_tonight",
+        "name": "今宵の一杯",
+        "order": 1
+      },
+      "cat_cocktail": {
+        "menuId": "mnu_menu",
+        "name": "カクテル",
+        "order": 1
+      },
+      "cat_whisky": {
+        "menuId": "mnu_menu",
+        "name": "ウイスキー",
+        "order": 2
+      },
+      "cat_charge": {
+        "menuId": "mnu_menu",
+        "name": "チャージ",
+        "order": 3
+      }
+    },
+    "labels": {
+      "lbl_recommend": {
+        "name": "おすすめ",
+        "system": "recommended",
+        "order": 1
+      }
+    },
+    "items": {
+      "itm_k001": {
+        "status": "onSale",
+        "name": "冬蜜柑のオールドファッションド",
+        "description": "剥きたての皮の香りを、大きな氷とゆっくり。",
+        "photos": [
+          "ast_k101"
+        ],
+        "prices": [
+          {
+            "id": "prc_k001",
+            "type": "fixed",
+            "amount": 2000
+          }
+        ]
+      },
+      "itm_k002": {
+        "status": "onSale",
+        "name": "炙り柚子とローズマリーのサワー",
+        "description": "仕上げに炙った柚子の皮をのせて、香りの立つうちに。",
+        "photos": [
+          "ast_k201"
+        ],
+        "prices": [
+          {
+            "id": "prc_k002",
+            "type": "fixed",
+            "amount": 2000
+          }
+        ]
+      },
+      "itm_k003": {
+        "status": "onSale",
+        "name": "ブラックベリーのジンサワー",
+        "description": "夏の終わりに漬け込んだブラックベリーが、ちょうど飲みごろになりました。",
+        "photos": [
+          "ast_k301"
+        ],
+        "prices": [
+          {
+            "id": "prc_k003",
+            "type": "fixed",
+            "amount": 2000
+          }
+        ]
+      },
+      "itm_m001": {
+        "status": "onSale",
+        "name": "シグネチャーカクテル",
+        "description": "店の定番の一杯。仕上げの香りまで、目の前で整えます。",
+        "photos": [
+          "ast_h201"
+        ],
+        "prices": [
+          {
+            "id": "prc_m001",
+            "type": "from",
+            "amount": 1800
+          }
+        ],
+        "labels": [
+          "lbl_recommend"
+        ]
+      },
+      "itm_m002": {
+        "status": "onSale",
+        "name": "クラシックカクテル",
+        "description": "マティーニ、マンハッタン、ギムレット、サイドカー。お好みの配合でお作りします。",
+        "photos": [
+          "ast_c101"
+        ],
+        "prices": [
+          {
+            "id": "prc_m002",
+            "type": "from",
+            "amount": 1500
+          }
+        ]
+      },
+      "itm_m003": {
+        "status": "onSale",
+        "name": "ウイスキー",
+        "description": "ジャパニーズウイスキーを中心に。ストレート、ロック、水割り、ハイボールで。",
+        "photos": [
+          "ast_w101"
+        ],
+        "prices": [
+          {
+            "id": "prc_m003",
+            "type": "from",
+            "amount": 1200
+          }
+        ]
+      },
+      "itm_m004": {
+        "status": "onSale",
+        "name": "季節のフルーツカクテル",
+        "description": "旬の果物で、その時季だけの一杯を。",
+        "prices": [
+          {
+            "id": "prc_m004",
+            "type": "from",
+            "amount": 2000
+          }
+        ]
+      },
+      "itm_m005": {
+        "status": "onSale",
+        "name": "ノンアルコールカクテル",
+        "description": "お酒を召し上がらない方にも、同じ手間で一杯を。",
+        "prices": [
+          {
+            "id": "prc_m005",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ]
+      },
+      "itm_m006": {
+        "status": "onSale",
+        "name": "チャージ",
+        "description": "お通し付き。",
+        "prices": [
+          {
+            "id": "prc_m006",
+            "type": "fixed",
+            "amount": 1100
+          }
+        ]
+      }
+    },
+    "placements": {
+      "plc_k001": {
+        "itemId": "itm_k001",
+        "menuId": "mnu_tonight",
+        "categoryId": "cat_tonight",
+        "order": 1
+      },
+      "plc_k002": {
+        "itemId": "itm_k002",
+        "menuId": "mnu_tonight",
+        "categoryId": "cat_tonight",
+        "order": 2
+      },
+      "plc_k003": {
+        "itemId": "itm_k003",
+        "menuId": "mnu_tonight",
+        "categoryId": "cat_tonight",
+        "order": 3
+      },
+      "plc_m001": {
+        "itemId": "itm_m001",
+        "menuId": "mnu_menu",
+        "categoryId": "cat_cocktail",
+        "order": 4
+      },
+      "plc_m002": {
+        "itemId": "itm_m002",
+        "menuId": "mnu_menu",
+        "categoryId": "cat_cocktail",
+        "order": 5
+      },
+      "plc_m003": {
+        "itemId": "itm_m003",
+        "menuId": "mnu_menu",
+        "categoryId": "cat_whisky",
+        "order": 6
+      },
+      "plc_m004": {
+        "itemId": "itm_m004",
+        "menuId": "mnu_menu",
+        "categoryId": "cat_cocktail",
+        "order": 7
+      },
+      "plc_m005": {
+        "itemId": "itm_m005",
+        "menuId": "mnu_menu",
+        "categoryId": "cat_cocktail",
+        "order": 8
+      },
+      "plc_m006": {
+        "itemId": "itm_m006",
+        "menuId": "mnu_menu",
+        "categoryId": "cat_charge",
+        "order": 9
+      }
+    }
+  }
+}

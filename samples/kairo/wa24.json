@@ -1,0 +1,204 @@
+{
+  "name": "BAR KAIRO",
+  "nameKana": "バー かいろ",
+  "copyright": "© BAR KAIRO",
+  "hdHours": "19:00〜翌2:00　日曜定休",
+  "telLabel": "電話する",
+  "mapLabel": "地図アプリで開く",
+  "nav": [
+    [
+      "今宵",
+      "今宵の一杯",
+      "tonight"
+    ],
+    [
+      "カウンター",
+      "カウンター",
+      "counter"
+    ],
+    [
+      "品書き",
+      "品書き",
+      "menu"
+    ],
+    [
+      "案内",
+      "案内",
+      "access"
+    ]
+  ],
+  "fv": {
+    "kicker": "芦屋・川西町のカクテルバー",
+    "copy": [
+      "夜の続きを、",
+      "一杯で。"
+    ],
+    "lead": "季節の果物のカクテルと、ジャパニーズウイスキーを。",
+    "info": "19:00〜翌2:00（L.O. 1:30）　日曜定休",
+    "en": [
+      "19:00 — 2:00",
+      "Closed on Sundays",
+      "8 seats at the counter"
+    ]
+  },
+  "tonight": {
+    "en": "TONIGHT'S THREE",
+    "head": "今宵の一杯",
+    "lead": "いまの季節の果物で仕立てた、三つの一杯です。",
+    "giant": "Tonight",
+    "ingLabel": "材料",
+    "note": "果物の入荷によって、一杯の中身が替わることがあります。お好みの味や強さをお伝えいただければ、ほかの一杯もお作りします。",
+    "cards": [
+      {
+        "item": "itm_k001",
+        "no": "No. 1",
+        "tag": "SEASONAL FRUIT",
+        "en": "Winter Mikan Old Fashioned",
+        "ing": "ジャパニーズウイスキー、温州みかん、ビターズ、香辛料"
+      },
+      {
+        "item": "itm_k002",
+        "no": "No. 2",
+        "tag": "SEASONAL FRUIT",
+        "en": "Smoked Yuzu & Rosemary Sour",
+        "ing": "ジン、柚子の果汁、蜂蜜、ローズマリー"
+      },
+      {
+        "item": "itm_k003",
+        "no": "No. 3",
+        "tag": "HOUSE LIQUEUR",
+        "en": "Blackberry Gin Sour",
+        "ing": "ジン、自家製のブラックベリーのリキュール、レモン、卵白、ミント"
+      }
+    ]
+  },
+  "counter": {
+    "en": "AT THE COUNTER",
+    "giant": "Counter",
+    "head": [
+      "八席の、",
+      "小さなカウンター。"
+    ],
+    "body": "カウンター八席の小さなバーです。季節の果物を使ったカクテルと、ジャパニーズウイスキーを中心にご用意しています。お一人でも、どうぞお気軽に。",
+    "nums": [
+      [
+        "8 seats",
+        "カウンター八席"
+      ],
+      [
+        "19:00 — 2:00",
+        "L.O. 1:30"
+      ],
+      [
+        "Sunday",
+        "日曜定休"
+      ]
+    ],
+    "caption": "一杯ずつ、目の前でお作りします。"
+  },
+  "menu": {
+    "giant": "Menu",
+    "head": "品書き",
+    "note": "表示はすべて税込みです。チャージ 1,100円（お通し付き）を頂戴します。",
+    "cards": [
+      {
+        "item": "itm_m001",
+        "tag": "SIGNATURE"
+      },
+      {
+        "item": "itm_m002",
+        "tag": "CLASSIC",
+        "wide": true
+      },
+      {
+        "item": "itm_m003",
+        "tag": "WHISKY"
+      }
+    ],
+    "rows": [
+      "itm_m004",
+      "itm_m005",
+      "itm_m006"
+    ],
+    "rowLink": "今宵の一杯を見る"
+  },
+  "access": {
+    "giant": "Access",
+    "rows": [
+      [
+        "(HOURS)",
+        "19:00〜翌2:00"
+      ],
+      [
+        "(LAST ORDER)",
+        "1:30"
+      ],
+      [
+        "(CLOSED)",
+        "日曜日"
+      ],
+      [
+        "(SEATS)",
+        "カウンター 8 席"
+      ],
+      [
+        "(PHONE)",
+        "tel"
+      ],
+      [
+        "(ADDRESS)",
+        "addr"
+      ]
+    ]
+  },
+  "footer": {
+    "line": "芦屋・川西町の、八席の小さなバーです。",
+    "hours": [
+      "19:00〜翌2:00（L.O. 1:30）",
+      "日曜定休"
+    ],
+    "age": "20歳未満の方の飲酒はお断りしています。"
+  },
+  "photos": {
+    "fv": {
+      "slot": "interior",
+      "alt": "暗い店内。真鍮の棚に小さなボトルが並び、黒いスツールの奥の窓から琥珀の光が差す",
+      "page": "https://unsplash.com/photos/Dukn-t-d7UU"
+    },
+    "k1": {
+      "slot": "signature",
+      "alt": "冬蜜柑のオールドファッションド。切子のロックグラスに琥珀色の一杯と大きな氷。オレンジ色の皮と半分の柑橘を添えて",
+      "page": "https://unsplash.com/photos/R31OwFKbRdE"
+    },
+    "k2": {
+      "slot": "signature",
+      "alt": "炙り柚子とローズマリーのサワー。脚付きのグラスに黄色い一杯。トングで炙った皮をのせ、煙が立つ。手前にローズマリー",
+      "page": "https://unsplash.com/photos/C-e4SyNNP_8"
+    },
+    "k3": {
+      "slot": "signature",
+      "alt": "ブラックベリーのジンサワー。赤紫の一杯に桃色の泡。ブラックベリーとミントを添えて",
+      "page": "https://unsplash.com/photos/vAkIPzXOSOc"
+    },
+    "h1": {
+      "slot": "work",
+      "alt": "琥珀の光のカウンターで、長い箸でマティーニにオリーブを添える手元",
+      "page": "https://unsplash.com/photos/7DI9S8kCbOQ"
+    },
+    "h2": {
+      "slot": "product",
+      "alt": "シグネチャーカクテル。暗いカウンターで、両手がスプーンで赤い一杯に仕上げの粉をふる",
+      "page": "https://unsplash.com/photos/CyvVuIJ8YBI"
+    },
+    "w1": {
+      "slot": "product",
+      "alt": "ウイスキー。切子のグラスに琥珀色のウイスキーと四角い氷、斜めの光の筋",
+      "page": "https://unsplash.com/photos/_AqEYlX0e9o"
+    },
+    "c1": {
+      "slot": "product",
+      "alt": "クラシックカクテル。紺の背景に、細い脚のグラスの琥珀色の一杯とピンに刺したオリーブ",
+      "page": "https://unsplash.com/photos/sBeJOZnCy0c"
+    }
+  }
+}
