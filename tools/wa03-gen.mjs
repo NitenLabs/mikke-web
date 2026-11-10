@@ -3,6 +3,7 @@
 // 使い方：node tools/wa03-gen.mjs <店> → node tools/build.mjs samples/<店> → node tools/wa03-finish.mjs <店>（<店> の既定は roku）
 import fs from "node:fs";
 import { formatClosedDays } from "./lib/format.mjs";
+import { resolveRepeater, makeRefDate } from "./lib/catalog.mjs";
 const ID = process.argv[2] || "roku";
 const DIR = `samples/${ID}`;
 const C = JSON.parse(fs.readFileSync(`${DIR}/wa03.json`, "utf8"));
@@ -77,15 +78,19 @@ t("st_script", "sec_story", SITE_NAME_EN, [[160, 224, -8], [64, 89.6, -3.2]], SC
 const CAT = shop.catalog, MENU_H = { pc: 293.5, sp: 347.1 };
 const ids = Object.keys(CAT.items);
 const cell = (id, content, fmt, pc, sp, size, opts = {}) => ({ type: "text", z: 2, role: "body", paragraphs: [{ runs: [{ bind: { scope: "item", path: content, format: fmt } }] }], style: { font: opts.font || B, weight: opts.weight || 400, color: opts.color || TX, lineHeight: r(opts.lh / size), letterSpacing: r(opts.ls / size) }, layout: { pc: { ...pc, size }, sp: { ...sp, size } } });
-sec("sec_menu", "Menu", "theme:background", 1045, 1784, { anchor: "menu", nav: { label: "Menu", order: 2 } });
+const MN_SRC = FS ? { kind: "catalog", menuId: "mnu_food", categoryIds: Object.keys(CAT.categories).filter((k) => CAT.categories[k].menuId === "mnu_food") } : { kind: "catalog", menuId: "mnu_food", pick: ids };
+// fromShop：品が 8 品より少なくて行が減るときは、段の高さを行の分だけ詰める（PC 4 列・スマホ 2 列。多いときは build が測って押し下げる）
+const MN_N = FS ? resolveRepeater(shop, MN_SRC, makeRefDate(process.env.WA03_DATE)).length : 8;
+const MN_LESS = { pc: Math.max(0, 2 - Math.max(1, Math.ceil(MN_N / 4))), sp: Math.max(0, 4 - Math.max(1, Math.ceil(MN_N / 2))) };
+sec("sec_menu", "Menu", "theme:background", Math.round(1045 - MN_LESS.pc * (MENU_H.pc + 50)), Math.round(1784 - MN_LESS.sp * (MENU_H.sp + 30)), { anchor: "menu", nav: { label: "Menu", order: 2 } });
 head("mn", "sec_menu", "Menu", "お品書き", 139.8, 197.3, 100.1, 154.9);
-add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: FS ? { kind: "catalog", menuId: "mnu_food", categoryIds: Object.keys(CAT.categories).filter((k) => CAT.categories[k].menuId === "mnu_food") } : { kind: "catalog", menuId: "mnu_food", pick: ids }, display: { mode: "grid", columns: { pc: 4, sp: 2 }, gap: { pc: 50, sp: 30 }, photoless: "sameCard" },
+add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: MN_SRC, display: { mode: "grid", columns: { pc: 4, sp: 2 }, gap: { pc: 50, sp: 30 }, photoless: "sameCard" },
   card: { height: MENU_H, elements: {
     c_ph: { type: "photo", z: 1, bind: { scope: "item", path: "/photos" }, layout: { pc: { x: 0, y: 0, w: 100, h: 180, ratio: "custom" }, sp: { x: 0, y: 0, w: 100, h: 160, ratio: "custom" } } },
     c_nm: cell("c_nm", "/name", "plain", { x: 0, y: 190, w: 100, h: 30.7 }, { x: 0, y: 170, w: 100, h: 61.4 }, 19.2, { lh: 30.72, ls: 0.96, weight: 500 }),
     c_ds: cell("c_ds", "/description", "plain", { x: 0, y: 224.7, w: 100, h: 43.2 }, { x: 0, y: 235.1, w: 100, h: 86.4 }, 14.4, { lh: 21.6, ls: 0.72, color: MU }),
     c_pr: cell("c_pr", "/prices", "priceAll", { x: 0, y: 271.9, w: 100, h: 21.6 }, { x: 0, y: 325.5, w: 100, h: 21.6 }, 14.4, { lh: 21.6, ls: 0.72, color: AC, font: M, weight: 500 }) } },
-  layout: lay({ x: 80, y: 267.5, w: 1280, h: 637 }, { x: 30, y: 205, w: 330, h: 1478.4 }) });
+  layout: lay({ x: 80, y: 267.5, w: 1280, h: r(637 - MN_LESS.pc * (MENU_H.pc + 50)) }, { x: 30, y: 205, w: 330, h: r(1478.4 - MN_LESS.sp * (MENU_H.sp + 30)) }) });
 
 // ---- 5 Access（PC 939 / スマホ 1057）
 const cityTown = ["/location", "address"];
@@ -108,13 +113,14 @@ function infoRows(short) {
 }
 const ROWS = [["住所", cityTown], ["営業時間", ["/hours", "hoursShort"]], ...infoRows(false), ["電話番号", ["/contact/phone", "phone"]], ["アクセス", ["/location/access", "access"]]];
 const XA = ROWS.length - 5; // 5行より多い分（fromShop で定休日の行が増えたとき）。ボタンと、スマホの段の高さを下げる
-sec("sec_access", "Access", "theme:background", 939, 1057 + 67.6 * XA, { anchor: "access", nav: { label: "Access", order: 3 } });
+sec("sec_access", "Access", "theme:background", 939, Math.round(1057 + 67.6 * XA), { anchor: "access", nav: { label: "Access", order: 3 } });
 head("ac", "sec_access", "Access", "店舗情報", 140.2, 197.8, 100, 155.2);
 t("ac_name", "sec_access", NAME, [[32, 60, 3.2], [28, 60, 2.8]], B, TX, [{ x: 80, y: 268, w: 350, h: 60 }, { x: 30, y: 488.5, w: C.nameSpW ?? 250, h: 60 }], { weight: 500 });
 const TBL = [[16, 28.8, 0.48], [16, 28.8, 0.48]];
 ROWS.forEach(([k, v], i) => {
   const yP = 358 + 48.8 * i, yS = 558.5 + 67.6 * i;
-  t(`ac_k${i}`, "sec_access", k, TBL, B, MU, [{ x: 80, y: yP, w: 110, h: 28.8 }, { x: 30, y: yS, w: 330, h: 28.8 }], { deco: 1 });
+  // fromShop：項目名の箱を値の列へ 10px かけ、値が折り返して伸びたとき次の行の項目名も一緒に下がるようにする（見た目は同じ）
+  t(`ac_k${i}`, "sec_access", k, TBL, B, MU, [{ x: 80, y: yP, w: FS ? 130 : 110, h: 28.8 }, { x: 30, y: yS, w: 330, h: 28.8 }], { deco: 1 });
   t(`ac_v${i}`, "sec_access", v, TBL, B, TX, [{ x: 200, y: yP, w: 490, h: 28.8 }, { x: 30, y: yS + 28.8, w: 330, h: 28.8 }]);
 });
 const LNK = { kind: "url", value: mapUrl, newTab: true };
@@ -139,11 +145,11 @@ const FT = [[14.4, 21.6, 0.72], [14.4, 21.6, 0.72]];
 add("ft_mapbox", { type: "shape", z: 2, kind: "rect", fill: "theme:surface", section: "sec_footer", layout: lay({ x: 820.5, y: 180, w: 496.3, h: 280 }, { x: 30, y: 387, w: 330, h: 280 }) });
 F_R.forEach(([k, v], i) => {
   const yP = 490 + 41.6 * i, yS = 697 + 41.6 * i;
-  t(`ft_k${i}`, "sec_footer", k, FT, B, MU, [{ x: 820.5, y: yP, w: 103.9, h: 21.6 }, { x: 30, y: yS, w: 85, h: 21.6 }], { deco: 1 });
+  t(`ft_k${i}`, "sec_footer", k, FT, B, MU, [{ x: 820.5, y: yP, w: FS ? 133.9 : 103.9, h: 21.6 }, { x: 30, y: yS, w: FS ? 115 : 85, h: 21.6 }], { deco: 1 });
   t(`ft_v${i}`, "sec_footer", v, FT, B, TX, [{ x: 944.4, y: yP, w: 372.4, h: 21.6 }, { x: 135, y: yS, w: 225, h: 21.6 }]);
 });
 t("ft_mikke", "sec_footer", "芦屋みっけ 掲載店", FT, B, SO, [{ x: 123.2, y: 610, w: 500, h: 21.6 }, { x: 30, y: 883.4 + DF, w: 330, h: 21.6 }], { link: { kind: "url", value: C.mikkeUrl, newTab: true }, deco: 1 });
-if (DF) secs.sec_footer.minHeight.sp += DF;
+if (DF) secs.sec_footer.minHeight.sp = Math.round(secs.sec_footer.minHeight.sp + DF); // minHeight は整数（schema）
 t("ft_draft", "sec_footer", "営業用の見本（写真・品は仮）", FT, B, SO, [{ x: 123.2, y: 636, w: 560, h: 21.6 }, { x: 30, y: 909.4 + DF, w: 330, h: 21.6 }], { deco: 1 });
 t("ft_copy", "sec_footer", C.copyright, [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], M, SO, [{ x: 123.2, y: 816.4, w: 500, h: 17.3 }, { x: 30, y: 980 + DF, w: 330, h: 17.3 }], { weight: 500 });
 

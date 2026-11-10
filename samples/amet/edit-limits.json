@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "shop": "amet",
+  "template": "tpl_wa_03",
+  "measuredAt": "2026-11-11",
+  "method": "① を変えて wa03-gen → build → wa03-finish し、1440・768・390 で数値の検査（横スクロール・文字のはみ出し・文字の重なり・セクション外・カードからのはみ出し）。指示 0044 段3",
+  "keys": "fields のキーは data-edit の値（DATA_SPEC 4.12）。shop:/… は ① の JSON Pointer。item:*/… は品ごと（全部の品に同じ上限）",
+  "fields": {
+    "shop:/story/answers/q_body/answer": {
+      "maxChars": 300,
+      "maxParagraphs": 3,
+      "maxLines": { "pc": 9 },
+      "budget": { "pc": { "lineChars": 34, "lineHeight": 28.8, "paragraphGap": 14, "maxHeight": 300 } },
+      "level": "warn",
+      "note": "PC で本文が長いと、下の飾りの筆記体（st_script）と重なる。行数＝各段落の ceil(字数/34) の合計、高さ＝行数×28.8＋(段落数−1)×14 が 300 以下なら安全（実測：330 字1段落＝10行は可、360 字1段落・320 字3段落は重なる）。スマホ・768 は伸びて下を押すので崩れない（600 字でも可）。schema の上限は 2000"
+    },
+    "shop:/story/answers/q_catch/answer": {
+      "maxChars": 24,
+      "maxLines": 2,
+      "maxLineChars": 12,
+      "level": "warn",
+      "note": "改行で行を分ける。1行 12 字まで・2行までが設計どおり（PC 32px・幅 400）。超えても下を押すので崩れはしないが、見出しが4行になる（26 字2行で PC 4 行）"
+    },
+    "shop:/hours": {
+      "maxRenderedChars": 80,
+      "maxExceptionDays": 3,
+      "level": "error",
+      "note": "表示は「基本の時間（月曜は…・火曜は…）」の1文。基本と違う曜日が 4 つ以上（表示 90 字前後）になると、スマホ・768 のフッター（ft_v1、幅 225）と Access（ac_v1）で、折り返せない塊が箱の横にはみ出す（共通の折り返しの道具が最後の2つの塊を nowrap でまとめるため）。違う曜日 3 つ・表示 77 字までは可。休みの曜日は「定休日」の行に別に出る（数えない）"
+    },
+    "shop:/facilities/seats/total": {
+      "maxDigits": 3,
+      "note": "100 席でも1行。「5」と「席」の間で折れることは無かった（全ケースで検査）"
+    },
+    "shop:/facilities/note": {
+      "maxChars": 30,
+      "level": "warn",
+      "note": "Access の「お席」の行に「◯席・全席禁煙・」に続けて出る（フッターには出ない）。長いと行が増え下を押すだけで崩れない（60 字で スマホ 5 行）。見やすさの目安 30 字"
+    },
+    "item:*/name": {
+      "maxChars": 10,
+      "hardMaxChars": 15,
+      "level": "warn",
+      "note": "PC は 15 字まで1行（16 字で2行・カードが伸びる）。スマホは 2 行の枠。11〜12 字で最後の行が1〜2字だけになることがある（wa03-check の「品名の最後の行」）。読点や・で区切れる名前なら 12 字程度まで可"
+    },
+    "item:*/description": {
+      "maxChars": 40,
+      "hardMaxChars": 80,
+      "level": "warn",
+      "note": "40 字までで PC 3 行・スマホ 6 行以内（その行の段の高さはほぼ設計どおり）。それより長いとカードの行が伸び、下を押す（80 字で PC 6 行・スマホ 11 行。重なりは出ない）。schema の上限は 300"
+    },
+    "item:*/prices": {
+      "maxOptions": 3,
+      "maxOptionNameChars": 6,
+      "note": "4 桁（1,280円）・〜付き（12,800円〜）・範囲・2〜3 選択肢（ショート 530円／トール 1,280円／グランデ 1,580円）すべて崩れなし。3 選択肢でスマホ 3 行、カードの行が伸びる"
+    },
+    "text:fv_en": {
+      "note": "ファーストビューの小さい文「店内5席とテイクアウト。／JR芦屋駅 南口から3分。」は ② の文字で、① の席数・アクセスと二重。① の席数を変えたらここも直す（段3 の画面で注意を出す）"
+    }
+  },
+  "lists": {
+    "catalog:mnu_food": {
+      "dataEdit": "list:catalog:mnu_food",
+      "categoryIds": ["cat_menu"],
+      "minItems": 1,
+      "maxItems": 24,
+      "designItems": 8,
+      "columns": { "pc": 4, "sp": 2 },
+      "note": "多い分は下を押す（24 品まで検査、崩れなし。それ以上も同じ作り）。少ない分は gen が段の高さを行の数だけ詰める（1・3・5・7 品で下の余白が設計どおり）。0 品だと見出しだけの段が残る（段4 の段の隠すで対応）。品を消すときは review の該当行も消す必要がある（消した品を指す確認があると validate がエラー）"
+    }
+  },
+  "photos": {
+    "_rule": "全部 object-fit:cover で枠いっぱいに切り抜く（中央。crop の fx・fy で寄せられる）。どの縦横比でも崩れない。minWidth は 2 倍の解像度で一番大きく出る幅（PC 1440 と 768 の大きい方）",
+    "ast_fv01": { "aspect": { "pc": 0.62, "sp": 0.48 }, "orientation": "portrait", "minWidth": 1000 },
+    "ast_fv02": { "aspect": { "pc": 0.62, "sp": 0.48 }, "orientation": "portrait", "minWidth": 1000 },
+    "ast_st01": { "aspect": { "pc": 1.07, "sp": 1.3 }, "orientation": "square", "minWidth": 1300 },
+    "ast_st02": { "aspect": { "pc": 1.84, "sp": 1.12 }, "orientation": "landscape", "minWidth": 1660 },
+    "ast_st03": { "aspect": { "pc": 1.0, "sp": 0.79 }, "orientation": "square", "minWidth": 900 },
+    "item:*/photos": { "aspect": { "pc": 1.57, "sp": 0.94 }, "orientation": "any", "minWidth": 600, "note": "品の写真（カード）。PC は横長・スマホはほぼ正方形に切る。写真が無い品も同じカード（photoless: sameCard）" },
+    "ast_sr01": { "aspect": { "pc": 1.44, "sp": 1.23 }, "orientation": "landscape", "minWidth": 1350 },
+    "ast_sr02": { "aspect": { "pc": 1.44, "sp": 1.23 }, "orientation": "landscape", "minWidth": 1350 },
+    "ast_sr03": { "aspect": { "pc": 1.44, "sp": 1.23 }, "orientation": "landscape", "minWidth": 1350 },
+    "ast_sr04": { "aspect": { "pc": 1.44, "sp": 1.23 }, "orientation": "landscape", "minWidth": 1350 },
+    "ast_sr05": { "aspect": { "pc": 1.44, "sp": 1.23 }, "orientation": "landscape", "minWidth": 1350 },
+    "ast_sr06": { "aspect": { "pc": 1.44, "sp": 1.23 }, "orientation": "landscape", "minWidth": 1350 }
+  }
+}

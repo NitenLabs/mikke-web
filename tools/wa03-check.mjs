@@ -28,8 +28,10 @@ for (const w of WIDTHS) {
     const idOf = (e) => e.dataset.el || e.dataset.cel;
     for (const e of T) { const b = e.getBoundingClientRect(); const id = idOf(e); if (b.right > vw + 0.5 || b.left < -0.5) out.clip.push(id); const script = /fv_script|st_script/.test(id); if (e.scrollWidth > e.clientWidth + 3 || (!script && e.scrollHeight > e.clientHeight + 6)) out.clip.push(id + "(中身)"); }
     const rect = (e) => { const R = document.createRange(); R.selectNodeContents(e); return R.getBoundingClientRect(); };
+    // 情報の表の同じ行の項目名と値（fromShop の店は項目名の箱を値へ 10px かけている。伸びたとき次の行も下がるように）
+    const sameRow = (p, q) => { const m = /^(ac|ft)_k([0-9]+)$/.exec(p), n = /^(ac|ft)_v([0-9]+)$/.exec(q); return !!(m && n && m[1] === n[1] && m[2] === n[2]); };
     const R = T.filter((e) => !e.closest(".site-header")).map((e) => { const b = rect(e); return [idOf(e), { l: b.left, r: b.right, t: b.top + scrollY, b: b.bottom + scrollY }]; });
-    for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) { const a = R[i][1], b = R[j][1]; if (a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.t < a.b - 1) out.over.push(R[i][0] + "×" + R[j][0]); }
+    for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) { const a = R[i][1], b = R[j][1]; if (a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.t < a.b - 1 && !sameRow(R[i][0], R[j][0])) out.over.push(R[i][0] + "×" + R[j][0]); }
     for (const s of document.querySelectorAll("[data-sec]")) out.secs[s.dataset.sec] = Math.round(s.getBoundingClientRect().height * 10) / 10;
     const body = document.querySelector("[data-el=st_body]"); out.bodyPx = body ? parseFloat(getComputedStyle(body).fontSize) : 0;
     const R2 = document.createRange(); if (body) { R2.selectNodeContents(body); out.bodyH = Math.round(R2.getBoundingClientRect().height * 10) / 10; }
