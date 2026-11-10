@@ -59,7 +59,15 @@ const shopDir = (site) => path.join(ROOT, "samples", site);
 
 async function desk(p, body) {
   if (!DESK || !SECRET) die("desk の URL と鍵が要る（--desk・--secret か EDIT_DESK_URL・EDIT_RUNNER_SECRET）");
-  const r = await fetch(`${DESK}${p}`, { method: "POST", headers: { "content-type": "application/json", "x-edit-runner-secret": SECRET }, body: JSON.stringify(body) });
+  const init = { method: "POST", headers: { "content-type": "application/json", "x-edit-runner-secret": SECRET }, body: JSON.stringify(body) };
+  // 作り直しの間（30 秒ほど）に、claim で使った keep-alive の接続を desk 側が閉じていて ECONNRESET になることがある → 1 回だけ新しい接続でやり直す
+  let r;
+  try { r = await fetch(`${DESK}${p}`, init); }
+  catch (e) {
+    if (!/ECONNRESET|EPIPE|UND_ERR_SOCKET|other side closed/i.test(String(e?.cause?.code ?? e?.cause?.message ?? e))) throw e;
+    await new Promise((ok) => setTimeout(ok, 500));
+    r = await fetch(`${DESK}${p}`, init);
+  }
   const text = await r.text();
   let json; try { json = JSON.parse(text); } catch { json = { raw: text }; }
   if (!r.ok) throw new Error(`${p} → ${r.status} ${text.slice(0, 300)}`);
