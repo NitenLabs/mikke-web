@@ -17,3 +17,4 @@ node tools/wa23-check.mjs <店のID>
 ```
 写真を差し替えるときは `photos.txt` の URL を変え、`samples/<店>/media/ast_ph<枠>.webp` を消してから gen を流す（無い写真だけ取りに行く）。
 四つの素材のパネルは 1〜6 枚、表の行は 1〜5 行で崩れない。品書きの写真の札は 0〜3（それより多い品は「ほかのそば」の行へ）。
+写真の明るさをそろえるときは `samples/<店>/wa23-content.json` の `filters` に `{ "shio": "brightness(1.1)" }` の形で書く（finish が CSS に出す）。

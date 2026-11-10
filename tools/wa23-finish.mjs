@@ -65,6 +65,7 @@ ${MQ.sp}{${devRules.sp.join("")}html{scroll-padding-top:6rem}}
 ${MQ.tab}{${devRules.tab.join("")}html{scroll-padding-top:6rem}}
 ${STICK.pc}{.wa23-stack>section{position:sticky;top:${r(HD.pc / 10)}rem}}
 ${STICK.tab}{.wa23-stack>section{position:sticky;top:${r(HD.tab / 10)}rem}}
+${Object.entries(C.filters || {}).map(([k, f]) => `img[src$="ast_ph${k.replace(/-/g, "")}.webp"]{filter:${f}}`).join("\n")}
 </style>`;
 const js = `<script>(function(){document.querySelectorAll('.nav-menu a').forEach(function(a){a.addEventListener('click',function(){var d=a.closest('details');if(d)d.open=false;});});})();</script>`;
 // タブレット（768〜1024）：768 の設計を rem ごと伸ばす（1rem＝100vw/76.8、上限 11.5px。1024 では中身の列 773px＝画面幅の 75%）
