@@ -41,7 +41,7 @@
   "footHours": ["昼 11:00〜15:00（L.O. 14:30）", "夜 17:00〜21:00（L.O. 20:30）", "木曜日 定休"],
   "nav": [["三つの定番", "signature"], ["お品書き", "menu"], ["すずかけのこと", "story"], ["ご案内", "info"]],
   "photos": {
-    "fv": { "slot": "interior", "alt": "デミグラスソースを添えた、ふんわり卵のオムライス", "page": "https://unsplash.com/photos/TdtoE7BE3z8" },
+    "fv": { "slot": "interior", "alt": "厨房のステンレスの台に重ねた、使い込んだ銅の片手鍋", "page": "https://unsplash.com/photos/J5ybwA02dvI" },
     "t1": { "slot": "product", "alt": "オムライス（デミグラス）。デミグラスソースをたっぷりかけて", "page": "https://unsplash.com/photos/ZukOQ0oWs3c" },
     "t2": { "slot": "product", "alt": "目玉焼きをのせた、デミグラスソースのハンバーグ", "page": "https://unsplash.com/photos/MEhNgwV9wEk" },
     "t3": { "slot": "product", "alt": "牛肉と人参を煮込んだビーフシチュー", "page": "https://unsplash.com/photos/71gD9JoiPQY" },

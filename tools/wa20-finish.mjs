@@ -16,6 +16,7 @@ html{scroll-padding-top:8rem}
 .lb{word-break:auto-phrase}
 [data-el=fv_ph]{border-radius:27rem 27rem 0 0}
 @media (max-width:${BP - 0.02}px){[data-el=fv_ph]{border-radius:17.5rem 17.5rem 0 0}}
+@media (min-width:${TAB - 0.01}px) and (max-width:${BP - 0.02}px){[data-el=fv_ph] img{object-position:80% 50% !important}}
 [data-cel^=s][data-cel$=_bx]{box-shadow:inset 0 0 0 2px ${NAVY}}
 [data-cel^=m][data-cel$=_bx]{box-shadow:inset 0 0 0 2px ${GOLD}}
 [data-el^=mn_r] .rep-card{border-top:1px solid ${GOLD};border-bottom:1px solid ${GOLD}}
