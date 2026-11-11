@@ -3,18 +3,25 @@
 // 常駐しない（1回走って終わる）。定期実行にするかは別に決める。
 //
 // 使い方（mikke-web のフォルダで）：
-//   node tools/edit-runner.mjs --desk http://127.0.0.1:8788 --secret <desk の鍵> --api http://127.0.0.1:8787 --api-secret <api の鍵> [--api-cookie <Cookie> --api-origin <Origin>] [--all] [--dry-run] [--publish] [--date YYYY-MM-DD]
+//   node tools/edit-runner.mjs --desk http://127.0.0.1:8788 --secret <desk の鍵> --api http://127.0.0.1:8787 --api-secret <api の鍵> [--all] [--dry-run] [--publish] [--date YYYY-MM-DD]
 //   node tools/edit-runner.mjs --ops <ops.json> --site amet --api … [--dry-run] [--publish]   # desk を使わず差分のファイルで、api の下書きに当てる
 //   node tools/edit-runner.mjs --local <ops.json> --site amet [--write]      # 手元の試し：api を使わず samples を読む（--write で samples を書き換える）
 //   node tools/edit-runner.mjs --snapshot amet [--post] [--samples]          # 店の今の姿（api の下書き。--samples なら samples）を desk に送る（--post なしは書き出すだけ）
-//   鍵と URL は環境変数でもよい：EDIT_DESK_URL・EDIT_RUNNER_SECRET（desk）、MIKKE_API_URL・MIKKE_API_RUNNER_SECRET（無ければ EDIT_RUNNER_SECRET）・MIKKE_API_COOKIE・MIKKE_API_ORIGIN（api）
-// ① の元（0053）：--local 以外は apps/api の下書き。① は /edit-api/shops/<店>/shop（鍵）で読み、承認された直しを当てた ① を同じ口に If-Match で書き戻す（下書きだけ。公開はしない）。
-//   ② の文字（doc:"site" の差分）は api の ②③ の下書き draft.content[要素ID] に載せる（/api/shops/<ID>/drafts/site。ログインの Cookie と Origin が要る）。
-//   写真（assets.json・media/）は samples の物（--api-assets で api の ④ から取る）。部品は tools/lib/api-source.mjs
+//   node tools/edit-runner.mjs --republish [--site amet] --desk … --secret … --api … --api-secret …   # 公開に失敗した job の公開だけをやり直す（0059）
+//   鍵と URL は環境変数でもよい：EDIT_DESK_URL・EDIT_RUNNER_SECRET（desk）、MIKKE_API_URL・MIKKE_API_RUNNER_SECRET（無ければ EDIT_RUNNER_SECRET）（api）
+// ① の元（0053）：--local 以外は apps/api の下書き。api は /edit-api/shops/<店>/…（鍵だけ。Cookie・Origin は使わない、0059）。
+//   ① は …/shop で読み、承認された直しを当てた ① を同じ口に If-Match で書き戻す（下書きだけ。公開は --publish）。
+//   ② の文字（doc:"site" の差分）は ②③ の下書き（…/site）に載せる。形は今の下書きに合わせる（api-source.mjs の siteDraftForm）：
+//   DATA_SPEC 4.9.3 の型の店の形なら draft.content[要素ID]、site.json を丸ごと持つ形（seed・apps/owner）なら draft.elements と draft.genConfig。
+//   写真（assets.json・media/）は samples の物。部品は tools/lib/api-source.mjs
 // 主な引数：
 //   --all            待ち行列が空になるまで続けて取る（既定は 1 件）
 //   --dry-run        api の下書きに書き戻さない（--local 以外。既定は書き戻す）
-//   --publish        書き戻した後に、下書き → 公開（POST /api/shops/<ID>/publish）。公開された ① から作り直すのは rebuild-shop --from-api
+//   --publish        書き戻した後に、下書き → 公開（POST /edit-api/shops/<店>/publish）。公開された ① から作り直すのは rebuild-shop --from-api
+//                    公開は 1 分に 1 回まで：too_soon（429）は retryAfter だけ待ってやり直す（3 回まで）。--all でも順に流れる。
+//                    公開に失敗しても、下書きは書けているので job は built（result.published.ok = false・errorCode・error）。--republish で公開だけをやり直す
+//   --republish      desk の「作り直し済み・公開は失敗」の job（/edit-api/unpublished）の店を、今の下書きのまま公開し直し、結果を /edit-api/published に返す。
+//                    --site だけなら desk を使わずその店を公開する。作り直しはしない（型の店は rebuild。html の店は job の置き場の after を送る）
 //   --publish-render html|rebuild  公開の描き方。既定は型（wa-NN）の店は rebuild（①②③ の写しだけを版にし、rebuild-shop --from-api が描いて結果を返す）、
 //                    ほかは html（書き出しの HTML を送る）。型の店の書き出しはインラインのスクリプトがあり html では unsafe_html で断られる（0053 段E）
 //   --write          （--local だけ）成功したら samples/<店> の ①（と文字の箱を直したときは site.json・型の設定）を書き換える。既定は書き換えない（dry-run）
@@ -42,7 +49,9 @@ import {
   withLinkedRemovals,
 } from "./lib/edit-ops.mjs";
 import { RebuildError, loadDeployConfig, makeStage, removeStage, resolveSiteUrl, runPipeline } from "./lib/rebuild.mjs";
-import { ApiError, apiClient, fetchDraftSource, publishDrafts, publishRenderOf, templateNameOf, textsAfterGen, withSiteTexts } from "./lib/api-source.mjs";
+import {
+  ApiError, apiClient, draftVersions, fetchDraftSource, publishFailure, publishRenderOf, publishSuccess, publishWithWait, templateNameOf, textsAfterGen, withSiteTexts,
+} from "./lib/api-source.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
@@ -59,21 +68,19 @@ const WRITE = LOCAL && flag("--write");
 const API_WRITE = !LOCAL && !flag("--dry-run");
 const PUBLISH = !LOCAL && flag("--publish");
 const PUBLISH_RENDER = opt("--publish-render") ?? null;
-const API_ASSETS = flag("--api-assets");
+for (const k of ["--api-cookie", "--api-origin", "--api-assets"]) if (flag(k)) die(`${k} はもう使わない（0059：api は /edit-api の鍵だけで回る。写真は samples の物）`);
 const CHECK = !flag("--no-check");
 const KEEP = flag("--keep-stage");
 if (!/^\d{4}-\d{2}-\d{2}$/.test(DATE)) die(`--date の形が違う：${DATE}`);
 if (flag("--write") && !LOCAL) die("--write は --local のときだけ（api の下書きには既定で書き戻す。書き戻さないなら --dry-run）");
 if (PUBLISH_RENDER && !["html", "rebuild"].includes(PUBLISH_RENDER)) die("--publish-render は html か rebuild");
 if (PUBLISH && !API_WRITE) die("--publish は --dry-run と一緒に使えない");
-if (PUBLISH && !(opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE)) die("--publish にはログインの Cookie と Origin が要る（--api-cookie・--api-origin。/edit-api に公開の口が無い）");
+const REPUBLISH = flag("--republish");
+if (REPUBLISH && LOCAL) die("--republish は api のとき（--local とは一緒に使えない）");
 const API = LOCAL ? null : apiClient({
   base: opt("--api") ?? process.env.MIKKE_API_URL ?? die("api の URL が要る（--api か MIKKE_API_URL。samples で試すなら --local）"),
   secret: opt("--api-secret") ?? process.env.MIKKE_API_RUNNER_SECRET ?? SECRET,
-  cookie: opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE ?? "",
-  origin: opt("--api-origin") ?? process.env.MIKKE_API_ORIGIN ?? "",
 });
-const HAS_COOKIE = !!(opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE);
 
 function jstToday() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); }
 function die(msg, code = 2) { console.error(`✗ ${msg}`); process.exit(code); }
@@ -199,20 +206,18 @@ async function resolveDeploy(job, site, dir) {
 // ───────── api の下書き（0053）
 
 /** api の今の下書き（①・② の文字）を work/source に「--from の形」で書く */
-async function loadApiSource(site, ops, work) {
-  const needSite = ops.some((o) => (o.doc ?? "shop") === "site");
-  if (needSite && !HAS_COOKIE) throw new EditError("api", "② の文字の直し（doc:site）を api の下書きに載せるには、ログインの Cookie と Origin が要る（--api-cookie・--api-origin。/edit-api に ②③ の口が無い）");
-  const s = await fetchDraftSource(API, { site, dir: path.join(work, "source"), withSite: HAS_COOKIE, apiAssets: API_ASSETS });
+async function loadApiSource(site, work) {
+  const s = await fetchDraftSource(API, { site, dir: path.join(work, "source") });
   return {
     ...s,
     info: {
-      base: API.base, shopId: s.shopId, shopDraftVersion: s.shop.version, siteDraftVersion: s.site?.version ?? null,
+      base: API.base, shopId: s.shopId, shopDraftVersion: s.shop.version, siteDraftVersion: s.site.version, siteDraftForm: s.site.form,
       textsFromDraft: Object.keys(s.texts), ignored: s.ignored, assetsFrom: s.assetsFrom, ...(s.genConfig ? { genConfig: s.genConfig } : {}),
     },
   };
 }
 
-/** 承認された直しを api の下書きに書き戻す：① は /edit-api（If-Match）、② の文字は ②③ の下書きの draft.content。公開はしない */
+/** 承認された直しを api の下書きに書き戻す：① は …/shop、② の文字は …/site（どちらも If-Match）。公開はしない */
 async function writeBackApi(site, src, applied, shopChanged, site0) {
   const out = {};
   const conflict = (what, e) => new EditError("conflict", `${what}の下書きが、読んだ後に直されている（今の版 ${e.body?.current?.version ?? "?"}）。書き戻していない${out.shop ? `（① は版 ${out.shop.version} に書き戻した）` : ""}。読み直して当て直す`);
@@ -222,7 +227,10 @@ async function writeBackApi(site, src, applied, shopChanged, site0) {
   }
   if (Object.keys(applied.texts).length) {
     const next = withSiteTexts(src.site?.data, applied.texts, templateNameOf(site0));
-    try { const r = await API.putSiteDraft(src.shopId, src.site?.version ?? 0, next); out.site = { version: r.version, content: Object.keys(applied.texts) }; }
+    try {
+      const r = await API.putSiteDraft(site, src.site?.version ?? 0, next.data);
+      out.site = { version: r.version, form: next.form, texts: Object.keys(applied.texts), ...(next.folded.length ? { folded: next.folded } : {}), ...(next.genConfig ? { genConfig: next.genConfig } : {}) };
+    }
     catch (e) { if (e instanceof ApiError && e.code === "conflict") throw conflict("②③ ", e); throw e; }
   }
   return out;
@@ -246,7 +254,7 @@ async function runJob(job) {
     checkOpShape(job.ops);
     // ① の元：--local は samples、ほかは api の下書き（「--from の形」に書いて、stage に重ねる）
     let t = now();
-    const src = LOCAL ? null : await loadApiSource(site, job.ops, work);
+    const src = LOCAL ? null : await loadApiSource(site, work);
     if (src) { timings.apiRead = Math.round(now() - t); result.api = src.info; }
     const dir = src?.dir ?? shopDir(site);
     const shop = src ? src.shop.data : readJson(path.join(dir, "shop.json"));
@@ -342,7 +350,7 @@ async function runJob(job) {
     if (Object.keys(applied.texts).length) dataChanged["site.json"] = true;
     if (dep.write) dataChanged["deploy.json"] = true;
     result.dataFiles = LOCAL ? Object.keys(dataChanged).map((f) => `samples/${site}/${f}`)
-      : [...(dataChanged["shop.json"] ? [`api:/edit-api/shops/${site}/shop`] : []), ...(Object.keys(applied.texts).length ? [`api:/api/shops/${src.shopId}/drafts/site（draft.content）`] : [])];
+      : [...(dataChanged["shop.json"] ? [`api:/edit-api/shops/${site}/shop`] : []), ...(Object.keys(applied.texts).length ? [`api:/edit-api/shops/${site}/site（${src.site.form === "site" ? "draft.elements・genConfig" : "draft.content"}）`] : [])];
     fs.cpSync(sdir, path.join(work, "data"), { recursive: true, filter: (s) => !/[\\/]media([\\/]|$)/.test(s) });
     if (!Object.keys(pages).length) throw new EditError("nochange", "書き出しが前と同じ（差分が表に出ていない）");
     if (unexpected.length) throw new EditError("unmarked", `印の外が変わった（${unexpected.length} 件。人が見る）：` + unexpected.slice(0, 3).map((c) => `${c.page} ${c.where} ${c.kind}「${c.before}」→「${c.after}」`).join(" / "));
@@ -364,11 +372,20 @@ async function runJob(job) {
       result.newHash = shopHash(applied.shop);
       result.snapshot = buildSnapshot(site, path.join(work, "data"), after);
       if (PUBLISH) {
+        // 下書きはもう書けている。公開に失敗しても job は失敗にしない（built・published.ok false）。--republish で公開だけをやり直す（0059）
         t = now();
         const siteVer = wrote.site?.version ?? src.site?.version ?? 0;
-        const pub = await publishDrafts(API, src.shopId, { shopDraftVersion: wrote.shop?.version ?? src.shop.version, siteDraftVersion: siteVer > 0 ? siteVer : undefined, distDir: after, render: PUBLISH_RENDER ?? publishRenderOf(site0) });
+        try {
+          const pub = await publishWithWait(API, site, { shopDraftVersion: wrote.shop?.version ?? src.shop.version, siteDraftVersion: siteVer > 0 ? siteVer : undefined, distDir: after, render: PUBLISH_RENDER ?? publishRenderOf(site0) }, {
+            onWait: (sec, n) => { log(`公開は 1 分に 1 回まで（too_soon）：${sec} 秒待つ（${n} 回目）`); console.log(`  公開を ${sec} 秒待つ（too_soon・${n} 回目）`); },
+          });
+          result.published = publishSuccess(pub);
+        } catch (e) {
+          if (!(e instanceof ApiError)) throw e;
+          result.published = publishFailure(e);
+          log(`公開に失敗（下書きは書けた）：[${e.code}] ${e.message}`);
+        }
         timings.publish = Math.round(now() - t);
-        result.published = { number: pub.number, scope: pub.scope, render: pub.render, publishedAt: pub.publishedAt, pages: pub.pages, skipped: pub.skipped, url: pub.url ?? null };
       }
     }
     result.ok = true;
@@ -393,7 +410,7 @@ async function runJob(job) {
 async function currentSnapshot(site, log) {
   if (LOCAL) return buildSnapshot(site, shopDir(site), baseBuild(site, log).dir);
   const dir = path.join(OUT, "_api-source", site);
-  const s = await fetchDraftSource(API, { site, dir, withSite: HAS_COOKIE, apiAssets: API_ASSETS });
+  const s = await fetchDraftSource(API, { site, dir });
   const snap = buildSnapshot(site, dir, baseBuild(site, log, dir, s.texts).dir);
   return { ...snap, shop: s.shop.data };
 }
@@ -409,13 +426,14 @@ async function main() {
     if (flag("--post")) console.log(JSON.stringify(await desk("/edit-api/snapshot", { ...snap, source: "edit-runner" })));
     return;
   }
+  if (REPUBLISH) return republish();
   const local = opt("--local") ?? opt("--ops"); // --local は samples、--ops は api の下書きに当てる
   if (local) {
     const ops = readJson(path.resolve(local));
     const site = opt("--site") ?? die("--local・--ops には --site が要る");
     const r = await runJob({ id: null, site, ops: Array.isArray(ops) ? ops : ops.ops, baseHash: Array.isArray(ops) ? undefined : ops.baseHash, deploy: Array.isArray(ops) ? undefined : ops.deploy });
     report(r);
-    process.exitCode = r.ok ? 0 : 1;
+    process.exitCode = r.ok && r.published?.ok !== false ? 0 : 1;
     return;
   }
   for (const s of (opt("--sync") ?? "").split(",").filter(Boolean)) {
@@ -430,17 +448,54 @@ async function main() {
     console.log(`▸ job ${job.id}（${job.site}）：${job.summary || job.request}`);
     const r = await runJob(job);
     report(r);
-    if (!r.ok) failed++;
+    if (!r.ok || r.published?.ok === false) failed++;
     const { snapshot, ...rest } = r;
     await desk("/edit-api/result", { id: job.id, token: job.token, ok: r.ok, error: r.ok ? undefined : `[${r.errorCode}] ${r.error}`, result: rest, ...(snapshot ? { snapshot } : {}) });
   } while (flag("--all"));
   process.exitCode = failed ? 1 : 0;
 }
 
+/**
+ * 公開だけをやり直す（0059）。作り直しはしない：今の ①②③ の下書きをそのまま公開する（後の直しが入っていれば、それも一緒に出る）。
+ * desk があれば /edit-api/unpublished で「作り直し済み・公開は失敗」の job を取り、店ごとに 1 回公開して、各 job に /edit-api/published で結果を返す。
+ * --site だけ（desk なし）なら、その店を公開するだけ
+ */
+async function republish() {
+  const only = opt("--site") ?? null;
+  const useDesk = !!(DESK && SECRET);
+  if (!useDesk && !only) die("--republish には desk（--desk・--secret）か --site が要る");
+  const jobs = useDesk ? ((await desk("/edit-api/unpublished", only ? { site: only } : {})).jobs ?? []) : [];
+  const sites = [...new Set([...jobs.map((j) => j.site), ...(only ? [only] : [])])];
+  if (!sites.length) { console.log("公開のやり直しが要る job は無い"); return; }
+  let failed = 0;
+  for (const site of sites) {
+    const mine = jobs.filter((j) => j.site === site);
+    const t = now();
+    let published;
+    try {
+      const sf = path.join(shopDir(site), "site.json");
+      const render = PUBLISH_RENDER ?? publishRenderOf(fs.existsSync(sf) ? readJson(sf) : null);
+      // html の店は描いた HTML が要る：一番新しい job の置き場の after（この PC にあるとき）
+      const distDir = render === "html" ? mine.map((j) => j.outDir && path.join(j.outDir, "after")).filter((d) => d && fs.existsSync(d)).at(-1) : undefined;
+      if (render === "html" && !distDir) throw new ApiError("publish", `html の店の公開には書き出しが要る（job の置き場の after がこの PC に無い）。runner を流し直す`);
+      const v = await draftVersions(API, site);
+      const pub = await publishWithWait(API, site, { ...v, distDir, render }, { onWait: (sec, n) => console.log(`  公開を ${sec} 秒待つ（too_soon・${n} 回目）`) });
+      published = { ...publishSuccess(pub), retried: true, shopDraftVersion: v.shopDraftVersion, siteDraftVersion: v.siteDraftVersion ?? null };
+    } catch (e) {
+      if (!(e instanceof ApiError)) throw e;
+      published = { ...publishFailure(e), retried: true };
+    }
+    if (!published.ok) failed++;
+    console.log(`${published.ok ? "✓" : "✗"} ${site} 公開のやり直し：${published.ok ? `版 ${published.number}（${published.scope}・${published.render}）` : `[${published.errorCode}] ${published.error}`}　job ${mine.map((j) => j.id).join(",") || "—"}　${Math.round(now() - t)} ms`);
+    for (const j of mine) await desk("/edit-api/published", { id: j.id, published });
+  }
+  process.exitCode = failed ? 1 : 0;
+}
+
 function report(r) {
   const marks = Object.values(r.htmlDiff ?? {}).flat().flatMap((c) => c.marks);
   console.log(`${r.ok ? "✓" : "✗"} ${r.site} ${r.mode}：${r.ok ? `変わった印 ${[...new Set(marks)].join(" ")}・ファイル ${r.changedFiles?.length ?? 0}` : `[${r.errorCode}] ${r.error}`}`);
-  if (r.apiWrite) console.log(`  api の下書き：${JSON.stringify(r.apiWrite)}${r.published ? `　公開 版 ${r.published.number}（${r.published.scope}・${r.published.render}）` : ""}`);
+  if (r.apiWrite) console.log(`  api の下書き：${JSON.stringify(r.apiWrite)}${!r.published ? "" : r.published.ok ? `　公開 版 ${r.published.number}（${r.published.scope}・${r.published.render}${r.published.waits?.length ? `・待ち ${r.published.waits.join("+")} 秒` : ""}）` : `　公開は失敗（下書きは書けた。--republish でやり直す）：[${r.published.errorCode}] ${r.published.error}`}`);
   console.log(`  置き場 ${r.outDir}　公開のアドレス ${r.url ?? r.deploy?.error ?? "—"}　時間 ${JSON.stringify(r.timings)}`);
   if (r.linkedRemovals?.length) console.log(`  連れて消した review：${r.linkedRemovals.map((x) => x.path).join(" ")}`);
 }

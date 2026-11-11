@@ -1,6 +1,6 @@
-// apps/api（お店の ①②③ の置き場）とのつなぎ（指示 0053 段D）。edit-runner・rebuild-shop から使う。
-// - ① の下書き：/edit-api/shops/:slug/shop（鍵 x-edit-runner-secret。apps/api/src/routes/runner.ts）
-// - ② の下書き・公開・公開した版・写真：/api/shops/:shopId/…（ログインの Cookie。書くときは Origin も。/edit-api には口が無い）
+// apps/api（お店の ①②③ の置き場）とのつなぎ（指示 0053 段D・0059 段G）。edit-runner・rebuild-shop から使う。
+// - 呼ぶのは /edit-api/shops/:slug/…（鍵 x-edit-runner-secret だけ。apps/api/src/routes/runner.ts）。Cookie・Origin は使わない（0059）
+//   ① の下書き・②③ の下書き・公開・公開した版・版・写真のファイル・描いた結果
 // - api の店の名前（slug）は samples のフォルダ名と同じ（0053 の決め）
 // - 「--from の形」のフォルダ（docs/REBUILD.md）に書き出して、lib/rebuild.mjs の makeStage・rebuildShop に渡す
 // 通信は opts.fetch を使う（試験では偽物を渡す。tools/api-source.test.mjs）。
@@ -13,38 +13,29 @@ export class ApiError extends Error {
   constructor(code, message, { status = null, body = null } = {}) { super(message); this.code = code; this.status = status; this.body = body; }
 }
 
-/** 呼ぶ口の一覧（apps/api の routes に合わせる。口が増えたらここだけ直す） */
+/** 呼ぶ口の一覧（apps/api の routes/runner.ts に合わせる。口が増えたらここだけ直す）。:shop は slug（ID でもよい）。すべて鍵だけ */
 export const API_ROUTES = {
-  shopDraft: (slug) => `/edit-api/shops/${encodeURIComponent(slug)}/shop`, // GET・PUT（鍵）
-  siteDraft: (id) => `/api/shops/${id}/drafts/site`, // GET・PUT（Cookie）
-  shopInfo: (id) => `/api/shops/${id}`, // GET（publishedVersion）
-  version: (id, n) => `/api/shops/${id}/versions/${n}`, // GET（公開した版の ①②③）
-  assets: (id) => `/api/shops/${id}/assets`, // GET（assets.json と同じ形）
-  assetFile: (id, a) => `/api/shops/${id}/assets/${a}/file`, // GET（写真そのもの）
-  publish: (id) => `/api/shops/${id}/publish`, // POST（下書き → 公開）
-  renderResult: (slug, n) => `/edit-api/shops/${encodeURIComponent(slug)}/versions/${n}/render`, // POST（鍵。render:"rebuild" の版を描いた結果）
+  shopDraft: (s) => `/edit-api/shops/${encodeURIComponent(s)}/shop`, // GET・PUT（① の下書き。PUT は If-Match）
+  siteDraft: (s) => `/edit-api/shops/${encodeURIComponent(s)}/site`, // GET・PUT（②③ の下書き。PUT は If-Match）
+  publish: (s) => `/edit-api/shops/${encodeURIComponent(s)}/publish`, // POST（下書き → 公開。1 分に 1 回まで：429 too_soon・retryAfter）
+  published: (s) => `/edit-api/shops/${encodeURIComponent(s)}/published`, // GET（公開中の版の ①②③・写真。未公開は 404 not_published）
+  version: (s, n) => `/edit-api/shops/${encodeURIComponent(s)}/versions/${n}`, // GET（版 n）
+  assetFile: (s, a) => `/edit-api/shops/${encodeURIComponent(s)}/assets/${encodeURIComponent(a)}/file`, // GET（写真そのもの）
+  renderResult: (s, n) => `/edit-api/shops/${encodeURIComponent(s)}/versions/${n}/render`, // POST（render:"rebuild" の版を描いた結果）
 };
 
+/** api の答えの error のうち、そのまま code に使う物（状態の番号より先に見る） */
+const BODY_CODES = new Set(["too_soon", "not_published", "conflict", "unsafe_html", "precondition_required"]);
+
 /**
- * api を呼ぶ道具。base は api の根（例 http://127.0.0.1:8787）。
- * secret：/edit-api の鍵（EDIT_RUNNER_SECRET）。cookie：/api のログインの Cookie（"mikke_session=…" のまま）。origin：/api に書くときの Origin（APP_ORIGINS の1つ）
+ * api を呼ぶ道具。base は api の根（例 http://127.0.0.1:8787）。secret：/edit-api の鍵（EDIT_RUNNER_SECRET）
  */
-export function apiClient({ base, secret = "", cookie = "", origin = "", fetch: f = globalThis.fetch } = {}) {
+export function apiClient({ base, secret = "", fetch: f = globalThis.fetch } = {}) {
   if (!base) throw new ApiError("config", "api の URL が要る（--api か MIKKE_API_URL）");
   const root = String(base).replace(/\/$/, "");
-  async function call(method, p, { json, auth, ifMatch, raw } = {}) {
-    const headers = {};
-    if (auth === "runner") {
-      if (!secret) throw new ApiError("config", "/edit-api の鍵が要る（--api-secret か MIKKE_API_RUNNER_SECRET・EDIT_RUNNER_SECRET）");
-      headers["x-edit-runner-secret"] = secret;
-    } else {
-      if (!cookie) throw new ApiError("config", `${p} はログインの Cookie が要る（--api-cookie か MIKKE_API_COOKIE。/edit-api にこの口は無い）`);
-      headers.cookie = cookie;
-      if (method !== "GET") {
-        if (!origin) throw new ApiError("config", `${p} に書くには Origin が要る（--api-origin か MIKKE_API_ORIGIN。apps/api の APP_ORIGINS の1つ）`);
-        headers.origin = origin;
-      }
-    }
+  async function call(method, p, { json, ifMatch, raw } = {}) {
+    if (!secret) throw new ApiError("config", "/edit-api の鍵が要る（--api-secret か MIKKE_API_RUNNER_SECRET・EDIT_RUNNER_SECRET）");
+    const headers = { "x-edit-runner-secret": secret };
     if (ifMatch != null) headers["if-match"] = `"${ifMatch}"`;
     if (json !== undefined) headers["content-type"] = "application/json";
     const init = { method, headers, body: json === undefined ? undefined : JSON.stringify(json) };
@@ -62,27 +53,32 @@ export function apiClient({ base, secret = "", cookie = "", origin = "", fetch: 
     const text = await r.text();
     let body; try { body = text ? JSON.parse(text) : null; } catch { body = { raw: text.slice(0, 300) }; }
     if (!r.ok) {
-      const code = r.status === 409 ? "conflict" : r.status === 401 || r.status === 403 ? "auth" : r.status === 404 ? "not_found" : r.status === 429 ? "too_soon" : r.status === 503 ? "closed" : "api";
-      throw new ApiError(code, `${method} ${p} → ${r.status} ${body?.error ?? ""} ${body?.message ?? text.slice(0, 200)}`.trim(), { status: r.status, body });
+      const code = BODY_CODES.has(body?.error) ? body.error
+        : r.status === 409 ? "conflict" : r.status === 401 || r.status === 403 ? "auth" : r.status === 404 ? "not_found" : r.status === 429 ? "too_soon" : r.status === 503 ? "closed" : "api";
+      const e = new ApiError(code, `${method} ${p} → ${r.status} ${body?.error ?? ""} ${body?.message ?? text.slice(0, 200)}`.trim(), { status: r.status, body });
+      const raw = body?.retryAfter ?? r.headers?.get?.("retry-after");
+      const ra = raw == null || raw === "" ? NaN : Number(raw);
+      if (Number.isFinite(ra) && ra >= 0) e.retryAfter = ra;
+      throw e;
     }
     return body;
   }
   return {
     base: root,
     /** ① の下書き：{ shopId, slug, version, baseHash, data, updatedAt } */
-    getShopDraft: (slug) => call("GET", API_ROUTES.shopDraft(slug), { auth: "runner" }),
+    getShopDraft: (slug) => call("GET", API_ROUTES.shopDraft(slug)),
     /** 承認された直しを当てた ① を下書きに書き戻す（公開はしない）。読んだ版が古ければ ApiError("conflict")（body.current に今の版） */
-    putShopDraft: (slug, version, data) => call("PUT", API_ROUTES.shopDraft(slug), { auth: "runner", ifMatch: version, json: data }),
-    /** ②③ の下書き：{ kind, version, data: {draft, theme?} | null } */
-    getSiteDraft: (shopId) => call("GET", API_ROUTES.siteDraft(shopId)),
-    putSiteDraft: (shopId, version, data) => call("PUT", API_ROUTES.siteDraft(shopId), { ifMatch: version, json: data }),
-    getShopInfo: (shopId) => call("GET", API_ROUTES.shopInfo(shopId)),
-    getVersion: (shopId, n) => call("GET", API_ROUTES.version(shopId, n)),
-    getAssets: (shopId) => call("GET", API_ROUTES.assets(shopId)),
-    getAssetFile: (shopId, assetId) => call("GET", API_ROUTES.assetFile(shopId, assetId), { raw: true }),
-    publish: (shopId, body) => call("POST", API_ROUTES.publish(shopId), { json: body }),
+    putShopDraft: (slug, version, data) => call("PUT", API_ROUTES.shopDraft(slug), { ifMatch: version, json: data }),
+    /** ②③ の下書き：{ shopId, slug, kind, version, data: {draft, theme?} | null }（無ければ版 0） */
+    getSiteDraft: (slug) => call("GET", API_ROUTES.siteDraft(slug)),
+    putSiteDraft: (slug, version, data) => call("PUT", API_ROUTES.siteDraft(slug), { ifMatch: version, json: data }),
+    /** 公開中の版：{ shopId, slug, number, scope, publishedAt, isPublished, render, shop, site, assets }。未公開は ApiError("not_published") */
+    getPublished: (slug) => call("GET", API_ROUTES.published(slug)),
+    getVersion: (slug, n) => call("GET", API_ROUTES.version(slug, n)),
+    getAssetFile: (slug, assetId) => call("GET", API_ROUTES.assetFile(slug, assetId), { raw: true }),
+    publish: (slug, body) => call("POST", API_ROUTES.publish(slug), { json: body }),
     /** render:"rebuild" の版を描いた結果を返す：{ok:true, url?} か {ok:false, error}（html の版は 409 not_rebuild） */
-    postRenderResult: (slug, n, body) => call("POST", API_ROUTES.renderResult(slug, n), { auth: "runner", json: body }),
+    postRenderResult: (slug, n, body) => call("POST", API_ROUTES.renderResult(slug, n), { json: body }),
   };
 }
 
@@ -104,35 +100,94 @@ export const templateNameOf = (siteJson) => {
 };
 
 /**
- * ②③ の下書きから、site.json の文字の箱に当てる文字を取り出す。
- * 返り：{ texts: {要素ID: 文字}（site.json と違う物だけ）, same: [今と同じ], ignored: [{id, reason}] }
+ * ②③ の下書きの形（0059 段G）。
+ * - "content"：DATA_SPEC 4.9.3 の型の店の形 {draft: {template, sections: {}, content: {要素ID: 文字}}}。runner が新しく作るのはこの形
+ * - "site"：site.json を丸ごと持つ形 {draft: {...site.json, template, genConfig}}。apps/api の seed（wa03SiteDraft）と apps/owner の画面が
+ *   使う（apps/owner は draft.elements の段落と draft.genConfig.fvCopy を読み書きする）。この形では文字を elements と genConfig に書き、
+ *   content は持たない（古い runner が足した content は elements に移して消す。どちらかが古く残らないように）
+ * - null：下書きが無い
+ */
+export const siteDraftForm = (siteDraft) => (!isObj(siteDraft?.draft) ? null : isObj(siteDraft.draft.elements) ? "site" : "content");
+
+/** 文字の箱の文字（連動していない箱だけ）。箱が無い・連動・形が違えば {reason} */
+function boxText(siteJson, id, v) {
+  const el = siteJson?.elements?.[id];
+  if (!el || !Array.isArray(el.paragraphs)) return { reason: "site.json に文字の箱が無い" };
+  if (el.paragraphs.some((p) => (p.runs ?? []).some((r) => r.bind))) return { reason: "① と連動している箱" };
+  const t = contentText(v);
+  if (t == null) return { reason: "文字の形でない" };
+  return { text: t, same: t === paragraphsToText(el.paragraphs) };
+}
+
+/**
+ * ②③ の下書きから、site.json（samples）の文字の箱に当てる文字を取り出す。
+ * "content" の形は draft.content[要素ID]、"site" の形は draft.elements[要素ID].paragraphs（と、残っていれば古い content。content が勝つ）
+ * 返り：{ texts: {要素ID: 文字}（site.json と違う物だけ）, same: [今と同じ], ignored: [{id, reason}], form }
  */
 export function textsFromSiteDraft(siteDraft, siteJson) {
-  const content = siteDraft?.draft?.content;
-  const out = { texts: {}, same: [], ignored: [] };
-  if (!isObj(content)) return out;
-  for (const [id, v] of Object.entries(content)) {
-    const el = siteJson?.elements?.[id];
-    if (!el || !Array.isArray(el.paragraphs)) { out.ignored.push({ id, reason: "site.json に文字の箱が無い" }); continue; }
-    if (el.paragraphs.some((p) => (p.runs ?? []).some((r) => r.bind))) { out.ignored.push({ id, reason: "① と連動している箱" }); continue; }
-    const t = contentText(v);
-    if (t == null) { out.ignored.push({ id, reason: "文字の形でない" }); continue; }
-    if (t === paragraphsToText(el.paragraphs)) out.same.push(id);
-    else out.texts[id] = t;
+  const form = siteDraftForm(siteDraft);
+  const out = { texts: {}, same: [], ignored: [], form };
+  const take = (id, v, quiet) => {
+    const r = boxText(siteJson, id, v);
+    if (r.reason) { if (!quiet) out.ignored.push({ id, reason: r.reason }); return; }
+    delete out.texts[id];
+    out.same = out.same.filter((x) => x !== id);
+    if (r.same) out.same.push(id); else out.texts[id] = r.text;
+  };
+  if (form === "site") {
+    for (const [id, el] of Object.entries(siteDraft.draft.elements)) {
+      if (!Array.isArray(el?.paragraphs) || !Array.isArray(siteJson?.elements?.[id]?.paragraphs)) continue;
+      const r = boxText(siteJson, id, paragraphsToText(el.paragraphs));
+      if (!r.reason && !r.same) out.texts[id] = r.text; // 同じ物は数えない（箱が多いので）。連動の箱は ① から描くので見ない
+    }
   }
+  const content = siteDraft?.draft?.content;
+  if (isObj(content)) for (const [id, v] of Object.entries(content)) take(id, v, false);
   return out;
 }
 
-/** ②③ の下書きに文字を載せた写しを返す（元は変えない）。下書きが無ければ {draft: {template, sections: {}}} から作る */
+/**
+ * ②③ の下書きに文字を載せた写しを返す（元は変えない）。形は今の下書きに合わせる（siteDraftForm）。
+ * - 下書きが無い：{draft: {template, sections: {}, content}}（DATA_SPEC 4.9.3）
+ * - "content"：content[要素ID] に文字。型の店の形に無い古い項目（elements・genConfig など site.json の物）は持たない
+ * - "site"：elements[要素ID].paragraphs と genConfig（同じ文字の所）を直す。古い content は elements に移して消す
+ * 返り：{ data, form, folded: [content から elements に移した ID], genConfig: {replaced, missing} | null }
+ */
 export function withSiteTexts(siteDraft, texts, templateName) {
   const out = isObj(siteDraft) ? clone(siteDraft) : {};
-  if (!isObj(out.draft)) {
+  const form = siteDraftForm(out);
+  if (form === "site") {
+    const d = out.draft;
+    const folded = [];
+    const all = {};
+    if (isObj(d.content)) {
+      for (const [id, v] of Object.entries(d.content)) {
+        const t = contentText(v);
+        if (t != null && Array.isArray(d.elements[id]?.paragraphs)) { all[id] = t; folded.push(id); }
+      }
+    }
+    Object.assign(all, Object.fromEntries(Object.entries(texts).map(([id, t]) => [id, String(t)])));
+    const missingBox = Object.keys(all).filter((id) => !Array.isArray(d.elements[id]?.paragraphs));
+    if (missingBox.length) throw new ApiError("site_draft", `②③ の下書きに文字の箱が無い：${missingBox.join(" ")}`);
+    let genConfig = null;
+    if (isObj(d.genConfig)) {
+      const g = applyTextsToGenConfig(d.genConfig, d, all);
+      d.genConfig = g.config;
+      genConfig = { replaced: g.replaced, missing: g.missing };
+    }
+    out.draft = { ...applySiteTexts(d, all) };
+    if (genConfig) out.draft.genConfig = d.genConfig;
+    delete out.draft.content;
+    return { data: out, form, folded, genConfig };
+  }
+  if (!form) {
     if (!templateName) throw new ApiError("site_draft", "②③ の下書きが無く、型の名前もわからない（site.json の templateId）");
     out.draft = { template: { name: templateName, version: 1 }, sections: {} };
   }
-  if (!isObj(out.draft.content)) out.draft.content = {};
+  const { template, sections, content } = out.draft;
+  out.draft = { template, sections: isObj(sections) ? sections : {}, content: isObj(content) ? content : {} };
   for (const [id, t] of Object.entries(texts)) out.draft.content[id] = String(t);
-  return out;
+  return { data: out, form: form ?? "content", folded: [], genConfig: null };
 }
 
 // ───────── 「--from の形」のフォルダを書く
@@ -194,14 +249,22 @@ export function textsAfterGen(texts) {
   };
 }
 
-/** api の写真（④）を取ってくる：{ json（assets.json の形）, files: {file.key: Buffer} } */
-export async function fetchApiAssets(client, shopId) {
-  const json = await client.getAssets(shopId);
+const MEDIA_EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
+
+/**
+ * 版の写真（版が指している ④）を取ってくる：{ json（assets.json の形）, files: {media の名前: Buffer} }。
+ * 版の assets は samples の assets.json に重ねる（版に無い写真は samples のまま）。file.key は R2 の名前なので media/ の名前（<ID>.<拡張子>）に替える。
+ * 鍵だけで読める写真の口は版の写真と写真のファイルだけなので、今の ④（下書きの時点）は取らない（0059）
+ */
+export async function fetchVersionAssets(client, slug, version, { site = slug, root = ROOT } = {}) {
+  const f = path.join(root, "samples", site, "assets.json");
+  const base = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : { schemaVersion: 1, assets: {} };
+  const json = { ...base, assets: { ...(base.assets ?? {}) } };
   const files = {};
-  for (const [id, a] of Object.entries(json?.assets ?? {})) {
-    const key = a?.file?.key;
-    if (!key) continue;
-    files[key] = await client.getAssetFile(shopId, id);
+  for (const [id, a] of Object.entries(version?.assets?.assets ?? {})) {
+    const name = `${id}.${MEDIA_EXT[a?.file?.mime] ?? "jpg"}`;
+    files[name] = await client.getAssetFile(slug, id);
+    json.assets[id] = { ...(json.assets[id] ?? {}), ...a, file: { ...(a?.file ?? {}), key: name } };
   }
   return { json, files };
 }
@@ -212,42 +275,36 @@ const readSamplesSite = (site, root) => {
 };
 
 /**
- * 今の下書き（①・② の文字）を「--from の形」に書く（edit-runner の元）。
- * 返り：{ dir, shopId, shop: {version, baseHash, data}, site: {version, data} | null, texts, ignored, genConfig, assetsFrom }
- * ②③ の下書きは Cookie があるときだけ読む（無ければ site: null・② の文字は samples のまま）
+ * 今の下書き（①・② の文字）を「--from の形」に書く（edit-runner の元）。① も ②③ も /edit-api から鍵だけで読む。写真は samples の物
+ * 返り：{ dir, shopId, shop: {version, baseHash, data}, site: {version, data, form}, texts, ignored, genConfig, assetsFrom }
  */
-export async function fetchDraftSource(client, { site, dir, withSite = true, apiAssets = false, root = ROOT }) {
+export async function fetchDraftSource(client, { site, dir, root = ROOT }) {
   const shop = await client.getShopDraft(site);
-  let siteDraft = null, t = { texts: {}, same: [], ignored: [] };
-  if (withSite) {
-    siteDraft = await client.getSiteDraft(shop.shopId);
-    t = textsFromSiteDraft(siteDraft?.data, readSamplesSite(site, root));
-  }
-  const assets = apiAssets ? await fetchApiAssets(client, shop.shopId) : null;
-  const w = writeSourceDir(dir, { site, shop: shop.data, texts: t.texts, assets, root });
+  const siteDraft = await client.getSiteDraft(site);
+  const t = textsFromSiteDraft(siteDraft?.data, readSamplesSite(site, root));
+  const w = writeSourceDir(dir, { site, shop: shop.data, texts: t.texts, root });
   return {
     dir, shopId: shop.shopId,
     shop: { version: shop.version, baseHash: shop.baseHash, data: shop.data },
-    site: siteDraft ? { version: siteDraft.version ?? 0, data: siteDraft.data ?? null } : null,
-    texts: t.texts, ignored: t.ignored, genConfig: w.genConfig, assetsFrom: assets ? "api" : "samples",
+    site: { version: siteDraft?.version ?? 0, data: siteDraft?.data ?? null, form: t.form },
+    texts: t.texts, ignored: t.ignored, genConfig: w.genConfig, assetsFrom: "samples",
   };
 }
 
 /**
- * 公開された ① から「--from の形」に書く（rebuild-shop --from-api の元）。
- * shopId は /edit-api の ① から（slug → ID）。公開中の版の番号は /api/shops/:id、中身は /api/shops/:id/versions/:n
- * 返り：{ dir, shopId, version, publishedAt, texts, ignored, genConfig, assetsFrom, afterGen }
+ * 公開された ① から「--from の形」に書く（rebuild-shop --from-api の元）。GET /edit-api/shops/:slug/published（鍵だけ）
+ * apiAssets：版の写真を api から取る（無ければ samples の写真）
+ * 返り：{ dir, shopId, version, scope, render, publishedAt, texts, ignored, genConfig, assetsFrom, afterGen }
  */
-export async function fetchPublishedSource(client, { site, dir, shopId = null, apiAssets = false, root = ROOT }) {
-  const id = shopId ?? (await client.getShopDraft(site)).shopId;
-  const info = await client.getShopInfo(id);
-  const n = info?.publishedVersion;
-  if (!n) throw new ApiError("not_published", `まだ公開していない：${site}（${id}）`);
-  const v = await client.getVersion(id, n);
+export async function fetchPublishedSource(client, { site, dir, apiAssets = false, root = ROOT }) {
+  let v;
+  try { v = await client.getPublished(site); }
+  catch (e) { if (e instanceof ApiError && e.code === "not_published") throw new ApiError("not_published", `まだ公開していない：${site}`, { status: e.status, body: e.body }); throw e; }
+  const n = v.number;
   const t = textsFromSiteDraft(v.site, readSamplesSite(site, root));
-  const assets = apiAssets ? await fetchApiAssets(client, id) : null;
+  const assets = apiAssets ? await fetchVersionAssets(client, site, v, { root }) : null;
   const w = writeSourceDir(dir, { site, shop: v.shop, texts: t.texts, assets, root });
-  return { dir, shopId: id, version: n, scope: v.scope ?? null, render: v.render ?? null, publishedAt: v.publishedAt ?? null, texts: t.texts, ignored: t.ignored, genConfig: w.genConfig, assetsFrom: assets ? "api" : "samples", afterGen: textsAfterGen(t.texts) };
+  return { dir, shopId: v.shopId ?? null, version: n, scope: v.scope ?? null, render: v.render ?? null, publishedAt: v.publishedAt ?? null, texts: t.texts, ignored: t.ignored, siteForm: t.form, genConfig: w.genConfig, assetsFrom: assets ? "api" : "samples", afterGen: textsAfterGen(t.texts) };
 }
 
 // ───────── 下書き → 公開
@@ -270,13 +327,13 @@ export function pagesFromDist(distDir) {
 }
 
 /**
- * 下書き → 公開（POST /api/shops/:id/publish）。scope all は ①②③、shop は ① だけ（②③ は公開中の物を引き継ぐ）。
+ * 下書き → 公開（POST /edit-api/shops/:slug/publish。鍵だけ）。scope all は ①②③、shop は ① だけ（②③ は公開中の物を引き継ぐ）。
  * render "html"：pages に書き出しの HTML を送る（api が R2 に置き、サブドメインで出す。スクリプトは /_mikke/ だけの検査がある）
  * render "rebuild"：pages を送らず ①②③ の写しだけを版にする（render は pending）。描くのは rebuild-shop --from-api で、結果は
  *   POST /edit-api/shops/:slug/versions/:n/render に返す。型（wa-NN）の店は書き出しにインラインのスクリプト（finish が足す）があり、
  *   html では unsafe_html で断られるので rebuild を使う（0053 段E）
  */
-export async function publishDrafts(client, shopId, { shopDraftVersion, siteDraftVersion, distDir, render = "html", scope = siteDraftVersion == null ? "shop" : "all" }) {
+export async function publishDrafts(client, slug, { shopDraftVersion, siteDraftVersion, distDir, render = "html", scope = siteDraftVersion == null ? "shop" : "all" }) {
   if (render !== "html" && render !== "rebuild") throw new ApiError("publish", `render は html か rebuild：${render}`);
   const body = { scope, shopDraftVersion };
   if (scope === "all") body.siteDraftVersion = siteDraftVersion;
@@ -287,8 +344,51 @@ export async function publishDrafts(client, shopId, { shopDraftVersion, siteDraf
     body.pages = p.pages;
     skipped = p.skipped;
   } else body.render = "rebuild";
-  const r = await client.publish(shopId, body);
+  const r = await client.publish(slug, body);
   return { ...r, render: r.render ?? render, skipped };
+}
+
+/** 公開の 1 分に 1 回の待ち：too_soon の retryAfter（秒。無ければ 60）に 1 秒足し、1〜70 秒に収める */
+export const waitSecondsOf = (e) => Math.min(70, Math.max(1, Math.ceil(Number.isFinite(e?.retryAfter) ? e.retryAfter : 60) + 1));
+
+/**
+ * publishDrafts を、too_soon（429）のときは retryAfter だけ待ってやり直す（0059 段G。--all --publish で続けて流すため）。
+ * 待つのは maxWaits 回まで（既定 3）。それでも too_soon なら、そのまま ApiError を投げる。ほかの失敗はすぐ投げる。
+ * sleep・onWait は試験用（偽の時計）。返り：publishDrafts の返りに waits（待った秒の並び）
+ */
+export async function publishWithWait(client, slug, args, { maxWaits = 3, sleep = (ms) => new Promise((ok) => setTimeout(ok, ms)), onWait = () => {} } = {}) {
+  const waits = [];
+  for (;;) {
+    try { return { ...(await publishDrafts(client, slug, args)), waits }; }
+    catch (e) {
+      if (!(e instanceof ApiError) || e.code !== "too_soon" || waits.length >= maxWaits) { if (e instanceof ApiError) e.waits = waits; throw e; }
+      const sec = waitSecondsOf(e);
+      waits.push(sec);
+      onWait(sec, waits.length);
+      await sleep(sec * 1000);
+    }
+  }
+}
+
+/** 公開に失敗したときの記録（result.published）。下書きは書けている。edit-runner --republish で公開だけをやり直す */
+export const publishFailure = (e, at = new Date().toISOString()) => ({
+  ok: false, at,
+  errorCode: e instanceof ApiError ? e.code : "internal",
+  error: String(e?.message ?? e).slice(0, 600),
+  ...(e?.retryAfter != null ? { retryAfter: e.retryAfter } : {}),
+  ...(e?.waits?.length ? { waits: e.waits } : {}),
+});
+
+/** 公開できたときの記録（result.published） */
+export const publishSuccess = (pub, at = new Date().toISOString()) => ({
+  ok: true, at, number: pub.number, scope: pub.scope, render: pub.render, publishedAt: pub.publishedAt, pages: pub.pages, skipped: pub.skipped, url: pub.url ?? null,
+  ...(pub.waits?.length ? { waits: pub.waits } : {}),
+});
+
+/** 今の下書きの版（公開だけをやり直すとき）：{ shopId, shopDraftVersion, siteDraftVersion（0 なら undefined） } */
+export async function draftVersions(client, slug) {
+  const [shop, site] = [await client.getShopDraft(slug), await client.getSiteDraft(slug)];
+  return { shopId: shop.shopId, shopDraftVersion: shop.version, siteDraftVersion: site?.version > 0 ? site.version : undefined };
 }
 
 /** 公開の既定の描き方：型（site.json の templateId が tpl_wa_NN）の店は rebuild、ほかは html */

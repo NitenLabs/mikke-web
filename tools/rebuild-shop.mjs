@@ -4,8 +4,8 @@
 //   node tools/rebuild-shop.mjs <店> [--from <①のフォルダ>] [--out <フォルダ>] [--dry-run] [--deploy] [--date YYYY-MM-DD] [--base <前の書き出し>] [--no-check] [--keep-stage] [--log <file>]
 //   --from    ① のフォルダ（shop.json・assets.json・media/ ほか。形は docs/REBUILD.md）。無ければ samples/<店>
 //   --from-api <api の URL>  apps/api の公開された ① から作り直す（0053）：公開中の版の ①・② の文字（draft.content）を取り出し、
-//             dist/_api-source/<店> に --from の形で書いてから流す。鍵 --api-secret（MIKKE_API_RUNNER_SECRET・EDIT_RUNNER_SECRET）で slug → 店の ID、
-//             公開中の版はログインの Cookie --api-cookie（MIKKE_API_COOKIE）で読む。--api-assets で写真も api の ④ から（既定は samples の写真）
+//             dist/_api-source/<店> に --from の形で書いてから流す。読むのは GET /edit-api/shops/<店>/published（鍵 --api-secret だけ。
+//             MIKKE_API_RUNNER_SECRET・EDIT_RUNNER_SECRET。Cookie は使わない、0059）。--api-assets で写真も版の写真を api から（既定は samples の写真）
 //             版が render:"rebuild"（描き直しの版）なら、作り直した結果を POST /edit-api/shops/<店>/versions/<n>/render に返す（--dry-run・--no-report では返さない）
 //   --out     書き出し先（既定 dist/rebuild/<店>）。--dry-run のときは書かない
 //   --dry-run 作って検査するだけ（書き出さない）
@@ -20,13 +20,14 @@ import { ROOT, rebuildShop } from "./lib/rebuild.mjs";
 import { ApiError, apiClient, fetchPublishedSource } from "./lib/api-source.mjs";
 
 const argv = process.argv.slice(2);
-const VALUED = ["--from", "--out", "--date", "--base", "--log", "--from-api", "--api-secret", "--api-cookie"];
+const VALUED = ["--from", "--out", "--date", "--base", "--log", "--from-api", "--api-secret"];
 const opt = (k) => { const i = argv.indexOf(k); return i >= 0 ? argv[i + 1] : undefined; };
 const flag = (k) => argv.includes(k);
 const site = argv.find((a, i) => !a.startsWith("--") && !VALUED.includes(argv[i - 1]));
 if (!site) { console.error("使い方: node tools/rebuild-shop.mjs <店> [--from <dir> | --from-api <url>] [--out <dir>] [--dry-run] [--deploy] [--date YYYY-MM-DD] [--base <dir>] [--no-check]"); process.exit(2); }
 for (const k of VALUED) if (flag(k) && (!opt(k) || opt(k).startsWith("--"))) { console.error(`${k} の後に値が要る`); process.exit(2); }
 
+if (flag("--api-cookie")) { console.error("--api-cookie はもう使わない（0059：--from-api は /edit-api の鍵 --api-secret だけで読む）"); process.exit(2); }
 if (flag("--from") && flag("--from-api")) { console.error("--from と --from-api は一緒に使えない"); process.exit(2); }
 const dryRun = flag("--dry-run");
 const logFile = opt("--log") ? path.resolve(opt("--log")) : null;
@@ -37,7 +38,6 @@ if (flag("--from-api")) {
     client = apiClient({
       base: opt("--from-api"),
       secret: opt("--api-secret") ?? process.env.MIKKE_API_RUNNER_SECRET ?? process.env.EDIT_RUNNER_SECRET ?? "",
-      cookie: opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE ?? "",
     });
     source = await fetchPublishedSource(client, { site, dir: path.join(ROOT, "dist", "_api-source", `${site}-published`), apiAssets: flag("--api-assets") });
   } catch (e) {
