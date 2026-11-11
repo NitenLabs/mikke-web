@@ -6,11 +6,14 @@ import { assetJson, getAsset, type AssetRow } from "../services/assets";
 import { getVersion, renderOf } from "../services/publish";
 import { draftChangeRows, recordChanges, SYSTEM } from "../services/changes";
 import { draftJson, getDraft, MAX_DRAFT_BYTES, parseIfMatch, saveDraft, validateDraft } from "../services/drafts";
+import { publishBody } from "./publishing";
+import { readDraftBody, writeDraftBody } from "./shops";
 
 /**
  * 段2（mikke-desk の直しの依頼）とのつなぎ：PC の edit-runner が、お店の ①（shop の下書き）を読み書きする口。
  * ブラウザではないので Cookie・Origin は使わず、ヘッダ `x-edit-runner-secret` の鍵で入る（/api の外に置く）。
  * 鍵が Worker に無い（か 32 文字より短い）ときは口を閉じる（503）。
+ * ②③ の下書き（/site）・公開（/publish）・公開中の版（/published）も、鍵だけで使える（指示 0059。/api と同じ処理）。
  * 書くのは ① 全体（runner が承認済みの差分を当てた後の物）。版番号（If-Match）が古ければ 409。公開はしない（下書きになるだけ）。
  */
 export const runner = new Hono<AppEnv>();
@@ -74,9 +77,13 @@ const versionNum = (s: string) => {
 /** 版の中身。{shopId, slug, number, scope, publishedAt, isPublished, render, shop, site, assets}。assets は ④ の形（版が指している写真だけ） */
 runner.get("/shops/:shop/versions/:n", async (c) => {
   const s = await findShop(c, c.req.param("shop"));
-  const v = await getVersion(c.env, s.id, versionNum(c.req.param("n")));
+  return c.json(await versionBody(c.env, s, versionNum(c.req.param("n"))));
+});
+
+async function versionBody(env: AppEnv["Bindings"], s: { id: string; slug: string }, n: number) {
+  const v = await getVersion(env, s.id, n);
   if (!v) throw new ApiError(404, "not_found", "版が見つかりません");
-  const res = await c.env.DB.prepare(
+  const res = await env.DB.prepare(
     `SELECT a.* FROM assets a JOIN version_assets va ON va.asset_id = a.id AND va.shop_id = a.shop_id
      WHERE va.shop_id = ? AND va.number = ? AND a.purged_at IS NULL ORDER BY a.id`,
   )
@@ -87,8 +94,8 @@ runner.get("/shops/:shop/versions/:n", async (c) => {
     const { id, ...rest } = assetJson(r);
     assets[id] = rest;
   }
-  const pub = await c.env.DB.prepare("SELECT published_version FROM shops WHERE id = ?").bind(s.id).first<{ published_version: number | null }>();
-  return c.json({
+  const pub = await env.DB.prepare("SELECT published_version FROM shops WHERE id = ?").bind(s.id).first<{ published_version: number | null }>();
+  return {
     shopId: s.id,
     slug: s.slug,
     number: v.number,
@@ -99,7 +106,37 @@ runner.get("/shops/:shop/versions/:n", async (c) => {
     shop: v.shop,
     site: v.site,
     assets: { schemaVersion: 1, assets },
-  });
+  };
+}
+
+// ---- 鍵だけで回す口（指示 0059）：②③ の下書き・公開・公開した版。中身は /api と同じ処理（routes/shops・publishing）を呼ぶ ----
+
+/** ②③ の下書きを読む。答えは GET /api/shops/:id/drafts/site と同じ {kind, version, data, updatedAt, updatedBy}（無ければ版 0）に shopId・slug を足した物。ETag に版 */
+runner.get("/shops/:shop/site", async (c) => {
+  const s = await findShop(c, c.req.param("shop"));
+  const r = await readDraftBody(c.env, s.id, "site");
+  return c.json({ shopId: s.id, slug: s.slug, ...r.body }, 200, r.headers);
+});
+
+/** ②③ の下書きを書く。If-Match が要る（無ければ 428、古ければ 409 と今の版）。答えは /api と同じ {kind, version, updatedAt} に shopId。変更の記録は「仕組み」 */
+runner.put("/shops/:shop/site", async (c) => {
+  const s = await findShop(c, c.req.param("shop"));
+  const r = await writeDraftBody(c, s.id, "site", SYSTEM, null);
+  return c.json({ shopId: s.id, ...r.body }, 200, r.headers);
+});
+
+/** 下書き → 公開。本文と答えは POST /api/shops/:id/publish と同じ（render html|rebuild）に shopId。1 分に 1 回まで：too_soon は 429・retryAfter（秒）・Retry-After */
+runner.post("/shops/:shop/publish", async (c) => {
+  const s = await findShop(c, c.req.param("shop"));
+  return c.json({ shopId: s.id, ...(await publishBody(c, s.id, SYSTEM)) });
+});
+
+/** 公開中の版の中身。答えは GET /edit-api/shops/:shop/versions/:n と同じ形。まだ公開していなければ 404 not_published */
+runner.get("/shops/:shop/published", async (c) => {
+  const s = await findShop(c, c.req.param("shop"));
+  const pub = await c.env.DB.prepare("SELECT published_version FROM shops WHERE id = ?").bind(s.id).first<{ published_version: number | null }>();
+  if (!pub?.published_version) throw new ApiError(404, "not_published", "まだ公開していません");
+  return c.json(await versionBody(c.env, s, pub.published_version));
 });
 
 /** 写真そのもの（元の 1 枚）。ゴミ箱の中でも、消しきっていなければ返す（版が指していることがあるので） */

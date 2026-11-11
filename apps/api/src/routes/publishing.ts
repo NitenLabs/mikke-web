@@ -1,7 +1,7 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import type { AppEnv } from "../env";
 import { ApiError, bad, isPlainObject, notFound, readJson } from "../lib/http";
-import { actorOf, actorView } from "../services/changes";
+import { actorOf, actorView, type Actor } from "../services/changes";
 import { insertBackup, getVersion, listVersions, MAX_PUBLISH_BYTES, parsePublishInput, publish, replaceDrafts } from "../services/publish";
 import { MAX_DRAFT_BYTES, validateDraft } from "../services/drafts";
 import { publicUrl } from "./shops";
@@ -9,14 +9,16 @@ import { publicUrl } from "./shops";
 export const publishing = new Hono<AppEnv>();
 
 /** D1：公開 */
-publishing.post("/:shopId/publish", async (c) => {
-  const shopId = c.req.param("shopId");
+publishing.post("/:shopId/publish", async (c) => c.json(await publishBody(c, c.req.param("shopId"), actorOf(c.get("user")))));
+
+/** 公開の答え（/api と /edit-api で共通）。1 分に 1 回まで（too_soon は 429 と retryAfter 秒） */
+export async function publishBody(c: Context<AppEnv>, shopId: string, actor: Actor) {
   const input = parsePublishInput(await readJson(c, MAX_PUBLISH_BYTES));
-  const r = await publish(c.env, shopId, actorOf(c.get("user")), input);
+  const r = await publish(c.env, shopId, actor, input);
   const slug = (await c.env.DB.prepare("SELECT slug FROM shops WHERE id = ?").bind(shopId).first<{ slug: string }>())!.slug;
   // rebuild の版は API の公開ページに出さない（描き直しの先は render の結果で分かる）ので url は null
-  return c.json({ ...r, url: r.render === "html" ? publicUrl(c.env, slug) : null });
-});
+  return { ...r, url: r.render === "html" ? publicUrl(c.env, slug) : null };
+}
 
 const num = (s: string) => {
   if (!/^\d{1,9}$/.test(s)) throw notFound("版が見つかりません");

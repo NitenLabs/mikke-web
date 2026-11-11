@@ -113,6 +113,10 @@ npm run typecheck   # tsc
 | `GET /edit-api/shops/:shop/assets/:id/file` | 写真そのもの（元の 1 枚） | 鍵 |
 | `POST /edit-api/shops/:shop/versions/:n/render` | 描き直しの結果 `{ok:true, url?}`／`{ok:false, error}` → 版の `render` が ok／failed。rebuild の版だけ（html の版は 409）。答え `{shopId, number, render}` | 鍵 |
 | `PUT /edit-api/shops/:shop/shop` | 承認済みの直しを当てた ① を書き戻す（下書きになるだけ。公開しない）。`If-Match` が要る（428）。古いと 409 `{current:{version, data, baseHash}}`。変更の記録は「仕組み」 | 鍵 |
+| `GET /edit-api/shops/:shop/site` | ②③ の下書きを読む（指示 0059）。答えは `GET /api/shops/:id/drafts/site` と同じ `{kind, version, data, updatedAt, updatedBy}`（無ければ版 0）に `shopId`・`slug`。ETag に版 | 鍵 |
+| `PUT /edit-api/shops/:shop/site` | ②③ の下書きを書く。`If-Match` が要る（428）。古いと 409 `{current:{kind, version, data, …}}`（/api と同じ）。答え `{shopId, kind, version, updatedAt}`。変更の記録は「仕組み」 | 鍵 |
+| `POST /edit-api/shops/:shop/publish` | 下書き → 公開。本文・答えは `POST /api/shops/:id/publish` と同じ（`render` html／rebuild）に `shopId`。1 分に 1 回まで：429 `too_soon` に `retryAfter`（秒）と `Retry-After` | 鍵 |
+| `GET /edit-api/shops/:shop/published` | 公開中の版の中身（`/versions/:n` と同じ形）。まだ公開していなければ 404 `not_published` | 鍵 |
 | `GET /api/admin/shops` | お店の一覧 | 制作 |
 | `POST /api/admin/shops` `{slug, name, id?}` | お店を作る（wa-01 の最初の下書きつき） | 制作 |
 | `POST /api/admin/users` `{email, name?, role}` | ユーザーを作る（`owner`／`producer`） | 制作 |

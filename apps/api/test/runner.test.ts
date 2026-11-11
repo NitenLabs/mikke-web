@@ -1,6 +1,6 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { call, getDraft, putDraft, world } from "./helpers";
+import { allowPublish, call, getDraft, putDraft, world } from "./helpers";
 
 const KEY = "test-runner-secret-0123456789abcdef-xyz";
 const R = (key: string | null = KEY): Record<string, string> => (key ? { "x-edit-runner-secret": key } : {});
@@ -68,5 +68,88 @@ describe("段2 とのつなぎ：PC の runner が ① を読み書きする（/
     const { shop } = await world();
     for (const bad of [{ shopId: "shp_other" }, []])
       expect((await call("PUT", `/edit-api/shops/${shop.id}/shop`, { headers: { ...R(), "if-match": '"1"' }, json: bad })).status).toBe(400);
+  });
+});
+
+describe("鍵だけで回す口：②③ の下書き・公開・公開した版（/edit-api。指示 0059）", () => {
+  const wa = (content: Record<string, unknown>) => ({ draft: { template: { name: "wa-03", version: 1 }, sections: {}, content } });
+
+  it("R-6 鍵がない・違うと 401（4 つの口とも）。Cookie も Origin も無しで通る", async () => {
+    const { shop } = await world();
+    const paths: [string, string, unknown?][] = [
+      ["GET", `/edit-api/shops/${shop.slug}/site`],
+      ["PUT", `/edit-api/shops/${shop.slug}/site`, wa({})],
+      ["POST", `/edit-api/shops/${shop.slug}/publish`, { scope: "all", render: "rebuild", shopDraftVersion: 1, siteDraftVersion: 1 }],
+      ["GET", `/edit-api/shops/${shop.slug}/published`],
+    ];
+    for (const [m, p, json] of paths) {
+      for (const key of [null, "x".repeat(40)]) {
+        const r = await call(m, p, { headers: { ...R(key), "if-match": '"0"' }, json, origin: null });
+        expect(r.status, `${m} ${p} ${key}`).toBe(401);
+      }
+    }
+    const r = await call("GET", `/edit-api/shops/${shop.slug}/site`, { headers: R(), origin: null });
+    expect(r.status).toBe(200);
+    expect(await r.json()).toMatchObject({ shopId: shop.id, slug: shop.slug, kind: "site" });
+  });
+
+  it("R-7 ②③ の下書きを読み書き：If-Match なしは 428、古い版は 409（今の版を返す）、書くと版が上がり記録は「仕組み」", async () => {
+    const { owner, shop } = await world();
+    const got = (await (await call("GET", `/edit-api/shops/${shop.id}/site`, { headers: R() })).json()) as any;
+    const v0 = got.version;
+    expect((await call("PUT", `/edit-api/shops/${shop.id}/site`, { headers: R(), json: wa({ fv_copy: "春の\nことば" }), origin: null })).status).toBe(428);
+    const w = await call("PUT", `/edit-api/shops/${shop.id}/site`, { headers: { ...R(), "if-match": `"${v0}"` }, json: wa({ fv_copy: "春の\nことば" }), origin: null });
+    expect(w.status).toBe(200);
+    const wb = (await w.json()) as any;
+    expect(wb).toMatchObject({ shopId: shop.id, kind: "site", version: v0 + 1 });
+    expect(w.headers.get("etag")).toBe(`"${v0 + 1}"`);
+    const mine = await getDraft(owner.cookie, shop.id, "site");
+    expect(mine.data.draft.content.fv_copy).toBe("春の\nことば");
+    expect(mine.data.draft.sections).toEqual({});
+    // 店主が先に保存 → 古い版で書くと 409
+    expect((await putDraft(owner.cookie, shop.id, "site", mine.version, wa({ fv_copy: "店主の直し" }))).status).toBe(200);
+    const c = await call("PUT", `/edit-api/shops/${shop.id}/site`, { headers: { ...R(), "if-match": `"${v0 + 1}"` }, json: wa({ fv_copy: "runner" }), origin: null });
+    expect(c.status).toBe(409);
+    const cb = (await c.json()) as any;
+    expect(cb.error).toBe("conflict");
+    expect(cb.current.version).toBe(v0 + 2);
+    expect(cb.current.data.draft.content.fv_copy).toBe("店主の直し");
+    // 形のおかしい ②③ は 400
+    expect((await call("PUT", `/edit-api/shops/${shop.id}/site`, { headers: { ...R(), "if-match": `"${v0 + 2}"` }, json: { draft: { template: { name: "wa-03" } } } })).status).toBe(400);
+    const ch = (await (await call("GET", `/api/shops/${shop.id}/changes`, { cookie: owner.cookie })).json()) as any;
+    expect(ch.changes.some((x: any) => x.actor.kind === "system" && x.layer !== "publish")).toBe(true);
+  });
+
+  it("R-8 鍵で公開（rebuild）→ 公開した版を読める。続けて公開すると 429 too_soon と retryAfter（秒）。まだ公開していなければ 404", async () => {
+    const { owner, shop } = await world();
+    expect((await call("GET", `/edit-api/shops/${shop.slug}/published`, { headers: R() })).status).toBe(404);
+    const site = (await (await call("GET", `/edit-api/shops/${shop.slug}/site`, { headers: R() })).json()) as any;
+    const w = (await (await call("PUT", `/edit-api/shops/${shop.slug}/site`, { headers: { ...R(), "if-match": `"${site.version}"` }, json: wa({ fv_copy: "表紙" }) })).json()) as any;
+    const shopD = (await (await call("GET", `/edit-api/shops/${shop.slug}/shop`, { headers: R() })).json()) as any;
+    const body = { scope: "all", render: "rebuild", shopDraftVersion: shopD.version, siteDraftVersion: w.version };
+    const p = await call("POST", `/edit-api/shops/${shop.slug}/publish`, { headers: R(), json: body, origin: null });
+    expect(p.status).toBe(200);
+    const pb = (await p.json()) as any;
+    expect(pb).toMatchObject({ shopId: shop.id, scope: "all", render: "pending", url: null });
+    expect(typeof pb.number).toBe("number");
+    const pub = await call("GET", `/edit-api/shops/${shop.slug}/published`, { headers: R() });
+    expect(pub.status).toBe(200);
+    const vb = (await pub.json()) as any;
+    expect(vb).toMatchObject({ shopId: shop.id, slug: shop.slug, number: pb.number, isPublished: true, scope: "all" });
+    expect(vb.site.draft.content.fv_copy).toBe("表紙");
+    expect(vb.render.state).toBe("pending");
+    // /api から見ても同じ版が公開中。公開したのは「仕組み」
+    expect(((await (await call("GET", `/api/shops/${shop.id}`, { cookie: owner.cookie })).json()) as any).publishedVersion).toBe(pb.number);
+    // 1 分に 1 回まで
+    const again = await call("POST", `/edit-api/shops/${shop.slug}/publish`, { headers: R(), json: body, origin: null });
+    expect(again.status).toBe(429);
+    const ab = (await again.json()) as any;
+    expect(ab.error).toBe("too_soon");
+    expect(ab.retryAfter).toBeGreaterThan(0);
+    expect(ab.retryAfter).toBeLessThanOrEqual(60);
+    expect(again.headers.get("retry-after")).toBe(String(ab.retryAfter));
+    // 1 分たてば通る。古い下書きの版なら 409
+    await allowPublish(shop.id);
+    expect((await call("POST", `/edit-api/shops/${shop.slug}/publish`, { headers: R(), json: { ...body, siteDraftVersion: w.version - 1 } })).status).toBe(409);
   });
 });

@@ -1,8 +1,8 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import type { AppEnv } from "../env";
 import { ApiError, bad, isPlainObject, nowIso, readJson } from "../lib/http";
 import { canonJSON } from "../lib/json";
-import { actorOf, actorView, draftChangeRows, recordChanges } from "../services/changes";
+import { actorOf, actorView, draftChangeRows, recordChanges, type Actor } from "../services/changes";
 import { draftJson, getDraft, MAX_DRAFT_BYTES, parseIfMatch, saveDraft, validateDraft, type DraftKind } from "../services/drafts";
 import { getPublished } from "../services/publish";
 
@@ -34,34 +34,45 @@ const kindOf = (k: string): DraftKind => {
 
 /** B3：下書きを読む。ETag に版番号 */
 shops.get("/:shopId/drafts/:kind", async (c) => {
-  const kind = kindOf(c.req.param("kind"));
-  const d = await getDraft(c.env, c.req.param("shopId"), kind);
-  if (!d) return c.json({ kind, version: 0, data: null, updatedAt: null, updatedBy: null }, 200, { ETag: '"0"' });
-  return c.json(draftJson(kind, d), 200, { ETag: `"${d.version}"`, "Cache-Control": "no-store" });
+  const r = await readDraftBody(c.env, c.req.param("shopId"), kindOf(c.req.param("kind")));
+  return c.json(r.body, 200, r.headers);
 });
 
 /** B3・B4：下書きを保存。If-Match の版が今の版と違えば 409（今の版と中身を返す） */
 shops.put("/:shopId/drafts/:kind", async (c) => {
   const shopId = c.req.param("shopId");
   const kind = kindOf(c.req.param("kind"));
+  const user = c.get("user");
+  const r = await writeDraftBody(c, shopId, kind, actorOf(user), user.id);
+  return c.json(r.body, 200, r.headers);
+});
+
+/** 下書きを読む答え（/api と /edit-api の ②③ で共通）。無ければ版 0 */
+export async function readDraftBody(env: AppEnv["Bindings"], shopId: string, kind: DraftKind) {
+  const d = await getDraft(env, shopId, kind);
+  if (!d) return { body: { kind, version: 0, data: null, updatedAt: null, updatedBy: null } as Record<string, unknown>, headers: { ETag: '"0"' } as Record<string, string> };
+  return { body: draftJson(kind, d) as Record<string, unknown>, headers: { ETag: `"${d.version}"`, "Cache-Control": "no-store" } as Record<string, string> };
+}
+
+/** 下書きを保存する（/api と /edit-api の ②③ で共通）。If-Match が無ければ 428、版が古ければ 409（今の版と中身） */
+export async function writeDraftBody(c: Context<AppEnv>, shopId: string, kind: DraftKind, actor: Actor, userId: string | null) {
   const expected = parseIfMatch(c.req.header("if-match"));
   if (expected === null) throw new ApiError(428, "precondition_required", "If-Match に、読んだときの版番号を付けてください");
   const data = await readJson(c, MAX_DRAFT_BYTES);
   validateDraft(kind, shopId, data);
   const before = await getDraft(c.env, shopId, kind);
-  const user = c.get("user");
   // 記録の行は保存の前に作る（ここで失敗したら、保存もしない。M1）
   const rows = draftChangeRows(kind, before?.data, data);
-  const saved = (before?.version ?? 0) === expected ? await saveDraft(c.env, shopId, kind, expected, data, user.id) : null;
+  const saved = (before?.version ?? 0) === expected ? await saveDraft(c.env, shopId, kind, expected, data, userId) : null;
   if (!saved) {
     const current = await getDraft(c.env, shopId, kind);
     throw new ApiError(409, "conflict", "ほかの端末かタブで先に保存されています。今の版を読み直してください", {
       current: current ? draftJson(kind, current) : { kind, version: 0, data: null },
     });
   }
-  await recordChanges(c.env, shopId, actorOf(user), rows, true);
-  return c.json({ kind, version: saved.version, updatedAt: saved.updatedAt }, 200, { ETag: `"${saved.version}"` });
-});
+  await recordChanges(c.env, shopId, actor, rows, true);
+  return { body: { kind, version: saved.version, updatedAt: saved.updatedAt } as Record<string, unknown>, headers: { ETag: `"${saved.version}"` } as Record<string, string> };
+}
 
 /** 編集の設定（最近使った色。新しい順に 5 つまで）。版に入れず、比べない */
 shops.get("/:shopId/settings", async (c) => {
