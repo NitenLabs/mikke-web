@@ -248,7 +248,23 @@ async function flow(ctx, UI, W, { first }) {
   check(`${tag} 引きずって並べ替え（${pc ? "マウス" : "指で長押し"}）`, hit && dragInfo.mid === 1 && names.at(-3) === newName && (await page.locator(".reorder-pop").count()) === 0, { hit, ...dragInfo, last3: names.slice(-3) });
   await sleep(400);   // 引きずった直後の click は数えないので少し置く
   // つまみを押すだけ →「上へ」「下へ」の箱 →「下へ」で 1 つ下（最後から 2 番目）
+  if (!(await rowOf(newName).evaluate((e) => e.classList.contains("open")))) await rowOf(newName).locator(".item-head").click();   // 開いた品で箱を出す（指示 0061）
   await rowOf(newName).locator(".grip").click();
+  // 箱はその品の中のほかの物（とくに「名前」の見出し・入力）に重ならない（指示 0061）
+  const popHit = await page.evaluate(() => {
+    const pop = document.querySelector(".reorder-pop"), li = pop?.closest(".item"); if (!li) return { err: "no pop" };
+    const pr = pop.getBoundingClientRect();
+    const hits = [...li.querySelectorAll("button, input, textarea, label, .note, .msg, .nm, .pr")].filter((e) => !pop.contains(e) && !e.contains(pop)).filter((e) => {
+      const r = e.getBoundingClientRect(); if (!r.width || !r.height) return false;
+      return Math.min(r.right, pr.right) - Math.max(r.left, pr.left) > 0.5 && Math.min(r.bottom, pr.bottom) - Math.max(r.top, pr.top) > 0.5;
+    }).map((e) => `${e.tagName}.${e.className}:${(e.textContent || e.getAttribute("data-if") || "").slice(0, 8)}`);
+    const nameLbl = [...li.querySelectorAll(".item-body label")].find((l) => l.textContent.trim() === "名前");
+    const nameIn = li.querySelector('[data-if="name"]');
+    const gap = nameLbl ? Math.round(nameLbl.getBoundingClientRect().top - pr.bottom) : null;
+    return { open: li.classList.contains("open"), hasName: !!nameLbl && !!nameIn, hits, gap, pop: { x: Math.round(pr.left), y: Math.round(pr.top), w: Math.round(pr.width), h: Math.round(pr.height) } };
+  });
+  check(`${tag} 「上へ」「下へ」の箱が開いた品の中身（名前など）に重ならない`, popHit.open && popHit.hasName && popHit.hits.length === 0 && popHit.gap >= 0, popHit);
+  if (!pc) { await page.locator(".reorder-pop").evaluate((e) => e.scrollIntoView({ block: "center" })); await shot(page, "owner3-390-popover"); }
   const pop = await page.$$eval(".reorder-pop button", (bs) => bs.map((b) => ({ t: b.textContent, w: Math.round(b.getBoundingClientRect().width), h: Math.round(b.getBoundingClientRect().height), dis: b.disabled })));
   check(`${tag} 押すと「上へ」「下へ」の箱（44px 以上）`, pop.length === 2 && pop[0].t === "上へ" && pop[1].t === "下へ" && pop.every((b) => b.w >= 44 && b.h >= 44), pop);
   await page.click('.reorder-pop [data-dir="1"]');
@@ -314,7 +330,12 @@ async function flow(ctx, UI, W, { first }) {
   await page.fill("#phScale", "60"); await page.locator("#phScale").dispatchEvent("input");
   check(`${tag} 小さく切ると「ぼやけるかも」`, /ぼやける/.test(await page.textContent("#phMsg")), await page.textContent("#phMsg"));
   await page.fill("#phScale", "100"); await page.locator("#phScale").dispatchEvent("input");
-  if (W <= 760) { await page.$eval(".sheet-in", (e) => { e.scrollTop = 0; }); await settled(page, "#sheet"); await shot(page, "owner2-390-crop"); }
+  // 写真は箱の幅いっぱい（右に空きが無い。指示 0061）
+  const cg = await page.evaluate(() => { const c = document.getElementById("crop"), v = document.getElementById("phCv"), cr = c.getBoundingClientRect(), vr = v.getBoundingClientRect(), pr = c.parentElement.getBoundingClientRect(), cs = getComputedStyle(c.parentElement);
+    const inner = pr.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (c.parentElement.offsetWidth - c.parentElement.clientWidth);
+    return { crop: +cr.width.toFixed(1), img: +vr.width.toFixed(1), inner: +inner.toFixed(1), rightGap: +(cr.right - vr.right).toFixed(1), h: +(cr.height - vr.height).toFixed(1) }; });
+  check(`${tag} 切り抜きの写真は箱の幅いっぱい（右の空き 0）`, Math.abs(cg.img - cg.crop) <= 1 && Math.abs(cg.crop - cg.inner) <= 1 && Math.abs(cg.rightGap) <= 1 && Math.abs(cg.h) <= 1, cg);
+  if (W <= 760) { await page.$eval(".sheet-in", (e) => { e.scrollTop = 0; }); await settled(page, "#sheet"); await shot(page, "owner2-390-crop"); await shot(page, "owner3-390-crop"); }
   await page.click("#phOk");
   await page.waitForSelector("#sheet[hidden]", { state: "attached", timeout: 30000 });
   const asset = await page.evaluate(() => window.OWNER.state().site.draft.elements.fv_1.asset);

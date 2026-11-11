@@ -567,12 +567,20 @@ function openPhoto(slot) {
   $("#phFile").onchange = async (e) => {
     const file = e.target.files[0]; if (!file) return;
     try { P = await loadPhoto(file); } catch (err) { $("#phMsg").textContent = "この写真は読み込めません。別の写真をお選びください"; $("#phMsg").className = "msg err"; return; }
-    const cv = $("#phCv"), maxW = Math.min(560, sh.clientWidth - 48);
-    k = Math.min(maxW / P.w, 420 / P.h);
-    cv.width = Math.round(P.w * k); cv.height = Math.round(P.h * k);
+    // 写真は箱の幅いっぱいに出す（右に空きを作らない。指示 0061）。k は表示の倍率だけで、切り抜きの計算は元の画素のまま
+    const cv = $("#phCv"), crop = $("#crop");
+    crop.hidden = false; $("#phSize").hidden = false;
+    const cw = crop.getBoundingClientRect().width;
+    k = cw / P.w;
+    cv.width = Math.round(cw); cv.height = Math.round(P.h * k);
     cv.getContext("2d").drawImage(P.canvas, 0, 0, cv.width, cv.height);
-    $("#crop").hidden = false; $("#phSize").hidden = false; $("#crop").style.width = `${cv.width}px`; $("#crop").style.height = `${cv.height}px`;
+    crop.style.height = `${P.h * k}px`;
     rect = fitCrop(P.w, P.h, aspect); draw();
+    // 箱の幅が後から変わったら（縦の送りが出た・画面を回した）倍率を合わせ直す
+    if (!crop._ro && window.ResizeObserver) {
+      crop._ro = new ResizeObserver(() => { if (!P || crop.hidden) return; const w = crop.getBoundingClientRect().width; if (!w || Math.abs(w - P.w * k) < 0.5) return; k = w / P.w; crop.style.height = `${P.h * k}px`; draw(); });
+      crop._ro.observe(crop);
+    }
     $("#phOk").disabled = false;
   };
   $("#phScale").oninput = (e) => { if (!P) return; rect = scaleCrop(rect, e.target.value / 100, P.w, P.h, aspect); draw(); };

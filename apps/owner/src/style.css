@@ -113,7 +113,8 @@ label { font-weight: 500; }
 .grip:focus-visible { outline: 2px solid var(--sky); outline-offset: -2px; }
 .items.sorting .item { transition: transform .15s ease; }
 .items .item.dragging { transition: none; z-index: 4; border-top: 1px solid var(--sky); border-bottom: 1px solid var(--sky); cursor: grabbing; }
-.reorder-pop { position: absolute; right: 0; top: 48px; z-index: 3; display: flex; background: var(--bg); border: 1px solid var(--ink); border-top: 2px solid var(--sky); }
+/* 箱は行のすぐ下・右寄せで流れの中に置く（重ねると開いた品の「名前」に掛かる。指示 0061）。下の中身はその分だけ下がる */
+.reorder-pop { display: flex; width: max-content; max-width: 100%; margin: 0 0 8px auto; background: var(--bg); border: 1px solid var(--ink); border-top: 2px solid var(--sky); }
 .reorder-pop .btn { min-width: 64px; border: 0; font-weight: 500; }
 .reorder-pop .btn + .btn { border-left: 1px solid var(--rule); }
 .price { display: grid; gap: 6px; padding: 8px 0; border-top: 1px dashed var(--rule); }
@@ -151,7 +152,7 @@ label { font-weight: 500; }
 .file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 /* 枠の外を薄く覆う影（9999px）は .crop の中だけに。外へ出ると見出し・ボタンまで白く覆ってしまう（指示 0056） */
 .crop { position: relative; margin: 12px 0; touch-action: none; max-width: 100%; overflow: hidden; isolation: isolate; }
-.crop canvas { display: block; }
+.crop canvas { display: block; width: 100%; height: auto; }
 .crop-box { position: absolute; border: 2px solid var(--sky); cursor: move; box-shadow: 0 0 0 9999px rgba(255, 255, 255, .55); }
 .crop-sp { position: absolute; border: 1px dashed var(--ink); pointer-events: none; }
 input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--sky); }
