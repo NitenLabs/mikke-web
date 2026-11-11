@@ -2,3 +2,5 @@
 AUTH_SECRET = "local-dev-secret-change-me-0123456789abcdef"
 # MAILER = "resend" を local で試すときだけ（ふだんは log のまま。値は書かない）
 # RESEND_API_KEY = ""
+# 段2 の runner の口（/edit-api）を local で試すときだけ（32 文字以上。値は自分で決める）
+# EDIT_RUNNER_SECRET = ""
