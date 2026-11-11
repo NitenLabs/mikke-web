@@ -3,13 +3,19 @@
 // 常駐しない（1回走って終わる）。定期実行にするかは別に決める。
 //
 // 使い方（mikke-web のフォルダで）：
-//   node tools/edit-runner.mjs --desk http://127.0.0.1:8788 --secret <EDIT_RUNNER_SECRET> [--all] [--write] [--date YYYY-MM-DD]
-//   node tools/edit-runner.mjs --local <ops.json> --site amet [--write]      # desk を使わず差分のファイルで試す（結果は標準出力と result.json）
-//   node tools/edit-runner.mjs --snapshot amet [--post]                      # 店の今の姿を desk に送る（--post なしは書き出すだけ）
-//   鍵と URL は環境変数 EDIT_DESK_URL・EDIT_RUNNER_SECRET でもよい
+//   node tools/edit-runner.mjs --desk http://127.0.0.1:8788 --secret <desk の鍵> --api http://127.0.0.1:8787 --api-secret <api の鍵> [--api-cookie <Cookie> --api-origin <Origin>] [--all] [--dry-run] [--publish] [--date YYYY-MM-DD]
+//   node tools/edit-runner.mjs --ops <ops.json> --site amet --api … [--dry-run] [--publish]   # desk を使わず差分のファイルで、api の下書きに当てる
+//   node tools/edit-runner.mjs --local <ops.json> --site amet [--write]      # 手元の試し：api を使わず samples を読む（--write で samples を書き換える）
+//   node tools/edit-runner.mjs --snapshot amet [--post] [--samples]          # 店の今の姿（api の下書き。--samples なら samples）を desk に送る（--post なしは書き出すだけ）
+//   鍵と URL は環境変数でもよい：EDIT_DESK_URL・EDIT_RUNNER_SECRET（desk）、MIKKE_API_URL・MIKKE_API_RUNNER_SECRET（無ければ EDIT_RUNNER_SECRET）・MIKKE_API_COOKIE・MIKKE_API_ORIGIN（api）
+// ① の元（0053）：--local 以外は apps/api の下書き。① は /edit-api/shops/<店>/shop（鍵）で読み、承認された直しを当てた ① を同じ口に If-Match で書き戻す（下書きだけ。公開はしない）。
+//   ② の文字（doc:"site" の差分）は api の ②③ の下書き draft.content[要素ID] に載せる（/api/shops/<ID>/drafts/site。ログインの Cookie と Origin が要る）。
+//   写真（assets.json・media/）は samples の物（--api-assets で api の ④ から取る）。部品は tools/lib/api-source.mjs
 // 主な引数：
 //   --all            待ち行列が空になるまで続けて取る（既定は 1 件）
-//   --write          成功したら samples/<店> の ①（と文字の箱を直したときは site.json・型の設定）を書き換える。既定は書き換えない（dry-run）
+//   --dry-run        api の下書きに書き戻さない（--local 以外。既定は書き戻す）
+//   --publish        書き戻した後に、下書き → 公開（POST /api/shops/<ID>/publish。pages は書き出しの HTML）。公開された ① から作り直すのは rebuild-shop --from-api
+//   --write          （--local だけ）成功したら samples/<店> の ①（と文字の箱を直したときは site.json・型の設定）を書き換える。既定は書き換えない（dry-run）
 //   --sync a,b       取る前に、その店の今の姿（snapshot）を desk に送る
 //   --out <dir>      書き出しの置き場（既定 dist/edit-runner）。<店>-job<ID>-<時刻>/ に after（書き出し）・result.json・log を置く
 //   --no-check       型の検査（waNN-check。Playwright）を飛ばす
@@ -34,6 +40,7 @@ import {
   withLinkedRemovals,
 } from "./lib/edit-ops.mjs";
 import { RebuildError, loadDeployConfig, makeStage, removeStage, resolveSiteUrl, runPipeline } from "./lib/rebuild.mjs";
+import { ApiError, apiClient, fetchDraftSource, publishDrafts, templateNameOf, textsAfterGen, withSiteTexts } from "./lib/api-source.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
@@ -45,10 +52,24 @@ const SECRET = opt("--secret") ?? process.env.EDIT_RUNNER_SECRET ?? "";
 const RUNNER = opt("--runner") ?? `edit-runner@${os.hostname()}`;
 const OUT = path.resolve(opt("--out") ?? path.join(ROOT, "dist", "edit-runner"));
 const DATE = opt("--date") ?? jstToday();
-const WRITE = flag("--write");
+const LOCAL = argv.includes("--local") || (argv.includes("--snapshot") && flag("--samples")); // samples を読み書きするのはこのときだけ
+const WRITE = LOCAL && flag("--write");
+const API_WRITE = !LOCAL && !flag("--dry-run");
+const PUBLISH = !LOCAL && flag("--publish");
+const API_ASSETS = flag("--api-assets");
 const CHECK = !flag("--no-check");
 const KEEP = flag("--keep-stage");
 if (!/^\d{4}-\d{2}-\d{2}$/.test(DATE)) die(`--date の形が違う：${DATE}`);
+if (flag("--write") && !LOCAL) die("--write は --local のときだけ（api の下書きには既定で書き戻す。書き戻さないなら --dry-run）");
+if (PUBLISH && !API_WRITE) die("--publish は --dry-run と一緒に使えない");
+if (PUBLISH && !(opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE)) die("--publish にはログインの Cookie と Origin が要る（--api-cookie・--api-origin。/edit-api に公開の口が無い）");
+const API = LOCAL ? null : apiClient({
+  base: opt("--api") ?? process.env.MIKKE_API_URL ?? die("api の URL が要る（--api か MIKKE_API_URL。samples で試すなら --local）"),
+  secret: opt("--api-secret") ?? process.env.MIKKE_API_RUNNER_SECRET ?? SECRET,
+  cookie: opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE ?? "",
+  origin: opt("--api-origin") ?? process.env.MIKKE_API_ORIGIN ?? "",
+});
+const HAS_COOKIE = !!(opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE);
 
 function jstToday() { return new Date(Date.now() + 9 * 3600e3).toISOString().slice(0, 10); }
 function die(msg, code = 2) { console.error(`✗ ${msg}`); process.exit(code); }
@@ -86,19 +107,20 @@ const rebuild = runPipeline;
 const tail = (s) => String(s ?? "").trim().split("\n").slice(-4).join(" / ").slice(0, 600);
 
 /** 前の書き出し（差分を当てる前）。① と設定と道具が同じならキャッシュを使う */
-function baseBuild(site, log) {
-  const dir = shopDir(site);
+function baseBuild(site, log, from = null, texts = {}) {
+  const dir = from ?? shopDir(site);
   const files = fs.readdirSync(dir).filter((f) => f.endsWith(".json")).sort();
+  const media = fs.existsSync(path.join(dir, "media")) ? fs.readdirSync(path.join(dir, "media")).sort().map((f) => `${f}:${fs.statSync(path.join(dir, "media", f)).size}`) : [];
   let head = "";
   try { head = execFileSync("git", ["-C", ROOT, "rev-parse", "HEAD"], { encoding: "utf8" }).trim(); } catch {}
-  const toolsDirty = (() => { try { return execFileSync("git", ["-C", ROOT, "status", "--porcelain", "tools", "schema"], { encoding: "utf8" }); } catch { return "?"; } })();
-  const key = sha([head, toolsDirty, DATE, ...files.map((f) => f + fs.readFileSync(path.join(dir, f), "utf8"))].join("\0")).slice(0, 16);
+  const toolsDirty = (() => { try { return execFileSync("git", ["-C", ROOT, "status", "--porcelain", "tools", "schema", `samples/${site}`], { encoding: "utf8" }); } catch { return "?"; } })();
+  const key = sha([head, toolsDirty, DATE, from ? "from" : "samples", ...media, ...files.map((f) => f + fs.readFileSync(path.join(dir, f), "utf8"))].join("\0")).slice(0, 16);
   const cache = path.join(OUT, "_base", `${site}-${key}`);
   if (fs.existsSync(path.join(cache, "index.html"))) return { dir: cache, cached: true, ms: 0 };
   const t = now();
-  const stage = makeStage(path.join(OUT, "_stage", `${site}-base`), site).dir;
+  const stage = makeStage(path.join(OUT, "_stage", `${site}-base`), site, { from }).dir;
   try {
-    const r = rebuild({ site, stage, date: DATE, log });
+    const r = rebuild({ site, stage, date: DATE, log, afterGen: Object.keys(texts).length ? () => textsAfterGen(texts)({ shopDir: path.join(stage, "samples", site) }) : undefined });
     fs.rmSync(cache, { recursive: true, force: true });
     fs.mkdirSync(path.dirname(cache), { recursive: true });
     fs.cpSync(r.distDir, cache, { recursive: true });
@@ -170,6 +192,38 @@ async function resolveDeploy(job, site, dir) {
   }
 }
 
+// ───────── api の下書き（0053）
+
+/** api の今の下書き（①・② の文字）を work/source に「--from の形」で書く */
+async function loadApiSource(site, ops, work) {
+  const needSite = ops.some((o) => (o.doc ?? "shop") === "site");
+  if (needSite && !HAS_COOKIE) throw new EditError("api", "② の文字の直し（doc:site）を api の下書きに載せるには、ログインの Cookie と Origin が要る（--api-cookie・--api-origin。/edit-api に ②③ の口が無い）");
+  const s = await fetchDraftSource(API, { site, dir: path.join(work, "source"), withSite: HAS_COOKIE, apiAssets: API_ASSETS });
+  return {
+    ...s,
+    info: {
+      base: API.base, shopId: s.shopId, shopDraftVersion: s.shop.version, siteDraftVersion: s.site?.version ?? null,
+      textsFromDraft: Object.keys(s.texts), ignored: s.ignored, assetsFrom: s.assetsFrom, ...(s.genConfig ? { genConfig: s.genConfig } : {}),
+    },
+  };
+}
+
+/** 承認された直しを api の下書きに書き戻す：① は /edit-api（If-Match）、② の文字は ②③ の下書きの draft.content。公開はしない */
+async function writeBackApi(site, src, applied, shopChanged, site0) {
+  const out = {};
+  const conflict = (what, e) => new EditError("conflict", `${what}の下書きが、読んだ後に直されている（今の版 ${e.body?.current?.version ?? "?"}）。書き戻していない${out.shop ? `（① は版 ${out.shop.version} に書き戻した）` : ""}。読み直して当て直す`);
+  if (shopChanged) {
+    try { const r = await API.putShopDraft(site, src.shop.version, applied.shop); out.shop = { version: r.version, baseHash: r.baseHash }; }
+    catch (e) { if (e instanceof ApiError && e.code === "conflict") throw conflict("① ", e); throw e; }
+  }
+  if (Object.keys(applied.texts).length) {
+    const next = withSiteTexts(src.site?.data, applied.texts, templateNameOf(site0));
+    try { const r = await API.putSiteDraft(src.shopId, src.site?.version ?? 0, next); out.site = { version: r.version, content: Object.keys(applied.texts) }; }
+    catch (e) { if (e instanceof ApiError && e.code === "conflict") throw conflict("②③ ", e); throw e; }
+  }
+  return out;
+}
+
 // ───────── 1件を処理する（desk にも --local にも使う）
 
 async function runJob(job) {
@@ -181,22 +235,27 @@ async function runJob(job) {
   fs.mkdirSync(work, { recursive: true });
   const logFile = path.join(work, "log.txt");
   const log = (s) => fs.appendFileSync(logFile, s + "\n");
-  const result = { site, jobId: job.id ?? null, mode: WRITE ? "write" : "dry-run", date: DATE, outDir: work, rebuilder: rebuild.name };
+  const result = { site, jobId: job.id ?? null, source: LOCAL ? "samples" : "api", mode: LOCAL ? (WRITE ? "write" : "dry-run") : (API_WRITE ? "api-draft" : "dry-run"), date: DATE, outDir: work, rebuilder: rebuild.name };
   let stage = null;
   try {
     if (!/^[a-z0-9][a-z0-9-]{0,40}$/.test(site ?? "") || !fs.existsSync(path.join(shopDir(site), "shop.json"))) throw new EditError("site", `店のフォルダが無い：samples/${site}`);
-    const dir = shopDir(site);
-    const shop = readJson(path.join(dir, "shop.json"));
+    checkOpShape(job.ops);
+    // ① の元：--local は samples、ほかは api の下書き（「--from の形」に書いて、stage に重ねる）
+    let t = now();
+    const src = LOCAL ? null : await loadApiSource(site, job.ops, work);
+    if (src) { timings.apiRead = Math.round(now() - t); result.api = src.info; }
+    const dir = src?.dir ?? shopDir(site);
+    const shop = src ? src.shop.data : readJson(path.join(dir, "shop.json"));
     const site0 = readJson(path.join(dir, "site.json"));
     const limits = fs.existsSync(path.join(dir, "edit-limits.json")) ? readJson(path.join(dir, "edit-limits.json")) : {};
     const hash = shopHash(shop);
     result.baseHash = hash;
-    if (job.baseHash && job.baseHash !== hash) throw new EditError("stale", `stale：手元の ① が案のときと違う（job ${job.baseHash.slice(0, 12)}… ／ 手元 ${hash.slice(0, 12)}…）。snapshot を送り直して案を作り直す`);
+    if (src && src.shop.baseHash !== hash) log(`注：api の baseHash（${src.shop.baseHash}）と手元で数えた hash（${hash}）が違う`);
+    if (job.baseHash && job.baseHash !== hash) throw new EditError("stale", `stale：${src ? "api の ① の下書き" : "手元の ①"}が案のときと違う（job ${job.baseHash.slice(0, 12)}… ／ 今 ${hash.slice(0, 12)}…）。snapshot を送り直して案を作り直す`);
 
-    // 差分の形 → 前の書き出し（印の一覧）→ 印との対応 → 当てる
-    checkOpShape(job.ops);
-    let t = now();
-    const base = baseBuild(site, log);
+    // 前の書き出し（印の一覧）→ 印との対応 → 当てる
+    t = now();
+    const base = baseBuild(site, log, src?.dir ?? null, src?.texts ?? {});
     timings.baseBuild = base.ms;
     result.baseCached = base.cached;
     const basePages = htmlPages(base.dir);
@@ -215,7 +274,7 @@ async function runJob(job) {
     if (dep.target) { result.target = dep.target; result.url = dep.target.url; }
 
     // stage に新しい ① を置く。文字の箱は型の設定（waNN.json）にも当てる（gen で戻らないように）
-    stage = makeStage(path.join(OUT, "_stage", `${site}-job${job.id ?? "local"}`), site).dir;
+    stage = makeStage(path.join(OUT, "_stage", `${site}-job${job.id ?? "local"}`), site, { from: src?.dir ?? null }).dir;
     const sdir = path.join(stage, "samples", site);
     writeJson(path.join(sdir, "shop.json"), applied.shop);
     if (dep.target && dep.deploy) writeJson(path.join(sdir, "deploy.json"), dep.deploy); // rebuild-shop の --from と同じく写しに重ねる（build は読まない）
@@ -229,10 +288,11 @@ async function runJob(job) {
     }
     // gen の後：site.json の文字の箱を確かめ、設定から戻らなかった物（missing）は直接当てる。表示の字数も測る
     let rendered = [];
+    const allTexts = { ...(src?.texts ?? {}), ...applied.texts }; // api の下書きにもう載っている文字も、gen で戻らないように
     const afterGen = () => {
       const sf = path.join(sdir, "site.json");
       let s = readJson(sf);
-      const need = Object.fromEntries(Object.entries(applied.texts).filter(([id]) => paragraphsToText(s.elements?.[id]?.paragraphs) !== applied.texts[id]));
+      const need = Object.fromEntries(Object.entries(allTexts).filter(([id]) => paragraphsToText(s.elements?.[id]?.paragraphs) !== allTexts[id]));
       if (Object.keys(need).length) { s = applySiteTexts(s, need); writeJson(sf, s); }
       rendered = checkRenderedLimits(applied.shop, s, limits, Number(DATE.slice(0, 4)));
       const over = rendered.filter((r) => !r.ok);
@@ -277,7 +337,8 @@ async function runJob(job) {
     if (genConfig?.replaced.length) dataChanged[genConfig.file] = true;
     if (Object.keys(applied.texts).length) dataChanged["site.json"] = true;
     if (dep.write) dataChanged["deploy.json"] = true;
-    result.dataFiles = Object.keys(dataChanged).map((f) => `samples/${site}/${f}`);
+    result.dataFiles = LOCAL ? Object.keys(dataChanged).map((f) => `samples/${site}/${f}`)
+      : [...(dataChanged["shop.json"] ? [`api:/edit-api/shops/${site}/shop`] : []), ...(Object.keys(applied.texts).length ? [`api:/api/shops/${src.shopId}/drafts/site（draft.content）`] : [])];
     fs.cpSync(sdir, path.join(work, "data"), { recursive: true, filter: (s) => !/[\\/]media([\\/]|$)/.test(s) });
     if (!Object.keys(pages).length) throw new EditError("nochange", "書き出しが前と同じ（差分が表に出ていない）");
     if (unexpected.length) throw new EditError("unmarked", `印の外が変わった（${unexpected.length} 件。人が見る）：` + unexpected.slice(0, 3).map((c) => `${c.page} ${c.where} ${c.kind}「${c.before}」→「${c.after}」`).join(" / "));
@@ -289,10 +350,27 @@ async function runJob(job) {
       result.snapshot = buildSnapshot(site, dir, after);
       result.newHash = shopHash(applied.shop);
     }
+    // api：承認された直しを下書きに書き戻す（--dry-run でなければ）→ --publish なら公開
+    if (src && API_WRITE) {
+      t = now();
+      const wrote = await writeBackApi(site, src, applied, !!dataChanged["shop.json"], site0);
+      timings.apiWrite = Math.round(now() - t);
+      result.apiWrite = wrote;
+      result.written = result.dataFiles;
+      result.newHash = shopHash(applied.shop);
+      result.snapshot = buildSnapshot(site, path.join(work, "data"), after);
+      if (PUBLISH) {
+        t = now();
+        const siteVer = wrote.site?.version ?? src.site?.version ?? 0;
+        const pub = await publishDrafts(API, src.shopId, { shopDraftVersion: wrote.shop?.version ?? src.shop.version, siteDraftVersion: siteVer > 0 ? siteVer : undefined, distDir: after });
+        timings.publish = Math.round(now() - t);
+        result.published = { number: pub.number, scope: pub.scope, publishedAt: pub.publishedAt, pages: pub.pages, skipped: pub.skipped, url: pub.url ?? null };
+      }
+    }
     result.ok = true;
   } catch (e) {
     result.ok = false;
-    const known = e instanceof EditError || e instanceof RebuildError; // RebuildError（lib/rebuild.mjs）は rebuild・validate など
+    const known = e instanceof EditError || e instanceof RebuildError || e instanceof ApiError; // RebuildError（lib/rebuild.mjs）は rebuild・validate など、ApiError（lib/api-source.mjs）は conflict・auth など
     result.errorCode = known ? e.code : "internal";
     result.error = String(e?.message ?? e);
     if (!known) log(String(e?.stack ?? e));
@@ -307,30 +385,37 @@ async function runJob(job) {
 
 // ───────── 入口
 
+/** 店の今の姿：--samples は samples、ほかは api の下書き（① と ② の文字）から作り直した書き出しの印 */
+async function currentSnapshot(site, log) {
+  if (LOCAL) return buildSnapshot(site, shopDir(site), baseBuild(site, log).dir);
+  const dir = path.join(OUT, "_api-source", site);
+  const s = await fetchDraftSource(API, { site, dir, withSite: HAS_COOKIE, apiAssets: API_ASSETS });
+  const snap = buildSnapshot(site, dir, baseBuild(site, log, dir, s.texts).dir);
+  return { ...snap, shop: s.shop.data };
+}
+
 async function main() {
   fs.mkdirSync(OUT, { recursive: true });
   const snapSite = opt("--snapshot");
   if (snapSite) {
-    const base = baseBuild(snapSite, (s) => fs.appendFileSync(path.join(OUT, "snapshot-log.txt"), s + "\n"));
-    const snap = buildSnapshot(snapSite, shopDir(snapSite), base.dir);
+    const snap = await currentSnapshot(snapSite, (s) => fs.appendFileSync(path.join(OUT, "snapshot-log.txt"), s + "\n"));
     const f = path.join(OUT, `${snapSite}-snapshot.json`);
     writeJson(f, snap);
     console.log(`snapshot：${f}（印 ${snap.targets.length}・文字の箱 ${Object.keys(snap.texts).length}・hash ${shopHash(snap.shop).slice(0, 12)}…）`);
     if (flag("--post")) console.log(JSON.stringify(await desk("/edit-api/snapshot", { ...snap, source: "edit-runner" })));
     return;
   }
-  const local = opt("--local");
+  const local = opt("--local") ?? opt("--ops"); // --local は samples、--ops は api の下書きに当てる
   if (local) {
     const ops = readJson(path.resolve(local));
-    const site = opt("--site") ?? die("--local には --site が要る");
+    const site = opt("--site") ?? die("--local・--ops には --site が要る");
     const r = await runJob({ id: null, site, ops: Array.isArray(ops) ? ops : ops.ops, baseHash: Array.isArray(ops) ? undefined : ops.baseHash, deploy: Array.isArray(ops) ? undefined : ops.deploy });
     report(r);
     process.exitCode = r.ok ? 0 : 1;
     return;
   }
   for (const s of (opt("--sync") ?? "").split(",").filter(Boolean)) {
-    const base = baseBuild(s, () => {});
-    const res = await desk("/edit-api/snapshot", { ...buildSnapshot(s, shopDir(s), base.dir), source: "edit-runner" });
+    const res = await desk("/edit-api/snapshot", { ...(await currentSnapshot(s, () => {})), source: "edit-runner" });
     console.log(`snapshot を送った：${s} ${res.baseHash?.slice(0, 12)}…`);
   }
   let n = 0, failed = 0;
@@ -351,6 +436,7 @@ async function main() {
 function report(r) {
   const marks = Object.values(r.htmlDiff ?? {}).flat().flatMap((c) => c.marks);
   console.log(`${r.ok ? "✓" : "✗"} ${r.site} ${r.mode}：${r.ok ? `変わった印 ${[...new Set(marks)].join(" ")}・ファイル ${r.changedFiles?.length ?? 0}` : `[${r.errorCode}] ${r.error}`}`);
+  if (r.apiWrite) console.log(`  api の下書き：${JSON.stringify(r.apiWrite)}${r.published ? `　公開 版 ${r.published.number}（${r.published.scope}）` : ""}`);
   console.log(`  置き場 ${r.outDir}　公開のアドレス ${r.url ?? r.deploy?.error ?? "—"}　時間 ${JSON.stringify(r.timings)}`);
   if (r.linkedRemovals?.length) console.log(`  連れて消した review：${r.linkedRemovals.map((x) => x.path).join(" ")}`);
 }
