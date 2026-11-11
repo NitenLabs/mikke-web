@@ -199,7 +199,11 @@
         {
           "runs": [
             {
-              "text": "焼鳥 とりの音"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -301,7 +305,8 @@
       },
       "hidden": {
         "sp": true
-      }
+      },
+      "edit": false
     },
     "fv_ph": {
       "type": "photo",
@@ -516,7 +521,11 @@
         {
           "runs": [
             {
-              "text": "紀州備長炭の焼き鳥と地酒"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/tagline",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -554,7 +563,37 @@
         {
           "runs": [
             {
-              "text": "17:00〜23:30（L.O. 23:00）・日曜定休"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "hoursShort"
+              }
+            },
+            {
+              "text": "（L.O. "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/mon/periods/0/lastOrder",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "）"
+            },
+            {
+              "text": "・"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
+            },
+            {
+              "text": "定休"
             }
           ]
         }
@@ -592,14 +631,11 @@
         {
           "runs": [
             {
-              "text": "朝びきの地鶏を、"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "その日に串打ち。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_catch/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -637,7 +673,11 @@
         {
           "runs": [
             {
-              "text": "仕入れは毎朝。その日のうちに串を打ち、店主おすすめの地酒と合わせてお出しします。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_body/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -1438,7 +1478,11 @@
         {
           "runs": [
             {
-              "text": "お品書き"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_main/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1476,7 +1520,11 @@
         {
           "runs": [
             {
-              "text": "価格はすべて税込です。"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_main/description",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1514,7 +1562,11 @@
         {
           "runs": [
             {
-              "text": "コース"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_course/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1574,7 +1626,11 @@
         {
           "runs": [
             {
-              "text": "おまかせ串コース（8本）"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_omakase/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1612,7 +1668,11 @@
         {
           "runs": [
             {
-              "text": "3,800円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_omakase/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -1673,7 +1733,11 @@
         {
           "runs": [
             {
-              "text": "串"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_kushi/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1733,7 +1797,11 @@
         {
           "runs": [
             {
-              "text": "もも葱"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_momonegi/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1771,7 +1839,11 @@
         {
           "runs": [
             {
-              "text": "280円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_momonegi/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -1832,7 +1904,11 @@
         {
           "runs": [
             {
-              "text": "つくね（月見）"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tsukune/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1870,7 +1946,11 @@
         {
           "runs": [
             {
-              "text": "380円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tsukune/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -1931,7 +2011,11 @@
         {
           "runs": [
             {
-              "text": "せせり"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_seseri/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1969,7 +2053,11 @@
         {
           "runs": [
             {
-              "text": "260円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_seseri/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2030,7 +2118,11 @@
         {
           "runs": [
             {
-              "text": "皮"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_kawa/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2068,7 +2160,11 @@
         {
           "runs": [
             {
-              "text": "220円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_kawa/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2129,7 +2225,11 @@
         {
           "runs": [
             {
-              "text": "ぼんじり"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_bonjiri/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2167,7 +2267,11 @@
         {
           "runs": [
             {
-              "text": "260円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_bonjiri/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2228,7 +2332,11 @@
         {
           "runs": [
             {
-              "text": "手羽先"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tebasaki/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2266,7 +2374,11 @@
         {
           "runs": [
             {
-              "text": "300円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tebasaki/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2327,7 +2439,11 @@
         {
           "runs": [
             {
-              "text": "一品・〆"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_ippin/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2387,7 +2503,11 @@
         {
           "runs": [
             {
-              "text": "鶏白湯スープ"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_paitan/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2425,7 +2545,11 @@
         {
           "runs": [
             {
-              "text": "500円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_paitan/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2486,7 +2610,11 @@
         {
           "runs": [
             {
-              "text": "〆の親子丼"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_oyakodon/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2524,7 +2652,11 @@
         {
           "runs": [
             {
-              "text": "900円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_oyakodon/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2585,7 +2717,11 @@
         {
           "runs": [
             {
-              "text": "お飲みもの"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_drink/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2645,7 +2781,11 @@
         {
           "runs": [
             {
-              "text": "生ビール"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_beer/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2683,7 +2823,11 @@
         {
           "runs": [
             {
-              "text": "650円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_beer/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2744,7 +2888,11 @@
         {
           "runs": [
             {
-              "text": "地酒"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_jizake/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2782,7 +2930,11 @@
         {
           "runs": [
             {
-              "text": "700円〜"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_jizake/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -3052,7 +3204,11 @@
         {
           "runs": [
             {
-              "text": "カウンター10席・小上がり2卓"
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3090,7 +3246,11 @@
         {
           "runs": [
             {
-              "text": "カウンターは、焼き台のすぐそば。小上がりでは、お仲間とゆっくりお過ごしいただけます。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_seats/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -3215,7 +3375,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v0": {
       "type": "text",
@@ -3317,7 +3478,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v1": {
       "type": "text",
@@ -3328,7 +3490,24 @@
         {
           "runs": [
             {
-              "text": "17:00〜23:30（L.O. 23:00）"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "hoursShort"
+              }
+            },
+            {
+              "text": "（L.O. "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/mon/periods/0/lastOrder",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "）"
             }
           ]
         }
@@ -3415,7 +3594,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v2": {
       "type": "text",
@@ -3426,7 +3606,11 @@
         {
           "runs": [
             {
-              "text": "日曜日"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
             }
           ]
         }
@@ -3513,7 +3697,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v3": {
       "type": "text",
@@ -3524,7 +3709,11 @@
         {
           "runs": [
             {
-              "text": "カウンター10席・小上がり2卓"
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3611,7 +3800,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v4": {
       "type": "text",
@@ -3846,7 +4036,8 @@
           "h": 24,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_n": {
       "type": "text",
@@ -3857,7 +4048,11 @@
         {
           "runs": [
             {
-              "text": "焼鳥 とりの音"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3937,14 +4132,41 @@
         {
           "runs": [
             {
-              "text": "営業時間 17:00〜23:30（L.O. 23:00）"
+              "text": "営業時間 "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "hoursShort"
+              }
+            },
+            {
+              "text": "（L.O. "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/mon/periods/0/lastOrder",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "）"
             }
           ]
         },
         {
           "runs": [
             {
-              "text": "定休日 日曜日"
+              "text": "定休日 "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
             }
           ]
         }
@@ -4027,7 +4249,14 @@
         {
           "runs": [
             {
-              "text": "© 焼鳥 とりの音"
+              "text": "© "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }

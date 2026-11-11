@@ -10,12 +10,17 @@
     "genre": {
       "template": "restaurant",
       "detail": "焼き鳥・地酒"
-    }
+    },
+    "tagline": "紀州備長炭の焼き鳥と地酒"
   },
   "location": {
     "prefecture": "兵庫県",
     "city": "芦屋市",
-    "town": "公光町"
+    "town": "公光町",
+    "geo": {
+      "lat": 34.73,
+      "lng": 135.3043
+    }
   },
   "hours": {
     "weekly": {
@@ -90,11 +95,31 @@
       "digits": "0797000000"
     }
   },
+  "facilities": {
+    "note": "カウンター10席・小上がり2卓"
+  },
+  "story": {
+    "answers": {
+      "q_catch": {
+        "question": "紹介の見出し",
+        "answer": "朝びきの地鶏を、\nその日に串打ち。"
+      },
+      "q_body": {
+        "question": "お店の紹介",
+        "answer": "仕入れは毎朝。その日のうちに串を打ち、店主おすすめの地酒と合わせてお出しします。"
+      },
+      "q_seats": {
+        "question": "お席について",
+        "answer": "カウンターは、焼き台のすぐそば。小上がりでは、お仲間とゆっくりお過ごしいただけます。"
+      }
+    }
+  },
   "catalog": {
     "menus": {
       "mnu_main": {
         "order": 1,
-        "name": "お品書き"
+        "name": "お品書き",
+        "description": "価格はすべて税込です。"
       }
     },
     "categories": {
