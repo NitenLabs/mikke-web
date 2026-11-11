@@ -183,7 +183,11 @@
         {
           "runs": [
             {
-              "text": "中國菜 浜正"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -399,7 +403,8 @@
           "h": 25.7,
           "size": 8
         }
-      }
+      },
+      "edit": false
     },
     "sr_1": {
       "type": "photo",
@@ -599,7 +604,8 @@
           "h": 23.7,
           "size": 14.82
         }
-      }
+      },
+      "edit": false
     },
     "ab_h": {
       "type": "text",
@@ -610,14 +616,11 @@
         {
           "runs": [
             {
-              "text": "十六席の、"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "ていねいな中國菜。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_catch/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -682,7 +685,11 @@
         {
           "runs": [
             {
-              "text": "2016年、芦屋・東芦屋町に開いた中國料理の店です。四川の香りと辛さ、季節の魚介を生かした料理を、和の器に盛ってお出しします。テーブル4卓・16席の落ち着いた店内で、ゆっくりとお食事をお楽しみください。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_body/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -748,7 +755,11 @@
         {
           "runs": [
             {
-              "text": "香りと火入れを、一皿ずつ。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_message_h/answer",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -786,7 +797,11 @@
         {
           "runs": [
             {
-              "text": "黒酢で仕上げる角煮の酢豚、花椒の香る麻婆豆腐、季節の魚の蒸し物。定番の一皿から季節の料理まで、素材に合わせて丁寧に仕立てています。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_message/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -853,7 +868,8 @@
           "size": 19.5,
           "writingMode": "vertical"
         }
-      }
+      },
+      "edit": false
     },
     "rc_cards": {
       "type": "repeater",
@@ -862,11 +878,8 @@
       "source": {
         "kind": "catalog",
         "menuId": "mnu_osusume",
-        "pick": [
-          "itm_r001",
-          "itm_r002",
-          "itm_r003",
-          "itm_r004"
+        "categoryIds": [
+          "cat_recommend"
         ]
       },
       "display": {
@@ -945,7 +958,8 @@
                 "h": 23.7,
                 "size": 14.82
               }
-            }
+            },
+            "edit": false
           },
           "c_nm": {
             "type": "text",
@@ -1081,7 +1095,8 @@
           "h": 31.2,
           "size": 19.5
         }
-      }
+      },
+      "edit": false
     },
     "mn_ja": {
       "type": "text",
@@ -1129,13 +1144,8 @@
       "source": {
         "kind": "catalog",
         "menuId": "mnu_food",
-        "pick": [
-          "itm_m001",
-          "itm_m002",
-          "itm_m003",
-          "itm_m004",
-          "itm_m005",
-          "itm_m006"
+        "categoryIds": [
+          "cat_menu"
         ]
       },
       "display": {
@@ -1322,7 +1332,8 @@
           "h": 31.2,
           "size": 19.5
         }
-      }
+      },
+      "edit": false
     },
     "in_k0": {
       "type": "text",
@@ -1360,7 +1371,8 @@
           "h": 20,
           "size": 12.48
         }
-      }
+      },
+      "edit": false
     },
     "in_v0": {
       "type": "text",
@@ -1440,7 +1452,8 @@
           "h": 20,
           "size": 12.48
         }
-      }
+      },
+      "edit": false
     },
     "in_v1": {
       "type": "text",
@@ -1523,7 +1536,8 @@
           "h": 20,
           "size": 12.48
         }
-      }
+      },
+      "edit": false
     },
     "in_v2": {
       "type": "text",
@@ -1603,7 +1617,8 @@
           "h": 20,
           "size": 12.48
         }
-      }
+      },
+      "edit": false
     },
     "in_v3": {
       "type": "text",
@@ -1679,7 +1694,8 @@
           "h": 20,
           "size": 12.48
         }
-      }
+      },
+      "edit": false
     },
     "in_v4": {
       "type": "text",
@@ -1755,7 +1771,8 @@
           "h": 20,
           "size": 12.48
         }
-      }
+      },
+      "edit": false
     },
     "in_v5": {
       "type": "text",
@@ -1793,7 +1810,8 @@
           "h": 26.5,
           "size": 13.26
         }
-      }
+      },
+      "edit": false
     },
     "in_k6": {
       "type": "text",
@@ -1831,7 +1849,8 @@
           "h": 20,
           "size": 12.48
         }
-      }
+      },
+      "edit": false
     },
     "in_v6": {
       "type": "text",
@@ -1911,7 +1930,8 @@
           "h": 20,
           "size": 12.48
         }
-      }
+      },
+      "edit": false
     },
     "in_v7": {
       "type": "text",
@@ -2021,7 +2041,8 @@
           "h": 31.2,
           "size": 19.5
         }
-      }
+      },
+      "edit": false
     },
     "rs_p": {
       "type": "text",
@@ -2148,7 +2169,11 @@
         {
           "runs": [
             {
-              "text": "中國菜 浜正"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2217,7 +2242,8 @@
           "h": 13.7,
           "size": 13.65
         }
-      }
+      },
+      "edit": false
     },
     "ft_n1": {
       "type": "text",
@@ -2259,7 +2285,8 @@
           "h": 13.7,
           "size": 13.65
         }
-      }
+      },
+      "edit": false
     },
     "ft_n2": {
       "type": "text",
@@ -2301,7 +2328,8 @@
           "h": 13.7,
           "size": 13.65
         }
-      }
+      },
+      "edit": false
     },
     "ft_n3": {
       "type": "text",
@@ -2343,7 +2371,8 @@
           "h": 13.7,
           "size": 13.65
         }
-      }
+      },
+      "edit": false
     },
     "ft_n4": {
       "type": "text",
@@ -2385,7 +2414,8 @@
           "h": 13.7,
           "size": 13.65
         }
-      }
+      },
+      "edit": false
     },
     "ft_ig": {
       "type": "shape",
@@ -2395,9 +2425,7 @@
       "radius": 10,
       "section": "sec_footer",
       "link": {
-        "kind": "url",
-        "value": "https://www.instagram.com/ashiya.hamasyou/",
-        "newTab": true
+        "kind": "shopInstagram"
       },
       "layout": {
         "pc": {
@@ -2436,9 +2464,7 @@
         "letterSpacing": 0,
         "align": "center",
         "link": {
-          "kind": "url",
-          "value": "https://www.instagram.com/ashiya.hamasyou/",
-          "newTab": true
+          "kind": "shopInstagram"
         }
       },
       "layout": {
@@ -2456,7 +2482,8 @@
           "h": 23.7,
           "size": 14.82
         }
-      }
+      },
+      "edit": false
     },
     "ft_mikke": {
       "type": "text",
@@ -2499,7 +2526,8 @@
           "h": 16,
           "size": 10
         }
-      }
+      },
+      "edit": false
     },
     "ft_draft": {
       "type": "text",
@@ -2537,7 +2565,8 @@
           "h": 16,
           "size": 10
         }
-      }
+      },
+      "edit": false
     },
     "ft_copy": {
       "type": "text",

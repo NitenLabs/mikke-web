@@ -5,11 +5,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { chromium } from "playwright";
+import { resolveRepeater, makeRefDate } from "./lib/catalog.mjs";
 const URL_ = pathToFileURL(path.resolve("dist/hamasyou/index.html")).href;
 const WIDTHS = [320, 360, 390, 430, 600, 767, 768, 1007, 1008, 1024, 1280, 1440, 1920];
 const site = JSON.parse(fs.readFileSync("samples/hamasyou/site.json", "utf8"));
 const specOf = (d) => Object.fromEntries(Object.entries(site.sections).map(([k, v]) => [k, v.minHeight[d]]));
 const SPEC = { 1440: specOf("pc"), 390: specOf("sp") };
+// カードの数は ① から（お品書き×100＋おすすめ）。品を足し引きしても検査が追従する
+const shop = JSON.parse(fs.readFileSync("samples/hamasyou/shop.json", "utf8")), REF = makeRefDate(process.env.WA04_DATE);
+const CARDS = resolveRepeater(shop, site.elements.mn_cards.source, REF).length * 100 + resolveRepeater(shop, site.elements.rc_cards.source, REF).length;
 const browser = await chromium.launch();
 let bad = 0;
 const ng = (m) => { bad++; console.log("NG " + m); };
@@ -59,7 +63,7 @@ for (const w of WIDTHS) {
   if (r.orphan.length) ng(`${w}: 品名の最後の行が 1〜2 字 ${r.orphan.join(",")}`);
   if (r.broken.length) ng(`${w}: 読めない写真 ${r.broken.join(",")}`);
   if (r.contrast.length) ng(`${w}: コントラスト ${r.contrast.join(",")}`);
-  if (r.cards !== 604) ng(`${w}: カード ${r.cards} 枚`);
+  if (r.cards !== CARDS) ng(`${w}: カード ${r.cards} 枚（① から ${CARDS}）`);
   if (r.strip !== 6 || r.clones !== 6) ng(`${w}: 帯 ${r.strip}＋複製 ${r.clones}`);
   if (errs.length) ng(`${w}: エラー ${errs.join(" / ")}`);
   if (SPEC[w]) for (const [s, h] of Object.entries(SPEC[w])) if (Math.abs((r.secs[s] ?? 0) - h) > 1.5) ng(`${w}: ${s} 高さ ${r.secs[s]}（設計 ${h}）`);

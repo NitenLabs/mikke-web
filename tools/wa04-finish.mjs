@@ -36,9 +36,12 @@ const map = `<iframe title="${shop.basic.name}の地図" src="https://www.google
 const re = /(<div data-el="in_mapbox"[^>]*>)/;
 if (!re.test(h)) throw new Error("in_mapbox が見つかりません");
 h = h.replace(re, `$1${map}`);
-// 住所は建物名の前で折り返す（「1F」だけが次の行に落ちないように）
-if (!/エクセレント芦屋 ?1F/.test(h)) throw new Error("建物名が見つかりません");
-h = h.replace(/エクセレント芦屋 ?1F/g, (m) => `<span style="white-space:nowrap">${m}</span>`);
+// 住所は建物名の前で折り返す（「1F」だけが次の行に落ちないように）。建物名は ① location.building（空白は有っても無くても合う）。
+// 無いとき・見つからないとき（店主が直したなど）は何もしない
+if (loc.building) {
+  const bre = new RegExp(loc.building.trim().split(/\s+/).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(" ?"), "g");
+  h = h.replace(bre, (m) => `<span style="white-space:nowrap">${m}</span>`);
+}
 h = h.replace("</head>", css + "</head>").replace("</body>", js + "</body>");
 const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
 fs.writeFileSync(f, bp(h));
