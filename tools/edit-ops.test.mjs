@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   EditError, applyOps, applySiteTexts, applyTextsToGenConfig, checkRenderedLimits, classifyCheck, collectTargets, diffMarked,
-  expectedKeysAll, parsePointer, shopHash,
+  expectedKeysAll, getAt, parsePointer, shopHash, withLinkedRemovals,
 } from "./lib/edit-ops.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -153,4 +153,26 @@ test("書き出しの差の要点：印つきの要素ごとに前と後の文�
   assert.equal(d.elements[0].where, "/html/body/section[sec_access]/p[ac_v1]");
   assert.equal(d.elements[0].after, "8:30〜18:00 （土曜は 9:00〜17:00）");
   assert.equal(d.elements[0].allowed, true);
+});
+
+test("消す差分に連れて消す：品を消すと、その品（とその下）を指す review も消す。重ねない・配列の位置は見ない（0044 の残り）", () => {
+  const ops = [
+    { op: "remove", path: "/catalog/items/itm_m001" },
+    { op: "remove", path: "/catalog/placements/plc_m001" },
+  ];
+  const r = withLinkedRemovals(shop, ops);
+  assert.deepEqual(r.added, [{ op: "remove", path: "/review/~1catalog~1items~1itm_m001~1prices", because: "/catalog/items/itm_m001" }]);
+  assert.equal(r.ops.length, 3);
+  assert.equal(ops.length, 2); // 元は変えない
+  const a = applyOps(shop, site, r.ops);
+  assert.equal(a.shop.review["/catalog/items/itm_m001/prices"], undefined);
+  assert.ok(a.shop.review["/catalog/items/itm_m005/prices"]); // ほかの品の review は残す
+  // validate と同じ見方：review の場所に値が在る（unreadable 以外）
+  for (const [ptr, v] of Object.entries(a.shop.review)) if (v.status !== "unreadable") assert.notEqual(getAt(a.shop, parsePointer(ptr)), undefined, ptr);
+  // review の無い品・review を自分で消した差分・set は足さない
+  assert.deepEqual(withLinkedRemovals(shop, [{ op: "remove", path: "/catalog/items/itm_m002" }]).added, []);
+  assert.deepEqual(withLinkedRemovals(shop, [...ops, { op: "remove", path: "/review/~1catalog~1items~1itm_m001~1prices" }]).added, []);
+  assert.deepEqual(withLinkedRemovals(shop, [{ op: "set", path: "/catalog/items/itm_m001/name", value: "x" }]).added, []);
+  // 項目だけ消す（値段）でも、その場所の review を消す
+  assert.equal(withLinkedRemovals(shop, [{ op: "remove", path: "/catalog/items/itm_m005/prices" }]).added.length, 1);
 });

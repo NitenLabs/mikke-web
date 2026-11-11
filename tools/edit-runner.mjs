@@ -20,6 +20,7 @@
 //   3. 表示の字数（edit-limits の maxRenderedChars。営業時間など）を本物の format で測る
 //   4. 作り直し（下の rebuild。前の書き出しも同じ道具で作る・キャッシュあり）→ 型の検査
 //   5. 前と後の HTML を比べ、変わったのが印（data-edit）の所だけか確かめる。印の外が変われば failed（人が見る）
+//   公開のアドレスは desk の job.deploy（無ければ /edit-api/site、samples/<店>/deploy.json）から決めて result.url に。--write で desk と samples が違えば deploy.json も揃える。配置はしない
 //   6. /edit-api/result に ok・変わったファイル・印ごとの差の要点・置き場・時間を返す（--write のときだけ新しい snapshot も）
 import fs from "node:fs";
 import path from "node:path";
@@ -30,7 +31,9 @@ import crypto from "node:crypto";
 import {
   EditError, applyOps, applySiteTexts, applyTextsToGenConfig, checkOpShape, checkRenderedLimits, classifyCheck, collectTargets,
   diffMarked, expectedKeysAll, paragraphsToText, shopHash, summarizeChanges,
+  withLinkedRemovals,
 } from "./lib/edit-ops.mjs";
+import { RebuildError, loadDeployConfig, makeStage, removeStage, resolveSiteUrl, runPipeline } from "./lib/rebuild.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
@@ -74,67 +77,13 @@ async function desk(p, body) {
   return json;
 }
 
-// ───────── 作り直し（アダプタ）
-// 返り：{ distDir（書き出しの index.html のあるフォルダ）, steps: [{ name, ms, ok }] }
-// stage は ROOT の写し（tools・schema・samples/<店>・node_modules への link）。repo のデータは触らない。
-
-/** 0045 の rebuild-shop.mjs が無い間のつなぎ：型の gen → build → finish を stage の中で流す */
-function rebuildFallback({ site, stage, date, log, afterGen }) {
-  const dir = path.join(stage, "samples", site);
-  const tpl = fs.readdirSync(dir).map((f) => /^(wa\d\d)\.json$/.exec(f)?.[1]).find(Boolean); // 例 wa03
-  const steps = [];
-  const run = (name, args) => {
-    const t = now();
-    const r = spawnSync(process.execPath, args, { cwd: stage, encoding: "utf8", env: { ...process.env, WA03_DATE: date }, maxBuffer: 64 << 20 });
-    log(`$ node ${args.join(" ")}\n${r.stdout ?? ""}${r.stderr ?? ""}`);
-    steps.push({ name, ms: Math.round(now() - t), ok: r.status === 0 });
-    if (r.status !== 0) throw new EditError("rebuild", `${name} が失敗（exit ${r.status}）：${tail(r.stderr || r.stdout)}`);
-  };
-  if (tpl && fs.existsSync(path.join(stage, "tools", `${tpl}-gen.mjs`))) run(`${tpl}-gen`, [`tools/${tpl}-gen.mjs`, site]);
-  afterGen?.(); // gen の後の site.json に文字の箱の差分を当てる・表示の字数を測る（runJob）
-  run("build", ["tools/build.mjs", `samples/${site}`, "--date", date]);
-  if (tpl && fs.existsSync(path.join(stage, "tools", `${tpl}-finish.mjs`))) run(`${tpl}-finish`, [`tools/${tpl}-finish.mjs`, site]);
-  return { distDir: path.join(stage, "dist", site), steps, tpl };
-}
-
-/** 0045 が入った後の形（未確認：rebuild-shop の引数・返りの json は lane3 の報告に合わせて直す） */
-function rebuildWithRebuildShop({ site, stage, date, log, afterGen }) {
-  // 注意：rebuild-shop の中で gen が走るので afterGen（文字の箱・表示の字数）をはさめない。0045 の形に合わせて直す
-  void afterGen;
-  const out = path.join(stage, "dist", site);
-  const t = now();
-  const r = spawnSync(process.execPath, [path.join(ROOT, "tools", "rebuild-shop.mjs"), site, "--from", path.join(stage, "samples", site), "--out", out, "--dry-run", "--date", date], { cwd: ROOT, encoding: "utf8", maxBuffer: 64 << 20 });
-  log(`$ rebuild-shop ${site}\n${r.stdout ?? ""}${r.stderr ?? ""}`);
-  if (r.status !== 0) throw new EditError("rebuild", `rebuild-shop が失敗（exit ${r.status}）：${tail(r.stderr || r.stdout)}`);
-  const tpl = fs.readdirSync(path.join(stage, "samples", site)).map((f) => /^(wa\d\d)\.json$/.exec(f)?.[1]).find(Boolean);
-  return { distDir: out, steps: [{ name: "rebuild-shop", ms: Math.round(now() - t), ok: true }], tpl };
-}
-
-// TODO(0045)：tools/rebuild-shop.mjs が main に入ったら、下の1行を rebuildWithRebuildShop に替える
-//   （docs/gallery/status/0045.done を見る。文字の箱の差分は gen の後に当てる必要がある＝rebuild-shop に gen の後のつなぎが要るか確かめる）
-const rebuild = rebuildFallback;
+// ───────── 作り直し
+// tools/lib/rebuild.mjs（0045 の rebuild-shop と同じ部品）の runPipeline を使う：stage の中で型の gen → validate → build → finish。
+// 引数 { site, stage, date, log, afterGen }・返り { distDir, steps, tpl }。投げるのは RebuildError（code: rebuild・validate）
+// → runJob の catch で EditError と同じに code を拾う。stage は lib の makeStage（tools・schema・templates/wa-NN・店の写し、node_modules は link）。
+const rebuild = runPipeline;
 
 const tail = (s) => String(s ?? "").trim().split("\n").slice(-4).join(" / ").slice(0, 600);
-
-/** stage（作業用の写し）を作る。tools・schema は写し、node_modules は link、店のフォルダは写し */
-function makeStage(dir, site) {
-  fs.rmSync(dir, { recursive: true, force: true });
-  fs.mkdirSync(dir, { recursive: true });
-  const filter = (src) => !/[\\/](verify-[^\\/]+|__pycache__)([\\/]|$)/.test(src);
-  fs.cpSync(path.join(ROOT, "tools"), path.join(dir, "tools"), { recursive: true, filter });
-  fs.cpSync(path.join(ROOT, "schema"), path.join(dir, "schema"), { recursive: true });
-  fs.cpSync(shopDir(site), path.join(dir, "samples", site), { recursive: true });
-  fs.symlinkSync(path.join(ROOT, "node_modules"), path.join(dir, "node_modules"), "junction");
-  return dir;
-}
-/** stage を消す。node_modules は link だけ先に外す（本体の node_modules を巻き込まない） */
-function removeStage(dir) {
-  const nm = path.join(dir, "node_modules");
-  try { if (fs.lstatSync(nm).isSymbolicLink() || isJunction(nm)) fs.unlinkSync(nm); } catch {}
-  if (fs.existsSync(nm)) throw new Error(`stage の node_modules を外せなかった：${nm}（消さずに残す）`);
-  fs.rmSync(dir, { recursive: true, force: true });
-}
-function isJunction(p) { try { return fs.readlinkSync(p) != null; } catch { return false; } }
 
 /** 前の書き出し（差分を当てる前）。① と設定と道具が同じならキャッシュを使う */
 function baseBuild(site, log) {
@@ -147,7 +96,7 @@ function baseBuild(site, log) {
   const cache = path.join(OUT, "_base", `${site}-${key}`);
   if (fs.existsSync(path.join(cache, "index.html"))) return { dir: cache, cached: true, ms: 0 };
   const t = now();
-  const stage = makeStage(path.join(OUT, "_stage", `${site}-base`), site);
+  const stage = makeStage(path.join(OUT, "_stage", `${site}-base`), site).dir;
   try {
     const r = rebuild({ site, stage, date: DATE, log });
     fs.rmSync(cache, { recursive: true, force: true });
@@ -191,6 +140,36 @@ function changedFiles(a, b) {
   ].sort((x, y) => x.file.localeCompare(y.file));
 }
 
+/**
+ * 公開のアドレスを決める（0045 段C）。desk の D1（site_domains）が元：claim の job.deploy、無ければ /edit-api/site。
+ * desk に無い・--local のときは samples/<店>/deploy.json（--local では差分のファイルの deploy も使える）。
+ * 返り：{ deploy（{ domain }）, target（resolveSiteUrl の返り）, write（--write で samples の deploy.json を書き換えるか）, info（result に載せる要点） }
+ * 形の誤りでは直しを止めない（target を出さず info.error に理由。deploy.json も書かない）。配置はしない
+ */
+async function resolveDeploy(job, site, dir) {
+  const file = path.join(dir, "deploy.json");
+  const local = fs.existsSync(file) ? readJson(file) : null;
+  let deploy = null, source = null;
+  if (job.deploy?.domain) { deploy = { domain: job.deploy.domain }; source = "job"; }
+  else if (job.id != null && DESK && SECRET) {
+    try { const r = await desk("/edit-api/site", { site }); if (r?.deploy?.domain) { deploy = { domain: r.deploy.domain }; source = "desk"; } }
+    catch (e) { source = `desk の /edit-api/site に失敗（${String(e?.message ?? e).slice(0, 120)}）`; }
+  }
+  if (!deploy && local?.domain) { deploy = { domain: local.domain }; source = source ? `${source} → samples` : "samples"; }
+  if (!deploy) { deploy = { domain: { kind: "pages", name: null } }; source = source ?? "既定（pages）"; }
+  const norm = (d) => JSON.stringify({ kind: d?.kind ?? "pages", name: d?.name ?? null });
+  const differs = norm(deploy.domain) !== norm(local?.domain);
+  try {
+    const target = resolveSiteUrl(site, deploy, loadDeployConfig());
+    // desk の設定が samples の deploy.json と違えば、--write のときだけ samples に揃える（rebuild-shop --deploy が同じアドレスを読むように）
+    const write = WRITE && differs && (source === "job" || source === "desk");
+    const fileJson = { ...(local ?? {}), domain: { kind: deploy.domain.kind ?? "pages", name: deploy.domain.name ?? null } };
+    return { deploy: fileJson, target, write, info: { source, domain: deploy.domain, url: target.url, pending: target.pending, differsFromSamples: differs, writesSamples: write } };
+  } catch (e) {
+    return { deploy: null, target: null, write: false, info: { source, domain: deploy.domain, error: String(e?.message ?? e) } };
+  }
+}
+
 // ───────── 1件を処理する（desk にも --local にも使う）
 
 async function runJob(job) {
@@ -224,13 +203,22 @@ async function runJob(job) {
     const targets = [...new Set(basePages.flatMap((p) => collectTargets(fs.readFileSync(path.join(base.dir, p), "utf8"))))].sort();
     const expected = expectedKeysAll(job.ops, shop, targets);
     result.expectedMarks = expected;
-    const applied = applyOps(shop, site0, job.ops);
+    // 消す差分に連れて、消す所を指す review（口コミなどの出所）も消す（0044 の残り。残すと validate が落ちる）。印の対応は元の差分で決める
+    const linked = withLinkedRemovals(shop, job.ops);
+    if (linked.added.length) result.linkedRemovals = linked.added;
+    const applied = applyOps(shop, site0, linked.ops);
     timings.apply = Math.round(now() - t);
 
+    // 公開のアドレス：desk の設定（job.deploy → /edit-api/site）→ samples/<店>/deploy.json → 無ければ pages
+    const dep = await resolveDeploy(job, site, dir);
+    result.deploy = dep.info;
+    if (dep.target) { result.target = dep.target; result.url = dep.target.url; }
+
     // stage に新しい ① を置く。文字の箱は型の設定（waNN.json）にも当てる（gen で戻らないように）
-    stage = makeStage(path.join(OUT, "_stage", `${site}-job${job.id ?? "local"}`), site);
+    stage = makeStage(path.join(OUT, "_stage", `${site}-job${job.id ?? "local"}`), site).dir;
     const sdir = path.join(stage, "samples", site);
     writeJson(path.join(sdir, "shop.json"), applied.shop);
+    if (dep.target && dep.deploy) writeJson(path.join(sdir, "deploy.json"), dep.deploy); // rebuild-shop の --from と同じく写しに重ねる（build は読まない）
     const tplFile = fs.readdirSync(sdir).find((f) => /^wa\d\d\.json$/.test(f));
     let genConfig = null;
     if (Object.keys(applied.texts).length && tplFile) {
@@ -288,6 +276,7 @@ async function runJob(job) {
     if (job.ops.some((o) => (o.doc ?? "shop") === "shop")) dataChanged["shop.json"] = true;
     if (genConfig?.replaced.length) dataChanged[genConfig.file] = true;
     if (Object.keys(applied.texts).length) dataChanged["site.json"] = true;
+    if (dep.write) dataChanged["deploy.json"] = true;
     result.dataFiles = Object.keys(dataChanged).map((f) => `samples/${site}/${f}`);
     fs.cpSync(sdir, path.join(work, "data"), { recursive: true, filter: (s) => !/[\\/]media([\\/]|$)/.test(s) });
     if (!Object.keys(pages).length) throw new EditError("nochange", "書き出しが前と同じ（差分が表に出ていない）");
@@ -303,9 +292,10 @@ async function runJob(job) {
     result.ok = true;
   } catch (e) {
     result.ok = false;
-    result.errorCode = e instanceof EditError ? e.code : "internal";
+    const known = e instanceof EditError || e instanceof RebuildError; // RebuildError（lib/rebuild.mjs）は rebuild・validate など
+    result.errorCode = known ? e.code : "internal";
     result.error = String(e?.message ?? e);
-    if (!(e instanceof EditError)) log(String(e?.stack ?? e));
+    if (!known) log(String(e?.stack ?? e));
   } finally {
     if (stage && !KEEP) { try { removeStage(stage); } catch (e) { log(String(e)); } }
     timings.total = Math.round(now() - t0);
@@ -333,7 +323,7 @@ async function main() {
   if (local) {
     const ops = readJson(path.resolve(local));
     const site = opt("--site") ?? die("--local には --site が要る");
-    const r = await runJob({ id: null, site, ops: Array.isArray(ops) ? ops : ops.ops, baseHash: Array.isArray(ops) ? undefined : ops.baseHash });
+    const r = await runJob({ id: null, site, ops: Array.isArray(ops) ? ops : ops.ops, baseHash: Array.isArray(ops) ? undefined : ops.baseHash, deploy: Array.isArray(ops) ? undefined : ops.deploy });
     report(r);
     process.exitCode = r.ok ? 0 : 1;
     return;
@@ -361,7 +351,8 @@ async function main() {
 function report(r) {
   const marks = Object.values(r.htmlDiff ?? {}).flat().flatMap((c) => c.marks);
   console.log(`${r.ok ? "✓" : "✗"} ${r.site} ${r.mode}：${r.ok ? `変わった印 ${[...new Set(marks)].join(" ")}・ファイル ${r.changedFiles?.length ?? 0}` : `[${r.errorCode}] ${r.error}`}`);
-  console.log(`  置き場 ${r.outDir}　時間 ${JSON.stringify(r.timings)}`);
+  console.log(`  置き場 ${r.outDir}　公開のアドレス ${r.url ?? r.deploy?.error ?? "—"}　時間 ${JSON.stringify(r.timings)}`);
+  if (r.linkedRemovals?.length) console.log(`  連れて消した review：${r.linkedRemovals.map((x) => x.path).join(" ")}`);
 }
 
 await main();

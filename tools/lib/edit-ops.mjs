@@ -89,6 +89,33 @@ function applyOne(root, segs, op, value) {
   parent[last] = clone(value);
 }
 
+/**
+ * 消す差分（remove）に連れて消す物を足す（0044 の残り）：① の review（確かめ待ち・口コミなどの出所）のうち、
+ * 消す所かその下を指す物。残すと validate が「review の場所に値がありません」で落ちる。
+ * 配列の中の位置を消す remove は対象にしない（位置がずれるため。今の印では品・載せ方・項目の remove だけ）。
+ * 返り：{ ops（元の差分＋足した remove）, added: [{ op, path, because }] }。元の ops は変えない
+ */
+export function withLinkedRemovals(shop, ops) {
+  const added = [];
+  const reviews = isObj(shop?.review) ? Object.keys(shop.review) : [];
+  const already = new Set((ops ?? []).filter((o) => o?.op === "remove" && (o.doc ?? "shop") === "shop").map((o) => o.path));
+  for (const o of ops ?? []) {
+    if (!isObj(o) || o.op !== "remove" || (o.doc ?? "shop") !== "shop") continue;
+    const segs = parsePointer(o.path);
+    if (!segs || segs[0] === "review") continue;
+    if (Array.isArray(getAt(shop, segs.slice(0, -1)))) continue;
+    const pre = toPointer(segs);
+    for (const ptr of reviews) {
+      if (ptr !== pre && !ptr.startsWith(pre + "/")) continue;
+      const p = toPointer(["review", ptr]);
+      if (already.has(p)) continue;
+      already.add(p);
+      added.push({ op: "remove", path: p, because: o.path });
+    }
+  }
+  return { ops: [...(ops ?? []), ...added.map(({ op, path }) => ({ op, path }))], added };
+}
+
 /** 文字（\n 区切り）→ site.json の paragraphs。元の run の飾り（text 以外のキー）は1つ目の run から引き継ぐ */
 export function textToParagraphs(text, oldParagraphs = []) {
   const firstRun = oldParagraphs?.[0]?.runs?.[0] ?? {};
