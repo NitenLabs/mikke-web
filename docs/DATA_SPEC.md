@@ -319,6 +319,8 @@ draft
 - 型（`templateId` が `wa-NN`）で作ったお店の ②③ の下書きは、`sections` を**空のまま**（`{}`）にし、`content` のキーに **site.json の要素 ID**（例 `fv_copy`）を使う。形は `{draft: {template: {name: "wa-03", version: 1}, sections: {}, content: {<要素ID>: <文字>}}}`
 - 文字は上の表の「文字」と同じ（見た目の無い文字は文字列だけでよい。段落は `\n` で区切る）。上の部品 ID の並び（編集画面 wa-01 の部品）とは別の名前の並び
 - 型の店の段の並び・手直しは site.json と型の側が持つので、この下書きには書かない（`added`・`removed`・`adjust` なども書かない）。描くときは site.json に `content` を当ててから書き出す
+- **写真**は `content[<写真の要素ID>] = {asset: <④ の ID>}`（上の表の「写真」の形。2026-11-11、指示 0065）。切り抜きはお店の方が上げる前に済ませるので持たない（`crop` は書かない）。描くときは元の素材（site.json の要素の `asset`）の代わりにこの写真を使う
+- テンプレート（samples の site.json）と同じ文字・写真は書かない（元に戻したら `content` のキーを消し、空になったら `content` も消す）。何もしていない型の店の下書きは `{template, sections: {}}` だけ。theme は今までどおり `draft` の外（`{draft, theme}`）。site.json を丸ごと持つ形（0065 より前の seed）は使わない
 
 #### 4.9.4 戻す範囲（データで見たとき）
 

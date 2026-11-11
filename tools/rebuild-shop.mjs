@@ -5,7 +5,8 @@
 //   --from    ① のフォルダ（shop.json・assets.json・media/ ほか。形は docs/REBUILD.md）。無ければ samples/<店>
 //   --from-api <api の URL>  apps/api の公開された ① から作り直す（0053）：公開中の版の ①・② の文字（draft.content）を取り出し、
 //             dist/_api-source/<店> に --from の形で書いてから流す。読むのは GET /edit-api/shops/<店>/published（鍵 --api-secret だけ。
-//             MIKKE_API_RUNNER_SECRET・EDIT_RUNNER_SECRET。Cookie は使わない、0059）。--api-assets で写真も版の写真を api から（既定は samples の写真）
+//             MIKKE_API_RUNNER_SECRET・EDIT_RUNNER_SECRET。Cookie は使わない、0059）。--api-assets で写真も版の写真を api から（既定は samples の写真。ただし ② で差し替えた写真＝draft.content[要素ID] = {asset} は、
+//             いつも版の写真を api から取り、元の素材の file をその写真に向ける。0065）
 //             版が render:"rebuild"（描き直しの版）なら、作り直した結果を POST /edit-api/shops/<店>/versions/<n>/render に返す（--dry-run・--no-report では返さない）
 //   --out     書き出し先（既定 dist/rebuild/<店>）。--dry-run のときは書かない
 //   --dry-run 作って検査するだけ（書き出さない）

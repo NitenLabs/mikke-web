@@ -1,6 +1,6 @@
 // apps/api（お店の ①②③ の置き場）とのつなぎ（指示 0053 段D・0059 段G）。edit-runner・rebuild-shop から使う。
 // - 呼ぶのは /edit-api/shops/:slug/…（鍵 x-edit-runner-secret だけ。apps/api/src/routes/runner.ts）。Cookie・Origin は使わない（0059）
-//   ① の下書き・②③ の下書き・公開・公開した版・版・写真のファイル・描いた結果
+//   ① の下書き・②③ の下書き・公開・公開した版・版・写真の台帳とファイル・描いた結果
 // - api の店の名前（slug）は samples のフォルダ名と同じ（0053 の決め）
 // - 「--from の形」のフォルダ（docs/REBUILD.md）に書き出して、lib/rebuild.mjs の makeStage・rebuildShop に渡す
 // 通信は opts.fetch を使う（試験では偽物を渡す。tools/api-source.test.mjs）。
@@ -20,6 +20,7 @@ export const API_ROUTES = {
   publish: (s) => `/edit-api/shops/${encodeURIComponent(s)}/publish`, // POST（下書き → 公開。1 分に 1 回まで：429 too_soon・retryAfter）
   published: (s) => `/edit-api/shops/${encodeURIComponent(s)}/published`, // GET（公開中の版の ①②③・写真。未公開は 404 not_published）
   version: (s, n) => `/edit-api/shops/${encodeURIComponent(s)}/versions/${n}`, // GET（版 n）
+  asset: (s, a) => `/edit-api/shops/${encodeURIComponent(s)}/assets/${encodeURIComponent(a)}`, // GET（写真の台帳 1 件。今の ④。0065）
   assetFile: (s, a) => `/edit-api/shops/${encodeURIComponent(s)}/assets/${encodeURIComponent(a)}/file`, // GET（写真そのもの）
   renderResult: (s, n) => `/edit-api/shops/${encodeURIComponent(s)}/versions/${n}/render`, // POST（render:"rebuild" の版を描いた結果）
 };
@@ -75,6 +76,8 @@ export function apiClient({ base, secret = "", fetch: f = globalThis.fetch } = {
     /** 公開中の版：{ shopId, slug, number, scope, publishedAt, isPublished, render, shop, site, assets }。未公開は ApiError("not_published") */
     getPublished: (slug) => call("GET", API_ROUTES.published(slug)),
     getVersion: (slug, n) => call("GET", API_ROUTES.version(slug, n)),
+    /** 写真の台帳 1 件（今の ④）：{id, kind, file: {key, mime, width, height, bytes}, …}。無ければ ApiError("not_found") */
+    getAsset: (slug, assetId) => call("GET", API_ROUTES.asset(slug, assetId)),
     getAssetFile: (slug, assetId) => call("GET", API_ROUTES.assetFile(slug, assetId), { raw: true }),
     publish: (slug, body) => call("POST", API_ROUTES.publish(slug), { json: body }),
     /** render:"rebuild" の版を描いた結果を返す：{ok:true, url?} か {ok:false, error}（html の版は 409 not_rebuild） */
@@ -82,8 +85,8 @@ export function apiClient({ base, secret = "", fetch: f = globalThis.fetch } = {
   };
 }
 
-// ───────── ② の文字（文字の箱）を api の ②③ の下書きに載せる
-// 載せ所：draft.content[要素ID]（DATA_SPEC 4.9.3「文字」。見た目の無い文字は文字列だけでよい）。段落の区切りは \n。
+// ───────── ② の文字（文字の箱）と写真を api の ②③ の下書きから読む・載せる
+// 載せ所：draft.content[要素ID]（DATA_SPEC 4.9.3「文字」「写真」。見た目の無い文字は文字列だけでよい。段落の区切りは \n。写真は {asset}）。
 // 要素ID は samples/<店>/site.json の elements の ID（例 fv_copy）。wa-03 などの型の店は、編集画面の部品 ID ではなくこの ID を使う。
 
 const isObj = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
@@ -100,14 +103,24 @@ export const templateNameOf = (siteJson) => {
 };
 
 /**
- * ②③ の下書きの形（0059 段G）。
- * - "content"：DATA_SPEC 4.9.3 の型の店の形 {draft: {template, sections: {}, content: {要素ID: 文字}}}。runner が新しく作るのはこの形
- * - "site"：site.json を丸ごと持つ形 {draft: {...site.json, template, genConfig}}。apps/api の seed（wa03SiteDraft）と apps/owner の画面が
- *   使う（apps/owner は draft.elements の段落と draft.genConfig.fvCopy を読み書きする）。この形では文字を elements と genConfig に書き、
- *   content は持たない（古い runner が足した content は elements に移して消す。どちらかが古く残らないように）
+ * ②③ の下書きの形（0059 段G・0065）。
+ * - "content"：DATA_SPEC 4.9.3 の型の店の形 {draft: {template, sections: {}, content: {要素ID: 文字 | {asset}}}}。apps/api の seed・apps/owner・runner が使う
+ * - "old"：site.json を丸ごと持つ古い形 {draft: {...site.json, template, genConfig}}（0065 より前の seed）。読まない（assertContentForm で止める）
  * - null：下書きが無い
  */
-export const siteDraftForm = (siteDraft) => (!isObj(siteDraft?.draft) ? null : isObj(siteDraft.draft.elements) ? "site" : "content");
+export const siteDraftForm = (siteDraft) =>
+  !isObj(siteDraft?.draft) ? null : isObj(siteDraft.draft.elements) || isObj(siteDraft.draft.genConfig) ? "old" : "content";
+
+/** 古い形の下書きなら ApiError("site_draft_form") で止める（黙って直さない。seed し直す） */
+export function assertContentForm(siteDraft) {
+  if (siteDraftForm(siteDraft) === "old") {
+    throw new ApiError("site_draft_form", "②③ の下書きが古い形（site.json を丸ごと持つ。draft.elements・draft.genConfig がある）。node apps/api/scripts/seed.mjs --site <店> で入れ直す");
+  }
+}
+
+/** content の値が写真の形（{asset?, cleared?, bright?}。DATA_SPEC 4.9.3「写真」）か */
+const isPhotoValue = (v) => isObj(v) && ("asset" in v || "cleared" in v || "bright" in v);
+const ASSET_RE = /^ast_[a-z0-9]{4,24}$/;
 
 /** 文字の箱の文字（連動していない箱だけ）。箱が無い・連動・形が違えば {reason} */
 function boxText(siteJson, id, v) {
@@ -120,66 +133,59 @@ function boxText(siteJson, id, v) {
 }
 
 /**
- * ②③ の下書きから、site.json（samples）の文字の箱に当てる文字を取り出す。
- * "content" の形は draft.content[要素ID]、"site" の形は draft.elements[要素ID].paragraphs（と、残っていれば古い content。content が勝つ）
+ * ②③ の下書き（content の形）から、site.json（samples）の文字の箱に当てる文字を取り出す。draft.content[要素ID] の文字だけ（写真の値は photosFromSiteDraft）。
+ * 古い形は ApiError("site_draft_form")。
  * 返り：{ texts: {要素ID: 文字}（site.json と違う物だけ）, same: [今と同じ], ignored: [{id, reason}], form }
  */
 export function textsFromSiteDraft(siteDraft, siteJson) {
-  const form = siteDraftForm(siteDraft);
-  const out = { texts: {}, same: [], ignored: [], form };
-  const take = (id, v, quiet) => {
-    const r = boxText(siteJson, id, v);
-    if (r.reason) { if (!quiet) out.ignored.push({ id, reason: r.reason }); return; }
-    delete out.texts[id];
-    out.same = out.same.filter((x) => x !== id);
-    if (r.same) out.same.push(id); else out.texts[id] = r.text;
-  };
-  if (form === "site") {
-    for (const [id, el] of Object.entries(siteDraft.draft.elements)) {
-      if (!Array.isArray(el?.paragraphs) || !Array.isArray(siteJson?.elements?.[id]?.paragraphs)) continue;
-      const r = boxText(siteJson, id, paragraphsToText(el.paragraphs));
-      if (!r.reason && !r.same) out.texts[id] = r.text; // 同じ物は数えない（箱が多いので）。連動の箱は ① から描くので見ない
-    }
-  }
+  assertContentForm(siteDraft);
+  const out = { texts: {}, same: [], ignored: [], form: siteDraftForm(siteDraft) };
   const content = siteDraft?.draft?.content;
-  if (isObj(content)) for (const [id, v] of Object.entries(content)) take(id, v, false);
+  if (!isObj(content)) return out;
+  for (const [id, v] of Object.entries(content)) {
+    if (isPhotoValue(v)) continue;
+    const r = boxText(siteJson, id, v);
+    if (r.reason) out.ignored.push({ id, reason: r.reason });
+    else if (r.same) out.same.push(id);
+    else out.texts[id] = r.text;
+  }
   return out;
 }
 
 /**
- * ②③ の下書きに文字を載せた写しを返す（元は変えない）。形は今の下書きに合わせる（siteDraftForm）。
+ * ②③ の下書き（content の形）から、差し替えた ② の写真を取り出す：content[要素ID] = {asset}（DATA_SPEC 4.9.3「写真」。切り抜きは持たない）。
+ * site.json の elements[要素ID] が写真（type "photo"）で、asset が元の素材と違う物だけ。cleared（写真を外す）・bright は今は描けないので ignored。
+ * 返り：{ photos: {要素ID: 新しい素材ID}, same: [元と同じ], ignored: [{id, reason}] }
+ */
+export function photosFromSiteDraft(siteDraft, siteJson) {
+  assertContentForm(siteDraft);
+  const out = { photos: {}, same: [], ignored: [] };
+  const content = siteDraft?.draft?.content;
+  if (!isObj(content)) return out;
+  for (const [id, v] of Object.entries(content)) {
+    if (!isPhotoValue(v)) continue;
+    const el = siteJson?.elements?.[id];
+    if (el?.type !== "photo" || !el.asset) { out.ignored.push({ id, reason: "site.json に写真の要素が無い" }); continue; }
+    if (v.cleared) { out.ignored.push({ id, reason: "まだ描けない（cleared）" }); continue; }
+    if (v.bright != null) out.ignored.push({ id, reason: "まだ描けない（bright）" });
+    if (v.asset == null) continue;
+    if (typeof v.asset !== "string" || !ASSET_RE.test(v.asset)) { out.ignored.push({ id, reason: "写真の ID の形が違う" }); continue; }
+    if (v.asset === el.asset) out.same.push(id);
+    else out.photos[id] = v.asset;
+  }
+  return out;
+}
+
+/**
+ * ②③ の下書きに文字を載せた写しを返す（元は変えない）。content の形だけ（古い形は ApiError("site_draft_form")）。
  * - 下書きが無い：{draft: {template, sections: {}, content}}（DATA_SPEC 4.9.3）
- * - "content"：content[要素ID] に文字。型の店の形に無い古い項目（elements・genConfig など site.json の物）は持たない
- * - "site"：elements[要素ID].paragraphs と genConfig（同じ文字の所）を直す。古い content は elements に移して消す
- * 返り：{ data, form, folded: [content から elements に移した ID], genConfig: {replaced, missing} | null }
+ * - ある：content[要素ID] に文字。型の店の形に無い項目（added など）は持たない。content のほかの値（写真など）はそのまま
+ * 返り：{ data, form }
  */
 export function withSiteTexts(siteDraft, texts, templateName) {
+  assertContentForm(siteDraft);
   const out = isObj(siteDraft) ? clone(siteDraft) : {};
   const form = siteDraftForm(out);
-  if (form === "site") {
-    const d = out.draft;
-    const folded = [];
-    const all = {};
-    if (isObj(d.content)) {
-      for (const [id, v] of Object.entries(d.content)) {
-        const t = contentText(v);
-        if (t != null && Array.isArray(d.elements[id]?.paragraphs)) { all[id] = t; folded.push(id); }
-      }
-    }
-    Object.assign(all, Object.fromEntries(Object.entries(texts).map(([id, t]) => [id, String(t)])));
-    const missingBox = Object.keys(all).filter((id) => !Array.isArray(d.elements[id]?.paragraphs));
-    if (missingBox.length) throw new ApiError("site_draft", `②③ の下書きに文字の箱が無い：${missingBox.join(" ")}`);
-    let genConfig = null;
-    if (isObj(d.genConfig)) {
-      const g = applyTextsToGenConfig(d.genConfig, d, all);
-      d.genConfig = g.config;
-      genConfig = { replaced: g.replaced, missing: g.missing };
-    }
-    out.draft = { ...applySiteTexts(d, all) };
-    if (genConfig) out.draft.genConfig = d.genConfig;
-    delete out.draft.content;
-    return { data: out, form, folded, genConfig };
-  }
   if (!form) {
     if (!templateName) throw new ApiError("site_draft", "②③ の下書きが無く、型の名前もわからない（site.json の templateId）");
     out.draft = { template: { name: templateName, version: 1 }, sections: {} };
@@ -187,17 +193,24 @@ export function withSiteTexts(siteDraft, texts, templateName) {
   const { template, sections, content } = out.draft;
   out.draft = { template, sections: isObj(sections) ? sections : {}, content: isObj(content) ? content : {} };
   for (const [id, t] of Object.entries(texts)) out.draft.content[id] = String(t);
-  return { data: out, form: form ?? "content", folded: [], genConfig: null };
+  return { data: out, form: form ?? "content" };
 }
 
 // ───────── 「--from の形」のフォルダを書く
 
+const readSamplesJson = (site, name, root) => {
+  const f = path.join(root, "samples", site, name);
+  return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : null;
+};
+
 /**
- * samples/<店> の設定（FROM_FILES・<型>.json）を土台に、api の ① と ② の文字を重ねたフォルダを作る。
+ * samples/<店> の設定（FROM_FILES・<型>.json）を土台に、api の ① と ② の文字・写真を重ねたフォルダを作る。
  * assets：{ json, files: {名前: Buffer} } を渡せば assets.json と media/ を api の物にする（無ければ samples の assets.json。写真は makeStage が samples から写す）
- * 返り：{ dir, files, texts, genConfig: {file, replaced, missing} | null }
+ * photos：{要素ID: 新しい素材ID}（photosFromSiteDraft）。gen は決まった素材 ID（site.json・<型>.json の物）を指すので、site.json を書き換えても
+ *   gen で戻る。そこで assets.json の**元の素材の file を新しい写真の file に向ける**（新しい写真の台帳と file が要る。無ければ ApiError("assets")）
+ * 返り：{ dir, files, texts, genConfig: {file, replaced, missing} | null, swapped: ["fv_1:ast_fv01→ast_xxx"] }
  */
-export function writeSourceDir(dir, { site, shop, texts = {}, assets = null, root = ROOT }) {
+export function writeSourceDir(dir, { site, shop, texts = {}, photos = {}, assets = null, root = ROOT }) {
   if (!SITE_RE.test(site ?? "")) throw new ApiError("site", `店の名前の形が違う：${site}`);
   if (!isObj(shop)) throw new ApiError("shop", "① が無い");
   const src = path.join(root, "samples", site);
@@ -211,11 +224,12 @@ export function writeSourceDir(dir, { site, shop, texts = {}, assets = null, roo
   }
   const write = (n, v) => { fs.writeFileSync(path.join(dir, n), JSON.stringify(v, null, 2) + "\n"); if (!files.includes(n)) files.push(n); };
   write("shop.json", shop);
+  const sf = path.join(dir, "site.json");
+  const needSite = Object.keys(texts).length > 0 || Object.keys(photos).length > 0;
+  if (needSite && !fs.existsSync(sf)) throw new ApiError("site_json", `② の文字・写真を当てる site.json が無い：samples/${site}`);
+  const siteJson = needSite ? JSON.parse(fs.readFileSync(sf, "utf8")) : null;
   let genConfig = null;
   if (Object.keys(texts).length) {
-    const sf = path.join(dir, "site.json");
-    if (!fs.existsSync(sf)) throw new ApiError("site_json", `② の文字を当てる site.json が無い：samples/${site}`);
-    const siteJson = JSON.parse(fs.readFileSync(sf, "utf8"));
     const tpl = files.find((f) => /^wa\d\d\.json$/.test(f));
     if (tpl) {
       const g = applyTextsToGenConfig(JSON.parse(fs.readFileSync(path.join(dir, tpl), "utf8")), siteJson, texts);
@@ -224,15 +238,31 @@ export function writeSourceDir(dir, { site, shop, texts = {}, assets = null, roo
     }
     write("site.json", applySiteTexts(siteJson, texts));
   }
+  const swapped = [];
+  let json = assets?.json ?? null;
+  if (Object.keys(photos).length) {
+    json = clone(json ?? readSamplesJson(site, "assets.json", root) ?? { schemaVersion: 1, assets: {} });
+    json.assets ??= {};
+    const have = new Set(Object.keys(assets?.files ?? {}));
+    for (const [elId, newId] of Object.entries(photos)) {
+      const orig = siteJson.elements?.[elId]?.asset;
+      if (!orig) throw new ApiError("assets", `site.json に写真の要素が無い：${elId}`);
+      const na = json.assets[newId];
+      if (!na?.file?.key) throw new ApiError("assets", `差し替えた写真の台帳が無い：${elId}→${newId}`);
+      if (!have.has(na.file.key) && !fs.existsSync(path.join(src, "media", na.file.key))) throw new ApiError("assets", `差し替えた写真のファイルが無い：${elId}→${newId}（${na.file.key}）`);
+      json.assets[orig] = { ...(json.assets[orig] ?? {}), file: { ...na.file } };
+      swapped.push(`${elId}:${orig}→${newId}`);
+    }
+  }
+  if (json) write("assets.json", json);
   if (assets) {
-    write("assets.json", assets.json);
     fs.mkdirSync(path.join(dir, "media"), { recursive: true });
     for (const [n, buf] of Object.entries(assets.files ?? {})) {
       if (!/^[A-Za-z0-9._-]+$/.test(n)) throw new ApiError("assets", `写真のファイル名の形が違う：${n}`);
       fs.writeFileSync(path.join(dir, "media", n), buf);
     }
   }
-  return { dir, files: files.sort(), texts, genConfig };
+  return { dir, files: files.sort(), texts, genConfig, swapped };
 }
 
 /**
@@ -252,59 +282,86 @@ export function textsAfterGen(texts) {
 const MEDIA_EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
 /**
- * 版の写真（版が指している ④）を取ってくる：{ json（assets.json の形）, files: {media の名前: Buffer} }。
- * 版の assets は samples の assets.json に重ねる（版に無い写真は samples のまま）。file.key は R2 の名前なので media/ の名前（<ID>.<拡張子>）に替える。
- * 鍵だけで読める写真の口は版の写真と写真のファイルだけなので、今の ④（下書きの時点）は取らない（0059）
+ * api の写真（[[ID, 台帳], …]）を取ってきて samples の assets.json に重ねる：{ json（assets.json の形）, files: {media の名前: Buffer} }。
+ * file.key は R2 の名前なので media/ の名前（<ID>.<拡張子>）に替える
  */
-export async function fetchVersionAssets(client, slug, version, { site = slug, root = ROOT } = {}) {
-  const f = path.join(root, "samples", site, "assets.json");
-  const base = fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : { schemaVersion: 1, assets: {} };
+async function overlayAssets(client, slug, entries, { site = slug, root = ROOT } = {}) {
+  const base = readSamplesJson(site, "assets.json", root) ?? { schemaVersion: 1, assets: {} };
   const json = { ...base, assets: { ...(base.assets ?? {}) } };
   const files = {};
-  for (const [id, a] of Object.entries(version?.assets?.assets ?? {})) {
+  for (const [id, a] of entries) {
     const name = `${id}.${MEDIA_EXT[a?.file?.mime] ?? "jpg"}`;
     files[name] = await client.getAssetFile(slug, id);
-    json.assets[id] = { ...(json.assets[id] ?? {}), ...a, file: { ...(a?.file ?? {}), key: name } };
+    const { id: _id, ...meta } = a ?? {};
+    void _id;
+    json.assets[id] = { ...(json.assets[id] ?? {}), ...meta, file: { ...(a?.file ?? {}), key: name } };
   }
   return { json, files };
 }
 
-const readSamplesSite = (site, root) => {
-  const f = path.join(root, "samples", site, "site.json");
-  return fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, "utf8")) : null;
-};
+/**
+ * 版の写真（版が指している ④。ids を渡せばその写真だけ）を取ってくる：{ json, files }。版に無い写真は samples のまま。
+ * ids の写真が版に無ければ ApiError("assets")
+ */
+export async function fetchVersionAssets(client, slug, version, { site = slug, root = ROOT, ids = null } = {}) {
+  const all = version?.assets?.assets ?? {};
+  const want = ids ?? Object.keys(all);
+  const miss = want.filter((id) => !all[id]);
+  if (miss.length) throw new ApiError("assets", `版に写真が無い：${miss.join(" ")}`);
+  return overlayAssets(client, slug, want.map((id) => [id, all[id]]), { site, root });
+}
+
+/** 今の ④（下書きの時点）の写真を ids だけ取ってくる（GET /edit-api/shops/:slug/assets/:id と …/file。0065）：{ json, files } */
+export async function fetchCurrentAssets(client, slug, ids, { site = slug, root = ROOT } = {}) {
+  const entries = [];
+  for (const id of ids) entries.push([id, await client.getAsset(slug, id)]);
+  return overlayAssets(client, slug, entries, { site, root });
+}
+
+const readSamplesSite = (site, root) => readSamplesJson(site, "site.json", root);
 
 /**
- * 今の下書き（①・② の文字）を「--from の形」に書く（edit-runner の元）。① も ②③ も /edit-api から鍵だけで読む。写真は samples の物
- * 返り：{ dir, shopId, shop: {version, baseHash, data}, site: {version, data, form}, texts, ignored, genConfig, assetsFrom }
+ * 今の下書き（①・② の文字と写真）を「--from の形」に書く（edit-runner の元）。① も ②③ も /edit-api から鍵だけで読む。
+ * 写真は samples の物。② で差し替えた写真（content[要素ID] = {asset}）だけは今の ④ を api から取る
+ * 返り：{ dir, shopId, shop: {version, baseHash, data}, site: {version, data, form}, texts, photos, swapped, ignored, genConfig, assetsFrom }
  */
 export async function fetchDraftSource(client, { site, dir, root = ROOT }) {
   const shop = await client.getShopDraft(site);
   const siteDraft = await client.getSiteDraft(site);
-  const t = textsFromSiteDraft(siteDraft?.data, readSamplesSite(site, root));
-  const w = writeSourceDir(dir, { site, shop: shop.data, texts: t.texts, root });
+  const siteJson = readSamplesSite(site, root);
+  const t = textsFromSiteDraft(siteDraft?.data, siteJson);
+  const ph = photosFromSiteDraft(siteDraft?.data, siteJson);
+  const ids = [...new Set(Object.values(ph.photos))];
+  const assets = ids.length ? await fetchCurrentAssets(client, site, ids, { root }) : null;
+  const w = writeSourceDir(dir, { site, shop: shop.data, texts: t.texts, photos: ph.photos, assets, root });
   return {
     dir, shopId: shop.shopId,
     shop: { version: shop.version, baseHash: shop.baseHash, data: shop.data },
     site: { version: siteDraft?.version ?? 0, data: siteDraft?.data ?? null, form: t.form },
-    texts: t.texts, ignored: t.ignored, genConfig: w.genConfig, assetsFrom: "samples",
+    texts: t.texts, photos: ph.photos, swapped: w.swapped, ignored: [...t.ignored, ...ph.ignored], genConfig: w.genConfig, assetsFrom: assets ? "samples+api" : "samples",
   };
 }
 
 /**
  * 公開された ① から「--from の形」に書く（rebuild-shop --from-api の元）。GET /edit-api/shops/:slug/published（鍵だけ）
- * apiAssets：版の写真を api から取る（無ければ samples の写真）
- * 返り：{ dir, shopId, version, scope, render, publishedAt, texts, ignored, genConfig, assetsFrom, afterGen }
+ * apiAssets：版の写真を全部 api から取る（無ければ samples の写真。ただし ② で差し替えた写真だけは、版の写真を api から取る）
+ * 返り：{ dir, shopId, version, scope, render, publishedAt, texts, photos, swapped, ignored, siteForm, genConfig, assetsFrom, afterGen }
  */
 export async function fetchPublishedSource(client, { site, dir, apiAssets = false, root = ROOT }) {
   let v;
   try { v = await client.getPublished(site); }
   catch (e) { if (e instanceof ApiError && e.code === "not_published") throw new ApiError("not_published", `まだ公開していない：${site}`, { status: e.status, body: e.body }); throw e; }
-  const n = v.number;
-  const t = textsFromSiteDraft(v.site, readSamplesSite(site, root));
-  const assets = apiAssets ? await fetchVersionAssets(client, site, v, { root }) : null;
-  const w = writeSourceDir(dir, { site, shop: v.shop, texts: t.texts, assets, root });
-  return { dir, shopId: v.shopId ?? null, version: n, scope: v.scope ?? null, render: v.render ?? null, publishedAt: v.publishedAt ?? null, texts: t.texts, ignored: t.ignored, siteForm: t.form, genConfig: w.genConfig, assetsFrom: assets ? "api" : "samples", afterGen: textsAfterGen(t.texts) };
+  const siteJson = readSamplesSite(site, root);
+  const t = textsFromSiteDraft(v.site, siteJson);
+  const ph = photosFromSiteDraft(v.site, siteJson);
+  const ids = [...new Set(Object.values(ph.photos))];
+  const assets = apiAssets ? await fetchVersionAssets(client, site, v, { root }) : ids.length ? await fetchVersionAssets(client, site, v, { root, ids }) : null;
+  const w = writeSourceDir(dir, { site, shop: v.shop, texts: t.texts, photos: ph.photos, assets, root });
+  return {
+    dir, shopId: v.shopId ?? null, version: v.number, scope: v.scope ?? null, render: v.render ?? null, publishedAt: v.publishedAt ?? null,
+    texts: t.texts, photos: ph.photos, swapped: w.swapped, ignored: [...t.ignored, ...ph.ignored], siteForm: t.form, genConfig: w.genConfig,
+    assetsFrom: apiAssets ? "api" : assets ? "samples+api" : "samples", afterGen: textsAfterGen(t.texts),
+  };
 }
 
 // ───────── 下書き → 公開

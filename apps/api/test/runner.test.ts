@@ -1,6 +1,6 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { allowPublish, call, getDraft, putDraft, world } from "./helpers";
+import { allowPublish, call, fakeJpeg, getDraft, putDraft, upload, world } from "./helpers";
 
 const KEY = "test-runner-secret-0123456789abcdef-xyz";
 const R = (key: string | null = KEY): Record<string, string> => (key ? { "x-edit-runner-secret": key } : {});
@@ -151,5 +151,21 @@ describe("鍵だけで回す口：②③ の下書き・公開・公開した版
     // 1 分たてば通る。古い下書きの版なら 409
     await allowPublish(shop.id);
     expect((await call("POST", `/edit-api/shops/${shop.slug}/publish`, { headers: R(), json: { ...body, siteDraftVersion: w.version - 1 } })).status).toBe(409);
+  });
+  it("R-9 写真の台帳 1 件を鍵で読む（下書きの時点の ② の写真のため。0065）：鍵なしは 401、ある写真は 200（file の mime・幅・高さ）、無い・よそのお店の写真は 404", async () => {
+    const { owner, shop } = await world();
+    const other = await world();
+    const a = (await (await upload(owner.cookie, shop.id, fakeJpeg(32, 18))).json()) as any;
+    const b = (await (await upload(other.owner.cookie, other.shop.id, fakeJpeg(10, 10))).json()) as any;
+    const p = (id: string) => `/edit-api/shops/${shop.slug}/assets/${id}`;
+    expect((await call("GET", p(a.id), { headers: R(null), origin: null })).status).toBe(401);
+    const r = await call("GET", p(a.id), { headers: R(), origin: null });
+    expect(r.status).toBe(200);
+    const j = (await r.json()) as any;
+    expect(j).toMatchObject({ id: a.id, file: { mime: "image/jpeg", width: 32, height: 18 } });
+    expect(typeof j.file.key).toBe("string");
+    expect((await call("GET", p("ast_nothere0000"), { headers: R() })).status).toBe(404);
+    expect((await call("GET", p(b.id), { headers: R() })).status).toBe(404);
+    expect((await call("GET", `${p(a.id)}/file`, { headers: R() })).status).toBe(200);
   });
 });

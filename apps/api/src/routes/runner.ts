@@ -139,6 +139,17 @@ runner.get("/shops/:shop/published", async (c) => {
   return c.json(await versionBody(c.env, s, pub.published_version));
 });
 
+/**
+ * 写真の台帳 1 件（④ の今。assetJson の形：{id, kind, file:{key, mime, width, height, bytes}, …}）。ゴミ箱の中でも、消しきっていなければ返す。
+ * runner が下書きの時点の ② の写真（content[要素ID] = {asset}。まだ版に入っていない物）を描くのに使う（0065）
+ */
+runner.get("/shops/:shop/assets/:id", async (c) => {
+  const s = await findShop(c, c.req.param("shop"));
+  const row = await getAsset(c.env, s.id, c.req.param("id"));
+  if (!row) throw new ApiError(404, "not_found", "写真が見つかりません");
+  return c.json(assetJson(row));
+});
+
 /** 写真そのもの（元の 1 枚）。ゴミ箱の中でも、消しきっていなければ返す（版が指していることがあるので） */
 runner.get("/shops/:shop/assets/:id/file", async (c) => {
   const s = await findShop(c, c.req.param("shop"));

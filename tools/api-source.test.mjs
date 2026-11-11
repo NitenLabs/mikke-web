@@ -6,7 +6,7 @@ import os from "node:os";
 import path from "node:path";
 import {
   API_ROUTES, ApiError, apiClient, draftVersions, fetchDraftSource, fetchPublishedSource, pagesFromDist, publishDrafts, publishFailure, publishRenderOf, publishSuccess, publishWithWait,
-  siteDraftForm, templateNameOf, textsAfterGen, textsFromSiteDraft, waitSecondsOf, withSiteTexts, writeSourceDir,
+  photosFromSiteDraft, siteDraftForm, templateNameOf, textsAfterGen, textsFromSiteDraft, waitSecondsOf, withSiteTexts, writeSourceDir,
 } from "./lib/api-source.mjs";
 import { paragraphsToText, shopHash } from "./lib/edit-ops.mjs";
 import { ROOT } from "./lib/rebuild.mjs";
@@ -98,40 +98,67 @@ test("② の文字：下書きに載せる（無ければ DATA_SPEC 4.9.3 の�
   const made = withSiteTexts(null, { fv_copy: "新しい" }, "wa-03");
   assert.deepEqual(made.data, { draft: { template: { name: "wa-03", version: 1 }, sections: {}, content: { fv_copy: "新しい" } } });
   assert.equal(made.form, "content");
-  const before = { draft: { template: { name: "wa-03", version: 1 }, sections: {}, content: { other: "o" }, genConfig: { old: 1 }, added: [] }, theme: { t: 1 } };
+  const before = { draft: { template: { name: "wa-03", version: 1 }, sections: {}, content: { other: "o", fv_1: { asset: "ast_new0001" } }, added: [] }, theme: { t: 1 } };
   const next = withSiteTexts(before, { fv_copy: "新しい" }, "wa-03").data;
-  assert.deepEqual(next.draft, { template: { name: "wa-03", version: 1 }, sections: {}, content: { other: "o", fv_copy: "新しい" } }, "型の店の形に無い項目（genConfig・added）は持たない");
+  assert.deepEqual(next.draft, { template: { name: "wa-03", version: 1 }, sections: {}, content: { other: "o", fv_1: { asset: "ast_new0001" }, fv_copy: "新しい" } }, "型の店の形に無い項目（added）は持たない。写真の値はそのまま");
   assert.deepEqual(next.theme, { t: 1 });
   assert.equal(before.draft.content.fv_copy, undefined);
   assert.throws(() => withSiteTexts(null, { a: "b" }, null), (e) => e.code === "site_draft");
 });
 
-test("② の文字：site.json を丸ごと持つ形（seed・apps/owner）は elements と genConfig に書き、古い content は elements に移して消す", () => {
+test("②③ の下書きの形：site.json を丸ごと持つ古い形（0065 より前の seed）は読む・書くとも site_draft_form で止まる（黙って直さない）", () => {
   const site = ametSite();
   const gen = readJson(path.join(AMET, "wa03.json"));
-  const seedForm = { draft: { ...site, template: { name: "wa-03", version: 1 }, genConfig: gen }, theme: { t: 1 } };
-  assert.equal(siteDraftForm(seedForm), "site");
+  const oldForm = { draft: { ...site, template: { name: "wa-03", version: 1 }, genConfig: gen }, theme: { t: 1 } };
+  assert.equal(siteDraftForm(oldForm), "old");
+  assert.equal(siteDraftForm({ draft: { template: {}, sections: {}, genConfig: {} } }), "old");
   assert.equal(siteDraftForm({ draft: { template: {}, sections: {}, content: {} } }), "content");
   assert.equal(siteDraftForm(null), null);
-  // 読む：elements の段落が samples と違えば文字として取る（同じなら取らない）
-  assert.deepEqual(textsFromSiteDraft(seedForm, site).texts, {});
-  const ownerEdited = withSiteTexts(seedForm, { fv_copy: "朝の、\n一杯。" }, "wa-03");
-  assert.equal(ownerEdited.form, "site");
-  assert.equal(paragraphsToText(ownerEdited.data.draft.elements.fv_copy.paragraphs), "朝の、\n一杯。");
-  assert.deepEqual(ownerEdited.data.draft.genConfig.fvCopy, ["朝の、", "一杯。"], "genConfig も同じ文字に（古く残らない）");
-  assert.equal(ownerEdited.data.draft.content, undefined);
-  assert.deepEqual(ownerEdited.data.theme, { t: 1 });
-  assert.deepEqual(textsFromSiteDraft(ownerEdited.data, site).texts, { fv_copy: "朝の、\n一杯。" });
-  assert.equal(paragraphsToText(seedForm.draft.elements.fv_copy.paragraphs), FV, "元は変えない");
-  // 0053 の runner が足した content が残る形：読むと content が勝ち、書くと elements・genConfig に移して content を消す
-  const mixed = { ...seedForm, draft: { ...seedForm.draft, content: { fv_copy: "前の runner の文字" } } };
-  assert.deepEqual(textsFromSiteDraft(mixed, site).texts, { fv_copy: "前の runner の文字" });
-  const w = withSiteTexts(mixed, {}, "wa-03");
-  assert.deepEqual(w.folded, ["fv_copy"]);
-  assert.equal(w.data.draft.content, undefined);
-  assert.equal(paragraphsToText(w.data.draft.elements.fv_copy.paragraphs), "前の runner の文字");
-  assert.deepEqual(w.data.draft.genConfig.fvCopy, ["前の runner の文字"]);
-  assert.throws(() => withSiteTexts(seedForm, { nope: "x" }, "wa-03"), (e) => e.code === "site_draft");
+  const stop = (e) => e instanceof ApiError && e.code === "site_draft_form" && /seed/.test(e.message);
+  assert.throws(() => textsFromSiteDraft(oldForm, site), stop);
+  assert.throws(() => photosFromSiteDraft(oldForm, site), stop);
+  assert.throws(() => withSiteTexts(oldForm, { fv_copy: "x" }, "wa-03"), stop);
+});
+
+test("② の写真：content[要素ID] = {asset} から、元の素材と違う物だけ取り出す（cleared・bright は描けないので ignored。文字の値は見ない）", () => {
+  const site = ametSite();
+  const content = {
+    fv_1: { asset: "ast_new0001" },
+    fv_2: { asset: "ast_fv02" },
+    fv_copy: "文字は写真ではない",
+    nope: { asset: "ast_new0002" },
+    st_ph1: { cleared: true },
+  };
+  const ph = photosFromSiteDraft({ draft: { template: { name: "wa-03", version: 1 }, sections: {}, content } }, site);
+  assert.deepEqual(ph.photos, { fv_1: "ast_new0001" });
+  assert.deepEqual(ph.same, ["fv_2"]);
+  assert.ok(ph.ignored.some((x) => x.id === "nope"));
+  assert.ok(ph.ignored.some((x) => x.id === "st_ph1" && /cleared/.test(x.reason)));
+  // 文字の取り出しは写真の値を「文字の形でない」と数えない
+  const t = textsFromSiteDraft({ draft: { content: { fv_1: { asset: "ast_new0001" }, fv_copy: "朝" } } }, site);
+  assert.deepEqual(t.texts, { fv_copy: "朝" });
+  assert.deepEqual(t.ignored, []);
+  assert.deepEqual(photosFromSiteDraft(null, site).photos, {});
+  assert.deepEqual(photosFromSiteDraft({ draft: { content: { fv_1: { asset: "ast_new0001", bright: 10 } } } }, site).photos, { fv_1: "ast_new0001" }, "bright は描けないが写真は替える");
+});
+
+test("--from の形に書く：差し替えた ② の写真は、元の素材の file を新しい写真に向ける（gen で戻らない。samples は変えない）", () => {
+  const d = tmp();
+  const assetsBefore = fs.readFileSync(path.join(AMET, "assets.json"), "utf8");
+  const img = Buffer.from([0xff, 0xd8, 0x01, 0xff, 0xd9]);
+  const base = readJson(path.join(AMET, "assets.json"));
+  const json = { ...base, assets: { ...base.assets, ast_new0001: { kind: "photo", file: { key: "ast_new0001.jpg", mime: "image/jpeg", width: 10, height: 10 } } } };
+  const w = writeSourceDir(d, { site: "amet", shop: ametShop(), photos: { fv_1: "ast_new0001" }, assets: { json, files: { "ast_new0001.jpg": img } } });
+  assert.deepEqual(w.swapped, ["fv_1:ast_fv01→ast_new0001"]);
+  const aj = readJson(path.join(d, "assets.json"));
+  assert.equal(aj.assets.ast_fv01.file.key, "ast_new0001.jpg");
+  assert.equal(aj.assets.ast_fv01.kind, base.assets.ast_fv01.kind, "台帳のほかの値は元のまま");
+  assert.deepEqual(fs.readFileSync(path.join(d, "media", "ast_new0001.jpg")), img);
+  assert.equal(fs.readFileSync(path.join(AMET, "assets.json"), "utf8"), assetsBefore);
+  assert.equal(fs.readFileSync(path.join(d, "site.json"), "utf8"), fs.readFileSync(path.join(AMET, "site.json"), "utf8"), "文字が無ければ site.json は samples のまま");
+  // 新しい写真の台帳・ファイルが無ければ止まる
+  assert.throws(() => writeSourceDir(tmp(), { site: "amet", shop: ametShop(), photos: { fv_1: "ast_none0001" } }), (e) => e.code === "assets");
+  assert.throws(() => writeSourceDir(tmp(), { site: "amet", shop: ametShop(), photos: { fv_1: "ast_new0001" }, assets: { json, files: {} } }), (e) => e.code === "assets");
 });
 
 test("--from の形に書く：samples の設定に api の ① と文字を重ねる（samples は変えない）", () => {
@@ -166,7 +193,32 @@ test("今の下書きを読む：① と ②③ の下書き（どちらも /edi
   assert.deepEqual({ version: s.site.version, form: s.site.form }, { version: 3, form: "content" });
   assert.deepEqual(s.texts, { fv_copy: "下書きの文字" });
   assert.equal(s.assetsFrom, "samples");
+  assert.deepEqual(s.swapped, []);
   assert.ok(noCookie(fa.calls), "Cookie・Origin は送らない");
+  // ② で写真を差し替えた下書き：今の ④ の台帳（…/assets/:id）とファイルを取り、元の素材の file を向ける
+  const img = Buffer.from([0xff, 0xd8, 0x02, 0xff, 0xd9]);
+  const fp = fakeApi({
+    "GET /edit-api/shops/amet/shop": () => [200, { shopId: shop.shopId, slug: "amet", version: 2, baseHash: "h", data: shop }],
+    "GET /edit-api/shops/amet/site": () => [200, { shopId: shop.shopId, kind: "site", version: 4, data: { draft: { template: { name: "wa-03", version: 1 }, sections: {}, content: { fv_1: { asset: "ast_up000001" } } } } }],
+    "GET /edit-api/shops/amet/assets/ast_up000001": () => [200, { id: "ast_up000001", kind: "photo", file: { key: "assets/shp_amet/ast_up000001.jpg", mime: "image/jpeg", width: 1200, height: 800 } }],
+    "GET /edit-api/shops/amet/assets/ast_up000001/file": () => [200, img],
+  });
+  const dp = tmp();
+  const sp = await fetchDraftSource(client(fp), { site: "amet", dir: dp });
+  assert.deepEqual(sp.photos, { fv_1: "ast_up000001" });
+  assert.deepEqual(sp.swapped, ["fv_1:ast_fv01→ast_up000001"]);
+  assert.equal(sp.assetsFrom, "samples+api");
+  const ajp = readJson(path.join(dp, "assets.json"));
+  assert.equal(ajp.assets.ast_fv01.file.key, "ast_up000001.jpg");
+  assert.equal(ajp.assets.ast_up000001.id, undefined, "台帳に id は持たない（キーが ID）");
+  assert.deepEqual(fs.readFileSync(path.join(dp, "media", "ast_up000001.jpg")), img);
+  assert.ok(fp.calls.some((c) => c.path === API_ROUTES.asset("amet", "ast_up000001")));
+  // 古い形の下書きは止まる
+  const fo = fakeApi({
+    "GET /edit-api/shops/amet/shop": () => [200, { shopId: shop.shopId, slug: "amet", version: 2, baseHash: "h", data: shop }],
+    "GET /edit-api/shops/amet/site": () => [200, { shopId: shop.shopId, kind: "site", version: 1, data: { draft: { ...ametSite(), template: { name: "wa-03", version: 1 } } } }],
+  });
+  await assert.rejects(fetchDraftSource(client(fo), { site: "amet", dir: tmp() }), (e) => e.code === "site_draft_form");
   // ②③ の下書きがまだ無い（版 0）
   const fa2 = fakeApi({
     "GET /edit-api/shops/amet/shop": () => [200, { shopId: shop.shopId, slug: "amet", version: 2, baseHash: "h", data: shop }],
@@ -196,6 +248,16 @@ test("公開された ① から --from の形に（rebuild-shop --from-api。/p
   assert.ok(Object.keys(aj.assets).length > 1, "版に無い写真は samples のまま");
   assert.deepEqual(fs.readFileSync(path.join(d, "media", "ast_fv01.jpg")), img);
   assert.ok(noCookie(fa.calls));
+  // --api-assets なしでも、② で差し替えた写真だけは版の写真を api から取る
+  const pubWithPhoto = () => [200, { shopId: shop.shopId, slug: "amet", number: 5, scope: "all", render: "pending", shop, site: { draft: { template: { name: "wa-03", version: 1 }, sections: {}, content: { fv_1: { asset: "ast_up000001" } } } }, assets: { schemaVersion: 1, assets: { ast_fv01: { kind: "photo", file: { key: "assets/shp_amet/ast_fv01.jpg", mime: "image/jpeg" } }, ast_up000001: { kind: "photo", file: { key: "assets/shp_amet/ast_up000001.png", mime: "image/png" } } } } }];
+  const fq = fakeApi({ "GET /edit-api/shops/amet/published": pubWithPhoto, "GET /edit-api/shops/amet/assets/ast_up000001/file": () => [200, img] });
+  const dq = tmp();
+  const q = await fetchPublishedSource(client(fq), { site: "amet", dir: dq });
+  assert.deepEqual(q.swapped, ["fv_1:ast_fv01→ast_up000001"]);
+  assert.equal(q.assetsFrom, "samples+api");
+  assert.equal(readJson(path.join(dq, "assets.json")).assets.ast_fv01.file.key, "ast_up000001.png");
+  assert.deepEqual(fs.readdirSync(path.join(dq, "media")), ["ast_up000001.png"], "差し替えた写真だけ取る");
+  assert.ok(!fq.calls.some((c) => c.path.endsWith("/ast_fv01/file")));
   const fb = fakeApi({ "GET /edit-api/shops/amet/published": () => [404, { error: "not_published", message: "まだ公開していません" }] });
   await assert.rejects(fetchPublishedSource(client(fb), { site: "amet", dir: tmp() }), (e) => e.code === "not_published");
 });

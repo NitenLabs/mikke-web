@@ -11,9 +11,10 @@
 //   鍵と URL は環境変数でもよい：EDIT_DESK_URL・EDIT_RUNNER_SECRET（desk）、MIKKE_API_URL・MIKKE_API_RUNNER_SECRET（無ければ EDIT_RUNNER_SECRET）（api）
 // ① の元（0053）：--local 以外は apps/api の下書き。api は /edit-api/shops/<店>/…（鍵だけ。Cookie・Origin は使わない、0059）。
 //   ① は …/shop で読み、承認された直しを当てた ① を同じ口に If-Match で書き戻す（下書きだけ。公開は --publish）。
-//   ② の文字（doc:"site" の差分）は ②③ の下書き（…/site）に載せる。形は今の下書きに合わせる（api-source.mjs の siteDraftForm）：
-//   DATA_SPEC 4.9.3 の型の店の形なら draft.content[要素ID]、site.json を丸ごと持つ形（seed・apps/owner）なら draft.elements と draft.genConfig。
-//   写真（assets.json・media/）は samples の物。部品は tools/lib/api-source.mjs
+//   ② の文字（doc:"site" の差分）は ②③ の下書き（…/site）の draft.content[要素ID] に載せる（DATA_SPEC 4.9.3 の型の店の形。0065）。
+//   site.json を丸ごと持つ古い形の下書きは site_draft_form で止まる（seed --site <店> で入れ直す）。
+//   写真（assets.json・media/）は samples の物。② で差し替えた写真（content[要素ID] = {asset}）だけは今の ④ を api から取り、
+//   元の素材の file をその写真に向ける。部品は tools/lib/api-source.mjs
 // 主な引数：
 //   --all            待ち行列が空になるまで続けて取る（既定は 1 件）
 //   --dry-run        api の下書きに書き戻さない（--local 以外。既定は書き戻す）
@@ -205,14 +206,14 @@ async function resolveDeploy(job, site, dir) {
 
 // ───────── api の下書き（0053）
 
-/** api の今の下書き（①・② の文字）を work/source に「--from の形」で書く */
+/** api の今の下書き（①・② の文字と写真）を work/source に「--from の形」で書く */
 async function loadApiSource(site, work) {
   const s = await fetchDraftSource(API, { site, dir: path.join(work, "source") });
   return {
     ...s,
     info: {
       base: API.base, shopId: s.shopId, shopDraftVersion: s.shop.version, siteDraftVersion: s.site.version, siteDraftForm: s.site.form,
-      textsFromDraft: Object.keys(s.texts), ignored: s.ignored, assetsFrom: s.assetsFrom, ...(s.genConfig ? { genConfig: s.genConfig } : {}),
+      textsFromDraft: Object.keys(s.texts), ...(s.swapped.length ? { photosSwapped: s.swapped } : {}), ignored: s.ignored, assetsFrom: s.assetsFrom, ...(s.genConfig ? { genConfig: s.genConfig } : {}),
     },
   };
 }
@@ -229,7 +230,7 @@ async function writeBackApi(site, src, applied, shopChanged, site0) {
     const next = withSiteTexts(src.site?.data, applied.texts, templateNameOf(site0));
     try {
       const r = await API.putSiteDraft(site, src.site?.version ?? 0, next.data);
-      out.site = { version: r.version, form: next.form, texts: Object.keys(applied.texts), ...(next.folded.length ? { folded: next.folded } : {}), ...(next.genConfig ? { genConfig: next.genConfig } : {}) };
+      out.site = { version: r.version, form: next.form, texts: Object.keys(applied.texts) };
     }
     catch (e) { if (e instanceof ApiError && e.code === "conflict") throw conflict("②③ ", e); throw e; }
   }
@@ -350,7 +351,7 @@ async function runJob(job) {
     if (Object.keys(applied.texts).length) dataChanged["site.json"] = true;
     if (dep.write) dataChanged["deploy.json"] = true;
     result.dataFiles = LOCAL ? Object.keys(dataChanged).map((f) => `samples/${site}/${f}`)
-      : [...(dataChanged["shop.json"] ? [`api:/edit-api/shops/${site}/shop`] : []), ...(Object.keys(applied.texts).length ? [`api:/edit-api/shops/${site}/site（${src.site.form === "site" ? "draft.elements・genConfig" : "draft.content"}）`] : [])];
+      : [...(dataChanged["shop.json"] ? [`api:/edit-api/shops/${site}/shop`] : []), ...(Object.keys(applied.texts).length ? [`api:/edit-api/shops/${site}/site（draft.content）`] : [])];
     fs.cpSync(sdir, path.join(work, "data"), { recursive: true, filter: (s) => !/[\\/]media([\\/]|$)/.test(s) });
     if (!Object.keys(pages).length) throw new EditError("nochange", "書き出しが前と同じ（差分が表に出ていない）");
     if (unexpected.length) throw new EditError("unmarked", `印の外が変わった（${unexpected.length} 件。人が見る）：` + unexpected.slice(0, 3).map((c) => `${c.page} ${c.where} ${c.kind}「${c.before}」→「${c.after}」`).join(" / "));
