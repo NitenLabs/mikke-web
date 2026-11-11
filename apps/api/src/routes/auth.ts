@@ -5,6 +5,7 @@ import { hmacHex, newId, randomCode, randomToken, sha256Hex, timingSafeEqual } f
 import { ApiError, bad, isPlainObject, readJson } from "../lib/http";
 import { mailerFor } from "../services/mailer";
 import { allowedOrigins } from "../services/csrf";
+import { verifyLineIdToken } from "../services/line";
 import { limitByIp } from "../services/ratelimit";
 import { cookieSecure, createSession, destroySession, requireUser } from "../services/session";
 
@@ -182,8 +183,61 @@ auth.post("/logout-all", requireUser, async (c) => {
   return c.json({ ok: true, sessions: r.meta.changes });
 });
 
+/**
+ * スマホ：LINE（LIFF）で入る。本文 {idToken}（liff.getIDToken()）。
+ * 先にメールで入って LINE をつないだ人だけ入れる（つないでいない LINE は 404 not_linked。メールで入ってからつなぐ）
+ */
+auth.post("/line", async (c) => {
+  await limitByIp(c, "verify");
+  const body = await readJson<Record<string, unknown>>(c, 8192);
+  const p = await verifyLineIdToken(c.env, isPlainObject(body) ? body.idToken : undefined);
+  const user = await c.env.DB.prepare(
+    "SELECT u.id, u.email, u.name, u.role FROM user_identities i JOIN users u ON u.id = i.user_id WHERE i.provider = 'line' AND i.subject = ? AND u.disabled_at IS NULL",
+  )
+    .bind(p.sub)
+    .first<{ id: string; email: string; name: string | null; role: "owner" | "producer" }>();
+  if (!user) throw new ApiError(404, "not_linked", "この LINE はまだつながっていません。一度メールで入ってから「LINE をつなぐ」を押してください");
+  await c.env.DB.prepare("UPDATE user_identities SET last_login_at = ? WHERE provider = 'line' AND subject = ?").bind(Date.now(), p.sub).run();
+  await createSession(c, user.id, user.role);
+  return c.json({ user });
+});
+
 export const me = new Hono<AppEnv>();
 me.use("*", requireUser);
+
+/** つないでいるログインの入口（メールはいつも。LINE はつないだら） */
+me.get("/identities", async (c) => {
+  const user = c.get("user");
+  const rows = await c.env.DB.prepare("SELECT provider, display_name, created_at, last_login_at FROM user_identities WHERE user_id = ?").bind(user.id).all<any>();
+  return c.json({
+    email: user.email,
+    identities: rows.results.map((r) => ({ provider: r.provider, displayName: r.display_name, linkedAt: r.created_at, lastLoginAt: r.last_login_at })),
+  });
+});
+
+/** メール（か LINE）で入っている人が、LIFF の中から自分の LINE をつなぐ。本文 {idToken}。ほかの人につながった LINE は 409 */
+me.post("/identities/line", async (c) => {
+  const user = c.get("user");
+  const body = await readJson<Record<string, unknown>>(c, 8192);
+  const p = await verifyLineIdToken(c.env, isPlainObject(body) ? body.idToken : undefined);
+  const owner = await c.env.DB.prepare("SELECT user_id FROM user_identities WHERE provider = 'line' AND subject = ?").bind(p.sub).first<{ user_id: string }>();
+  if (owner && owner.user_id !== user.id) throw new ApiError(409, "line_in_use", "この LINE はほかのアカウントにつながっています。事務局に連絡してください");
+  if (!owner) {
+    const mine = await c.env.DB.prepare("SELECT subject FROM user_identities WHERE provider = 'line' AND user_id = ?").bind(user.id).first();
+    if (mine) throw new ApiError(409, "line_already_linked", "このアカウントには別の LINE がつながっています。先に外してください");
+    await c.env.DB.prepare("INSERT INTO user_identities (provider, subject, user_id, display_name, created_at) VALUES ('line', ?, ?, ?, ?)")
+      .bind(p.sub, user.id, p.name, new Date().toISOString())
+      .run();
+  }
+  return c.json({ ok: true, provider: "line", displayName: p.name }, owner ? 200 : 201);
+});
+
+/** LINE のつながりを外す（メールではいつでも入れる） */
+me.delete("/identities/line", async (c) => {
+  const r = await c.env.DB.prepare("DELETE FROM user_identities WHERE provider = 'line' AND user_id = ?").bind(c.get("user").id).run();
+  return c.json({ ok: true, removed: r.meta.changes });
+});
+
 me.get("/", async (c) => {
   const user = c.get("user");
   const shops =

@@ -41,8 +41,9 @@ crons = ["0 15 * * *"]
 #                     local：.dev.vars（.dev.vars.example を写す）
 #                     dev・prod：`npx wrangler secret put AUTH_SECRET --env dev`（prod は --env prod）
 #   RESEND_API_KEY  … MAILER = "resend" のとき必須（dev・prod）。`npx wrangler secret put RESEND_API_KEY --env prod`
+#   EDIT_RUNNER_SECRET … 任意。段2 の PC の runner が ① を読み書きする鍵（32 文字以上）。無ければ /edit-api は閉じる
 # 秘密ではない設定（vars。環境ごとに下で書く。上の段からは引き継がれない）
-#   PUBLIC_DOMAIN・APP_ORIGINS・MAILER・MAIL_FROM・COOKIE_SECURE・PUBLIC_PORT（local だけ）
+#   PUBLIC_DOMAIN・APP_ORIGINS・MAILER・MAIL_FROM・COOKIE_SECURE・LINE_LOGIN_CHANNEL_ID・PUBLIC_PORT（local だけ）
 # 結びつけ（環境ごとに下で書く。上の段からは引き継がれない）
 #   DB（D1）・BUCKET（R2）・LOGIN_IP_LIMITER（Rate Limiting）
 # ======================================================================
@@ -65,6 +66,7 @@ MAILER = "resend"
 MAIL_FROM = "芦屋みっけ <login@mail.app.example>"
 COOKIE_SECURE = "true"
 PUBLIC_PORT = ""                      # local だけ使う。空にしておく（上の段から引き継がれない警告を消すため）
+LINE_LOGIN_CHANNEL_ID = ""            # LINE ログイン（LIFF）のチャネル ID。空のあいだは LINE では入れない（メールだけ）
 
 [[env.dev.d1_databases]]
 binding = "DB"
@@ -97,6 +99,7 @@ MAILER = "resend"
 MAIL_FROM = "芦屋みっけ <login@mail.app.example>"
 COOKIE_SECURE = "true"
 PUBLIC_PORT = ""
+LINE_LOGIN_CHANNEL_ID = ""            # LINE ログイン（LIFF）のチャネル ID。空のあいだは LINE では入れない（メールだけ）
 
 [[env.prod.d1_databases]]
 binding = "DB"

@@ -17,6 +17,8 @@ export default defineConfig(async () => {
             APP_ORIGINS: "https://app.mikke-web.test",
             COOKIE_SECURE: "true",
             PUBLIC_PORT: "",
+            EDIT_RUNNER_SECRET: "test-runner-secret-0123456789abcdef-xyz",
+            LINE_LOGIN_CHANNEL_ID: "1650000000",
           },
         },
       }),

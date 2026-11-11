@@ -6,6 +6,7 @@ import { assets } from "./routes/assets";
 import { auth, me } from "./routes/auth";
 import { publicSite, shopSlugFromHost } from "./routes/public";
 import { publishing } from "./routes/publishing";
+import { runner } from "./routes/runner";
 import { shops } from "./routes/shops";
 import { assertConfig } from "./services/config";
 import { corsForApp, csrfGuard } from "./services/csrf";
@@ -14,6 +15,8 @@ import { requireShop, requireUser } from "./services/session";
 /** API（編集画面から） */
 export const api = new Hono<AppEnv>();
 api.onError(errorResponse);
+// 段2 の PC の runner（ブラウザでない）。Cookie・Origin でなく鍵で入るので /api の外
+api.route("/edit-api", runner);
 api.use("/api/*", corsForApp, csrfGuard, async (c, next) => {
   await next();
   c.res.headers.set("Cache-Control", c.res.headers.get("Cache-Control") ?? "no-store");

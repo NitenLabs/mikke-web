@@ -38,7 +38,7 @@ curl -H 'Host: ashiyado.localhost' localhost:8787/
 ## 試験
 
 ```sh
-npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。14 ファイル 139 件
+npm test            # vitest ＋ @cloudflare/vitest-pool-workers（local の D1・R2 で走る）。16 ファイル 151 件
 npm run typecheck   # tsc
 ```
 
@@ -60,12 +60,14 @@ npm run typecheck   # tsc
 | `test/backup.test.ts` | B6 毎日のバックアップ（置き場所・中身・戻すと同じ・30 日・失敗してもほかは続く） |
 | `test/config.test.ts` | 危ない設定では動かない（L5・L6） |
 | `test/seed.test.ts` | 芦屋堂の種まき |
+| `test/line.test.ts` | 店主の LINE ログイン（メールの人に LINE をつなぐ・LINE で入る・ほかの人の LINE・外す・止めた人） |
+| `test/runner.test.ts` | 段2 とのつなぎ（runner が ① を読む・書き戻す・鍵・版が古いと 409） |
 
 ## API の一覧
 
 すべて JSON（写真を上げるときだけ本文が写真）。`/api/*` は API のホスト（例 `app.<アプリのドメイン>`）だけで答え、お店のサブドメインでは答えない。
 
-**権限**：— ＝だれでも／ログイン＝ログインしていれば／店＝そのお店の店主か制作側（ほかのお店は 404 に見せる）／制作＝制作側だけ
+**権限**：鍵＝ヘッダ `x-edit-runner-secret` が秘密の値 `EDIT_RUNNER_SECRET` と同じ（Cookie・Origin は見ない。秘密が無ければ 503）／— ＝だれでも／ログイン＝ログインしていれば／店＝そのお店の店主か制作側（ほかのお店は 404 に見せる）／制作＝制作側だけ
 
 | 道 | 中身 | 権限 |
 |---|---|---|
@@ -74,6 +76,10 @@ npm run typecheck   # tsc
 | `POST /api/auth/verify` `{email, code}` か `{token}` | コードかリンクの合言葉で入る。Cookie を付けて `{user}`。**コードは申し込んだブラウザ（`__Host-mikke_lgn` を持つ）でだけ使える**。1 つのコードで 5 回まで。アカウントごとに 24 時間で 20 回まちがえたら、コードでは 24 時間入れない（429 `locked`。リンクでは入れる）。リンクの合言葉はどの端末でも使える | — |
 | `POST /api/auth/logout` | このセッションを消す | — |
 | `POST /api/auth/logout-all` | このユーザーの全部の端末のセッションを消す。答え `{ok, sessions}` | ログイン |
+| `POST /api/auth/line` `{idToken}` | スマホ：LIFF の ID トークン（`liff.getIDToken()`）を LINE に確かめ、**つないである人だけ**入れる。つないでいない LINE は 404 `not_linked`。`LINE_LOGIN_CHANNEL_ID` が空なら 503 | — |
+| `GET /api/me/identities` | `{email, identities:[{provider:"line", displayName, linkedAt, lastLoginAt}]}` | ログイン |
+| `POST /api/me/identities/line` `{idToken}` | 入っている人に自分の LINE をつなぐ（LIFF の中で）。201。ほかの人の LINE・別の LINE がもうあるときは 409 | ログイン |
+| `DELETE /api/me/identities/line` | LINE を外す（メールではいつでも入れる） | ログイン |
 | `GET /api/me` | `{user:{id,email,name,role}, shops:[{id,slug,name,publishedVersion}]}` | ログイン |
 | `GET /api/shops/:shopId` | お店 `{id,slug,name,template,publishedVersion,publicUrl}` | 店 |
 | `GET /api/shops/:shopId/drafts/:kind` | 下書き（`kind` は `shop`＝① ／ `site`＝②③）。`{kind, version, data, updatedAt, updatedBy}`、`ETag: "版"` | 店 |
@@ -99,6 +105,8 @@ npm run typecheck   # tsc
 | `PATCH /api/shops/:shopId/assets/:id` `{alt?, slot?, kind?, rights?:{basis, note?}}` | 台帳を直す | 店 |
 | `DELETE /api/shops/:shopId/assets/:id` | ゴミ箱へ。答え `{trashedAt, purgeAfterDays:30, referencedBy:["version:3", "draft:site", …]}` | 店 |
 | `POST /api/shops/:shopId/assets/:id/restore` | ゴミ箱から戻す | 店 |
+| `GET /edit-api/shops/:shop/shop` | 段2 の PC の runner 用。① を書き出す `{shopId, slug, version, baseHash, data, updatedAt}`。`:shop` は ID か slug。`baseHash` は `JSON.stringify(①)` の SHA-256（runner の shopHash と同じ） | 鍵 |
+| `PUT /edit-api/shops/:shop/shop` | 承認済みの直しを当てた ① を書き戻す（下書きになるだけ。公開しない）。`If-Match` が要る（428）。古いと 409 `{current:{version, data, baseHash}}`。変更の記録は「仕組み」 | 鍵 |
 | `GET /api/admin/shops` | お店の一覧 | 制作 |
 | `POST /api/admin/shops` `{slug, name, id?}` | お店を作る（wa-01 の最初の下書きつき） | 制作 |
 | `POST /api/admin/users` `{email, name?, role}` | ユーザーを作る（`owner`／`producer`） | 制作 |
@@ -205,7 +213,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | 秘密の値 | `wrangler secret put AUTH_SECRET --env prod`（dev も同じく `--env dev`。`openssl rand -hex 32` など 32 文字以上） |
 | IP ごとの回数の制限 | `wrangler.toml` の環境ごとに `[[env.<名前>.ratelimits]]`（`name = "LOGIN_IP_LIMITER"`・`namespace_id` は環境ごとに別の数字・`simple = { limit = 10, period = 60 }`。`period` は 10 か 60 だけ）。上の段からは引き継がれないので、環境ごとに必ず書く。数えるのは 1 つの Cloudflare の拠点の中で（拠点をまたいだ合計ではない）、おおよその数 |
 
-`wrangler.toml` の `[env.dev]`・`[env.prod]` に書いてある（ドメイン・routes・database_id は仮。秘密の値の名前の一覧も上の注に）。出す前に `npm run deploy:check`（dry-run）。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
+**手順は `DEPLOY.md`**（PowerShell に貼る形）。`wrangler.toml` の `[env.dev]`・`[env.prod]` に書いてある（ドメイン・routes・database_id は仮。秘密の値の名前の一覧も上の注に）。出す前に `npm run deploy:check`（dry-run）。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
 
 ### 毎日のバックアップと戻し方（B6）
 
@@ -284,6 +292,8 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | 33 | 本物のメールは Resend（fetch で API を直に叩く。ライブラリは入れない）。文だけ・件名にコードを入れない。429・5xx・つながらないは同じ Idempotency-Key で 1 回だけやり直す。`MAILER=resend` は `RESEND_API_KEY`・`MAIL_FROM` がなければ起動しない（L6 と同じ考え） | 依存を増やさない。通知に出る件名にコードを出さない。やり直しで 2 通届かない |
 | 34 | ログインの申し込み・確かめの手前で、IP ごとの回数を Workers の Rate Limiting（`[[ratelimits]]` の binding `LOGIN_IP_LIMITER`）で数える。キーは `request:<IP>`・`verify:<IP>`、IPv6 は /64 にまとめる。binding がない（local・試験）・`CF-Connecting-IP` がない・数える仕組みが失敗したときは止めない。止めたときは D1 に何も書かず、メールも送らない | アドレスを変えながらの推し当て・申し込みのばらまきを 1 か所から絞る。数える仕組みの故障でログインが止まらないように（アドレスごとの制限は D1 で効いている） |
 | 35 | 品を出す決まり（3.4）は `packages/core/visibility.js` の 1 つを `src/lib/visibility.ts` から読んで使う（wrangler がまとめる）。日付は日本時間、販売の期間はその日を含む、`status` は `onSale` だけ | 編集画面（ブラウザの時刻の月・販売の期間を見ない）と API で食い違っていた（M3）。写しにすると、またずれる |
+| 36 | 店主は users の 1 行＝1 人。メール（`users.email`）はいつも持ち、PC はメールで入る。LINE は表 `user_identities`（provider・subject＝LINE の userId → user_id。1 人に LINE 1 つ、1 つの LINE は 1 人だけ）でつなぐ「もう 1 つの入口」。つなぐのは、メールで入った人が LIFF の中で `POST /api/me/identities/line`。つないでいない LINE ではアカウントを作らない（404） | 店主を作るのは制作側（#5）のまま。LINE だけの人を作ると、PC で入る道がなくなる。どちらの入口でも同じお店・同じ下書き・同じ版を見る |
+| 37 | 段2（mikke-desk の直しの依頼）とは `/edit-api/shops/:shop/shop` でつなぐ。runner が ① を読み、承認済みの差分を当てた ① 全体を `If-Match` 付きで書き戻す（下書きになるだけで公開はしない）。鍵は `EDIT_RUNNER_SECRET`（ヘッダ `x-edit-runner-secret`）、なければ口を閉じる | 差分の検査（印・edit-limits）は desk と runner が持っている（`tools/lib/edit-ops.mjs`）。API で同じ物を二重に持たない。版番号で店主の編集とぶつかったときは 409 |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと
