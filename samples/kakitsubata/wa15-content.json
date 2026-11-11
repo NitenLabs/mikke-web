@@ -1,40 +1,11 @@
 {
-  "name": "天ぷら 杜若",
-  "nameKana": "てんぷら かきつばた",
+  "fromShop": true,
   "shortName": "杜若",
   "tagName": "天ぷら　杜若",
   "nameEn": "Tempura Kakitsubata",
-  "genreDetail": "天ぷら",
-  "town": "船戸町",
-  "geo": {
-    "lat": 34.7352,
-    "lng": 135.3058
-  },
-  "phone": {
-    "display": "0797-00-0000",
-    "digits": "0797000000"
-  },
-  "closedDay": "mon",
-  "periods": [
-    {
-      "start": "11:30",
-      "end": "14:00",
-      "lastOrder": "13:30"
-    },
-    {
-      "start": "17:30",
-      "end": "21:30",
-      "lastOrder": "20:30"
-    }
-  ],
   "catchCopyLines": [
     "揚げたてを、",
     "ひと品ずつ。"
-  ],
-  "intro": "目の前の揚げ鍋から、そのままお皿へお出しします。胡麻油に太白胡麻油を合わせ、衣は軽く、香りは穏やかに仕上げます。季節の野菜と瀬戸内の魚を中心に。",
-  "facts": [
-    "昼 11:30〜14:00／夜 17:30〜21:30",
-    "月曜定休・カウンター10席"
   ],
   "fvEn": "Tempura Kakitsubata ─ Ashiya",
   "labels": {
@@ -94,81 +65,9 @@
   },
   "counter": {
     "heading": "目の前の揚げ鍋",
-    "en": "Counter",
-    "body": "白木のカウンターに十席。揚げ鍋を挟んで、手元がよく見えるお席です。揚がる音と香りも、味わいのうちと考えています。",
-    "fact": "カウンター10席"
+    "en": "Counter"
   },
   "menu": {
-    "heading": "お品書き",
-    "note": "価格はすべて税込です。",
-    "groups": [
-      {
-        "id": "lunch",
-        "name": "昼",
-        "sub": "11:30〜14:00（L.O. 13:30）",
-        "rows": [
-          {
-            "id": "teishoku",
-            "name": "天ぷら定食",
-            "price": 2200
-          },
-          {
-            "id": "tendon",
-            "name": "天丼",
-            "price": 1980
-          },
-          {
-            "id": "lunchomakase",
-            "name": "おまかせ",
-            "price": 4400
-          }
-        ]
-      },
-      {
-        "id": "dinner",
-        "name": "夜",
-        "sub": "17:30〜21:30（L.O. 20:30）",
-        "rows": [
-          {
-            "id": "omakase10",
-            "name": "おまかせ（10品）",
-            "price": 8800
-          },
-          {
-            "id": "tokusen13",
-            "name": "特選おまかせ（13品・〆付き）",
-            "price": 13200,
-            "lines": [
-              "特選おまかせ",
-              "（13品・〆付き）"
-            ]
-          }
-        ]
-      },
-      {
-        "id": "alacarte",
-        "name": "単品",
-        "sub": "お好みの一品を",
-        "rows": [
-          {
-            "id": "kurumaebi",
-            "name": "車海老",
-            "price": 880
-          },
-          {
-            "id": "yasai",
-            "name": "季節の野菜",
-            "price": 330,
-            "from": true
-          },
-          {
-            "id": "anago",
-            "name": "穴子一本揚げ",
-            "price": 1100
-          }
-        ]
-      }
-    ],
     "photos": [
       [
         "mn1",
@@ -182,40 +81,18 @@
   },
   "info": {
     "heading": "ご案内",
-    "rows": [
-      [
-        "所在地",
-        "$address"
-      ],
-      [
-        "お電話",
-        "$phone"
-      ],
-      [
-        "営業時間",
-        [
-          "昼 11:30〜14:00（L.O. 13:30）",
-          "夜 17:30〜21:30（L.O. 20:30）"
-        ]
-      ],
-      [
-        "定休日",
-        "月曜日"
-      ],
-      [
-        "お席",
-        "カウンター10席"
-      ]
-    ]
+    "labels": {
+      "address": "所在地",
+      "phone": "お電話",
+      "hours": "営業時間",
+      "closed": "定休日",
+      "seats": "お席"
+    }
   },
   "reserve": {
     "heading": "お席のご予約は、お電話で。",
     "button": "電話をかける"
   },
-  "footerHours": [
-    "営業時間 昼 11:30〜14:00／夜 17:30〜21:30",
-    "定休日 月曜日"
-  ],
   "photos": {
     "fv": [
       "signature",

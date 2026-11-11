@@ -54,7 +54,8 @@ function apply(file, isHome) {
   h = h.replace(/(<div class="nav-menu">)([\s\S]*?)(<\/div>)/, `$1$2<a class="wa15-res" href="${resHref}">${C.labels.reserveButton}</a>$3`);
   if (isHome) {
     // 緯度経度＋z=16＋hl=ja：Google の場所の札が出ない形（切り抜きなし）
-    const mapQ = C.geo ? `${C.geo.lat},${C.geo.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&z=16&hl=ja`;
+    const G = loc.geo || C.geo; // fromShop の店は ① の location.geo
+    const mapQ = G ? `${G.lat},${G.lng}&z=16&hl=ja` : `${encodeURIComponent(addr)}&z=16&hl=ja`;
     const map = `<iframe title="${shop.basic.name}の周辺の地図" src="https://www.google.com/maps?q=${mapQ}&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>`;
     const re = /(<div data-el="in_map"[^>]*>)/;
     if (!re.test(h)) throw new Error("in_map が見つかりません");

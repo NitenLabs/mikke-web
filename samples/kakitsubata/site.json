@@ -189,7 +189,11 @@
         {
           "runs": [
             {
-              "text": "天ぷら 杜若"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -292,7 +296,8 @@
       },
       "hidden": {
         "sp": true
-      }
+      },
+      "edit": false
     },
     "fv_ph": {
       "type": "photo",
@@ -439,7 +444,11 @@
         {
           "runs": [
             {
-              "text": "目の前の揚げ鍋から、そのままお皿へお出しします。胡麻油に太白胡麻油を合わせ、衣は軽く、香りは穏やかに仕上げます。季節の野菜と瀬戸内の魚を中心に。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_body/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -498,14 +507,85 @@
         {
           "runs": [
             {
-              "text": "昼 11:30〜14:00／夜 17:30〜21:30"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/label",
+                "format": "plain"
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/start",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "〜"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/end",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "／"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/label",
+                "format": "plain"
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/start",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "〜"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/end",
+                "format": "plain"
+              }
             }
           ]
         },
         {
           "runs": [
             {
-              "text": "月曜定休・カウンター10席"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
+            },
+            {
+              "text": "定休"
+            },
+            {
+              "text": "・"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -649,7 +729,8 @@
           "h": 16,
           "size": 13
         }
-      }
+      },
+      "edit": false
     },
     "fl_p": {
       "type": "text",
@@ -774,7 +855,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_k0": {
       "type": "text",
@@ -912,7 +994,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_t1": {
       "type": "text",
@@ -1011,7 +1094,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_t2": {
       "type": "text",
@@ -1110,7 +1194,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_t3": {
       "type": "text",
@@ -1209,7 +1294,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_t4": {
       "type": "text",
@@ -1308,7 +1394,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_t5": {
       "type": "text",
@@ -1407,7 +1494,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_t6": {
       "type": "text",
@@ -1506,7 +1594,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_t7": {
       "type": "text",
@@ -1605,7 +1694,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_k8": {
       "type": "text",
@@ -1743,7 +1833,8 @@
           "h": 28,
           "size": 22
         }
-      }
+      },
+      "edit": false
     },
     "fl_k9": {
       "type": "text",
@@ -1986,7 +2077,8 @@
           "h": 16,
           "size": 13
         }
-      }
+      },
+      "edit": false
     },
     "ab_p": {
       "type": "text",
@@ -2168,7 +2260,8 @@
           "h": 16,
           "size": 13
         }
-      }
+      },
+      "edit": false
     },
     "ct_p": {
       "type": "text",
@@ -2179,7 +2272,11 @@
         {
           "runs": [
             {
-              "text": "白木のカウンターに十席。揚げ鍋を挟んで、手元がよく見えるお席です。揚がる音と香りも、味わいのうちと考えています。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_seats/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -2217,7 +2314,11 @@
         {
           "runs": [
             {
-              "text": "カウンター10席"
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2303,7 +2404,11 @@
         {
           "runs": [
             {
-              "text": "お品書き"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_main/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2342,7 +2447,11 @@
         {
           "runs": [
             {
-              "text": "昼"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_lunch/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2380,7 +2489,11 @@
         {
           "runs": [
             {
-              "text": "11:30〜14:00（L.O. 13:30）"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_lunch/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2418,7 +2531,11 @@
         {
           "runs": [
             {
-              "text": "天ぷら定食"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_teishoku/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2456,7 +2573,11 @@
         {
           "runs": [
             {
-              "text": "2,200円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_teishoku/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2517,7 +2638,11 @@
         {
           "runs": [
             {
-              "text": "天丼"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tendon/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2555,7 +2680,11 @@
         {
           "runs": [
             {
-              "text": "1,980円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tendon/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2616,7 +2745,11 @@
         {
           "runs": [
             {
-              "text": "おまかせ"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_lunchomakase/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2654,7 +2787,11 @@
         {
           "runs": [
             {
-              "text": "4,400円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_lunchomakase/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2715,7 +2852,11 @@
         {
           "runs": [
             {
-              "text": "夜"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_dinner/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2753,7 +2894,11 @@
         {
           "runs": [
             {
-              "text": "17:30〜21:30（L.O. 20:30）"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_dinner/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2791,7 +2936,11 @@
         {
           "runs": [
             {
-              "text": "おまかせ（10品）"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_omakase10/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2829,7 +2978,11 @@
         {
           "runs": [
             {
-              "text": "8,800円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_omakase10/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2890,14 +3043,28 @@
         {
           "runs": [
             {
-              "text": "特選おまかせ"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tokusen13/name",
+                "format": "plain"
+              }
             }
           ]
         },
         {
           "runs": [
             {
-              "text": "（13品・〆付き）"
+              "text": "（"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tokusen13/description",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "）"
             }
           ]
         }
@@ -2935,7 +3102,11 @@
         {
           "runs": [
             {
-              "text": "13,200円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_tokusen13/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -2996,7 +3167,11 @@
         {
           "runs": [
             {
-              "text": "単品"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_alacarte/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3034,7 +3209,11 @@
         {
           "runs": [
             {
-              "text": "お好みの一品を"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_alacarte/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3072,7 +3251,11 @@
         {
           "runs": [
             {
-              "text": "車海老"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_kurumaebi/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3110,7 +3293,11 @@
         {
           "runs": [
             {
-              "text": "880円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_kurumaebi/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -3171,7 +3358,11 @@
         {
           "runs": [
             {
-              "text": "季節の野菜"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_yasai/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3209,7 +3400,11 @@
         {
           "runs": [
             {
-              "text": "330円〜"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_yasai/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -3270,7 +3465,11 @@
         {
           "runs": [
             {
-              "text": "穴子一本揚げ"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_anago/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3308,7 +3507,11 @@
         {
           "runs": [
             {
-              "text": "1,100円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_anago/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -3369,7 +3572,11 @@
         {
           "runs": [
             {
-              "text": "価格はすべて税込です。"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_main/description",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -3586,7 +3793,8 @@
           "h": 26,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v0": {
       "type": "text",
@@ -3688,7 +3896,8 @@
           "h": 26,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v1": {
       "type": "text",
@@ -3793,7 +4002,8 @@
           "h": 26,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v2": {
       "type": "text",
@@ -3804,14 +4014,88 @@
         {
           "runs": [
             {
-              "text": "昼 11:30〜14:00（L.O. 13:30）"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/label",
+                "format": "plain"
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/start",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "〜"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/end",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "（L.O. "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/lastOrder",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "）"
             }
           ]
         },
         {
           "runs": [
             {
-              "text": "夜 17:30〜21:30（L.O. 20:30）"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/label",
+                "format": "plain"
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/start",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "〜"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/end",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "（L.O. "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/lastOrder",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "）"
             }
           ]
         }
@@ -3898,7 +4182,8 @@
           "h": 26,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v3": {
       "type": "text",
@@ -3909,7 +4194,11 @@
         {
           "runs": [
             {
-              "text": "月曜日"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
             }
           ]
         }
@@ -3996,7 +4285,8 @@
           "h": 26,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v4": {
       "type": "text",
@@ -4007,7 +4297,11 @@
         {
           "runs": [
             {
-              "text": "カウンター10席"
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -4263,7 +4557,8 @@
           "h": 24,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_bg": {
       "type": "shape",
@@ -4375,7 +4670,11 @@
         {
           "runs": [
             {
-              "text": "天ぷら 杜若"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -4502,14 +4801,78 @@
         {
           "runs": [
             {
-              "text": "営業時間 昼 11:30〜14:00／夜 17:30〜21:30"
+              "text": "営業時間 "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/label",
+                "format": "plain"
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/start",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "〜"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/0/end",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "／"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/label",
+                "format": "plain"
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/start",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "〜"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours/weekly/tue/periods/1/end",
+                "format": "plain"
+              }
             }
           ]
         },
         {
           "runs": [
             {
-              "text": "定休日 月曜日"
+              "text": "定休日 "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
             }
           ]
         }
@@ -4547,7 +4910,14 @@
         {
           "runs": [
             {
-              "text": "© 天ぷら 杜若"
+              "text": "© "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }

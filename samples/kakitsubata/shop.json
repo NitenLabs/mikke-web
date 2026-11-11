@@ -30,11 +30,13 @@
         "status": "open",
         "periods": [
           {
+            "label": "昼",
             "start": "11:30",
             "end": "14:00",
             "lastOrder": "13:30"
           },
           {
+            "label": "夜",
             "start": "17:30",
             "end": "21:30",
             "lastOrder": "20:30"
@@ -45,11 +47,13 @@
         "status": "open",
         "periods": [
           {
+            "label": "昼",
             "start": "11:30",
             "end": "14:00",
             "lastOrder": "13:30"
           },
           {
+            "label": "夜",
             "start": "17:30",
             "end": "21:30",
             "lastOrder": "20:30"
@@ -60,11 +64,13 @@
         "status": "open",
         "periods": [
           {
+            "label": "昼",
             "start": "11:30",
             "end": "14:00",
             "lastOrder": "13:30"
           },
           {
+            "label": "夜",
             "start": "17:30",
             "end": "21:30",
             "lastOrder": "20:30"
@@ -75,11 +81,13 @@
         "status": "open",
         "periods": [
           {
+            "label": "昼",
             "start": "11:30",
             "end": "14:00",
             "lastOrder": "13:30"
           },
           {
+            "label": "夜",
             "start": "17:30",
             "end": "21:30",
             "lastOrder": "20:30"
@@ -90,11 +98,13 @@
         "status": "open",
         "periods": [
           {
+            "label": "昼",
             "start": "11:30",
             "end": "14:00",
             "lastOrder": "13:30"
           },
           {
+            "label": "夜",
             "start": "17:30",
             "end": "21:30",
             "lastOrder": "20:30"
@@ -105,11 +115,13 @@
         "status": "open",
         "periods": [
           {
+            "label": "昼",
             "start": "11:30",
             "end": "14:00",
             "lastOrder": "13:30"
           },
           {
+            "label": "夜",
             "start": "17:30",
             "end": "21:30",
             "lastOrder": "20:30"
@@ -124,28 +136,47 @@
       "digits": "0797000000"
     }
   },
+  "facilities": {
+    "note": "カウンター10席"
+  },
+  "story": {
+    "answers": {
+      "q_body": {
+        "question": "お店の紹介",
+        "answer": "目の前の揚げ鍋から、そのままお皿へお出しします。胡麻油に太白胡麻油を合わせ、衣は軽く、香りは穏やかに仕上げます。季節の野菜と瀬戸内の魚を中心に。"
+      },
+      "q_seats": {
+        "question": "お席について",
+        "answer": "白木のカウンターに十席。揚げ鍋を挟んで、手元がよく見えるお席です。揚がる音と香りも、味わいのうちと考えています。"
+      }
+    }
+  },
   "catalog": {
     "menus": {
       "mnu_main": {
         "order": 1,
-        "name": "お品書き"
+        "name": "お品書き",
+        "description": "価格はすべて税込です。"
       }
     },
     "categories": {
       "cat_lunch": {
         "menuId": "mnu_main",
         "name": "昼",
-        "order": 1
+        "order": 1,
+        "note": "11:30〜14:00（L.O. 13:30）"
       },
       "cat_dinner": {
         "menuId": "mnu_main",
         "name": "夜",
-        "order": 2
+        "order": 2,
+        "note": "17:30〜21:30（L.O. 20:30）"
       },
       "cat_alacarte": {
         "menuId": "mnu_main",
         "name": "単品",
-        "order": 3
+        "order": 3,
+        "note": "お好みの一品を"
       }
     },
     "labels": {
@@ -209,7 +240,8 @@
         "labels": []
       },
       "itm_tokusen13": {
-        "name": "特選おまかせ（13品・〆付き）",
+        "name": "特選おまかせ",
+        "description": "13品・〆付き",
         "photos": [],
         "prices": [
           {

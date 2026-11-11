@@ -13,10 +13,12 @@ const URL_ = pathToFileURL(path.resolve(`dist/${ID}/index.html`)).href;
 const WIDTHS = [320, 360, 390, 430, 600, 767, 768, 834, 1024, 1025, 1280, 1440, 1920]; // 1024／1025 が配置の切り替わり
 const TABLET = [768, 834, 1024];
 const site = JSON.parse(fs.readFileSync(`samples/${ID}/site.json`, "utf8"));
-const C = JSON.parse(fs.readFileSync(`samples/${ID}/wa15-content.json`, "utf8"));
 const specOf = (d) => Object.fromEntries(Object.entries(site.sections).filter(([k]) => k !== "sec_header").map(([k, v]) => [k, v.minHeight[d]]));
 const SPEC = { 1440: specOf("pc"), 390: specOf("sp") };
-const PHOTOS = Object.keys(C.photos).length, TEL = `tel:${C.phone.digits}`, TELROW = C.info.rows.findIndex(([, v]) => v === "$phone");
+const SHOP = JSON.parse(fs.readFileSync(`samples/${ID}/shop.json`, "utf8")), ASSETS = JSON.parse(fs.readFileSync(`samples/${ID}/assets.json`, "utf8")).assets;
+// 写真の数は ④、電話は ①、ご案内の電話の行は site.json から（fromShop の店は ① で行が決まる）
+const PHOTOS = Object.keys(ASSETS).length, TEL = `tel:${SHOP.contact.phone.digits}`;
+const TELROW = +Object.keys(site.elements).filter((k) => /^in_v\d+$/.test(k)).find((k) => site.elements[k].style?.link?.kind === "shopPhone").slice(4);
 const HEADER_BG = "rgb(239, 230, 214)";
 const browser = await chromium.launch();
 let bad = 0;
