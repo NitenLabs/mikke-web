@@ -333,8 +333,19 @@ async function flow(ctx, UI, W, { first }) {
   // 写真は箱の幅いっぱい（右に空きが無い。指示 0061）
   const cg = await page.evaluate(() => { const c = document.getElementById("crop"), v = document.getElementById("phCv"), cr = c.getBoundingClientRect(), vr = v.getBoundingClientRect(), pr = c.parentElement.getBoundingClientRect(), cs = getComputedStyle(c.parentElement);
     const inner = pr.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight) - (c.parentElement.offsetWidth - c.parentElement.clientWidth);
-    return { crop: +cr.width.toFixed(1), img: +vr.width.toFixed(1), inner: +inner.toFixed(1), rightGap: +(cr.right - vr.right).toFixed(1), h: +(cr.height - vr.height).toFixed(1) }; });
-  check(`${tag} 切り抜きの写真は箱の幅いっぱい（右の空き 0）`, Math.abs(cg.img - cg.crop) <= 1 && Math.abs(cg.crop - cg.inner) <= 1 && Math.abs(cg.rightGap) <= 1 && Math.abs(cg.h) <= 1, cg);
+    const pl = pr.left + parseFloat(cs.paddingLeft), maxH = Math.max(200, Math.round(innerHeight * 0.55));
+    return { crop: +cr.width.toFixed(1), img: +vr.width.toFixed(1), inner: +inner.toFixed(1), rightGap: +(cr.right - vr.right).toFixed(1), h: +(cr.height - vr.height).toFixed(1),
+      imgH: +vr.height.toFixed(1), maxH, lGap: +(cr.left - pl).toFixed(1), rGap: +(pl + inner - cr.right).toFixed(1) }; });
+  // 高さで抑えていないときは幅いっぱい（右の空き 0）。抑えたとき（画面の 55%）は写真が真ん中で、左右の空きが同じ
+  const hLimited = cg.inner - cg.crop > 1;
+  check(`${tag} 切り抜きの写真は箱の幅いっぱい（右の空き 0）か、高さで抑えて真ん中`, Math.abs(cg.img - cg.crop) <= 1 && Math.abs(cg.rightGap) <= 1 && Math.abs(cg.h) <= 1 && cg.imgH <= cg.maxH + 1
+    && (hLimited ? Math.abs(cg.imgH - cg.maxH) <= 1 && Math.abs(cg.lGap - cg.rGap) <= 1 : Math.abs(cg.crop - cg.inner) <= 1), { ...cg, hLimited });
+  // 「やめる」「この写真にする」は箱の見える所に全部入り、上に何も重ならず、44px 以上（指示 0061 の続き）
+  const acts = await page.evaluate(() => { const sin = document.querySelector("#sheet .sheet-in").getBoundingClientRect();
+    return ["#phCancel", "#phOk"].map((s) => { const e = document.querySelector(s), r = e.getBoundingClientRect(), t = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2);
+      return { s, top: +r.top.toFixed(1), bottom: +r.bottom.toFixed(1), h: +r.height.toFixed(1), inVp: r.top >= 0 && r.left >= 0 && r.bottom <= innerHeight && r.right <= innerWidth,
+        inSheet: r.top >= sin.top && r.bottom <= sin.bottom && r.left >= sin.left && r.right <= sin.right, hit: t === e || e.contains(t) }; }); });
+  check(`${tag} 切り抜きの箱：「やめる」「この写真にする」が画面と箱の中に全部見え、押せる（44px 以上）`, acts.every((a) => a.inVp && a.inSheet && a.hit && a.h >= 44), acts);
   if (W <= 760) { await page.$eval(".sheet-in", (e) => { e.scrollTop = 0; }); await settled(page, "#sheet"); await shot(page, "owner2-390-crop"); await shot(page, "owner3-390-crop"); }
   await page.click("#phOk");
   await page.waitForSelector("#sheet[hidden]", { state: "attached", timeout: 30000 });

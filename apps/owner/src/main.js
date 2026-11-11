@@ -546,14 +546,15 @@ function openPhoto(slot) {
   const aspect = rule?.aspect?.pc ?? 1.5, spAspect = rule?.aspect?.sp ?? null;
   const sh = $("#sheet");
   sh.hidden = false;
-  sh.innerHTML = `<div class="sheet-in" role="dialog" aria-label="写真を替える">
+  // 中身（.sheet-body）だけが縦に送られ、「やめる」「この写真にする」の行は箱の下にいつも出ている（指示 0061 の続き）
+  sh.innerHTML = `<div class="sheet-in split" role="dialog" aria-label="写真を替える"><div class="sheet-body">
     <h2>写真を替える</h2>
     <label class="btn line file">写真を選ぶ<input type="file" accept="image/*" id="phFile"></label>
     <div class="crop" id="crop" hidden><canvas id="phCv"></canvas><div class="crop-box" id="cropBox">${spAspect ? `<div class="crop-sp" id="cropSp"></div>` : ""}</div></div>
     <div class="field" id="phSize" hidden><label for="phScale">切り抜く大きさ</label><input type="range" id="phScale" min="20" max="100" value="100"></div>
     <p class="note" id="phNote">${spAspect ? "実線がパソコン、点線がスマホで見える所です。枠を動かして合わせてください。" : "枠を動かして合わせてください。"}</p>
     <p class="msg" id="phMsg" role="status"></p>
-    <div class="row"><button class="btn" type="button" id="phCancel">やめる</button><button class="btn main" type="button" id="phOk" disabled>この写真にする</button></div>
+    </div><div class="row sheet-acts"><button class="btn" type="button" id="phCancel">やめる</button><button class="btn main" type="button" id="phOk" disabled>この写真にする</button></div>
   </div>`;
   let P = null, rect = null, k = 1;
   const draw = () => {
@@ -567,19 +568,29 @@ function openPhoto(slot) {
   $("#phFile").onchange = async (e) => {
     const file = e.target.files[0]; if (!file) return;
     try { P = await loadPhoto(file); } catch (err) { $("#phMsg").textContent = "この写真は読み込めません。別の写真をお選びください"; $("#phMsg").className = "msg err"; return; }
-    // 写真は箱の幅いっぱいに出す（右に空きを作らない。指示 0061）。k は表示の倍率だけで、切り抜きの計算は元の画素のまま
-    const cv = $("#phCv"), crop = $("#crop");
+    // 写真は箱の幅いっぱいに出す（右に空きを作らない。指示 0061）。ただし高さは画面の 55%（最低 200px）まで：
+    // 縦に長い写真で下のボタンまで遠くならないように。高さで抑えたときは写真を真ん中に置く。
+    // k は表示の倍率だけで、切り抜きの計算は元の画素のまま
+    const cv = $("#phCv"), crop = $("#crop"), body = crop.parentElement;
     crop.hidden = false; $("#phSize").hidden = false;
-    const cw = crop.getBoundingClientRect().width;
-    k = cw / P.w;
-    cv.width = Math.round(cw); cv.height = Math.round(P.h * k);
-    cv.getContext("2d").drawImage(P.canvas, 0, 0, cv.width, cv.height);
-    crop.style.height = `${P.h * k}px`;
+    const fit = () => {
+      crop.style.width = "";
+      const cw = crop.getBoundingClientRect().width; if (!cw) return false;
+      const maxH = Math.max(200, Math.round(window.innerHeight * 0.55));
+      const nk = Math.min(cw / P.w, maxH / P.h), iw = P.w * nk, ih = P.h * nk;
+      crop.style.width = iw < cw - 0.5 ? `${iw}px` : "";
+      crop.style.height = `${ih}px`;
+      k = nk; cv.width = Math.round(iw); cv.height = Math.round(ih);
+      cv.getContext("2d").drawImage(P.canvas, 0, 0, cv.width, cv.height);
+      return true;
+    };
+    fit();
     rect = fitCrop(P.w, P.h, aspect); draw();
-    // 箱の幅が後から変わったら（縦の送りが出た・画面を回した）倍率を合わせ直す
+    // 箱の幅・画面の高さが後から変わったら（縦の送りが出た・画面を回した）倍率を合わせ直す
     if (!crop._ro && window.ResizeObserver) {
-      crop._ro = new ResizeObserver(() => { if (!P || crop.hidden) return; const w = crop.getBoundingClientRect().width; if (!w || Math.abs(w - P.w * k) < 0.5) return; k = w / P.w; crop.style.height = `${P.h * k}px`; draw(); });
-      crop._ro.observe(crop);
+      let last = `${body.clientWidth}x${window.innerHeight}`;
+      crop._ro = new ResizeObserver(() => { if (!P || crop.hidden) return; const now = `${body.clientWidth}x${window.innerHeight}`; if (!body.clientWidth || now === last) return; last = now; if (fit()) draw(); });
+      crop._ro.observe(body);
     }
     $("#phOk").disabled = false;
   };

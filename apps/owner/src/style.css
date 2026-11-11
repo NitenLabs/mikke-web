@@ -146,12 +146,16 @@ label { font-weight: 500; }
 .sheet[hidden] { display: none; }
 .sheet-in { background: var(--bg); border-top: 3px solid var(--ink); width: min(640px, 100%); max-height: calc(100vh - 32px); overflow: auto; padding: 16px 20px 20px; }
 .sheet-in h2 { margin: 0 0 8px; font-size: 18px; }
+/* 写真の箱：中身だけが縦に送られ、下のボタンの行は白地＋墨緑の罫で箱の底にいつも出ている（指示 0061 の続き） */
+.sheet-in.split { display: flex; flex-direction: column; overflow: hidden; padding: 0; max-height: calc(100dvh - 32px); }
+.sheet-body { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 16px 20px 12px; }
+.sheet-acts { flex: 0 0 auto; margin: 0; padding: 12px 20px; background: var(--bg); border-top: 1px solid var(--ink); }
 .row { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; flex-wrap: wrap; }
 .col { display: grid; gap: 8px; margin-top: 12px; }
 .file { display: inline-flex; align-items: center; }
 .file input { position: absolute; width: 1px; height: 1px; opacity: 0; }
 /* 枠の外を薄く覆う影（9999px）は .crop の中だけに。外へ出ると見出し・ボタンまで白く覆ってしまう（指示 0056） */
-.crop { position: relative; margin: 12px 0; touch-action: none; max-width: 100%; overflow: hidden; isolation: isolate; }
+.crop { position: relative; margin: 12px auto; touch-action: none; max-width: 100%; overflow: hidden; isolation: isolate; }
 .crop canvas { display: block; width: 100%; height: auto; }
 .crop-box { position: absolute; border: 2px solid var(--sky); cursor: move; box-shadow: 0 0 0 9999px rgba(255, 255, 255, .55); }
 .crop-sp { position: absolute; border: 1px dashed var(--ink); pointer-events: none; }
