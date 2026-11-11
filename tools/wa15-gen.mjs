@@ -136,7 +136,7 @@ if (FS) {
       .map((p) => { const it = cat.items[p.itemId], N = [`/catalog/items/${p.itemId}/name`];
         // 品の description（例：13品・〆付き）は品名の下の段に「（…）」で添える（品名の途中で折れないように段を分ける）
         return { name: it.description ? { lines: [N, { mix: ["（", [`/catalog/items/${p.itemId}/description`], "）"] }] } : N, ...(it.description ? { lines: [0, 1] } : {}),
-          price: [`/catalog/items/${p.itemId}/prices`, "price"], chars: it.name.length }; }) })).filter((g) => g.rows.length);
+          price: [`/catalog/items/${p.itemId}/prices`, "price"], chars: it.name.length, nameT: it.name, descT: it.description }; }) })).filter((g) => g.rows.length);
   INFO = [[L.address, ADDR, 1], [L.phone, PHONE, 1, true], ...(P.length ? [[L.hours, { lines: P.map((x) => ({ mix: span(x, true) })) }, P.length]] : []),
     ...(closed ? [[L.closed, CL, 1]] : []), ...(SEATS ? [[L.seats, SEATS, 1]] : [])];
   FOOT = [...(P.length ? [{ mix: [`${L.hours} `, ...spans(false, "／")] }] : []), ...(closed ? [{ mix: [`${L.closed} `, CL] }] : [])];
@@ -146,6 +146,13 @@ if (FS) {
   GROUPS = C.menu.groups.map((g) => ({ name: g.name, sub: g.sub, rows: g.rows.map((row) => ({ name: row.lines ? { lines: row.lines } : row.name, lines: row.lines, chars: row.name.length, price: yen(row.price) + (row.from ? "〜" : "") })) }));
   INFO = C.info.rows.map(([k, v]) => [k, val(v), Array.isArray(v) ? v.length : 1, v === "$phone"]); FOOT = C.footerHours;
 }
+
+// ---- ① の文の行の数の見積もり（fromShop の店だけ。① の文が長くなっても、タブレットの決め打ちの位置・PC の縦書きの箱・品の行の高さが追いつくように）
+// 1 行の字数＝幅÷字の大きさ。何行にもなる文は文節で折る分 1 字引く（焼鳥の型と同じ）。半角は 0.55 字
+const getP = (ptr) => ptr.split("/").slice(1).reduce((o, k) => o?.[k], shop);
+const wlen = (s) => [...String(s ?? "")].reduce((n, c) => n + (/[\x20-\x7e]/.test(c) ? 0.55 : 1), 0);
+const nLines = (s, per) => String(s ?? "").split("\n").reduce((n, t) => { const L = wlen(t); return n + (L <= per ? 1 : Math.ceil(L / (per - 1))); }, 0);
+const txtOf = (v) => (Array.isArray(v) ? getP(v[0]) : typeof v === "string" ? v : "");
 
 // タブレット（768〜1024）：左右 48、本文の列 W＝100vw−96（SPEC 2章「タブレット」）。縦の位置は { p: px, k: W の倍率 } で持つ
 const M = 48, W = "(100vw - 9.6rem)", COL = `calc(${W})`;
@@ -186,11 +193,13 @@ tb("hd_name", { left: rem(M) });
   tb("fv_tag", { left: rem(200), width: rem(40), top: `calc(${rem(TT)} + ${phW} * .66)`, height: rem(160) });
   tb("fv_tag_t", { left: rem(210), width: rem(20), top: `calc(${rem(TT)} + ${phW} * .66)`, height: rem(160), ...font(16, 19.2) });
   const y0 = { p: TT + 48 - 168, k: 1 }; // 写真の下端＋48
+  // fromShop：紹介文が 768 の列（672・16px で 42 字／行）で 3 行を超えた分だけ下をずらす
+  const fvX = FS ? Math.max(0, nLines(txtOf(INTRO), 42) - 3) * 32 : 0;
   tT("fv_p", y0, font(16, 32));
-  tT("fv_ln", plus(y0, 96 + 24), { width: rem(24), height: "1px" });
-  tT("fv_f", plus(y0, 96 + 40), font(13, 24));
-  tT("fv_en", plus(y0, 96 + 40 + 48 + 16), font(12, 16));
-  tablet.secs[S] = ex(plus(y0, 96 + 40 + 48 + 16 + 16 + 48));
+  tT("fv_ln", plus(y0, fvX + 96 + 24), { width: rem(24), height: "1px" });
+  tT("fv_f", plus(y0, fvX + 96 + 40), font(13, 24));
+  tT("fv_en", plus(y0, fvX + 96 + 40 + 48 + 16), font(12, 16));
+  tablet.secs[S] = ex(plus(y0, fvX + 96 + 40 + 48 + 16 + 16 + 48));
 }
 
 // ---- 2 おまかせの流れ（見せ場。左に縦書きの見出し・文・縦長の写真、右に番号と品名）
@@ -263,8 +272,10 @@ if (F.length) {
   tT("ct_h", TT, TAB_H);
   tT("ct_en", TT + 52, font(13, 16));
   tT("ct_p", TT + 80, font(16, 32));
-  tT("ct_f", TT + 80 + 64 + 24, font(20, 32));
-  const tPh = TT + 80 + 64 + 24 + 32 + 40;
+  // fromShop：お席の文が 768 の列（42 字／行）で 2 行を、要約（20px・33 字／行）が 1 行を超えた分だけ下をずらす
+  const ctX = FS ? Math.max(0, nLines(txtOf(CTP), 42) - 2) * 32 : 0, cfX = FS && CTF ? Math.max(0, nLines(txtOf(CTF), 33) - 1) * 32 : 0;
+  tT("ct_f", TT + 80 + 64 + 24 + ctX, font(20, 32));
+  const tPh = TT + 80 + 64 + 24 + 32 + 40 + ctX + cfX;
   tT("ct_ph", tPh, { height: `calc(${W} * .8)` });
   tablet.secs[S] = ex({ p: tPh + TT, k: 0.8 });
 }
@@ -272,7 +283,8 @@ if (F.length) {
 // ---- 5 お品書き（PC：面に昼・夜・単品の 3 列。SP・タブレット：面に 3 つの群を縦に積む。下に写真 2 枚）
 {
   const S = "sec_menu", G = GROUPS;
-  const lines = (row, perLine) => (row.lines ? row.lines.length : row.chars > perLine ? 2 : 1); // 品名の行数の見積もり（PC 幅 196 に 16px で 12 字、SP 幅 220 に 13 字）
+  // fromShop：品名（と description の「（…）」の段）をそれぞれ字数から数える（3 行以上も）
+  const lines = (row, perLine) => (FS ? nLines(row.nameT, perLine) + (row.descT ? nLines(`（${row.descT}）`, perLine) : 0) : row.lines ? row.lines.length : row.chars > perLine ? 2 : 1); // 品名の行数の見積もり（PC 幅 196 に 16px で 12 字、SP 幅 220 に 13 字）
   const rowH = (nl, base) => base + 26 * (nl - 1);
   // PC
   const cx = [368, 720, 1072], y = (v) => PT + v;
@@ -287,13 +299,15 @@ if (F.length) {
   // タブレット（3 列にしない。群を縦に積む。品名は 1 行に収まる幅）
   const tH = TT, tPanel = TT + 44.8 + 32;
   let ty = tPanel + 40;
-  const tG = G.map((g) => { const o = { h: ty, sub: ty + 46 }; let yy = ty + 80; o.rows = g.rows.map((row) => { const h = rowH(lines(row, 99), 64); const q = { y: yy, h }; yy += h; return q; }); ty = yy + 40; return o; });
+  const tG = G.map((g) => { const o = { h: ty, sub: ty + 46 }; let yy = ty + 80; o.rows = g.rows.map((row) => { const h = rowH(lines(row, FS ? 28 : 99), 64); const q = { y: yy, h }; yy += h; return q; }); ty = yy + 40; return o; });
   const tPanelH = ty - tPanel, tNote = tPanel + tPanelH + 24, tPh = tNote + 20 + 40;
   const w2 = `((${W} - 2.4rem) / 2)`;
 
   sec(S, "お品書き", PT + pcBottom + PT, ST + spBottom + ST, { anchor: "menu", nav: NAV(C.labels.menu, 3) });
   rect("mn_bg", S, PANEL, 1, { x: 288, y: y(0), w: 1152, h: panelH }, { x: 0, y: ys(64), w: 390, h: spPanelH });
-  t("mn_h", S, MNH, [[40, 56], [28, 39.2]], H, AI, [{ x: 180, y: y(48), w: 56, h: 200 }, { x: 32, y: ys(0), w: 326, h: 40 }], { vp: true, ls: 0.12, role: "heading" });
+  // fromShop：縦書きの見出しの箱を字数の分だけ伸ばす（40px＋字間 0.12＝44.8／字）
+  const mnhH = FS ? Math.max(200, Math.ceil(wlen(txtOf(MNH)) * 44.8)) : 200;
+  t("mn_h", S, MNH, [[40, 56], [28, 39.2]], H, AI, [{ x: 180, y: y(48), w: 56, h: mnhH }, { x: 32, y: ys(0), w: 326, h: 40 }], { vp: true, ls: 0.12, role: "heading" });
   tT("mn_h", tH, TAB_H);
   tb("mn_bg", { left: "0", width: "100%", top: rem(tPanel), height: rem(tPanelH) });
   G.forEach((g, gi) => {

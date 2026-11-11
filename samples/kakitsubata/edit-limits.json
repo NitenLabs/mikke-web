@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "shop": "kakitsubata",
+  "template": "tpl_wa_15",
+  "measuredAt": "2026-11-11",
+  "method": "① を変えて wa15-gen → build → wa15-finish し、1440・768・390 で数値の検査（横スクロール・文字のはみ出し・文字の重なり・文字と写真の重なり・セクション外・面（お品書きの面・札・フッターの面）の外にはみ出す文字・1〜2 字だけの行・時刻の途中の折れ）。指示 0050 段2",
+  "keys": "fields のキーは data-edit の値（DATA_SPEC 4.12）。shop:/… は ① の JSON Pointer。item:*/… は品ごと（全部の品に同じ上限）",
+  "regen": {
+    "gen": "品・括りを足す／消す・並べ替える、品の description の有る無し、時間帯の数・定休日の有る無し・facilities.note の有る無しを変える、紹介文・お席の文・お席の要約・お品書きの見出し・品名の長さを変える（タブレットの位置・品の行の高さ・縦書きの見出しの箱を gen が ① の字数から見積もる）→ wa15-gen から流し直す",
+    "build": "上のほかの文字の書き換え（値段・括りの名前と注記・お品書きの注記・店名・住所・電話・時刻・L.O.・時間帯の名前）と写真の差し替え → build と wa15-finish だけでよい",
+    "note": "品を足して gen を流さないと行が増えない（エラーにもならず黙って出ない）。品を消して gen を流さないと、消えた品を指す行が残り validate のエラーで build が止まる。facilities.note・定休日を無くして gen を流さないと、ご案内に値の無い行が残る。紹介文・お席の文を長くして gen を流さないと、タブレット（768〜1024）で文が下の文に重なる。段3 の画面で保存のたびに gen を流せば起きない"
+  },
+  "fields": {
+    "shop:/story/answers/q_body/answer": {
+      "maxChars": 200,
+      "level": "warn",
+      "note": "最初の画面の紹介文（PC 幅 364・SP 326・15px／タブレット 16px）。600 字まで重なりなし（PC・SP は下を押す。タブレットは gen が 42 字／行で見積もって下をずらす）。200 字を超えると PC の左の列が写真よりずっと長くなる（見た目の目安）"
+    },
+    "shop:/hours": {
+      "maxPeriods": 3,
+      "periodLabelMaxChars": 2,
+      "level": "warn",
+      "note": "最初の画面の事実の 1 行目・ご案内の営業時間（時間帯ごとに 1 行）・フッターに出る。時刻・L.O. の変更、夜だけ（1 つ）・昼／喫茶／夜（3 つ）、L.O. や時間帯の名前を消す、定休日（月・火）「月曜・火曜・第3水曜・年末年始」まで 3 幅とも崩れなし。時間帯の名前を「ランチ／ディナー」にすると、タブレットのフッター（幅 312・14px）で時刻の途中「〜｜21:30」で折れる → 名前は 2 字まで（昼・夜・喫茶）。時間帯は最初の開いている曜日の分だけが出る（曜日で違う時間は出ない）。括りの注記（11:30〜14:00…）は hours と連動しない"
+    },
+    "shop:/facilities/note": {
+      "maxChars": 18,
+      "hardMaxChars": 26,
+      "level": "warn",
+      "note": "お席の要約（20px・PC 幅 260 で 13 字・SP 18px 326 で 18 字／行）、最初の画面の事実の 2 行目、ご案内の「お席」。「カウンター10席・テーブル2卓・個室1室（要予約）」（26 字）まで崩れなし（PC・SP は下を押す、タブレットは gen が 33 字／行で見積もる）。文節の切れ方によってはスマホで最後の行が 1〜2 字になる（「…個室1室」の 20 字で 18/2）→ 1 行（18 字）までを目安に"
+    },
+    "shop:/story/answers/q_seats/answer": {
+      "maxChars": 200,
+      "level": "warn",
+      "note": "揚げ鍋の段の文（PC 幅 260・15px で 17 字／行、タブレット 42 字／行で 2 行が設計）。200 字まで崩れなし（PC・SP は下を押す。タブレットは gen が見積もって要約と写真を下げる）"
+    },
+    "shop:/catalog/menus/mnu_main/name": {
+      "maxChars": 8,
+      "level": "warn",
+      "note": "お品書きの見出し（PC は縦書き 40px、SP 28px で 326 に 11 字）。PC の縦の箱は gen が字数で伸ばす（8・12 字で崩れなし）。12 字でスマホが 10/2 字の行になる → 8 字まで"
+    },
+    "shop:/catalog/menus/mnu_main/description": {
+      "maxChars": 60,
+      "level": "warn",
+      "note": "お品書きの注記（13px、PC 幅 700・SP 326）。60 字（SP 3 行）まで崩れなし。消すと注記の行が空く（崩れではない）"
+    },
+    "shop:/catalog/categories/*/name": {
+      "maxChars": 6,
+      "level": "warn",
+      "note": "括りの見出し（28px・字間 0.2。PC 幅 300 で 8 字）。「昼のおまかせ」（6 字）で 3 幅とも 1 行"
+    },
+    "shop:/catalog/categories/*/note": {
+      "maxChars": 30,
+      "level": "warn",
+      "note": "括りの見出しの下の注記（13px、PC 幅 300 で 23 字）。「11:30〜14:00（L.O. 13:30）・土日祝は15:00まで」まで崩れなし（PC は 2 行で下を押す）。消すとスマホの面の下が少し空く（崩れではない）"
+    },
+    "shop:/basic/name": {
+      "maxChars": 10,
+      "level": "warn",
+      "note": "ヘッダー（22px・SP 幅 240）・フッター・コピーライト・地図の題。「天ぷら 杜若 芦屋本店」（11 字）まで崩れなし。縦書きの札（天ぷら　杜若）・フッターの縦書きの店名（杜若）は wa15-content.json の文で ① と連動しない"
+    },
+    "item:*/name": {
+      "maxChars": 12,
+      "hardMaxChars": 30,
+      "level": "warn",
+      "note": "お品書きの品名（16px、PC 幅 196 で 12 字・SP 220 で 13 字・タブレット 28 字／行）。何行になるかを gen が字数で見積もり行の高さを決める（30 字・3 行まで崩れなし）。ただし（）で括った部分が列の幅（12 字）より長いと、共通の道具の「最後の行を短くしない」で（）ごと 1 行にまとめられ、値段に重なる（「天ぷら定食（車海老・季節の野菜・ご飯・赤出汁）」で NG）→ 括弧の付け足しは description に分ける"
+    },
+    "item:*/description": {
+      "maxChars": 12,
+      "level": "warn",
+      "note": "品名の下の段に「（…）」で出る。足す／消すは gen が要る。「13品・〆の天茶または天丼付き」（15 字）で崩れなし。かなだけの 30 字でスマホに 1 字の行（実際の文では起きにくい）→ 1 行（12 字）まで"
+    },
+    "item:*/prices": {
+      "maxOptions": 1,
+      "allowTypes": ["fixed", "from", "market"],
+      "level": "warn",
+      "note": "format price で先頭の 1 つだけを出す。値段の箱は幅 100（PC・SP）で折り返さない。4〜6 桁（110,000円）・〜付き・時価は崩れなし。範囲（3,800円〜5,800円）は箱からはみ出し、スマホでは画面の外に出る → 範囲は使わない（「〜」付きにする）"
+    }
+  },
+  "lists": {
+    "catalog:mnu_main": {
+      "dataEdit": null,
+      "minItems": 1,
+      "maxItems": 20,
+      "designItems": 8,
+      "maxCategories": 3,
+      "note": "先頭のメニューの括り（order 順）ごとに見出しと品の行を gen が作る。PC は括りを 3 列に並べるので括りは 3 つまで（4 つ目は 1 列目に重なる）。SP・タブレットは縦に積む。品を 1〜6 足す・括りごと 1 品に減らす・括りを消すで 3 幅とも崩れなし（品 PC 72・SP／タブレット 64 ずつ伸びる）。PC は一番長い列で面の高さが決まる"
+    }
+  },
+  "photos": {
+    "_rule": "全部 object-fit:cover で枠いっぱいに切り抜く（crop の fx・fy で寄せられる）。横・正方形の枠に縦の写真、縦の枠（ast_phfr2）に横の写真でも崩れない（検査済み）。minWidth は表示の一番大きい幅の 2 倍",
+    "ast_phfv": { "aspect": { "pc": 1, "sp": 1 }, "orientation": "any", "minWidth": 1526, "note": "最初の画面の正方形。左の縁に藍の札が重なる" },
+    "ast_phfr2": { "aspect": { "pc": 0.5, "sp": 1.36, "tablet": 1.33 }, "orientation": "any", "minWidth": 960, "note": "おまかせの流れ。PC は縦長、SP・タブレットは横長に切り抜く" },
+    "ast_phab1": { "aspect": { "pc": 1.25, "sp": 1.25 }, "orientation": "landscape", "minWidth": 1856 },
+    "ast_phab2": { "aspect": { "pc": 1, "sp": 1 }, "orientation": "any", "minWidth": 520 },
+    "ast_phfr1": { "aspect": { "pc": 1.25, "sp": 1.25 }, "orientation": "landscape", "minWidth": 1856 },
+    "ast_phmn1": { "aspect": { "pc": 1.33, "sp": 1.33 }, "orientation": "landscape", "minWidth": 1040 },
+    "ast_phmn2": { "aspect": { "pc": 1.33, "sp": 1.33 }, "orientation": "landscape", "minWidth": 1040 }
+  }
+}
