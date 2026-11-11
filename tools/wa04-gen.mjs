@@ -102,9 +102,11 @@ els.ph_1.crop = { fx: 50, fy: 71, zoom: 1 }; // 焦点の合った皿の所で�
 // ---- 8 店舗情報（左に地図、右に表。行は項目の下に値を置き、値が長いと下を押す）
 const loc = shop.location;
 // 営業時間：共通の hoursShort は weekly のとき L.O. を出さないので、開いている曜日の最後の時間帯の L.O. がそろっていれば添える
+//   （そろうときは今のまま＝bind＋自由な文字の2 run。そろわないときだけ共通の hoursShortLO の1 run にして、曜日ごとの L.O. を出す。指示 0060）
 const openPs = Object.values(shop.hours?.weekly || {}).filter((d) => d?.status === "open" && d.periods?.length).map((d) => d.periods[d.periods.length - 1]);
 const LOS = [...new Set(openPs.map((p) => p.lastOrder || ""))];
 const LO = LOS.length === 1 && LOS[0] ? `（L.O. ${formatTime(LOS[0])}）` : "";
+const HOURS_V = LO ? { runs: [["/hours", "hoursShort"], LO] } : LOS.length > 1 ? ["/hours", "hoursShortLO"] : ["/hours", "hoursShort"];
 // 駐車場は ① の値から言葉を作る（連動の形式が無いので文字。edit:false で、直すのは ① の /location/parking）
 const pk = loc.parking || {};
 const PARK = { nearbyPaid: "なし（近くのコインパーキングをご利用ください）", no: "なし", yes: `あり${pk.spaces ? `（${pk.spaces}台）` : ""}`, partner: "提携駐車場あり" }[pk.status] || "";
@@ -113,7 +115,7 @@ const parkText = PARK && pk.note ? `${PARK}（${pk.note}）` : PARK;
 // 席・お支払いは ① と表示が合わない所があるので、今の文字を wa04.json に持つ（指示 0051 の判断）
 const ROWS = [
   { n: 0, k: "住所", v: ["/location", "address"], lines: 2 },
-  { n: 1, k: "営業時間", v: LO ? { runs: [["/hours", "hoursShort"], LO] } : ["/hours", "hoursShort"], lines: 1 },
+  { n: 1, k: "営業時間", v: HOURS_V, lines: 1 },
   ...(formatClosedDays(shop.hours) ? [{ n: 2, k: "定休日", v: ["/hours", "closedDays"], lines: 1 }] : []),
   { n: 3, k: "席", v: C_.seats, lines: 1 },
   { n: 4, k: "お支払い", v: C_.payment, lines: 1 },
