@@ -50,3 +50,6 @@ refs/grandpalace/
 
 # 下見の見本（指示 0041）の撮影。実のお店の名前が入るのでコミットしない
 docs/gallery/review/quick/
+
+# 店主の編集画面の通し（apps/owner/e2e/flow.mjs）の画面の写し
+docs/gallery/review/owner/
