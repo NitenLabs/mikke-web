@@ -49,9 +49,9 @@
 - 版：`/versions` の一覧→「この版に戻す」＝`restore {includeShop:true,…}`→下書き→公開し直す
 
 ## 7. api に足す物（試験つき。共通の物なので別のコミットで早く main へ）
-1. `POST /publish` に `render:"rebuild"`：`pages` 無しで版（①② の写し）を作る。答え `{number, render:"pending"}`。この版は API の公開ページでは出さない（店は Pages）
-2. `versions` に `render_state`・`render_error`（migration 0005）。`/status`・`/versions` に `render`
-3. `GET /edit-api/shops/:shop/versions/:n`（①②・写真の一覧）・`GET /edit-api/shops/:shop/assets/:id/file`・`POST /edit-api/shops/:shop/versions/:n/render {ok, url?, error?}`
+1. `POST /publish` に `render:"rebuild"`：`pages` 無しで版（①② の写し）を作る。答え `{number, render:"pending", pages:[], url:null, …}`（pages・css・files を付けると 400）。この版は API の公開ページでは出さない（店は Pages）
+2. `versions` に `render_state`（html／pending／ok／failed）・`render_error`・`render_url`・`rendered_at`（migration 0005）。`/status` の `published`・`/versions`・`/versions/:n` に `render {state, error, url, renderedAt}`
+3. `GET /edit-api/shops/:shop/versions/:n`（①②・写真の一覧）・`GET /edit-api/shops/:shop/assets/:id/file`・`POST /edit-api/shops/:shop/versions/:n/render {ok, url?, error?}`（失敗は error が要る。html の版は 409）。版の答えの `assets` は ④ の形 `{schemaVersion, assets}`
 4. 種まき：`seed.mjs --site amet`（`samples/amet` の ①・④・media 19 枚、② は `{draft:{...site.json, template:{name:"wa-03",version:1}, genConfig:<wa03.json>}, theme}`、スラッグ amet、店主 `owner@amet.example`）
 - lane4（0053）も `/edit-api` を触る→先に main へ。報告に「共通の道具を直した」
 
