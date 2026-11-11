@@ -79,11 +79,13 @@ describe("毎日の仕事の守り（M1・L4）", () => {
     const ba = (await (await upload(bad.owner.cookie, bad.shop.id, fakeJpeg(10, 10))).json()) as any;
     await env.DB.prepare("UPDATE versions SET shop_body = '{broken' WHERE shop_id = ?").bind(bad.shop.id).run();
     await env.DB.prepare("UPDATE drafts SET body = '{broken' WHERE shop_id = ?").bind(bad.shop.id).run();
-    const old = new Date(Date.now() - 31 * 86400_000).toISOString();
+    // 「今」は runDaily に渡す日に合わせる（本物の時計を使うと、試験を走らせる日で結果が変わる）
+    const runAt = new Date("2026-11-01T15:00:00Z");
+    const old = new Date(runAt.getTime() - 31 * 86400_000).toISOString();
     // 壊れた方が先に並ぶように
-    await env.DB.prepare("UPDATE assets SET trashed_at = ? WHERE id = ?").bind(new Date(Date.now() - 32 * 86400_000).toISOString(), ba.id).run();
+    await env.DB.prepare("UPDATE assets SET trashed_at = ? WHERE id = ?").bind(new Date(runAt.getTime() - 32 * 86400_000).toISOString(), ba.id).run();
     await env.DB.prepare("UPDATE assets SET trashed_at = ? WHERE id = ?").bind(old, ga.id).run();
-    const res = (await runDaily(env, new Date("2026-11-01T15:00:00Z"))) as any;
+    const res = (await runDaily(env, runAt)) as any;
     expect(res.rerender.shops.find((s: any) => s.shopId === good.shop.id)).toBeTruthy();
     expect(res.rerender.failed.map((f: any) => f.shopId)).toContain(bad.shop.id);
     expect(res.purge.purged).toContain(ga.id);
