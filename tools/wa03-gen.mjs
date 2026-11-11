@@ -111,7 +111,7 @@ function seatsMix(short) {
 function infoRows(short) {
   if (!FS) return [C.infoRow ? [C.infoRow.label, short ? C.infoRow.valueShort || C.infoRow.value : C.infoRow.value] : CLOSED];
   const seat = C.infoRow ? seatsMix(short) : null;
-  return [...(hasClosed || !seat ? [CLOSED] : []), ...(seat ? [[C.infoRow.label, seat]] : [])];
+  return [...(hasClosed ? [CLOSED] : []), ...(seat ? [[C.infoRow.label, seat]] : [])];
 }
 const ROWS = [["住所", cityTown], ["営業時間", ["/hours", "hoursShort"]], ...infoRows(false), ["電話番号", ["/contact/phone", "phone"]], ["アクセス", ["/location/access", "access"]]];
 const XA = ROWS.length - 5; // 5行より多い分（fromShop で定休日の行が増えたとき）。ボタンと、スマホの段の高さを下げる

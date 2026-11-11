@@ -1,0 +1,79 @@
+{
+  "version": 1,
+  "shop": "roku",
+  "template": "tpl_wa_03",
+  "measuredAt": "2026-11-11",
+  "method": "① の写し（.edit0-baseline/roku-var/rokuv）を変えて wa03-gen → build --date 2026-11-10 → wa03-finish し、1440・768・390 で数値の検査（横スクロール・文字のはみ出し・文字の重なり・筆記体の飾りと文字の字の重なり・セクション外・カードからのはみ出し・品名の最後の行）。道具は .edit0-baseline/roku-var/edit0k.mjs。AMET（samples/amet/edit-limits.json）と同じ wa03-gen の fromShop の道なので、同じ作りの所は AMET の上限を麓で測り直した値。指示 0051 段3",
+  "keys": "fields のキーは data-edit の値（DATA_SPEC 4.12）。shop:/… は ① の JSON Pointer。item:*/… は品ごと（全部の品に同じ上限）",
+  "fields": {
+    "shop:/story/answers/q_body/answer": {
+      "maxChars": 300,
+      "maxParagraphs": 3,
+      "maxLines": { "pc": 10 },
+      "budget": { "pc": { "lineChars": 34, "lineHeight": 28.8, "paragraphGap": 14, "maxHeight": 300 } },
+      "level": "warn",
+      "note": "AMET と同じ。PC で本文が長いと下の飾りの筆記体（st_script）と重なる。高さ＝Σceil(段落の字数/34)×28.8＋(段落数−1)×14 が 300 以下なら安全。麓の実測：300 字3段落（9 行）・330 字1段落（10 行）は可、320 字3段落・330 字3段落・360 字1段落・今の文の倍（366 字6段落）は重なる。768・スマホは伸びて下を押すだけ（倍でも崩れない）。筆記体は写真に重ねる飾りの作りなので gen では直さず上限にした"
+    },
+    "shop:/story/answers/q_catch/answer": {
+      "maxChars": 24,
+      "maxLines": 2,
+      "maxLineChars": 12,
+      "level": "warn",
+      "note": "AMET と同じ。改行で行を分ける。26 字2行・今の文の倍（4 行）でも崩れないが、PC で見出しが 4 行になり段が 109 伸びる"
+    },
+    "shop:/hours": {
+      "maxRenderedChars": 55,
+      "maxExceptionDays": 2,
+      "level": "error",
+      "note": "表示は「基本の時間（月曜は…・水曜は…）」の1文。麓の実測：基本と違う曜日 2 つ（表示 51 字）までは可。3 つ（65 字）で 768・スマホの Access（ac_v1）の文字が箱から切れ、スマホのフッターで営業時間（ft_v1）が電話番号（ft_v2）に重なる。4 つ以上（91 字）はフッター（ft_v1）が切れる。原因は AMET と同じ共通の折り返しの道具（最後の塊を nowrap でまとめる）で、keyOverlap を入れても同じ。AMET は 3 つ・77 字まで通ったが、麓は時間の書き方（2 部制）で塊が長くなり 1 つ少ない。休みの曜日は「定休日」の行に別に出る（数えない。休み 1〜4 日で崩れなし）"
+    },
+    "shop:/hours/weekly (closed)": {
+      "minClosedDays": 0,
+      "note": "休みが無い（毎日営業）と「定休日」の行ごと消える（指示 0051 で wa03-gen を直した：前は中身の無い「定休日」の行が残った。お席の行の無い店だけの話で AMET の出力は同じ）。行が 1 つ減ると Google Map のボタンとスマホの段の高さが 1 行分上がる"
+    },
+    "item:*/name": {
+      "maxChars": 11,
+      "hardMaxChars": 14,
+      "level": "warn",
+      "note": "スマホ・768 は 11 字まで 2 行（枠どおり）。12〜13 字で 3 行になり最後の行が 1〜2 字（wa03-check の「品名の最後の行」）、14 字で 3 行（段 +123）。PC は 14 字まで 1 行、15 字で 2 行（段 +61）。重なりは出ない。wa03.json の nameBreaks（折り目）は品名が変わると知らせて飛ばす（崩れない）。新しい長い名前に折り目が要るなら nameBreaks に足す"
+    },
+    "item:*/description": {
+      "maxChars": 40,
+      "hardMaxChars": 80,
+      "level": "warn",
+      "note": "AMET と同じ。40 字で PC 3 行（段 +43）・スマホ 段 +172。80 字でも重なり無し（PC +173・スマホ +604）"
+    },
+    "item:*/prices": {
+      "maxOptions": 3,
+      "maxOptionNameChars": 6,
+      "note": "4 桁（1,280円）・名前付き（ケーキセット 1,280円）・〜付き（12,800円〜）・範囲（1,280円〜3,800円）・2 選択肢（単品／ケーキセット）・3 選択肢（ショート／トール／グランデ 1,580円〜）を全品に入れても崩れなし。2 選択肢でスマホ段 +86、3 選択肢でスマホ +173・PC +43。値段の無い品（チーズトースト）もそのまま出る"
+    },
+    "text:fv_en": {
+      "note": "ファーストビューの英語の一行（wa03.json の fvEn）は飾りの文字で edit:false。① と連動しない"
+    }
+  },
+  "lists": {
+    "catalog:mnu_food": {
+      "dataEdit": "list:catalog:mnu_food",
+      "categoryIds": ["cat_menu"],
+      "minItems": 1,
+      "maxItems": 24,
+      "designItems": 8,
+      "columns": { "pc": 4, "sp": 2 },
+      "note": "AMET と同じ。多い分は下を押す（9・12・24 品で崩れなし）。少ない分は gen が段の高さを行の数だけ詰める（1・3・5・7 品で確かめた）。品を消すときは review の該当行（今は itm_m001・itm_m006 の値段）も消す必要がある（消した品を指す確認があると validate がエラーで書き出せない）"
+    }
+  },
+  "photos": {
+    "_rule": "AMET と同じ枠（同じ wa03-gen の配置）。全部 object-fit:cover で枠いっぱいに切り抜く（中央。crop の fx・fy で寄せられる）。FV・紹介・帯・品の写真を縦↔横・正方形に入れ替えても崩れなし。minWidth は 2 倍の解像度で一番大きく出る幅",
+    "ast_fv01": { "aspect": { "pc": 0.62, "sp": 0.48 }, "orientation": "portrait", "minWidth": 1000 },
+    "ast_fv02": { "aspect": { "pc": 0.62, "sp": 0.48 }, "orientation": "portrait", "minWidth": 1000 },
+    "ast_st01": { "aspect": { "pc": 1.07, "sp": 1.3 }, "orientation": "square", "minWidth": 1300 },
+    "ast_st02": { "aspect": { "pc": 1.84, "sp": 1.12 }, "orientation": "landscape", "minWidth": 1660 },
+    "ast_st03": { "aspect": { "pc": 1.0, "sp": 0.79 }, "orientation": "square", "minWidth": 900 },
+    "item:*/photos": { "aspect": { "pc": 1.57, "sp": 0.94 }, "orientation": "any", "minWidth": 600, "note": "品の写真（カード、ast_mn01〜08）。写真が無い品も同じカード（photoless: sameCard）" },
+    "ast_sr01-06": { "aspect": { "pc": 1.44, "sp": 1.23 }, "orientation": "landscape", "minWidth": 1350, "note": "写真の帯。6 枚固定（finish の流れの CSS が 6 枚前提）" }
+  },
+  "combined": {
+    "note": "全部を一度に（違う曜日 2 つ＋休み 2 日・品 +4・値段 2 選択肢・紹介文 倍・写真の縦横入れ替え）：768・スマホは崩れなし。PC は紹介文が筆記体と重なる（上の q_body の上限を超えた分だけ）"
+  }
+}
