@@ -8,13 +8,15 @@
     "build": "node tools/build.mjs",
     "shots": "node tools/shots.mjs",
     "check": "node tools/check-layout.mjs",
-    "test": "node --test tools/reflow.test.mjs tools/format.test.mjs tools/metacheck.test.mjs tools/edit-ops.test.mjs tools/rebuild-shop.test.mjs tools/api-source.test.mjs",
+    "test": "node --test tools/reflow.test.mjs tools/format.test.mjs tools/metacheck.test.mjs tools/edit-ops.test.mjs tools/rebuild-shop.test.mjs tools/api-source.test.mjs apps/owner/test/logic.test.mjs",
     "setup:browser": "npx playwright install chromium webkit",
     "spec-check": "node tools/spec-check.mjs samples/ashiyado dist/ashiyado",
     "metacheck": "node tools/metacheck.mjs",
     "build:editor": "node apps/editor/build.mjs",
     "test:core": "node --test packages/core/test/core.test.mjs packages/core/test/visibility.test.mjs",
-    "test:publish": "node --test packages/core/publish/test/publish.test.mjs"
+    "test:publish": "node --test packages/core/publish/test/publish.test.mjs",
+    "build:owner": "node apps/owner/build.mjs",
+    "test:owner": "node --test apps/owner/test/logic.test.mjs"
   },
   "dependencies": {
     "ajv": "^8.20.0",
