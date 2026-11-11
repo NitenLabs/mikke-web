@@ -97,11 +97,15 @@ async function openShop(me, shop) {
     hasBase: !!baseHtml,
   });
   adopt("shop", ds.version, ds.data); adopt("site", dsite.version, dsite.data);
-  // 既定の上限（今の段落の数・最長＋2 字）は下地の字から（直した下書きから測ると、直すたびに縮むので）
+  // 元の文字（samples の site.json に当たる物）は ② の下書きに無い（content には直した所だけ。DATA_SPEC 4.9.3）ので、下地の字から持つ。
+  // 既定の上限（今の段落の数・最長＋2 字）も下地の字から（直した下書きから測ると、直すたびに縮むので）
   const fvBase = [...baseDoc.querySelectorAll('[data-el="fv_copy"] > .pg')].map((e) => e.textContent.trim());
+  S.base = { fv_copy: fvBase };
   S.origFv = fvBase.length ? fvBase : textParagraphs(S.site, "fv_copy");
   S.open = null; S.openItem = null; S.reorder = null; S.view = "pc"; S.priceStash = {};
   renderShell();
+  // 0065 より前の seed の下書き（site.json を丸ごと持つ形）は読まない。直さずに知らせる（作り直しの側も site_draft_form で止まる）
+  if (S.site?.draft?.elements || S.site?.draft?.genConfig) flash("② の下書きが古い形です（制作側で seed し直してください）。表紙の言葉・写真は元のまま見えます");
   await refreshStatus();
   S.ready = true;
 }
@@ -161,7 +165,7 @@ function summary(id) {
   if (id === "hours") return hoursLine(S.shop.hours);
   if (id === "menu") return `${menuItems().length} 品`;
   if (id === "story") return String(getPointer(S.shop, Q_CATCH) ?? "").replace(/\n/g, " ");
-  if (id === "fv") return textParagraphs(S.site, "fv_copy").join(" ");
+  if (id === "fv") return textParagraphs(S.site, "fv_copy", S.base?.fv_copy).join(" ");
   if (id === "photos") return `${S.ed.photos.filter((p) => p.elId).length} 枚`;
   return "";
 }
@@ -196,7 +200,7 @@ function body(id) {
   }
   if (id === "fv") {
     return `<div class="field"><label for="fFv">表紙の言葉</label><p class="note">改行で行を分けます。</p>
-      <textarea id="fFv" rows="3" data-key="text:fv_copy">${esc(textParagraphs(S.site, "fv_copy").join("\n"))}</textarea><p class="msg" data-msg="fv"></p></div>`;
+      <textarea id="fFv" rows="3" data-key="text:fv_copy">${esc(textParagraphs(S.site, "fv_copy", S.base?.fv_copy).join("\n"))}</textarea><p class="msg" data-msg="fv"></p></div>`;
   }
   if (id === "photos") {
     return `<ul class="photos">${S.ed.photos.filter((p) => p.elId).map((p) => {
@@ -405,7 +409,7 @@ function onFormInput(e) {
     S.shop.hours = setDay(S.shop.hours, d, { status: "open", start, end });
     $("#hoursShown").textContent = hoursLine(S.shop.hours); $("#closedShown").textContent = closedLine(S.shop.hours);
   } else if (t.dataset.ptr) S.shop = setShopValue(S.shop, t.dataset.ptr, t.value);
-  else if (t.id === "fFv") S.site = setTextParagraphs(S.site, "fv_copy", t.value.split("\n"));
+  else if (t.id === "fFv") S.site = setTextParagraphs(S.site, "fv_copy", t.value.split("\n"), S.base?.fv_copy);
   else if (t.dataset.if) {
     const itemId = t.closest("[data-item]").dataset.item;
     S.shop = setItemField(S.shop, itemId, t.dataset.if, t.value);
@@ -434,7 +438,7 @@ function allChecks() {
   if (S.ed.shopPtrs.has("/hours")) put("hours", checkHours(S.shop.hours, ruleFor(L, "shop:/hours")), "営業時間");
   if (S.ed.shopPtrs.has(Q_CATCH)) put("catch", checkText(getPointer(S.shop, Q_CATCH), ruleFor(L, `shop:${Q_CATCH}`)), "紹介の見出し");
   if (S.ed.shopPtrs.has(Q_BODY)) put("body", checkText(getPointer(S.shop, Q_BODY), ruleFor(L, `shop:${Q_BODY}`)), "紹介文");
-  if (S.ed.texts.has("fv_copy")) put("fv", checkText(textParagraphs(S.site, "fv_copy").join("\n"), ruleFor(L, "text:fv_copy") ?? defaultTextRule(S.origFv), { required: true }), "表紙の言葉");
+  if (S.ed.texts.has("fv_copy")) put("fv", checkText(textParagraphs(S.site, "fv_copy", S.base?.fv_copy).join("\n"), ruleFor(L, "text:fv_copy") ?? defaultTextRule(S.origFv), { required: true }), "表紙の言葉");
   const items = menuItems();
   if (S.ed.lists.size) put("list", checkList(items.length, MENU().rule), "お品書き");
   for (const { itemId, item } of items) {
@@ -501,7 +505,7 @@ function refreshPreview() {
   const d = S.frame;
   if (!d) return;
   try {
-    patchTexts(d, previewTexts(S.shop, S.site, S.ed));
+    patchTexts(d, previewTexts(S.shop, S.site, S.ed, S.base ?? {}));
     patchMenu(d, S.shop, MENU(), assetUrl);
     patchPhotos(d, S.ed.photos, (p) => photoAsset(p, S.shop, S.site), assetUrl);
     if (S.focus) highlight(d, S.focus, { scroll: false });
@@ -610,7 +614,7 @@ function openPhoto(slot) {
       const a = await api(`/api/shops/${S.id}/assets`, { method: "POST", body: form });
       S.assets[a.id] = a;
       if (full.itemId) S.shop = setItemPhoto(S.shop, full.itemId, a.id);
-      else S.site = setElementPhoto(S.site, full.elId, a.id);
+      else S.site = setElementPhoto(S.site, full.elId, a.id, full.assetId);
       sh.hidden = true; sh.innerHTML = "";
       rerender(); focusKey(full.key ?? `item:${full.itemId}`);
       flash("写真を替えました。「下書きに保存」を押すと残ります");

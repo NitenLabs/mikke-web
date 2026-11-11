@@ -349,7 +349,7 @@ async function flow(ctx, UI, W, { first }) {
   if (W <= 760) { await page.$eval(".sheet-in", (e) => { e.scrollTop = 0; }); await settled(page, "#sheet"); await shot(page, "owner2-390-crop"); await shot(page, "owner3-390-crop"); }
   await page.click("#phOk");
   await page.waitForSelector("#sheet[hidden]", { state: "attached", timeout: 30000 });
-  const asset = await page.evaluate(() => window.OWNER.state().site.draft.elements.fv_1.asset);
+  const asset = await page.evaluate(() => window.OWNER.state().site.draft.content?.fv_1?.asset);
   check(`${tag} 写真が新しい素材に`, /^ast_/.test(asset) && asset !== "ast_fv01", asset);
   const vars = await apiGet(page, `/api/shops/${SHOP}/assets/${asset}/variants`);
   check(`${tag} 大きさ違いも上がった`, (vars.variants ?? []).length >= 2, vars.widths);
@@ -361,7 +361,8 @@ async function flow(ctx, UI, W, { first }) {
   await until(async () => /下書きに保存しました/.test(await saveMsg(page)), 20000, "保存");
   const dShop = await apiGet(page, `/api/shops/${SHOP}/drafts/shop`), dSite = await apiGet(page, `/api/shops/${SHOP}/drafts/site`);
   check(`${tag} 下書き ① に入った`, dShop.data.hours.weekly.wed.status === "closed" && Object.values(dShop.data.catalog.items).some((i) => i.name === newName) && dShop.data.story.answers.q_body.answer === body);
-  check(`${tag} 下書き ② に入った`, dSite.data.draft.elements.fv_1.asset === asset && dSite.data.draft.genConfig.fvCopy.join("") === "あさの一杯を、どうぞ。");
+  check(`${tag} 下書き ② に入った（content の形。0065）`, dSite.data.draft.content?.fv_1?.asset === asset && dSite.data.draft.content?.fv_copy === "あさの一杯を、\nどうぞ。", dSite.data.draft.content);
+  check(`${tag} 下書き ② に site.json の写し（elements・genConfig）が無い`, dSite.data.draft.elements === undefined && dSite.data.draft.genConfig === undefined && JSON.stringify(dSite.data.draft.sections) === "{}", Object.keys(dSite.data.draft));
   check(`${tag} 状態の文字`, /公開/.test(await page.textContent("#state")), await page.textContent("#state"));
 
   // 別のタブで先に保存 → こちらで保存すると 409 → 新しい方を読み込む
@@ -393,6 +394,7 @@ async function flow(ctx, UI, W, { first }) {
   const lp = await page.evaluate(() => window.OWNER.state().lastPublish);
   check(`${tag} 公開した（render:"rebuild"）`, lp?.render === "pending" && lp.number >= 1, { number: lp?.number, render: lp?.render });
   check(`${tag} 作り直し（dry-run）ok`, lp?.rebuild?.render?.state === "ok" && /公開しました/.test(msg), { state: lp?.rebuild?.render?.state, publishable: lp?.rebuild?.publishable, ms: lp?.rebuild?.ms, swapped: lp?.rebuild?.swapped, error: lp?.rebuild?.error });
+  check(`${tag} 作り直しで ② の写真を付け替えた（元の素材の file を新しい写真に）`, (lp?.rebuild?.swapped ?? []).includes(`fv_1:ast_fv01→${asset}`), lp?.rebuild?.swapped);
   await page.click("#btnVersions");
   await page.waitForSelector("[data-version]");
   const vs = await page.$$eval("[data-version]", (els) => els.map((e) => ({ n: e.dataset.version, now: e.textContent.includes("いま公開中"), r: e.querySelector("[data-render]")?.dataset.render })));

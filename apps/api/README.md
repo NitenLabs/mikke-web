@@ -18,7 +18,7 @@ npm run dev                      # http://localhost:8787
 ```
 
 - `npm run seed` は、マイグレーションを当て、`samples/ashiyado` の ①（shop.json）・③（theme.json）・④（assets.json と media/ の写真 12 枚）から、お店 `shp_ashiyado`（スラッグ `ashiyado`）・制作側・店主・下書き・写真を local の D1・R2 に入れる。②の下書きは wa-01 の「何もしていない」形（`{template, sections}`）。`samples/` は読むだけ
-- `npm run seed -- --site amet`：`samples/amet`（wa-03）の ①・④（写真 19 枚）から、お店 `shp_amet`（スラッグ `amet`、template `wa-03`）・店主 `owner@amet.example` を入れる。② は `{draft: {...site.json, template: {name:"wa-03", version:1}, genConfig: <wa03.json>}, theme}`（店主の編集画面 apps/owner 用）
+- `npm run seed -- --site amet`：`samples/amet`（wa-03）の ①・④（写真 19 枚）から、お店 `shp_amet`（スラッグ `amet`、template `wa-03`）・店主 `owner@amet.example` を入れる。② は DATA_SPEC 4.9.3 の型の店の形 `{draft: {template: {name:"wa-03", version:1}, sections: {}}, theme}`（0065。site.json・wa03.json は下書きに入れない。直した文字・写真だけが `content` に入る。前の形の置き場は seed し直す）
 - `npm run seed -- --persist-to <フォルダ>`：local の D1・R2 をそのフォルダに置く（`wrangler dev --persist-to <同じフォルダ>` と組で使う）。編集画面の通しの試験（`apps/editor/test/e2e-api.test.mjs`）が毎回まっさらな置き場所で走るために足した（ログインの回数の制限が前の回から持ち越さないように）
 - ログイン：`POST /api/auth/request` を送ると、**wrangler dev の画面に `[mail] to=… code=123456 link=…` が出る**（local の `MAILER = "log"`。本番は `resend`）
 - 公開ページ：公開したあと `http://ashiyado.localhost:8787/`（Chrome・Firefox は `*.localhost` を手元に向ける。curl なら `-H "Host: ashiyado.localhost"`）
@@ -110,6 +110,7 @@ npm run typecheck   # tsc
 | `POST /api/shops/:shopId/assets/:id/restore` | ゴミ箱から戻す | 店 |
 | `GET /edit-api/shops/:shop/shop` | 段2 の PC の runner 用。① を書き出す `{shopId, slug, version, baseHash, data, updatedAt}`。`:shop` は ID か slug。`baseHash` は `JSON.stringify(①)` の SHA-256（runner の shopHash と同じ） | 鍵 |
 | `GET /edit-api/shops/:shop/versions/:n` | 版の中身 `{shopId, slug, number, scope, publishedAt, isPublished, render, shop, site, assets}`（`assets` は ④ の形で、版が指している写真だけ）。描き直しの runner 用 | 鍵 |
+| `GET /edit-api/shops/:shop/assets/:id` | 写真の台帳 1 件（今の ④。下書きの時点の ② の写真を runner が描くため。0065） | 鍵 |
 | `GET /edit-api/shops/:shop/assets/:id/file` | 写真そのもの（元の 1 枚） | 鍵 |
 | `POST /edit-api/shops/:shop/versions/:n/render` | 描き直しの結果 `{ok:true, url?}`／`{ok:false, error}` → 版の `render` が ok／failed。rebuild の版だけ（html の版は 409）。答え `{shopId, number, render}` | 鍵 |
 | `PUT /edit-api/shops/:shop/shop` | 承認済みの直しを当てた ① を書き戻す（下書きになるだけ。公開しない）。`If-Match` が要る（428）。古いと 409 `{current:{version, data, baseHash}}`。変更の記録は「仕組み」 | 鍵 |

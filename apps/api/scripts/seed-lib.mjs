@@ -15,14 +15,22 @@ export const WA01_INITIAL_DRAFT = {
 };
 
 /**
- * wa-03 の店（例 samples/amet）の ②③：{draft: {...site.json, template: {name:"wa-03", version:1}, genConfig: <wa03.json>}, theme}
- * api の下書きの確かめ（draft.template.name・draft.sections）を通る形。recentColors は編集の設定に分けるので外す
+ * 型（wa-NN）の店（例 samples/amet）の ②③ の「何もしていない」下書き：{draft: {template: {name, version: 1}, sections: {}}, theme}
+ * DATA_SPEC 4.9.3 の型の店の形（0065）。site.json・<型>.json は下書きに入れない（描くときに samples の物へ content を当てる）。
+ * content は空なので書かない。recentColors は編集の設定に分けるので外す
  */
-export function wa03SiteDraft({ site, genConfig, theme }) {
+export function typeSiteDraft({ templateName, theme }) {
+  if (!/^wa-\d\d$/.test(templateName ?? "")) throw new Error(`型の名前の形が違う：${templateName}`);
   const { recentColors, ...themeBody } = theme ?? {};
   void recentColors;
-  return { draft: { ...site, template: { name: "wa-03", version: 1 }, genConfig }, theme: themeBody };
+  return { draft: { template: { name: templateName, version: 1 }, sections: {} }, theme: themeBody };
 }
+
+/** site.json の templateId（tpl_wa_03）→ 型の名前（wa-03）。型でなければ null */
+export const templateNameOfSite = (site) => {
+  const m = /^tpl_wa_(\d\d)$/.exec(site?.templateId ?? "");
+  return m ? `wa-${m[1]}` : null;
+};
 
 const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 

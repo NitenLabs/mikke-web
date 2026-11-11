@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // 見本のお店を local の D1・R2 に作る（既定は芦屋堂）。
 //   npm run seed -- --producer you@example.com --owner owner@example.com
-//   npm run seed -- --site amet   … samples/amet（wa-03。② は site.json＋template＋genConfig(wa03.json)。店主 owner@amet.example）
+//   npm run seed -- --site amet   … samples/amet（wa-03。② は {draft:{template:{name:"wa-03",version:1}, sections:{}}, theme}。店主 owner@amet.example）
 // 何度流してもよい（同じお店は消してから入れ直す）。samples/ は読むだけ。
 import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { buildSeed, wa03SiteDraft } from "./seed-lib.mjs";
+import { buildSeed, templateNameOfSite, typeSiteDraft } from "./seed-lib.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = resolve(here, "..");
@@ -32,8 +32,10 @@ const assets = read("assets.json");
 const fileSizes = {};
 for (const a of Object.values(assets.assets)) fileSizes[a.file.key] = statSync(join(samples, "media", a.file.key)).size;
 
-// wa-03 の店（genConfig の wa03.json がある）は、② を site.json から作る。無ければ wa-01 の「何もしていない」下書き
-const isWa03 = existsSync(join(samples, "wa03.json"));
+// 型の店（site.json の templateId が tpl_wa_NN）は、② を DATA_SPEC 4.9.3 の型の店の形（template・空の sections）で入れる（0065）。
+// site.json・<型>.json は下書きに入れない。wa-01（芦屋堂。部品の形の下書き）と型でない店は wa-01 の「何もしていない」下書き
+const tplOfSite = existsSync(join(samples, "site.json")) ? templateNameOfSite(read("site.json")) : null;
+const typeName = tplOfSite && tplOfSite !== "wa-01" ? tplOfSite : null;
 const theme = read("theme.json");
 const seed = buildSeed({
   shop: read("shop.json"),
@@ -43,7 +45,7 @@ const seed = buildSeed({
   producerEmail,
   ownerEmail,
   fileSizes,
-  ...(isWa03 ? { template: "wa-03", siteDraft: wa03SiteDraft({ site: read("site.json"), genConfig: read("wa03.json"), theme }) } : {}),
+  ...(typeName ? { template: typeName, siteDraft: typeSiteDraft({ templateName: typeName, theme }) } : {}),
 });
 
 // .bin/wrangler は Windows では直接は動かない（.cmd になる）ので、node で wrangler の本体を動かす

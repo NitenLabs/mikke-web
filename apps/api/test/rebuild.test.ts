@@ -1,11 +1,10 @@
 import { env } from "cloudflare:test";
 import { describe, expect, it } from "vitest";
-import { buildSeed, wa03SiteDraft } from "../scripts/seed-lib.mjs";
+import { buildSeed, templateNameOfSite, typeSiteDraft } from "../scripts/seed-lib.mjs";
 import ametShop from "../../../samples/amet/shop.json";
 import ametAssets from "../../../samples/amet/assets.json";
 import ametTheme from "../../../samples/amet/theme.json";
 import ametSite from "../../../samples/amet/site.json";
-import ametWa03 from "../../../samples/amet/wa03.json";
 import { allowPublish, call, fakeJpeg, getDraft, login, publishAll, putDraft, siteData, upload, world } from "./helpers";
 
 const KEY = "test-runner-secret-0123456789abcdef-xyz";
@@ -138,9 +137,10 @@ describe("GET /api/config", () => {
 });
 
 describe("種まき：AMET（samples/amet、wa-03）", () => {
-  it("SA-1 お店 amet・店主・①④・② {draft:{...site.json, template wa-03, genConfig}, theme} ができ、店主が開けて、rebuild で公開できる", async () => {
+  it("SA-1 お店 amet・店主・①④・② {draft:{template wa-03, sections:{}}, theme}（DATA_SPEC 4.9.3 の型の店の形。0065）ができ、店主が開けて、rebuild で公開できる", async () => {
     const ownerEmail = `owner-${Date.now()}@amet.example`;
-    const siteDraft = wa03SiteDraft({ site: ametSite, genConfig: ametWa03, theme: ametTheme });
+    expect(templateNameOfSite(ametSite)).toBe("wa-03");
+    const siteDraft = typeSiteDraft({ templateName: templateNameOfSite(ametSite), theme: ametTheme });
     const seed = buildSeed({ shop: ametShop, assets: ametAssets, theme: ametTheme, slug: "amet", producerEmail: `p-${Date.now()}@example.com`, ownerEmail, template: "wa-03", siteDraft });
     for (const sql of seed.statements) await env.DB.prepare(sql).run();
     for (const o of seed.objects) await env.BUCKET.put(o.key, fakeJpeg(16, 9), { httpMetadata: { contentType: o.mime } });
@@ -153,8 +153,8 @@ describe("種まき：AMET（samples/amet、wa-03）", () => {
     expect(shopInfo.template).toBe("wa-03");
     const site = await getDraft(cookie, "shp_amet", "site");
     expect(site.data.draft.template).toEqual({ name: "wa-03", version: 1 });
-    expect(site.data.draft.genConfig.fvCopy).toEqual(ametWa03.fvCopy);
-    expect(site.data.draft.elements).toEqual(ametSite.elements);
+    // site.json・wa03.json は下書きに持たない（描くときに samples の物へ content を当てる）
+    expect(site.data.draft).toEqual({ template: { name: "wa-03", version: 1 }, sections: {} });
     expect(site.data.theme.recentColors).toBeUndefined();
     // api の下書きの確かめを通る（そのまま保存し直せる）
     expect((await putDraft(cookie, "shp_amet", "site", site.version, site.data)).status).toBe(200);

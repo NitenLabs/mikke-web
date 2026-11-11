@@ -1,4 +1,6 @@
 // 下書き（① shop と ② site＝{draft, theme}）と、画面の項目のつなぎ（SPEC 3章・6章）。純粋。
+// ② は DATA_SPEC 4.9.3 の型の店の形 {draft: {template, sections: {}, content?: {要素ID: 文字 | {asset}}}, theme?}（0065）。
+// 元の文字・写真（samples の site.json に当たる物）は下書きに無いので、呼ぶ側（main.js）が下地の HTML から渡す（base）。
 import { formatHoursShort, formatPriceAll, getPointer } from "../../../../tools/lib/format.mjs";
 
 const clone = (o) => JSON.parse(JSON.stringify(o));
@@ -29,21 +31,34 @@ export function editableFrom(marks) {
   return { keys, shopPtrs, texts, itemFields, lists, photos };
 }
 
-// ---- 表紙の言葉（② の文字の箱 fv_copy。gen で戻らないよう genConfig.fvCopy も）
-export function textParagraphs(site, elId) {
-  const el = site?.draft?.elements?.[elId];
-  return (el?.paragraphs ?? []).map((p) => (p.runs ?? []).map((r) => r.text ?? "").join(""));
-}
-export function setTextParagraphs(site, elId, lines) {
-  const s = clone(site);
-  const el = s.draft?.elements?.[elId];
-  if (!el) return s;
-  const ls = lines.map((t) => String(t).trim()).filter(Boolean);
-  const keep = el.paragraphs?.[0]?.runs?.[0] ?? {};
-  const { text: _t, bind: _b, ...runStyle } = keep;
-  el.paragraphs = ls.map((t) => ({ runs: [{ ...runStyle, text: t }] }));
-  if (elId === "fv_copy" && s.draft.genConfig) s.draft.genConfig.fvCopy = ls;
+// ---- content[要素ID] の出し入れ（何もしていない所・元と同じ値・空の content は書かない。DATA_SPEC 4.9.3）
+const isObj = (v) => typeof v === "object" && v !== null && !Array.isArray(v);
+function putContent(site, elId, value) {
+  const s = clone(site ?? {});
+  if (value === undefined && !isObj(s.draft?.content)) return s;
+  s.draft ??= {};
+  const c = isObj(s.draft.content) ? s.draft.content : {};
+  if (value === undefined) delete c[elId];
+  else c[elId] = value;
+  if (Object.keys(c).length) s.draft.content = c;
+  else delete s.draft.content;
   return s;
+}
+
+// ---- 表紙の言葉（② の文字の箱 fv_copy）。content[要素ID] は段落を \n でつないだ文字列（見た目の無い文字。DATA_SPEC 4.9.3「文字」）
+/** 今の段落。content が無ければ base（元の段落。下地の HTML から） */
+export function textParagraphs(site, elId, base = []) {
+  const v = site?.draft?.content?.[elId];
+  const t = typeof v === "string" ? v
+    : Array.isArray(v) ? v.map((r) => (typeof r === "string" ? r : r?.text ?? "")).join("")
+    : null;
+  return t == null ? [...base] : t.split("\n");
+}
+/** 段落を content[要素ID] に（trim・空行を落とす）。base（元の段落）と同じなら書かない。gen に戻らないようにするのは作り直しの側（api-source） */
+export function setTextParagraphs(site, elId, lines, base = []) {
+  const ls = lines.map((t) => String(t).trim()).filter(Boolean);
+  const b = base.map((t) => String(t).trim()).filter(Boolean);
+  return putContent(site, elId, same(ls, b) ? undefined : ls.join("\n"));
 }
 
 // ---- ① の値（JSON Pointer）
@@ -64,11 +79,9 @@ export function setShopValue(shop, ptr, value) {
 export { getPointer };
 
 // ---- 写真
-export function setElementPhoto(site, elId, assetId) {
-  const s = clone(site);
-  const el = s.draft?.elements?.[elId];
-  if (el) { el.asset = assetId; el.crop = { fx: 50, fy: 50, zoom: 1 }; }
-  return s;
+/** ② の写真の要素を差し替える：content[要素ID] = {asset}（切り抜きは上げる前に済ませるので持たない）。baseAsset（元の素材）と同じなら書かない */
+export function setElementPhoto(site, elId, assetId, baseAsset = null) {
+  return putContent(site, elId, assetId === baseAsset ? undefined : { asset: assetId });
 }
 export function setItemPhoto(shop, itemId, assetId) {
   const s = clone(shop);
@@ -79,7 +92,8 @@ export function setItemPhoto(shop, itemId, assetId) {
 /** 写真の欄の今の素材 */
 export function photoAsset(slot, shop, site) {
   if (slot.itemId) return shop?.catalog?.items?.[slot.itemId]?.photos?.[0] ?? null;
-  return site?.draft?.elements?.[slot.elId]?.asset ?? slot.assetId;
+  const v = site?.draft?.content?.[slot.elId];
+  return (isObj(v) && typeof v.asset === "string" ? v.asset : null) ?? slot.assetId;
 }
 
 // ---- 保存の前の確かめ：印の無い所を変えていないか
@@ -93,7 +107,7 @@ export function changedPaths(a, b, base = "") {
 }
 /**
  * 印の無い所の変更（あれば保存しない）。
- * ① は shop:<ptr> の下・/catalog/items/<id>/<印のある項目>・品の出し入れ（list の印があるとき）だけ。② は text:<id> の箱・photo の要素・genConfig.fvCopy だけ
+ * ① は shop:<ptr> の下・/catalog/items/<id>/<印のある項目>・品の出し入れ（list の印があるとき）だけ。② は content の text:<id> の箱・photo の要素だけ
  */
 export function outsideEdits(ed, origShop, shop, origSite, site) {
   const bad = [];
@@ -108,9 +122,13 @@ export function outsideEdits(ed, origShop, shop, origSite, site) {
   }
   const elOk = new Set([...ed.texts, ...ed.photos.filter((x) => x.elId).map((x) => x.elId)]);
   for (const p of changedPaths(origSite, site)) {
-    const m = /^\/draft\/elements\/([^/]+)/.exec(p);
-    if (m && elOk.has(m[1])) continue;
-    if (p === "/draft/genConfig/fvCopy" && ed.texts.has("fv_copy")) continue;
+    const m = /^\/draft\/content\/([^/]+)/.exec(p);
+    if (m && elOk.has(m[1].replace(/~1/g, "/").replace(/~0/g, "~"))) continue;
+    // content ごと出来た・消えた（片方が無い）：中のキーが全部許す ID なら通す
+    if (p === "/draft/content") {
+      const keys = [...Object.keys(origSite?.draft?.content ?? {}), ...Object.keys(site?.draft?.content ?? {})];
+      if (keys.every((k) => elOk.has(k))) continue;
+    }
     bad.push(`②${p}`);
   }
   return bad;
@@ -135,13 +153,13 @@ export function resolveConflict(kind, choice, mine, current) {
 }
 
 // ---- その場の見え方（patch.js）に渡す文。キー（data-edit の値）→ 段落の並び
-export function previewTexts(shop, site, ed) {
+export function previewTexts(shop, site, ed, base = {}) {
   const out = {};
   for (const p of ed.shopPtrs) {
     if (p === "/hours") out[`shop:${p}`] = [formatHoursShort(shop.hours)];
     else if (p.startsWith("/story/")) out[`shop:${p}`] = String(getPointer(shop, p) ?? "").split("\n").filter((t) => t.trim());
   }
-  for (const id of ed.texts) if (id === "fv_copy") out[`text:${id}`] = textParagraphs(site, id);
+  for (const id of ed.texts) if (id === "fv_copy") out[`text:${id}`] = textParagraphs(site, id, base[id] ?? []);
   return out;
 }
 /** 入れ終わった値段だけ（入れている途中の「円」だけの文を出さない）。金額の要らない時価などはそのまま */

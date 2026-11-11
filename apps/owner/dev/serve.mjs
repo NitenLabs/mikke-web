@@ -11,6 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
+import { apiClient, fetchVersionAssets, photosFromSiteDraft, textsFromSiteDraft, writeSourceDir } from "../../../tools/lib/api-source.mjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OWNER = path.resolve(HERE, "..");
@@ -78,46 +79,27 @@ async function proxy(req, res) {
 }
 
 // ───────── 公開の後の作り直し（手元は dry-run まで。本当の公開は runner＝lane4）
+const apiEdit = () => apiClient({ base: API, secret: SECRET });
 async function edit(p, init = {}) {
   const r = await fetch(`${API}/edit-api${p}`, { ...init, headers: { "x-edit-runner-secret": SECRET, ...(init.body ? { "Content-Type": "application/json" } : {}), ...(init.headers ?? {}) } });
   if (!r.ok) throw new Error(`/edit-api${p} ${r.status} ${await r.text()}`);
   return r;
 }
 /**
- * 版から --from のフォルダを作る。
+ * 版から --from のフォルダを作る（tools/lib/api-source.mjs の共通の道具を使う。0065）。
  * ・shop.json＝版の ①、assets.json＝samples の ④ に版の ④ を重ねたもの（file.key は media/ の名前）、media/＝R2 の写真
- * ・<型>.json＝② の genConfig（表紙の言葉 fvCopy が入る）
- * ・② の写真の要素（gen が決まった素材を指す）を差し替えたときは、元の素材の file を新しい写真に向ける（gen で戻らないように）
+ * ・② の文字（draft.content[要素ID]）は samples の site.json と <型>.json に当てる（writeSourceDir）
+ * ・② の写真（content[要素ID] = {asset}）は、元の素材の file を新しい写真に向ける（gen は決まった素材を指すので、gen で戻らないように）
+ * ・theme.json＝版の theme
  */
 export async function writeFrom(slug, v, dir) {
-  fs.rmSync(dir, { recursive: true, force: true });
-  fs.mkdirSync(path.join(dir, "media"), { recursive: true });
-  const sampleDir = path.join(ROOT, "samples", slug);
-  const sAssets = fs.existsSync(path.join(sampleDir, "assets.json")) ? JSON.parse(fs.readFileSync(path.join(sampleDir, "assets.json"), "utf8")) : { schemaVersion: 1, assets: {} };
-  const assets = { schemaVersion: 1, assets: { ...sAssets.assets } };
-  const ext = (m) => ({ "image/png": "png", "image/webp": "webp" })[m] ?? "jpg";
-  for (const [id, a] of Object.entries(v.assets?.assets ?? {})) {
-    const name = `${id}.${ext(a.file?.mime)}`;
-    const buf = Buffer.from(await (await edit(`/shops/${slug}/assets/${id}/file`)).arrayBuffer());
-    fs.writeFileSync(path.join(dir, "media", name), buf);
-    assets.assets[id] = { ...sAssets.assets[id], ...a, file: { ...a.file, key: name } };
-  }
-  const draft = v.site?.draft ?? {};
-  const baseSite = fs.existsSync(path.join(sampleDir, "site.json")) ? JSON.parse(fs.readFileSync(path.join(sampleDir, "site.json"), "utf8")) : null;
-  const swapped = [];
-  for (const [elId, el] of Object.entries(draft.elements ?? {})) {
-    const orig = baseSite?.elements?.[elId];
-    if (el.type === "photo" && orig?.asset && el.asset && el.asset !== orig.asset && assets.assets[el.asset]) {
-      assets.assets[orig.asset] = { ...assets.assets[orig.asset], file: { ...assets.assets[el.asset].file } };
-      swapped.push(`${elId}:${orig.asset}→${el.asset}`);
-    }
-  }
-  fs.writeFileSync(path.join(dir, "shop.json"), JSON.stringify(v.shop, null, 2));
-  fs.writeFileSync(path.join(dir, "assets.json"), JSON.stringify(assets, null, 2));
-  const tpl = /^wa-(\d\d)$/.exec(draft.template?.name ?? "")?.[1];
-  if (tpl && draft.genConfig) fs.writeFileSync(path.join(dir, `wa${tpl}.json`), JSON.stringify(draft.genConfig, null, 2));
+  const siteJson = fs.existsSync(path.join(ROOT, "samples", slug, "site.json")) ? JSON.parse(fs.readFileSync(path.join(ROOT, "samples", slug, "site.json"), "utf8")) : null;
+  const t = textsFromSiteDraft(v.site, siteJson);
+  const ph = photosFromSiteDraft(v.site, siteJson);
+  const assets = await fetchVersionAssets(apiEdit(), slug, v);
+  const w = writeSourceDir(dir, { site: slug, shop: v.shop, texts: t.texts, photos: ph.photos, assets });
   if (v.site?.theme) fs.writeFileSync(path.join(dir, "theme.json"), JSON.stringify(v.site.theme, null, 2));
-  return { swapped };
+  return { swapped: w.swapped, texts: t.texts, ignored: [...t.ignored, ...ph.ignored], genConfig: w.genConfig };
 }
 
 async function devRebuild(req, res) {

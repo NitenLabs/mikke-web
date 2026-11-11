@@ -19,11 +19,11 @@
 | 営業時間・定休日 | `shop:/hours`（ac_v1・フッター） | ① `/hours/weekly/<曜>` {status, periods} | `shop:/hours` maxRenderedChars 80・maxExceptionDays 3（error） |
 | 紹介文 | `shop:/story/answers/q_body/answer` | ① 同じ | maxChars 300・maxParagraphs 3・PC 9 行（warn） |
 | 紹介の見出し | `shop:/story/answers/q_catch/answer` | ① 同じ | 24 字・2 行・1 行 12 字（warn） |
-| 表紙の言葉 | `text:fv_copy` | ② `elements.fv_copy.paragraphs` ＋ `genConfig.fvCopy` | 無し→「今の段落数まで・各段落 最長＋2 字」（error） |
+| 表紙の言葉 | `text:fv_copy` | ② `content.fv_copy`（段落を `\n` でつないだ文字列。元の文字と同じなら書かない。DATA_SPEC 4.9.3。元の文字は下地の HTML から） | 無し→「今の段落数まで・各段落 最長＋2 字」（error） |
 | 品の名前・説明 | `item:<id>/name`・`/description` | ① `/catalog/items/<id>/…` | 10/15 字・40/80 字（warn、hardMax は error） |
 | 値段 | `item:<id>/prices` | ① `…/prices`。書き方は「○円」fixed・「○円〜」from・「○〜○円」range（amount〜max、max > amount）・「時価」market（金額を持たない）。「値段を出さない」は `prices: []`（カードに値段の行が出ない。DATA_SPEC 3.4）。指示 0056 | maxOptions 3・名前 6 字・types（選べる書き方） |
 | 品を足す・消す・並べ替え | `list:catalog:mnu_food` | ① `items`＋`placements`（order） | min 1・max 24 |
-| 写真 | `photo:<素材>` | ② `elements.<el>.asset`・`crop`／品は ① `items.<id>.photos[0]` | 枠の比は ② の layout から計算、minWidth は `photos[元の素材]`（warn） |
+| 写真 | `photo:<素材>` | ② `content.<el> = {asset}`（切り抜きは持たない。元の素材と同じなら書かない）／品は ① `items.<id>.photos[0]` | 枠の比は ② の layout から計算、minWidth は `photos[元の素材]`（warn） |
 
 - 判定は `limits.js` だけ。入力のたびに残りの字数・理由。error があれば保存できない
 - 品を消すときは `review` の行も消す。直した品・物語の `draft:true` は外す
@@ -52,7 +52,7 @@
 1. `POST /publish` に `render:"rebuild"`：`pages` 無しで版（①② の写し）を作る。答え `{number, render:"pending", pages:[], url:null, …}`（pages・css・files を付けると 400）。この版は API の公開ページでは出さない（店は Pages）
 2. `versions` に `render_state`（html／pending／ok／failed）・`render_error`・`render_url`・`rendered_at`（migration 0005）。`/status` の `published`・`/versions`・`/versions/:n` に `render {state, error, url, renderedAt}`
 3. `GET /edit-api/shops/:shop/versions/:n`（①②・写真の一覧）・`GET /edit-api/shops/:shop/assets/:id/file`・`POST /edit-api/shops/:shop/versions/:n/render {ok, url?, error?}`（失敗は error が要る。html の版は 409）。版の答えの `assets` は ④ の形 `{schemaVersion, assets}`
-4. 種まき：`seed.mjs --site amet`（`samples/amet` の ①・④・media 19 枚、② は `{draft:{...site.json, template:{name:"wa-03",version:1}, genConfig:<wa03.json>}, theme}`、スラッグ amet、店主 `owner@amet.example`）
+4. 種まき：`seed.mjs --site amet`（`samples/amet` の ①・④・media 19 枚、② は DATA_SPEC 4.9.3 の型の店の形 `{draft:{template:{name:"wa-03",version:1}, sections:{}}, theme}`（0065。直した所だけ `content` に入る）、スラッグ amet、店主 `owner@amet.example`）
 - lane4（0053）も `/edit-api` を触る→先に main へ。報告に「共通の道具を直した」
 
 ## 8. ログイン

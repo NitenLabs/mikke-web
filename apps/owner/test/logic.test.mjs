@@ -14,7 +14,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../.
 const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, f), "utf8"));
 const LIM = read("samples/amet/edit-limits.json");
 const SHOP = read("samples/amet/shop.json");
-const SITE = { draft: { ...read("samples/amet/site.json"), template: { name: "wa-03", version: 1 }, genConfig: read("samples/amet/wa03.json") }, theme: read("samples/amet/theme.json") };
+// ② は DATA_SPEC 4.9.3 の型の店の形（seed が入れる「何もしていない」下書き。0065）。元の文字は下地の HTML から（BASE）
+const SITE = { draft: { template: { name: "wa-03", version: 1 }, sections: {} }, theme: read("samples/amet/theme.json") };
+const BASE = { fv_copy: ["深呼吸のかわりに、", "一杯。"] };
 const rnd = (() => { let i = 0; return () => ((i++ * 7) % 32) / 32; })();
 
 // 下地（rebuild-shop の書き出し）にある印の形
@@ -184,23 +186,30 @@ test("draft：印から直してよい所（値段の印はどれかのカード
   assert.deepEqual(ED.photos, [{ key: "photo:ast_fv01", elId: "fv_1", assetId: "ast_fv01" }, { key: "photo:ast_mn01", itemId: "itm_m001", assetId: "ast_mn01" }]);
   assert.equal(ED.keys.has("sec:sec_story"), true);
 });
-test("draft：表紙の言葉は ② の段落と genConfig.fvCopy の両方", () => {
-  assert.deepEqual(textParagraphs(SITE, "fv_copy"), ["深呼吸のかわりに、", "一杯。"]);
-  const s = setTextParagraphs(SITE, "fv_copy", ["朝の一杯を、", "", "どうぞ。"]);
-  assert.deepEqual(textParagraphs(s, "fv_copy"), ["朝の一杯を、", "どうぞ。"]);
-  assert.deepEqual(s.draft.genConfig.fvCopy, ["朝の一杯を、", "どうぞ。"]);
-  assert.deepEqual(previewTexts(SHOP, s, ED)["text:fv_copy"], ["朝の一杯を、", "どうぞ。"]);
+test("draft：表紙の言葉は ② の content.fv_copy（段落を \\n でつないだ文字列。元と同じなら書かない）", () => {
+  assert.deepEqual(textParagraphs(SITE, "fv_copy", BASE.fv_copy), ["深呼吸のかわりに、", "一杯。"], "content が無ければ元の段落");
+  const s = setTextParagraphs(SITE, "fv_copy", ["朝の一杯を、", "", "どうぞ。"], BASE.fv_copy);
+  assert.deepEqual(s.draft, { template: { name: "wa-03", version: 1 }, sections: {}, content: { fv_copy: "朝の一杯を、\nどうぞ。" } });
+  assert.equal(SITE.draft.content, undefined, "元は変えない");
+  assert.deepEqual(textParagraphs(s, "fv_copy", BASE.fv_copy), ["朝の一杯を、", "どうぞ。"]);
+  assert.deepEqual(textParagraphs({ draft: { content: { fv_copy: [{ text: "a\n" }, "b"] } } }, "fv_copy"), ["a", "b"], "切れ目の並びも読む");
+  assert.deepEqual(previewTexts(SHOP, s, ED, BASE)["text:fv_copy"], ["朝の一杯を、", "どうぞ。"]);
   assert.deepEqual(outsideEdits(ED, SHOP, SHOP, SITE, s), []);
+  // 元の文字に戻したら content ごと消える（何もしていない下書きに戻る）
+  const back = setTextParagraphs(s, "fv_copy", [" 深呼吸のかわりに、", "一杯。"], BASE.fv_copy);
+  assert.deepEqual(back.draft, SITE.draft);
+  assert.deepEqual(outsideEdits(ED, SHOP, SHOP, s, back), []);
 });
 test("draft：物語・写真・品・保存の前の確かめ", () => {
   let sh = setShopValue(SHOP, "/story/answers/q_body/answer", "新しい紹介。\n二段落目。");
   assert.equal(sh.story.draft, undefined);
   assert.deepEqual(previewTexts(sh, SITE, ED)["shop:/story/answers/q_body/answer"], ["新しい紹介。", "二段落目。"]);
   assert.equal(previewTexts(sh, SITE, ED)["shop:/hours"][0], "8:30〜18:00");
-  let si = setElementPhoto(SITE, "fv_1", "ast_newone");
-  assert.equal(si.draft.elements.fv_1.asset, "ast_newone");
-  assert.deepEqual(si.draft.elements.fv_1.crop, { fx: 50, fy: 50, zoom: 1 });
+  assert.equal(photoAsset(ED.photos[0], sh, SITE), "ast_fv01", "差し替える前は下地の印の素材");
+  let si = setElementPhoto(SITE, "fv_1", "ast_newone", "ast_fv01");
+  assert.deepEqual(si.draft.content, { fv_1: { asset: "ast_newone" } }, "写真は {asset} だけ（切り抜きは持たない）");
   assert.equal(photoAsset(ED.photos[0], sh, si), "ast_newone");
+  assert.deepEqual(setElementPhoto(si, "fv_1", "ast_fv01", "ast_fv01").draft, SITE.draft, "元の素材に戻したら書かない");
   sh = setItemPhoto(sh, "itm_m001", "ast_newtwo");
   assert.equal(photoAsset(ED.photos[1], sh, si), "ast_newtwo");
   const added = addItem(sh, "mnu_food", "cat_menu", { rand: rnd });
@@ -208,8 +217,11 @@ test("draft：物語・写真・品・保存の前の確かめ", () => {
   assert.deepEqual(outsideEdits(ED, SHOP, sh, SITE, si), [], "印のある所だけなら空");
   const bad = setShopValue(sh, "/basic/name", "ちがう名前");
   assert.deepEqual(outsideEdits(ED, SHOP, bad, SITE, si), ["①/basic/name"]);
-  const bad2 = JSON.parse(JSON.stringify(si)); bad2.draft.elements.hd_name.paragraphs = [];
-  assert.deepEqual(outsideEdits(ED, SHOP, sh, SITE, bad2), ["②/draft/elements/hd_name/paragraphs"]);
+  const bad2 = JSON.parse(JSON.stringify(si)); bad2.draft.content.hd_name = "ちがう";
+  assert.deepEqual(outsideEdits(ED, SHOP, sh, SITE, bad2), ["②/draft/content"], "content ごと出来たとき、印の無い ID が混じれば止める");
+  assert.deepEqual(outsideEdits(ED, SHOP, sh, si, bad2), ["②/draft/content/hd_name"]);
+  const bad3 = JSON.parse(JSON.stringify(si)); bad3.draft.sections = { x: [] };
+  assert.deepEqual(outsideEdits(ED, SHOP, sh, si, bad3), ["②/draft/sections/x"]);
   assert.ok(changedPaths({ a: 1 }, { a: 2 }).includes("/a"));
 });
 test("draft：変えた方だけ送る・409 の片付け", () => {

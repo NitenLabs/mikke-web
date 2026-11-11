@@ -63,6 +63,6 @@ node apps/owner/e2e/flow.mjs             # 通し（Playwright。CI では走ら
 ## 気をつけること
 
 - 右の今の姿は目安（改行・段の高さ・下地に無い「定休日」の行は作り直しで決まる）
-- ② の写真の要素は型の gen が決まった素材を指すので、手元の作り直しでは「元の素材の file を新しい写真に向ける」形で `--from` に書く（`dev/serve.mjs` の `writeFrom`）
+- ② の写真の要素は型の gen が決まった素材を指すので、作り直しでは「元の素材の file を新しい写真に向ける」形で `--from` に書く（共通の道具 `tools/lib/api-source.mjs` の `photosFromSiteDraft`・`writeSourceDir`。手元は `dev/serve.mjs` の `writeFrom` がこれを使う。0065）
 - AMET は salesDraft なので作り直しの結果は `publishable:false`（正しい）
 - LINE で入るボタンは `GET /api/config` が `line:true` のときだけ出す（LIFF の中で開いたときの処理はまだ）
