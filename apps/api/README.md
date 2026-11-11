@@ -18,6 +18,7 @@ npm run dev                      # http://localhost:8787
 ```
 
 - `npm run seed` は、マイグレーションを当て、`samples/ashiyado` の ①（shop.json）・③（theme.json）・④（assets.json と media/ の写真 12 枚）から、お店 `shp_ashiyado`（スラッグ `ashiyado`）・制作側・店主・下書き・写真を local の D1・R2 に入れる。②の下書きは wa-01 の「何もしていない」形（`{template, sections}`）。`samples/` は読むだけ
+- `npm run seed -- --site amet`：`samples/amet`（wa-03）の ①・④（写真 19 枚）から、お店 `shp_amet`（スラッグ `amet`、template `wa-03`）・店主 `owner@amet.example` を入れる。② は `{draft: {...site.json, template: {name:"wa-03", version:1}, genConfig: <wa03.json>}, theme}`（店主の編集画面 apps/owner 用）
 - `npm run seed -- --persist-to <フォルダ>`：local の D1・R2 をそのフォルダに置く（`wrangler dev --persist-to <同じフォルダ>` と組で使う）。編集画面の通しの試験（`apps/editor/test/e2e-api.test.mjs`）が毎回まっさらな置き場所で走るために足した（ログインの回数の制限が前の回から持ち越さないように）
 - ログイン：`POST /api/auth/request` を送ると、**wrangler dev の画面に `[mail] to=… code=123456 link=…` が出る**（local の `MAILER = "log"`。本番は `resend`）
 - 公開ページ：公開したあと `http://ashiyado.localhost:8787/`（Chrome・Firefox は `*.localhost` を手元に向ける。curl なら `-H "Host: ashiyado.localhost"`）
@@ -62,6 +63,7 @@ npm run typecheck   # tsc
 | `test/seed.test.ts` | 芦屋堂の種まき |
 | `test/line.test.ts` | 店主の LINE ログイン（メールの人に LINE をつなぐ・LINE で入る・ほかの人の LINE・外す・止めた人） |
 | `test/runner.test.ts` | 段2 とのつなぎ（runner が ① を読む・書き戻す・鍵・版が古いと 409） |
+| `test/rebuild.test.ts` | 描き直しの公開（`render:"rebuild"`・版の render・/edit-api の版・写真・結果）、`GET /api/config`、AMET の種まき |
 
 ## API の一覧
 
@@ -72,6 +74,7 @@ npm run typecheck   # tsc
 | 道 | 中身 | 権限 |
 |---|---|---|
 | `GET /api/health` | 生きているか | — |
+| `GET /api/config` | 画面の出し分け `{line}`（`LINE_LOGIN_CHANNEL_ID` が空でないときだけ true） | — |
 | `POST /api/auth/request` `{email}` | 6 桁のコードとリンクをメールで送る（有効 15 分、1 回だけ）。**申し込んだブラウザの Cookie（`__Host-mikke_lgn`）を付ける**。登録のないアドレスでも同じ答え。同じアドレスは 60 秒あける・1 時間に 5 回まで（429・`Retry-After`）。本番では同じ IP から 1 分に 10 回まで（429 `too_many_ip`）。答え `{ok, expiresInMinutes, retryAfter}` | — |
 | `POST /api/auth/verify` `{email, code}` か `{token}` | コードかリンクの合言葉で入る。Cookie を付けて `{user}`。**コードは申し込んだブラウザ（`__Host-mikke_lgn` を持つ）でだけ使える**。1 つのコードで 5 回まで。アカウントごとに 24 時間で 20 回まちがえたら、コードでは 24 時間入れない（429 `locked`。リンクでは入れる）。リンクの合言葉はどの端末でも使える | — |
 | `POST /api/auth/logout` | このセッションを消す | — |
@@ -106,6 +109,9 @@ npm run typecheck   # tsc
 | `DELETE /api/shops/:shopId/assets/:id` | ゴミ箱へ。答え `{trashedAt, purgeAfterDays:30, referencedBy:["version:3", "draft:site", …]}` | 店 |
 | `POST /api/shops/:shopId/assets/:id/restore` | ゴミ箱から戻す | 店 |
 | `GET /edit-api/shops/:shop/shop` | 段2 の PC の runner 用。① を書き出す `{shopId, slug, version, baseHash, data, updatedAt}`。`:shop` は ID か slug。`baseHash` は `JSON.stringify(①)` の SHA-256（runner の shopHash と同じ） | 鍵 |
+| `GET /edit-api/shops/:shop/versions/:n` | 版の中身 `{shopId, slug, number, scope, publishedAt, isPublished, render, shop, site, assets}`（`assets` は ④ の形で、版が指している写真だけ）。描き直しの runner 用 | 鍵 |
+| `GET /edit-api/shops/:shop/assets/:id/file` | 写真そのもの（元の 1 枚） | 鍵 |
+| `POST /edit-api/shops/:shop/versions/:n/render` | 描き直しの結果 `{ok:true, url?}`／`{ok:false, error}` → 版の `render` が ok／failed。rebuild の版だけ（html の版は 409）。答え `{shopId, number, render}` | 鍵 |
 | `PUT /edit-api/shops/:shop/shop` | 承認済みの直しを当てた ① を書き戻す（下書きになるだけ。公開しない）。`If-Match` が要る（428）。古いと 409 `{current:{version, data, baseHash}}`。変更の記録は「仕組み」 | 鍵 |
 | `GET /api/admin/shops` | お店の一覧 | 制作 |
 | `POST /api/admin/shops` `{slug, name, id?}` | お店を作る（wa-01 の最初の下書きつき） | 制作 |
@@ -141,7 +147,8 @@ npm run typecheck   # tsc
 - 写真は HTML の中で **`/media/<④の ID>`**（例 `<img src="/media/ast_frma">`）。①②③ と HTML・CSS の中の `ast_…` はすべてこのお店の写真でなければ 400（`{error:"unknown_assets", assets:[…]}`）
 - **スクリプト**：HTML の中に、インラインの `<script>`（`type="application/ld+json"` の構造化データだけは通す）・`/_mikke/` 以外の `<script src>`・`on〜` の属性・`javascript:` などの URL・`srcdoc`・`<meta http-equiv="refresh">` があれば 400（`{error:"unsafe_html", page, problems:[{kind, detail}]}`）。コメント・style・属性の値の中の「タグの形の文字」も読むので、そこにも書かない。テンプレートに要るスクリプトは、**サーバーが配る決まったファイル `/_mikke/site.js`**（`src/site-assets.ts`。店主は変えられない）を `<script src="/_mikke/site.js" defer></script>` で読む
 - 同じお店の公開は **1 分に 1 回まで**（429・`Retry-After`）
-- 答え `{number, scope, publishedAt, pages, assets, url}`
+- 答え `{number, scope, publishedAt, pages, assets, url, render}`（`render` は `"html"`）
+- **`render: "rebuild"`**（店主の編集画面 apps/owner。migration 0005）：`pages`・`css`・`files` は送らない（送ると 400）。①②③ の写しだけの版を作り、答えは `{number, render:"pending", pages:[], url:null, …}`。描くのは手元の runner（`/edit-api` で版を読み、rebuild-shop で描いて Pages に出し、`POST …/versions/:n/render` で結果を返す）。この版は API の公開ページ（サブドメイン）では出さない（見つからないページ）。`/versions`・`/versions/:n`・`/status` の `published` に `render: {state: html|pending|ok|failed, error, url, renderedAt}`
 
 ### 公開ページ（`<スラッグ>.<PUBLIC_DOMAIN>`）
 
@@ -294,6 +301,7 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | 35 | 品を出す決まり（3.4）は `packages/core/visibility.js` の 1 つを `src/lib/visibility.ts` から読んで使う（wrangler がまとめる）。日付は日本時間、販売の期間はその日を含む、`status` は `onSale` だけ | 編集画面（ブラウザの時刻の月・販売の期間を見ない）と API で食い違っていた（M3）。写しにすると、またずれる |
 | 36 | 店主は users の 1 行＝1 人。メール（`users.email`）はいつも持ち、PC はメールで入る。LINE は表 `user_identities`（provider・subject＝LINE の userId → user_id。1 人に LINE 1 つ、1 つの LINE は 1 人だけ）でつなぐ「もう 1 つの入口」。つなぐのは、メールで入った人が LIFF の中で `POST /api/me/identities/line`。つないでいない LINE ではアカウントを作らない（404） | 店主を作るのは制作側（#5）のまま。LINE だけの人を作ると、PC で入る道がなくなる。どちらの入口でも同じお店・同じ下書き・同じ版を見る |
 | 37 | 段2（mikke-desk の直しの依頼）とは `/edit-api/shops/:shop/shop` でつなぐ。runner が ① を読み、承認済みの差分を当てた ① 全体を `If-Match` 付きで書き戻す（下書きになるだけで公開はしない）。鍵は `EDIT_RUNNER_SECRET`（ヘッダ `x-edit-runner-secret`）、なければ口を閉じる | 差分の検査（印・edit-limits）は desk と runner が持っている（`tools/lib/edit-ops.mjs`）。API で同じ物を二重に持たない。版番号で店主の編集とぶつかったときは 409 |
+| 38 | 店主の編集画面（apps/owner）の公開は `render:"rebuild"`：API は ①②③ の写しだけを版にし、描き直し（rebuild-shop）は手元の runner が `/edit-api` で版を読んで行う。結果は版の `render_state`（migration 0005）に残す | 店のページは決まったテンプレートから rebuild-shop で作り Pages に出す（ブラウザで HTML を描かない）。今の /edit-api の口と答えの形は変えず、足すだけ |
 | 23 | `@cloudflare/vitest-pool-workers` は「`@cloudflare/vitest-plugin` に名前が変わった」と出るが、言われたとおりこちらを使った（0.23・vitest 4.1）。peer の解決で npm が落ちるので `.npmrc` に `legacy-peer-deps=true` | 移すときは `npx @cloudflare/codemods vitest:pool-workers-to-vitest-plugin` |
 
 ## まだできていないこと

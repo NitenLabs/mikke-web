@@ -98,7 +98,7 @@ shops.get("/:shopId/status", async (c) => {
     shopSame,
     siteSame,
     drafts,
-    published: { number: pub.number, scope: pub.scope, publishedAt: pub.publishedAt, publishedBy: actorView(c.get("user"), pub.publishedBy) },
+    published: { number: pub.number, scope: pub.scope, publishedAt: pub.publishedAt, publishedBy: actorView(c.get("user"), pub.publishedBy), render: pub.render },
   });
 });
 

@@ -46,7 +46,18 @@ export interface PublishedVersion {
   visibility: string[];
   publishedAt: string;
   publishedBy: { id: string | null; kind: string };
+  render: RenderView;
 }
+
+/** 版の描き方と、描き直しの結果（migration 0005）。html＝編集画面が描いた HTML を API が配る版 */
+export type RenderState = "html" | "pending" | "ok" | "failed";
+export interface RenderView {
+  state: RenderState;
+  error: string | null;
+  url: string | null;
+  renderedAt: string | null;
+}
+export const renderOf = (r: any): RenderView => ({ state: r.render_state ?? "html", error: r.render_error ?? null, url: r.render_url ?? null, renderedAt: r.rendered_at ?? null });
 
 function rowToVersion(r: any): PublishedVersion {
   return {
@@ -60,6 +71,7 @@ function rowToVersion(r: any): PublishedVersion {
     visibility: JSON.parse(r.visibility),
     publishedAt: r.published_at,
     publishedBy: { id: r.published_by, kind: r.published_by_kind },
+    render: renderOf(r),
   };
 }
 
@@ -76,6 +88,8 @@ export async function getPublished(env: Env, shopId: string): Promise<PublishedV
 
 export interface PublishInput {
   scope: "all" | "shop";
+  /** html（既定）＝pages を送る。rebuild＝pages を送らず、①② の写しだけを版にする（描き直しは手元の runner が /edit-api で） */
+  render: "html" | "rebuild";
   shopDraftVersion: number;
   siteDraftVersion?: number;
   pages: Record<string, string>;
@@ -92,6 +106,12 @@ export function parsePublishInput(body: unknown): PublishInput {
   const isVer = (v: unknown) => typeof v === "number" && Number.isInteger(v) && v >= 0;
   if (!isVer(body.shopDraftVersion)) throw bad("invalid_publish", "shopDraftVersion（公開する ① の下書きの版）を付けてください");
   if (scope === "all" && !isVer(body.siteDraftVersion)) throw bad("invalid_publish", "siteDraftVersion（公開する ②③ の下書きの版）を付けてください");
+  const render = body.render ?? "html";
+  if (render !== "html" && render !== "rebuild") throw bad("invalid_publish", "render は html（ページを送る）か rebuild（①② だけを残して描き直す）");
+  if (render === "rebuild") {
+    for (const k of ["pages", "css", "files"]) if (body[k] !== undefined) throw bad("invalid_publish", `render が rebuild のときは ${k} を送らないでください（描き直しで作ります）`);
+    return { scope, render, shopDraftVersion: body.shopDraftVersion as number, siteDraftVersion: body.siteDraftVersion as number | undefined, pages: {} };
+  }
   if (!isPlainObject(body.pages)) throw bad("invalid_publish", "pages（道 → HTML）を付けてください");
   const pages: Record<string, string> = {};
   const entries = Object.entries(body.pages);
@@ -128,6 +148,7 @@ export function parsePublishInput(body: unknown): PublishInput {
   }
   return {
     scope,
+    render,
     shopDraftVersion: body.shopDraftVersion as number,
     siteDraftVersion: body.siteDraftVersion as number | undefined,
     pages,
@@ -194,6 +215,7 @@ export async function publish(env: Env, shopId: string, actor: Actor, input: Pub
   const n = seq.version_seq;
 
   // 先に R2 に置く（途中で失敗しても、公開中の版は前のまま）
+  const rebuild = input.render === "rebuild";
   const htmlMeta = { httpMetadata: { contentType: "text/html; charset=utf-8" } };
   await Promise.all([
     ...Object.entries(input.pages).map(([p, html]) => env.BUCKET.put(pageKey(shopId, n, p), html, htmlMeta)),
@@ -205,8 +227,8 @@ export async function publish(env: Env, shopId: string, actor: Actor, input: Pub
   const visibility = visibleItemIds(shopBody, now);
   const stmts = [
     env.DB.prepare(
-      `INSERT INTO versions (shop_id, number, scope, shop_body, site_body, pages, has_css, files, visibility, published_at, published_by, published_by_kind)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO versions (shop_id, number, scope, shop_body, site_body, pages, has_css, files, visibility, published_at, published_by, published_by_kind, render_state)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).bind(
       shopId,
       n,
@@ -220,6 +242,7 @@ export async function publish(env: Env, shopId: string, actor: Actor, input: Pub
       at,
       actor.id,
       actor.kind,
+      rebuild ? "pending" : "html",
     ),
     ...[...assetIds].map((a) => env.DB.prepare("INSERT INTO version_assets (shop_id, number, asset_id) VALUES (?, ?, ?)").bind(shopId, n, a)),
     env.DB.prepare("UPDATE shops SET published_version = ?, rendered_visibility = ? WHERE id = ?").bind(n, JSON.stringify(visibility), shopId),
@@ -227,7 +250,7 @@ export async function publish(env: Env, shopId: string, actor: Actor, input: Pub
   await env.DB.batch(stmts);
   await recordChanges(env, shopId, actor, [{ layer: "publish", action: input.scope === "all" ? "publish" : "publish-shop", path: `/versions/${n}`, before: current?.number ?? null, after: n }]);
   await pruneVersions(env, shopId);
-  return { number: n, scope: input.scope, publishedAt: at, pages: Object.keys(input.pages).sort(), assets: [...assetIds].sort() };
+  return { number: n, scope: input.scope, publishedAt: at, pages: Object.keys(input.pages).sort(), assets: [...assetIds].sort(), render: (rebuild ? "pending" : "html") as RenderState };
 }
 
 /** 新しい方から 30 を残して、古い版（行と R2 のファイル）を消す。公開中の版は数に関係なく残す */
@@ -261,7 +284,7 @@ export async function deletePrefix(env: Env, prefix: string): Promise<void> {
 export async function listVersions(env: Env, shopId: string, viewer: User) {
   const s = await env.DB.prepare("SELECT published_version FROM shops WHERE id = ?").bind(shopId).first<{ published_version: number | null }>();
   const res = await env.DB.prepare(
-    `SELECT v.number, v.scope, v.pages, v.published_at, v.published_by, v.published_by_kind, u.name, u.email
+    `SELECT v.number, v.scope, v.pages, v.published_at, v.render_state, v.render_error, v.render_url, v.rendered_at, v.published_by, v.published_by_kind, u.name, u.email
      FROM versions v LEFT JOIN users u ON u.id = v.published_by WHERE v.shop_id = ? ORDER BY v.number DESC`,
   )
     .bind(shopId)
@@ -273,6 +296,7 @@ export async function listVersions(env: Env, shopId: string, viewer: User) {
     publishedAt: r.published_at,
     publishedBy: actorView(viewer, { id: r.published_by, kind: r.published_by_kind, name: r.name, email: r.email }),
     isPublished: r.number === s?.published_version,
+    render: renderOf(r),
   }));
 }
 

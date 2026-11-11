@@ -23,6 +23,8 @@ api.use("/api/*", corsForApp, csrfGuard, async (c, next) => {
   c.res.headers.set("X-Content-Type-Options", "nosniff");
 });
 api.get("/api/health", (c) => c.json({ ok: true }));
+/** 画面が出し分けに使う設定（ログインの前に読む）。line：LINE で入れるか（LINE_LOGIN_CHANNEL_ID があるときだけ） */
+api.get("/api/config", (c) => c.json({ line: !!(c.env.LINE_LOGIN_CHANNEL_ID ?? "").trim() }));
 api.route("/api/auth", auth);
 api.route("/api/me", me);
 api.route("/api/admin", admin);

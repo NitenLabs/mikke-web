@@ -1,7 +1,9 @@
 import { Hono } from "hono";
 import type { AppEnv } from "../env";
 import { sha256Hex, timingSafeEqual } from "../lib/crypto";
-import { ApiError, readJson } from "../lib/http";
+import { ApiError, bad, isPlainObject, nowIso, readJson } from "../lib/http";
+import { assetJson, getAsset, type AssetRow } from "../services/assets";
+import { getVersion, renderOf } from "../services/publish";
 import { draftChangeRows, recordChanges, SYSTEM } from "../services/changes";
 import { draftJson, getDraft, MAX_DRAFT_BYTES, parseIfMatch, saveDraft, validateDraft } from "../services/drafts";
 
@@ -60,4 +62,80 @@ runner.put("/shops/:shop/shop", async (c) => {
   }
   await recordChanges(c.env, s.id, SYSTEM, rows);
   return c.json({ shopId: s.id, version: saved.version, baseHash: await hashOf(data), updatedAt: saved.updatedAt }, 200, { ETag: `"${saved.version}"` });
+});
+
+// ---- 描き直し（render:"rebuild" の公開。指示 0054）：runner が版の ①②・写真を取り、rebuild-shop で描いて、結果を返す ----
+
+const versionNum = (s: string) => {
+  if (!/^\d{1,9}$/.test(s)) throw new ApiError(404, "not_found", "版が見つかりません");
+  return Number(s);
+};
+
+/** 版の中身。{shopId, slug, number, scope, publishedAt, isPublished, render, shop, site, assets}。assets は ④ の形（版が指している写真だけ） */
+runner.get("/shops/:shop/versions/:n", async (c) => {
+  const s = await findShop(c, c.req.param("shop"));
+  const v = await getVersion(c.env, s.id, versionNum(c.req.param("n")));
+  if (!v) throw new ApiError(404, "not_found", "版が見つかりません");
+  const res = await c.env.DB.prepare(
+    `SELECT a.* FROM assets a JOIN version_assets va ON va.asset_id = a.id AND va.shop_id = a.shop_id
+     WHERE va.shop_id = ? AND va.number = ? AND a.purged_at IS NULL ORDER BY a.id`,
+  )
+    .bind(s.id, v.number)
+    .all<AssetRow>();
+  const assets: Record<string, unknown> = {};
+  for (const r of res.results) {
+    const { id, ...rest } = assetJson(r);
+    assets[id] = rest;
+  }
+  const pub = await c.env.DB.prepare("SELECT published_version FROM shops WHERE id = ?").bind(s.id).first<{ published_version: number | null }>();
+  return c.json({
+    shopId: s.id,
+    slug: s.slug,
+    number: v.number,
+    scope: v.scope,
+    publishedAt: v.publishedAt,
+    isPublished: pub?.published_version === v.number,
+    render: v.render,
+    shop: v.shop,
+    site: v.site,
+    assets: { schemaVersion: 1, assets },
+  });
+});
+
+/** 写真そのもの（元の 1 枚）。ゴミ箱の中でも、消しきっていなければ返す（版が指していることがあるので） */
+runner.get("/shops/:shop/assets/:id/file", async (c) => {
+  const s = await findShop(c, c.req.param("shop"));
+  const row = await getAsset(c.env, s.id, c.req.param("id"));
+  if (!row) throw new ApiError(404, "not_found", "写真が見つかりません");
+  const obj = await c.env.BUCKET.get(row.r2_key);
+  if (!obj) throw new ApiError(404, "not_found", "写真のファイルが見つかりません");
+  return new Response(obj.body, { headers: { "Content-Type": row.mime, "Content-Security-Policy": "default-src 'none'" } });
+});
+
+/** 描き直しの結果を返す。本文 {ok: true, url?} か {ok: false, error}。rebuild の版だけ（html の版は 409）。何度送ってもよい（最後のが残る） */
+runner.post("/shops/:shop/versions/:n/render", async (c) => {
+  const s = await findShop(c, c.req.param("shop"));
+  const n = versionNum(c.req.param("n"));
+  const body = await readJson<Record<string, unknown>>(c, 8 * 1024);
+  if (!isPlainObject(body) || typeof body.ok !== "boolean") throw bad("invalid_render", "本文は {ok: true|false, url?, error?}");
+  for (const k of Object.keys(body)) if (!["ok", "url", "error"].includes(k)) throw bad("invalid_render", `知らない項目があります：${k}（ok・url・error だけ）`);
+  let url: string | null = null;
+  if (body.url !== undefined && body.url !== null) {
+    if (typeof body.url !== "string" || body.url.length > 500 || !/^https?:\/\/[^\s]+$/.test(body.url)) throw bad("invalid_render", "url は http(s):// で始まる 500 字までの文字");
+    url = body.url;
+  }
+  let error: string | null = null;
+  if (body.error !== undefined && body.error !== null) {
+    if (typeof body.error !== "string") throw bad("invalid_render", "error は文字");
+    error = body.error.slice(0, 1000);
+  }
+  if (!body.ok && !error) throw bad("invalid_render", "失敗のときは error（理由）を付けてください");
+  const row = await c.env.DB.prepare("SELECT render_state FROM versions WHERE shop_id = ? AND number = ?").bind(s.id, n).first<{ render_state: string }>();
+  if (!row) throw new ApiError(404, "not_found", "版が見つかりません");
+  if (row.render_state === "html") throw new ApiError(409, "not_rebuild", "この版は編集画面が描いた HTML の版です（描き直しの版ではありません）");
+  const at = nowIso();
+  await c.env.DB.prepare("UPDATE versions SET render_state = ?, render_error = ?, render_url = ?, rendered_at = ? WHERE shop_id = ? AND number = ?")
+    .bind(body.ok ? "ok" : "failed", body.ok ? null : error, url, at, s.id, n)
+    .run();
+  return c.json({ shopId: s.id, number: n, render: renderOf({ render_state: body.ok ? "ok" : "failed", render_error: body.ok ? null : error, render_url: url, rendered_at: at }) });
 });

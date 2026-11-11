@@ -14,7 +14,8 @@ publishing.post("/:shopId/publish", async (c) => {
   const input = parsePublishInput(await readJson(c, MAX_PUBLISH_BYTES));
   const r = await publish(c.env, shopId, actorOf(c.get("user")), input);
   const slug = (await c.env.DB.prepare("SELECT slug FROM shops WHERE id = ?").bind(shopId).first<{ slug: string }>())!.slug;
-  return c.json({ ...r, url: publicUrl(c.env, slug) });
+  // rebuild の版は API の公開ページに出さない（描き直しの先は render の結果で分かる）ので url は null
+  return c.json({ ...r, url: r.render === "html" ? publicUrl(c.env, slug) : null });
 });
 
 const num = (s: string) => {
@@ -29,7 +30,7 @@ publishing.get("/:shopId/versions", async (c) => c.json({ versions: await listVe
 publishing.get("/:shopId/versions/:n", async (c) => {
   const v = await getVersion(c.env, c.req.param("shopId"), num(c.req.param("n")));
   if (!v) throw notFound("版が見つかりません");
-  return c.json({ number: v.number, scope: v.scope, publishedAt: v.publishedAt, publishedBy: actorView(c.get("user"), v.publishedBy), pages: v.pages, shop: v.shop, site: v.site });
+  return c.json({ number: v.number, scope: v.scope, publishedAt: v.publishedAt, publishedBy: actorView(c.get("user"), v.publishedBy), pages: v.pages, render: v.render, shop: v.shop, site: v.site });
 });
 
 /** D4：「この版を下書きにする」。②③ はまるごと、① は includeShop のときだけ。公開中の版は変わらない */

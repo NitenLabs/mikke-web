@@ -1,4 +1,4 @@
-// 芦屋堂（samples/ashiyado）のデータから、お店を 1 つ作る SQL を組み立てる。
+// samples/<店>（既定は芦屋堂 samples/ashiyado）のデータから、お店を 1 つ作る SQL を組み立てる。
 // scripts/seed.mjs（wrangler で local の D1・R2 に入れる）と試験（test/seed.test.ts）の両方で使う。
 
 /** SQL の文字列の値 */
@@ -14,6 +14,16 @@ export const WA01_INITIAL_DRAFT = {
   },
 };
 
+/**
+ * wa-03 の店（例 samples/amet）の ②③：{draft: {...site.json, template: {name:"wa-03", version:1}, genConfig: <wa03.json>}, theme}
+ * api の下書きの確かめ（draft.template.name・draft.sections）を通る形。recentColors は編集の設定に分けるので外す
+ */
+export function wa03SiteDraft({ site, genConfig, theme }) {
+  const { recentColors, ...themeBody } = theme ?? {};
+  void recentColors;
+  return { draft: { ...site, template: { name: "wa-03", version: 1 }, genConfig }, theme: themeBody };
+}
+
 const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
 
 /**
@@ -25,10 +35,12 @@ const EXT = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
  * @param {string} p.producerEmail
  * @param {string} p.ownerEmail
  * @param {Record<string, number>} [p.fileSizes]  素材のファイル名 → バイト数（実物の大きさ。なければ台帳の値）
+ * @param {object} [p.siteDraft]  ②③ の下書き {draft, theme}（無ければ wa-01 の「何もしていない」下書き＋theme）
+ * @param {string} [p.template]   shops.template（既定 wa-01）
  * @param {string} [p.now]
  * @returns {{ shopId: string, statements: string[], objects: {key: string, file: string, mime: string}[] }}
  */
-export function buildSeed({ shop, assets, theme, slug = "ashiyado", producerEmail, ownerEmail, fileSizes = {}, now = new Date().toISOString() }) {
+export function buildSeed({ shop, assets, theme, slug = "ashiyado", producerEmail, ownerEmail, fileSizes = {}, siteDraft: givenSite, template = "wa-01", now = new Date().toISOString() }) {
   const shopId = shop.shopId;
   const name = shop.basic?.name ?? slug;
   const statements = [];
@@ -45,14 +57,14 @@ export function buildSeed({ shop, assets, theme, slug = "ashiyado", producerEmai
 
   statements.push(`INSERT OR IGNORE INTO users (id, email, name, role, created_at) VALUES (${q(prodId)}, ${q(producerEmail.toLowerCase())}, '制作側', 'producer', ${q(now)});`);
   statements.push(`INSERT OR IGNORE INTO users (id, email, name, role, created_at) VALUES (${q(ownerId)}, ${q(ownerEmail.toLowerCase())}, ${q(name + "の店主")}, 'owner', ${q(now)});`);
-  statements.push(`INSERT INTO shops (id, slug, name, template, created_at) VALUES (${q(shopId)}, ${q(slug)}, ${q(name)}, 'wa-01', ${q(now)});`);
+  statements.push(`INSERT INTO shops (id, slug, name, template, created_at) VALUES (${q(shopId)}, ${q(slug)}, ${q(name)}, ${q(template)}, ${q(now)});`);
   statements.push(
     `INSERT INTO memberships (user_id, shop_id, created_at) SELECT id, ${q(shopId)}, ${q(now)} FROM users WHERE email = ${q(ownerEmail.toLowerCase())};`,
   );
 
   // ③ の recentColors は編集の設定に分ける（版に入れない。DATA_SPEC 6章）
   const { recentColors = [], ...themeBody } = theme;
-  const siteDraft = { draft: WA01_INITIAL_DRAFT, theme: themeBody };
+  const siteDraft = givenSite ?? { draft: WA01_INITIAL_DRAFT, theme: themeBody };
   statements.push(`INSERT INTO drafts (shop_id, kind, version, body, updated_at, updated_by) VALUES (${q(shopId)}, 'shop', 1, ${q(JSON.stringify(shop))}, ${q(now)}, ${q(prodId)});`);
   statements.push(`INSERT INTO drafts (shop_id, kind, version, body, updated_at, updated_by) VALUES (${q(shopId)}, 'site', 1, ${q(JSON.stringify(siteDraft))}, ${q(now)}, ${q(prodId)});`);
   statements.push(`INSERT INTO editor_settings (shop_id, body, updated_at) VALUES (${q(shopId)}, ${q(JSON.stringify({ recentColors }))}, ${q(now)});`);

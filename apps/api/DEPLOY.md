@@ -56,7 +56,7 @@ npx wrangler d1 migrations apply DB --remote --env dev
 npx wrangler d1 migrations list DB --remote --env dev
 ```
 
-0001〜0004 の 4 つが ✅ になればよい（本番は `--env prod`。`npm run db:migrate:prod` でも同じ）。空の手元の D1 では 4 つとも当たることを確かめ済み（表 16 個）。
+0001〜0005 の 5 つが ✅ になればよい（本番は `--env prod`。`npm run db:migrate:prod` でも同じ）。空の手元の D1 では 5 つとも当たることを確かめ済み（0005 は versions に render_state・render_error・render_url・rendered_at を足すだけ。表は 16 個のまま）。
 
 ## 4. 秘密の値を入れる（名前だけ。値は git に書かない）
 

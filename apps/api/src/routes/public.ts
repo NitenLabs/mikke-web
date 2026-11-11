@@ -51,9 +51,10 @@ publicSite.use("*", async (c, next) => {
   await next();
 });
 
+/** 公開中の版。rebuild の版（店は Pages に出る。migration 0005）はここでは出さない＝見つからないページ */
 async function lookup(env: Env, slug: string): Promise<Ctx | null> {
   const r = await env.DB.prepare(
-    "SELECT s.id, s.published_version, v.pages, v.files, v.has_css FROM shops s JOIN versions v ON v.shop_id = s.id AND v.number = s.published_version WHERE s.slug = ?",
+    "SELECT s.id, s.published_version, v.pages, v.files, v.has_css FROM shops s JOIN versions v ON v.shop_id = s.id AND v.number = s.published_version WHERE s.slug = ? AND v.render_state = 'html'",
   )
     .bind(slug)
     .first<{ id: string; published_version: number; pages: string; files: string; has_css: number }>();
