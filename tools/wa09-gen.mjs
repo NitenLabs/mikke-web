@@ -137,6 +137,12 @@ if (FS) {
 const LB = [[13, 20, 3.9], [13, 20, 3.9]]; // 札の欧文
 const col = "(100vw - 9.6rem)", tbM = { left: "4.8rem", width: `calc(100% - 9.6rem)` };
 const H169 = `${col} * .5625`; // タブレットの大きい写真の高さ
+// タブレット（768〜1024）は finish の CSS で位置を決め打ちにするので（build の reflow が効かない）、① の文の長さから行の数を見積もって下を押し下げる（fromShop の店だけ。指示 0050 段2）。
+// 1行の字数は一番狭い 768（本文の列 672px）で：本文 16px（字間 .06em）37 字（禁則の分だけ詰める）・見出し 32px 20 字・注記 14px 46 字。半角は 0.55 字
+const jw = (x) => [...x].reduce((n, c) => n + (/[\x20-\x7e]/.test(c) ? 0.55 : 1), 0);
+const tbN = (x, per) => (FS ? String(x ?? "").split("\n").reduce((n, p) => n + Math.max(1, Math.ceil(jw(p) / per)), 0) : 1);
+const tbX = (x, per, baseH, lh) => r(Math.max(0, tbN(x, per) * lh - baseH)); // 設計の箱の高さ（baseH rem）を超えた分の rem。タブレットの行の高さは PC の値（本文 3.6・見出し 5.6・注記 2.8rem）
+const ANS = (q) => shop.story?.answers?.[q]?.answer;
 
 // ---- ヘッダー
 const NAV = (label, order) => ({ label, order });
@@ -164,24 +170,28 @@ t("ab_p", "sec_about", ABP, [[16, 36, 0.96], [16, 34, 0.96]], B, WH, [{ x: 920, 
 photo("ab_ph2", "sec_about", "ast_phab2", 2, { x: 189, y: 780, w: 528, h: 704 }, { x: 13, y: 673, w: 187, h: 249 });
 photo("ab_ph3", "sec_about", "ast_phab3", 2, { x: 986, y: 1000, w: 441, h: 440 }, { x: 208, y: 841, w: 169, h: 169 });
 tb("ab_lb", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "9.6rem" });
-tb("ab_h", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "13rem", "font-size": "3.2rem", "line-height": "5.6rem", height: "5.6rem" });
-tb("ab_p", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "20rem", height: "10.2rem" });
-tb("ab_ph1", { ...tbM, top: "32rem", height: `calc(${H169})` });
-tb("ab_ph2", { left: "4.8rem", width: `calc(${col} * .595)`, top: `calc(36.8rem + ${H169})`, height: `calc(${col} * .793)` });
-tb("ab_ph3", { left: `calc(4.8rem + ${col} * .631)`, width: `calc(${col} * .369)`, top: `calc(52.8rem + ${H169})`, height: `calc(${col} * .369)` });
-tablet.secs.sec_about = `calc(46.4rem + ${col} * 1.3555)`;
+const dAh = tbX(ANS("q_catch"), 20, 5.6, 5.6), dAp = tbX(ANS("q_body"), 37, 10.2, 3.6), dA = r(dAh + dAp);
+tb("ab_h", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "13rem", "font-size": "3.2rem", "line-height": "5.6rem", height: `${r(5.6 + dAh)}rem` });
+tb("ab_p", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: `${r(20 + dAh)}rem`, height: `${r(10.2 + dAp)}rem` });
+tb("ab_ph1", { ...tbM, top: `${r(32 + dA)}rem`, height: `calc(${H169})` });
+tb("ab_ph2", { left: "4.8rem", width: `calc(${col} * .595)`, top: `calc(${r(36.8 + dA)}rem + ${H169})`, height: `calc(${col} * .793)` });
+tb("ab_ph3", { left: `calc(4.8rem + ${col} * .631)`, width: `calc(${col} * .369)`, top: `calc(${r(52.8 + dA)}rem + ${H169})`, height: `calc(${col} * .369)` });
+tablet.secs.sec_about = `calc(${r(46.4 + dA)}rem + ${col} * 1.3555)`;
 
 // ---- 3 おまかせ（行は y0 から、PC 96・SP 104）
-sec("sec_omakase", "おまかせ", 1398, 1112, { anchor: "omakase", nav: NAV(C.labels.omakase, 2) });
+const nOM = OM.length - 3; // おまかせの行の数（3行で設計どおり）。増減の分だけ段の高さを変える（PC 96・SP 104・タブレット 9.6rem／行。少ないときは注記の下で止める）
+sec("sec_omakase", "おまかせ", Math.max(1398 + 96 * nOM, 1266), Math.max(1112 + 104 * nOM, 800), { anchor: "omakase", nav: NAV(C.labels.omakase, 2) });
 photo("om_ph", "sec_omakase", "ast_phom", 1, { x: 0, y: 0, w: 1440, h: 810 }, { x: 0, y: 0, w: 390, h: 520 }, { fx: 51, fy: 50 }, 30);
 t("om_en", "sec_omakase", C.labels.omakase, [[40, 56, 8], [28, 40, 5.6]], A, WH, [{ x: 40, y: 706, w: 800, h: 56 }, { x: 24, y: 448, w: 342, h: 40 }], { deco: true });
 t("om_h", "sec_omakase", OMH, [[32, 56, 0], [28, 44, 0]], H, WH, [{ x: 201, y: 950, w: 280, h: 56 }, { x: 24, y: 576, w: 342, h: 44 }], { role: "heading" });
 t("om_n", "sec_omakase", OMN, [[14, 28, 0], [14, 26, 0]], B, WH, [{ x: 201, y: 1022, w: 280, h: 84 }, { x: 24, y: 628, w: 342, h: 52 }]);
 tb("om_ph", { left: "0", width: "100%", top: "0", height: "56.25vw" });
 tb("om_en", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "calc(56.25vw - 8rem)", "font-size": "3.6rem", "line-height": "5rem", height: "5rem" });
-tb("om_h", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "calc(56.25vw + 6.4rem)", "font-size": "3.2rem", "line-height": "5.6rem", height: "5.6rem" });
-tb("om_n", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "calc(56.25vw + 12.8rem)", height: "2.8rem" });
-const yP0 = 950, yS0 = 704, yT0 = "56.25vw + 17.6rem";
+const MN = FS ? Object.values(shop.catalog.menus).sort((a, b) => a.order - b.order)[0] : {};
+const dOh = tbX(MN.name, 20, 5.6, 5.6), dOn = tbX(MN.description, 46, 2.8, 2.8), dO = r(dOh + dOn);
+tb("om_h", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "calc(56.25vw + 6.4rem)", "font-size": "3.2rem", "line-height": "5.6rem", height: `${r(5.6 + dOh)}rem` });
+tb("om_n", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: `calc(56.25vw + ${r(12.8 + dOh)}rem)`, height: `${r(2.8 + dOn)}rem` });
+const yP0 = 950, yS0 = 704, yT0 = `56.25vw + ${r(17.6 + dO)}rem`;
 line("om_l0", "sec_omakase", { x: 520, y: yP0, w: 720 }, { x: 24, y: yS0, w: 342 });
 tb("om_l0", { ...tbM, top: `calc(${yT0})` });
 OM.forEach((row, i) => {
@@ -195,7 +205,7 @@ OM.forEach((row, i) => {
   tb(`om_p${i}`, { left: "auto", right: "4.8rem", width: "18rem", top: `calc(${yT} + 3.2rem)` });
   tb(`om_l${i + 1}`, { ...tbM, top: `calc(${yT} + 9.5rem)` });
 });
-tablet.secs.sec_omakase = "calc(56.25vw + 56rem)";
+tablet.secs.sec_omakase = `calc(56.25vw + ${r(Math.max(56 + 9.6 * nOM, 25.2) + dO)}rem)`;
 
 // ---- 4 お席
 sec("sec_counter", "お席", 1354, 849, { anchor: "counter", nav: NAV(C.labels.counter, 3) });
@@ -209,10 +219,12 @@ const yC = `20rem + ${H169}`;
 tb("ct_bg", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: "9.6rem", "font-size": "9.6rem", "line-height": "12rem", height: "12rem" });
 tb("ct_ph1", { ...tbM, top: "20rem", height: `calc(${H169})` });
 tb("ct_lb", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: `calc(${yC} + 4.8rem)` });
-tb("ct_h", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: `calc(${yC} + 8.4rem)`, "font-size": "3.2rem", "line-height": "5.6rem", height: "5.6rem" });
-tb("ct_p", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: `calc(${yC} + 15.6rem)`, height: "10.2rem" });
-tb("ct_ph2", { left: `calc(4.8rem + ${col} * .631)`, width: `calc(${col} * .369)`, top: `calc(${yC} + 27.6rem)`, height: `calc(${col} * .246)` });
-tablet.secs.sec_counter = `calc(${yC} + 37.2rem + ${col} * .246)`;
+const ctH = FS ? C.counter.heading.replace("{seats}", String(shop.facilities?.seats?.total ?? "")) : "";
+const dCh = tbX(ctH, 20, 5.6, 5.6), dCp = tbX(ANS("q_counter"), 37, 10.2, 3.6), dCt = r(dCh + dCp);
+tb("ct_h", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: `calc(${yC} + 8.4rem)`, "font-size": "3.2rem", "line-height": "5.6rem", height: `${r(5.6 + dCh)}rem` });
+tb("ct_p", { left: "4.8rem", width: "calc(100% - 9.6rem)", top: `calc(${yC} + ${r(15.6 + dCh)}rem)`, height: `${r(10.2 + dCp)}rem` });
+tb("ct_ph2", { left: `calc(4.8rem + ${col} * .631)`, width: `calc(${col} * .369)`, top: `calc(${yC} + ${r(27.6 + dCt)}rem)`, height: `calc(${col} * .246)` });
+tablet.secs.sec_counter = `calc(${yC} + ${r(37.2 + dCt)}rem + ${col} * .246)`;
 
 // ---- 5 ご案内・ご予約
 sec("sec_info", "ご案内", 962, 1170, { anchor: "info", nav: NAV(C.labels.info, 4) });
