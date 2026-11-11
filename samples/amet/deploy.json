@@ -1,0 +1,4 @@
+{
+  "_about": "本番の置き場（指示 0045）。domain.kind は pages（mikke-<店>.pages.dev の仮のアドレス）・mikke（<name>.<芦屋みっけのドメイン>）・own（店の独自ドメイン。name にドメイン）のどれか。変え方は docs/REBUILD.md",
+  "domain": { "kind": "pages", "name": null }
+}
