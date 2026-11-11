@@ -642,6 +642,7 @@
             "paragraphs",
             "hoursTable",
             "hoursShort",
+            "hoursShortLO",
             "closedDays",
             "address",
             "addressShort",
@@ -655,7 +656,7 @@
             "seats",
             "flag"
           ],
-          "description": "複雑な値を文字にする書き方。例：paragraphs=改行で段落に分ける（紹介文など）、hoursTable=曜日ごとの表、hoursShort=「9:00〜18:00（水曜定休）」、flag=true/false の項目（true なら段落の自由な文字だけを出し、false・空なら段落ごと消す。「できません」とは書かない）"
+          "description": "複雑な値を文字にする書き方。例：paragraphs=改行で段落に分ける（紹介文など）、hoursTable=曜日ごとの表、hoursShort=「9:00〜18:00（水曜定休）」、hoursShortLO=hoursShort に各曜日の L.O. を添える（そろえば「（L.O. 20:30）」、そろわなければ「／土曜は17:00〜22:00（L.O. 21:00）」）、flag=true/false の項目（true なら段落の自由な文字だけを出し、false・空なら段落ごと消す。「できません」とは書かない）"
         }
       }
     },

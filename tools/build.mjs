@@ -59,8 +59,10 @@ const rootVars = themeRootVars(data.theme);
 console.log("▸ 改行の規則（文節分け・最後の行）を決める…");
 const lbResult = await computeLineBreakKeep(lineBreakRequests(resolved), fontUrl, rootVars, { chromium, webkit });
 resolved.lineBreakKeep = lbResult.keep;
+resolved.lineBreakAlt = lbResult.alt;
 const keepN = Object.values(lbResult.keep).filter((v) => v > 0).length;
 console.log(`  最後の行をまとめた段落: ${keepN} 件／文節が箱より長い: ${lbResult.longPhrases.length} 件／4文節でも直らない: ${lbResult.unresolved.length} 件`);
+if (lbResult.overflowFixed.length) console.log(`   塊が箱に入らないので下げた: ${lbResult.overflowFixed.length} 件（うち曜日のまとまりで折る: ${Object.keys(lbResult.alt).length} 件）: ` + lbResult.overflowFixed.join(" 、 "));
 if (lbResult.longPhrases.length) console.log("   長い文節: " + lbResult.longPhrases.join(" 、 "));
 if (lbResult.unresolved.length) console.log("   未解決(R2): " + lbResult.unresolved.join(" 、 "));
 

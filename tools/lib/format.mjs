@@ -104,6 +104,38 @@ export function formatHoursShort(hours) {
   return parts.length ? `${main}（${parts.join("・")}）` : main;
 }
 
+// hoursShortLO：hoursShort に L.O.（ラストオーダー）を添える。L.O. は各曜日の最後の時間帯の lastOrder。
+//   servingTime：hoursShort と同じ。
+//   開いている曜日の L.O. がそろう（または全部無い）：hoursShort ＋「（L.O. 20:30）」。例「17:30〜21:00（L.O. 20:30）」
+//   そろわない：曜日ごとに「時間帯＋L.O.」で比べ、いちばん多い物を本体に、違う曜日を「／」で並べる（括弧の入れ子を避ける）。
+//     例「17:30〜21:00（L.O. 20:30）／土曜は17:00〜22:00（L.O. 21:00）」、L.O. だけ違う曜日は「土曜はL.O. 21:00」。
+export function formatHoursShortLO(hours) {
+  if (!hours) return "";
+  if (!hours.weekly) return formatHoursShort(hours);
+  const weekly = hours.weekly;
+  const openDays = WEEKDAYS.filter((d) => weekly[d]?.status === "open" && weekly[d].periods?.length);
+  if (openDays.length === 0) return formatHoursShort(hours);
+  const loOf = (d) => { const ps = weekly[d].periods; return ps[ps.length - 1].lastOrder || ""; };
+  const loStr = (lo) => (lo ? `（L.O. ${formatTime(lo)}）` : "");
+  const los = [...new Set(openDays.map(loOf))];
+  if (los.length === 1) return formatHoursShort(hours) + loStr(los[0]);
+  const pstr = (d) => periodsStr(weekly[d].periods);
+  const sig = (d) => pstr(d) + loStr(loOf(d));
+  const counts = new Map();
+  for (const d of openDays) counts.set(sig(d), (counts.get(sig(d)) || 0) + 1);
+  let mainDay = null, best = -1;
+  for (const d of openDays) { const c = counts.get(sig(d)); if (c > best) { best = c; mainDay = d; } }
+  const main = sig(mainDay), mainP = pstr(mainDay);
+  const mainStart = weekly[mainDay].periods[0].start;
+  const parts = openDays.filter((d) => sig(d) !== main).map((d) => {
+    const ps = weekly[d].periods, lo = loOf(d);
+    if (pstr(d) === mainP) return `${WD_JA[d]}は${lo ? `L.O. ${formatTime(lo)}` : "L.O.なし"}`;
+    if (ps.length === 1 && ps[0].start === mainStart) return `${WD_JA[d]}は${formatTime(ps[0].end)}まで${loStr(lo)}`;
+    return `${WD_JA[d]}は${periodsStr(ps)}${loStr(lo)}`;
+  });
+  return [main, ...parts].join("／");
+}
+
 // closedDays：定休日。「水曜・第3火曜・年末年始」
 //   曜日の休み → 定休の規則 → 決まった期間の例外（休業）の順。
 export function formatClosedDays(hours) {
@@ -212,6 +244,7 @@ export function applyFormat(format, value, ctx = {}) {
     case "plain": return value == null ? "" : String(value);
     case "paragraphs": return value == null ? "" : String(value); // 段落に分けるのは text.mjs の resolveText
     case "hoursShort": return formatHoursShort(value);
+    case "hoursShortLO": return formatHoursShortLO(value);
     case "hoursTable": return formatHoursTable(value); // 配列を返す（特別扱い）
     case "closedDays": return formatClosedDays(value);
     case "address": return formatAddress(value);

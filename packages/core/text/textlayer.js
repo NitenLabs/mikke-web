@@ -83,9 +83,22 @@ export const TEXT = (function () {
     let chosen = 0;
     for (const keep of [0, 2, 3, 4]) {
       meas.innerHTML = build(keep); const m = lastLineVisible(meas); chosen = keep;
-      if (m.lines <= 1 || m.lastVisible >= 4) return keep;
+      if (m.lines <= 1 || m.lastVisible >= 4) break;
     }
-    return chosen;
+    return fitKeep(meas, build, chosen);
+  }
+  // 本線 linebreak.mjs の chooseKeep（A）と同じ：まとめた塊（nowrap）が箱の幅＋KEEP_TOL に入らなければ、入る最大の keep に下げる。
+  // （この層は箱を端末ごとに測るので、その端末の箱だけで判定する。営業時間の曜日のまとまり（B）は run に format が無いのでここには無い）
+  const KEEP_TOL = 2;
+  function fitKeep(meas, build, keep) {
+    const fits = (k) => {
+      if (k === 0) return true;
+      meas.innerHTML = build(k); const nw = meas.querySelector(".nowrap");
+      return !nw || nw.getBoundingClientRect().width <= meas.clientWidth + KEEP_TOL;
+    };
+    if (fits(keep)) return keep;
+    for (const k of [4, 3, 2]) if (k < keep && fits(k)) return k;
+    return 0;
   }
 
   // H を作る：collectTextBoxes の各箱を tokenize→keep→join。返り値 Map key->{html}

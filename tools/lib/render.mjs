@@ -10,7 +10,7 @@
 
 import { reflow } from "../reflow.mjs";
 import { resolveText } from "./text.mjs";
-import { tokenize, joinTokens, lbEnabled } from "./linebreak.mjs";
+import { tokenize, joinTokens, lbEnabled, HOURS_FMTS } from "./linebreak.mjs";
 import { resolveRepeater } from "./catalog.mjs";
 import { colorCss, fontCss, textStyle, ROLE_TAG } from "./theme.mjs";
 
@@ -163,7 +163,7 @@ function runSpan(r, linkResolver, cls) {
 // 段落→HTML。linkResolver(link)→{href,target} があればリンクを張る。
 // style.paragraphGap（px）＝段落の間隔／style.arrowRight＝末尾の「›」をピルの右端へ寄せる。
 function paragraphsHtml(resolvedText, style, opts = {}) {
-  const { linkResolver, labelColumn, lb, lbKey, keep } = opts;
+  const { linkResolver, labelColumn, lb, lbKey, keep, alt } = opts;
   const gap = style?.paragraphGap, arrowRight = style?.arrowRight;
   return resolvedText.paragraphs
     .map((p, idx) => {
@@ -178,7 +178,9 @@ function paragraphsHtml(resolvedText, style, opts = {}) {
       }
       if (lb) {
         // 改行の規則（R1/R2）：文節を <wbr> で連結し、末尾 keep 文節を nowrap の塊に
-        const toks = tokenize(p.runs, true, { arrowRight, linkResolver });
+        // alt＝塊がはみ出すので営業時間を曜日のまとまりで折る段落（B。linebreak.mjs の computeLineBreakKeep が決める）
+        const hoursGroups = !!(alt && lbKey && alt[`${lbKey}#${idx}`]);
+        const toks = tokenize(p.runs, true, { arrowRight, linkResolver, hoursGroups });
         const k = (keep && lbKey) ? (keep[`${lbKey}#${idx}`] || 0) : 0;
         return `<span class="pg"${mt}>${joinTokens(toks, k)}</span>`;
       }
@@ -199,7 +201,10 @@ export function lineBreakRequests(resolved) {
     rt.paragraphs.forEach((p, idx) => {
       const toks = tokenize(p.runs, true, { arrowRight: styleObj?.arrowRight });
       if (toks.length < 2) return;
-      out.push({ key: `${baseKey}#${idx}`, device, widthPx, style, tokens: toks });
+      const req = { key: `${baseKey}#${idx}`, device, widthPx, style, tokens: toks };
+      // 営業時間の段落は、曜日のまとまりのトークンも測る（塊がはみ出したときだけ使う＝B）
+      if (p.runs.some((r) => HOURS_FMTS.has(r.fmt))) req.altTokens = tokenize(p.runs, true, { arrowRight: styleObj?.arrowRight, hoursGroups: true });
+      out.push(req);
     });
   };
   for (const el of elements.values()) {
@@ -253,7 +258,7 @@ export function measurementRequests(resolved) {
           labelColumn: el.style?.labelColumn,
           vertical: box.writingMode === "vertical", fixedH: box.h,
           lb: lbEnabled(el.style, el.box, site), rowLines: el.style?.rowLines,
-          html: paragraphsHtml(el.text, el.style, { labelColumn: el.style?.labelColumn, lb: lbEnabled(el.style, el.box, site), lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep }),
+          html: paragraphsHtml(el.text, el.style, { labelColumn: el.style?.labelColumn, lb: lbEnabled(el.style, el.box, site), lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep, alt: resolved.lineBreakAlt }),
         });
       }
     }
@@ -276,7 +281,7 @@ export function measurementRequests(resolved) {
               style: textBoxStyle({ role: ce.role, style: ce.style, box: ce.layout }, device, theme, "px"),
               vertical: ce.layout[device].writingMode === "vertical", fixedH: ce.layout[device].h,
               lb: lbEnabled(ce.style, ce.layout, site),
-              html: paragraphsHtml(rt, ce.style, { lb: lbEnabled(ce.style, ce.layout, site), lbKey: `c:${el.id}:${it.id}:${cid}`, keep: resolved.lineBreakKeep }),
+              html: paragraphsHtml(rt, ce.style, { lb: lbEnabled(ce.style, ce.layout, site), lbKey: `c:${el.id}:${it.id}:${cid}`, keep: resolved.lineBreakKeep, alt: resolved.lineBreakAlt }),
             });
           }
         }
@@ -294,7 +299,7 @@ export function measurementRequests(resolved) {
               style: textBoxStyle({ role: gh.role, style: gh.style, box: gh.layout }, device, theme, "px"),
               vertical: false, fixedH: gh.layout[device].h,
               lb: lbEnabled(gh.style, gh.layout, site),
-              html: paragraphsHtml(rt, gh.style, { lb: lbEnabled(gh.style, gh.layout, site), lbKey: `g:${el.id}:${it.categoryId}`, keep: resolved.lineBreakKeep }),
+              html: paragraphsHtml(rt, gh.style, { lb: lbEnabled(gh.style, gh.layout, site), lbKey: `g:${el.id}:${it.categoryId}`, keep: resolved.lineBreakKeep, alt: resolved.lineBreakAlt }),
             });
           }
         }

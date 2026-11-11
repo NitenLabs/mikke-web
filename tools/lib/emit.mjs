@@ -165,7 +165,7 @@ function elementHtml(el, resolved, linkResolver, cssRules, device0) {
     const lb = lbEnabled(el.style, el.box, resolved.site);
     // 文字の箱全体のリンク（style.link）。箱全体が <a> になるので、中の run のリンクは出さない（<a> の入れ子を防ぐ）
     const boxLink = el.style?.link ? linkResolver(el.style.link) : null;
-    const inner = paragraphsHtml(el.text, el.style, { linkResolver: boxLink ? undefined : (l) => linkResolver(l), labelColumn: el.style?.labelColumn, lb, lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep });
+    const inner = paragraphsHtml(el.text, el.style, { linkResolver: boxLink ? undefined : (l) => linkResolver(l), labelColumn: el.style?.labelColumn, lb, lbKey: `t:${el.id}`, keep: resolved.lineBreakKeep, alt: resolved.lineBreakAlt });
     const mh = mhAttr(resolved, `t:pc:${el.id}`, `t:sp:${el.id}`);
     const rowCls = el.style?.rowLines ? " row-table" : "";
     const cls = `el el-text${lbCls(el.style, el.box, el.role, resolved.site)}${rowCls}`;
@@ -287,8 +287,8 @@ function repeaterHtml(el, resolved, linkResolver) {
     const qLb = lbEnabled(qStyle, qCe.layout, resolved.site), aLb = lbEnabled(aStyle, aCe.layout, resolved.site);
     const off = noEdit(resolved.site.elements?.[el.id]);
     const parts = rp.items.map((it) => {
-      const q = paragraphsHtml(it.cels[qCid], qStyle, { lb: qLb, lbKey: `c:${el.id}:${it.id}:${qCid}`, keep: resolved.lineBreakKeep });
-      const a = paragraphsHtml(it.cels[aCid], aStyle, { linkResolver: (l) => linkResolver(l), lb: aLb, lbKey: `c:${el.id}:${it.id}:${aCid}`, keep: resolved.lineBreakKeep });
+      const q = paragraphsHtml(it.cels[qCid], qStyle, { lb: qLb, lbKey: `c:${el.id}:${it.id}:${qCid}`, keep: resolved.lineBreakKeep, alt: resolved.lineBreakAlt });
+      const a = paragraphsHtml(it.cels[aCid], aStyle, { linkResolver: (l) => linkResolver(l), lb: aLb, lbKey: `c:${el.id}:${it.id}:${aCid}`, keep: resolved.lineBreakKeep, alt: resolved.lineBreakAlt });
       const edI = off ? "" : editAttr([itemTarget(it)]);
       const edQ = off ? "" : editAttr(itemBindTokens(qCe, it)), edA = off ? "" : editAttr(itemBindTokens(aCe, it));
       return `<details class="acc-item"${edI}><summary><span class="acc-q${qLb ? " lb" : ""}"${edQ}>${q}</span></summary><div class="acc-a${aLb ? " lb" : ""}"${edA}>${a}</div></details>`;
@@ -308,7 +308,7 @@ function repeaterHtml(el, resolved, linkResolver) {
       const mh = mhAttr(resolved, `g:pc:${el.id}:${pl.catId}`, `g:sp:${el.id}:${pl.catId}`);
       const ghLb = lbEnabled(gh.style, gh.layout, resolved.site);
       const edH = noEdit(resolved.site.elements?.[el.id]) ? "" : editAttr(itemBindTokens(gh, it));
-      parts.push(`<${tag} data-head="${pl.catId}" class="rep-head el-text${lbCls(gh.style, gh.layout, gh.role, resolved.site)}"${mh}${edH}>${paragraphsHtml(rt, gh.style, { lb: ghLb, lbKey: `g:${el.id}:${pl.catId}`, keep: resolved.lineBreakKeep })}</${tag}>`);
+      parts.push(`<${tag} data-head="${pl.catId}" class="rep-head el-text${lbCls(gh.style, gh.layout, gh.role, resolved.site)}"${mh}${edH}>${paragraphsHtml(rt, gh.style, { lb: ghLb, lbKey: `g:${el.id}:${pl.catId}`, keep: resolved.lineBreakKeep, alt: resolved.lineBreakAlt })}</${tag}>`);
     } else {
       const it = rp.items.find((x) => x.id === pl.id);
       parts.push(cardHtml(el, it, resolved, linkResolver));
@@ -332,7 +332,7 @@ function cardHtml(el, it, resolved, linkResolver) {
       const mh = mhAttr(resolved, `c:pc:${el.id}:${it.id}:${cid}`, `c:sp:${el.id}:${it.id}:${cid}`);
       const lb = lbEnabled(ce.style, ce.layout, resolved.site);
       const ed = off ? "" : editAttr(itemBindTokens(ce, it));
-      return `<${tag} data-cel="${cid}" class="el el-text${lbCls(ce.style, ce.layout, ce.role, resolved.site)}"${mh}${ed}>${paragraphsHtml(rt, ce.style, { linkResolver: (l) => linkResolver(l, it), lb, lbKey: `c:${el.id}:${it.id}:${cid}`, keep: resolved.lineBreakKeep })}</${tag}>`;
+      return `<${tag} data-cel="${cid}" class="el el-text${lbCls(ce.style, ce.layout, ce.role, resolved.site)}"${mh}${ed}>${paragraphsHtml(rt, ce.style, { linkResolver: (l) => linkResolver(l, it), lb, lbKey: `c:${el.id}:${it.id}:${cid}`, keep: resolved.lineBreakKeep, alt: resolved.lineBreakAlt })}</${tag}>`;
     }
     if (ce.type === "photo") {
       if (!it.hasPhoto) return "";

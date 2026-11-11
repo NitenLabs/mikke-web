@@ -7,7 +7,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
-  formatTime, formatHoursShort, formatClosedDays, formatPriceAll, formatPrice, formatPriceAllTax,
+  formatTime, formatHoursShort, formatHoursShortLO, formatClosedDays, formatPriceAll, formatPrice, formatPriceAllTax,
 } from "./lib/format.mjs";
 import { resolveRepeater, makeRefDate, effectivePrices } from "./lib/catalog.mjs";
 import { resolveText } from "./lib/text.mjs";
@@ -34,6 +34,33 @@ test("hoursShort：いちばん多い時間帯を本体に、違う曜日を括�
 
 test("hoursShort：servingTime（甘味処）は時間帯とL.O.を出す", () => {
   assert.equal(formatHoursShort(shop.catalog.menus.mnu_kanmi.servingTime), "11:00〜17:00（L.O. 16:30）");
+});
+
+// ---------- hoursShortLO（指示 0060）----------
+const wk = (o) => {
+  const w = {}; for (const d of ["mon", "tue", "wed", "thu", "fri", "sat", "sun"]) w[d] = o[d] === undefined ? o._ : o[d];
+  return { weekly: w };
+};
+const op = (start, end, lastOrder) => ({ status: "open", periods: [{ start, end, ...(lastOrder ? { lastOrder } : {}) }] });
+test("hoursShortLO：L.O. がそろえば hoursShort ＋（L.O.）", () => {
+  const h = wk({ _: op("17:30", "21:00", "20:30"), mon: { status: "closed" } });
+  assert.equal(formatHoursShortLO(h), formatHoursShort(h) + "（L.O. 20:30）");
+  assert.equal(formatHoursShortLO(h), "17:30〜21:00（L.O. 20:30）");
+  // L.O. が無い店は hoursShort と同じ。servingTime も hoursShort と同じ
+  assert.equal(formatHoursShortLO(shop.hours), formatHoursShort(shop.hours));
+  assert.equal(formatHoursShortLO(shop.catalog.menus.mnu_kanmi.servingTime), "11:00〜17:00（L.O. 16:30）");
+});
+test("hoursShortLO：L.O. がそろわなければ曜日ごとに時間帯＋L.O.を「／」で並べる", () => {
+  const h = wk({ _: op("17:30", "21:00", "20:30"), mon: { status: "closed" }, sat: op("17:00", "22:00", "21:00") });
+  assert.equal(formatHoursShort(h), "17:30〜21:00（土曜は17:00〜22:00）");
+  assert.equal(formatHoursShortLO(h), "17:30〜21:00（L.O. 20:30）／土曜は17:00〜22:00（L.O. 21:00）");
+  const h2 = wk({ _: op("17:30", "21:00", "20:30"), sun: op("17:30", "20:00", "19:30") });
+  assert.equal(formatHoursShortLO(h2), "17:30〜21:00（L.O. 20:30）／日曜は20:00まで（L.O. 19:30）");
+});
+test("hoursShortLO：L.O. だけ違う曜日は「◯曜はL.O. …」", () => {
+  const h = wk({ _: op("17:30", "21:00", "20:30"), sat: op("17:30", "21:00", "20:00") });
+  assert.equal(formatHoursShort(h), "17:30〜21:00");
+  assert.equal(formatHoursShortLO(h), "17:30〜21:00（L.O. 20:30）／土曜はL.O. 20:00");
 });
 
 // ---------- closedDays ----------

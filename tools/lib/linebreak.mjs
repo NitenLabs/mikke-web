@@ -2,7 +2,9 @@
 //  R1 文節の途中で改行しない：BudouX で文節に分け、文節の間に <wbr>、要素に word-break:keep-all。
 //  R2 最後の行を短くしない：段落の最後の行の可視文字が4未満なら、末尾の2〜4文節を nowrap の塊にして送る。
 //  R3 見出しの行の長さをそろえる：見出しの役割に text-wrap:balance（CSS。ここではクラス付けの判定のみ）。
-// keep（R2）は PC・SP の大きい方を採る（末尾をまとめると最終行は必ず長くなる＝両端末で安全）。
+// keep（R2）は PC・SP の大きい方を採る（末尾をまとめると最終行は必ず長くなる）。
+//   ただし、まとめた塊（nowrap）がどちらかの端末で箱に入らないときは、両端末に入る最大の keep に下げる（A：はみ出しの判定）。
+//   営業時間（hoursShort・hoursShortLO）の段落で下げたときは、文節ではなく曜日のまとまりで折り直す（B）。
 
 import { loadDefaultJapaneseParser } from "budoux";
 import { esc } from "./render.mjs";
@@ -28,18 +30,53 @@ export function lbHeading(role) { return HEADING_ROLES.has(role); }
 
 // 1段落の runs → トークン（文節）の HTML 配列。lb=false なら run ごとに1トークン（分割しない）。
 // リンク・priceAll・「›」の run は分割せず1トークン（境界を壊さない）。marks は各トークンに付ける。
+// opts.hoursGroups=true のとき、営業時間の run（hoursShort・hoursShortLO）は文節ではなく曜日のまとまりで分ける（B）。
 export function tokenize(runs, lb, opts = {}) {
-  const { arrowRight, linkResolver } = opts;
+  const { arrowRight, linkResolver, hoursGroups } = opts;
   const toks = [];
   for (const r of runs) {
     const isArrow = arrowRight && (r.text || "").trim() === "›";
     const single = !lb || r.marks?.link || isArrow || r.fmt === "priceAll" || r.fmt === "priceAllTax" || !r.text;
     if (single) { toks.push(runSpanHtml(r, linkResolver, isArrow ? "pill-arrow" : null)); continue; }
     const style = marksStyleHtml(r.marks);
-    for (const ph of splitPhrases(r.text)) toks.push(`<span${style ? ` style="${style}"` : ""}>${esc(ph)}</span>`);
+    const parts = hoursGroups && HOURS_FMTS.has(r.fmt) ? hoursGroupTokens(r.text) : splitPhrases(r.text);
+    for (const ph of parts) toks.push(`<span${style ? ` style="${style}"` : ""}>${esc(ph)}</span>`);
   }
   return toks;
 }
+// 営業時間の書き方（曜日のまとまりで折る対象）
+export const HOURS_FMTS = new Set(["hoursShort", "hoursShortLO"]);
+// 営業時間の文字を曜日のまとまりに分ける（B）。区切りは「◯曜は」の前：
+//   「（」の前で切る（「（」は次のまとまりの頭。行末に開き括弧を残さない）、「・」「／」の後で切る（前のまとまりの末尾）。
+//   例：「7:30〜17:00（月曜は休み・水曜は11:00〜15:00）」→「7:30〜17:00」「（月曜は休み・」「水曜は11:00〜15:00）」
+export function hoursGroupTokens(text) {
+  if (!text) return [];
+  const DAY = /^[月火水木金土日]曜は/;
+  const out = []; let start = 0;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    let cut = -1;
+    if (c === "（" && DAY.test(text.slice(i + 1))) cut = i;
+    else if ((c === "・" || c === "／") && DAY.test(text.slice(i + 1))) cut = i + 1;
+    if (cut > start) { out.push(text.slice(start, cut)); start = cut; }
+  }
+  out.push(text.slice(start));
+  return out.filter((t) => t.length);
+}
+
+// keep を決める（ブラウザの要らない純粋関数。A）。
+//   dv.pc・dv.sp: { chosen（最後の行が4以上になる最小の keep）, boxW（箱の幅）, chunkW: {2,3,4 → 塊の幅} }
+//   返り値: { keep, fixed（塊がはみ出すので下げた）}。許容 tol px（今の全店に 1.2px の超えが1件あり、それを変えないため 2）。
+export const KEEP_TOL = 2;
+export function chooseKeep(dv, tol = KEEP_TOL) {
+  const devs = [dv.pc, dv.sp].filter(Boolean);
+  const k0 = Math.max(0, ...devs.map((d) => d.chosen || 0));
+  const fits = (k) => k === 0 || devs.every((d) => !(d.chunkW?.[k] > d.boxW + tol));
+  if (fits(k0)) return { keep: k0, fixed: false };
+  for (const k of [4, 3, 2]) if (k < k0 && fits(k)) return { keep: k, fixed: true };
+  return { keep: 0, fixed: true };
+}
+
 // トークン配列 → 段落の中身 HTML（<wbr> で連結。keep>0 なら末尾 keep 個を nowrap の塊に）
 export function joinTokens(toks, keep) {
   if (keep > 0 && toks.length > keep) {
@@ -74,13 +111,14 @@ function runSpanHtml(r, linkResolver, cls) {
 }
 
 // ---- R2 の keep を測って決める（settle と build の両方で同じに呼ぶ）----
-// requests: [{key, device, widthPx, style(:string[]), tokens(:string[])}]
-// 返り値: { keep: {key(#pIdx)->N}, longPhrases: [文節が箱より長い件の説明], unresolved: [4でも4未満] }
+// requests: [{key, device, widthPx, style(:string[]), tokens(:string[]), altTokens?(:string[] 曜日のまとまり)}]
+// 返り値: { keep: {key(#pIdx)->N}, alt: {key->true（曜日のまとまりで書く）}, overflowFixed: [塊がはみ出すので下げた件],
+//          longPhrases: [文節が箱より長い件の説明], unresolved: [4でも4未満] }
 export async function computeLineBreakKeep(requests, fontUrl, rootVars, browsers) {
   const { chromium, webkit } = browsers;
   const byDev = { pc: [], sp: [] };
   for (const r of requests) byDev[r.device].push(r);
-  const keepByKeyDev = {}; const longPhrases = []; const unresolved = [];
+  const keepByKeyDev = {}; const altByKeyDev = {}; const longPhrases = []; const unresolved = [];
   for (const [dev, reqs] of Object.entries(byDev)) {
     if (!reqs.length) continue;
     const bt = dev === "pc" ? chromium : webkit;
@@ -98,7 +136,8 @@ export async function computeLineBreakKeep(requests, fontUrl, rootVars, browsers
     await page.setContent(html, { waitUntil: "load" });
     for (let i = 0; i < 50; i++) { const ok = await page.evaluate(() => { document.body.offsetHeight; return !document.fonts || document.fonts.status === "loaded"; }); if (ok) break; await page.waitForTimeout(100); }
     const tokensList = reqs.map((r) => r.tokens);
-    const res = await page.evaluate(({ tokensList, punctSrc }) => {
+    const altList = reqs.map((r) => r.altTokens || null);
+    const res = await page.evaluate(({ tokensList, altList, punctSrc }) => {
       const PUNCT = new RegExp(punctSrc, "g");
       const vis = (s) => (s || "").replace(PUNCT, "").length;
       // 要素の「最後の行の可視文字数」を測る（文字ごとの矩形で行を割り、最下段を最後の行とする）
@@ -120,10 +159,8 @@ export async function computeLineBreakKeep(requests, fontUrl, rootVars, browsers
         const lines = new Set(chars.map((c) => c.top)).size;
         return { lastVisible: vis(last), lines };
       }
-      const out = [];
-      const nodes = [...document.querySelectorAll(".m.lb")];
-      for (let i = 0; i < nodes.length; i++) {
-        const el = nodes[i]; const toks = tokensList[i];
+      // 1つのトークン列を測る：keep を 0,2,3,4 で試し、最後の行が4以上になる最小の keep。塊（nowrap）の幅も測る（A）
+      function measure(el, toks) {
         // 文節が箱より長いか（各トークン単独の幅 > 箱幅）
         let longPhrase = false;
         el.innerHTML = toks.map((t) => `<span class="probe">${t}</span>`).join("");
@@ -141,18 +178,41 @@ export async function computeLineBreakKeep(requests, fontUrl, rootVars, browsers
           if (m.lines <= 1 || m.lastVisible >= 4) { chosen = keep; ok = true; break; }
           chosen = keep;
         }
-        out.push({ chosen, ok, natural, longPhrase });
+        const chunkW = {};
+        for (const keep of [2, 3, 4]) {
+          if (!(toks.length > keep)) continue;
+          el.innerHTML = build(keep);
+          const nw = el.querySelector(".nowrap");
+          if (nw) chunkW[keep] = nw.getBoundingClientRect().width;
+        }
+        return { chosen, ok, natural, longPhrase, chunkW, boxW: w };
+      }
+      const out = [];
+      const nodes = [...document.querySelectorAll(".m.lb")];
+      for (let i = 0; i < nodes.length; i++) {
+        const r = measure(nodes[i], tokensList[i]);
+        if (altList[i]) r.alt = measure(nodes[i], altList[i]);
+        out.push(r);
       }
       return out;
-    }, { tokensList, punctSrc: PUNCT_SRC });
+    }, { tokensList, altList, punctSrc: PUNCT_SRC });
     reqs.forEach((r, i) => {
-      (keepByKeyDev[r.key] ??= {})[dev] = res[i].chosen;
+      (keepByKeyDev[r.key] ??= {})[dev] = res[i];
+      if (res[i].alt) (altByKeyDev[r.key] ??= {})[dev] = res[i].alt;
       if (res[i].longPhrase) longPhrases.push(`${r.key} [${dev}]`);
       if (!res[i].ok) unresolved.push(`${r.key} [${dev}]`);
     });
     await browser.close();
   }
-  const keep = {};
-  for (const [k, dv] of Object.entries(keepByKeyDev)) keep[k] = Math.max(dv.pc || 0, dv.sp || 0);
-  return { keep, longPhrases, unresolved };
+  const keep = {}; const alt = {}; const overflowFixed = [];
+  for (const [k, dv] of Object.entries(keepByKeyDev)) {
+    const c = chooseKeep(dv);
+    keep[k] = c.keep;
+    if (!c.fixed) continue;
+    overflowFixed.push(k);
+    // 営業時間の段落は曜日のまとまりで折り直す（B）。まとまりの keep も両端末に入る物にする
+    const av = altByKeyDev[k];
+    if (av && (av.pc || !dv.pc) && (av.sp || !dv.sp)) { keep[k] = chooseKeep(av).keep; alt[k] = true; }
+  }
+  return { keep, alt, overflowFixed, longPhrases, unresolved };
 }
