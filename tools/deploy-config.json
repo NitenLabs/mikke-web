@@ -1,0 +1,6 @@
+{
+  "_about": "本番の置き場の決まり（指示 0045）。tools/rebuild-shop.mjs が読む。mikkeDomain は芦屋みっけのドメイン（未取得の間は null。取ったらここに1か所書けば、deploy.json の domain.kind が mikke の店すべてに効く）。営業用の見本（previewProject、noindex）と本番（pagesProjectPrefix＋店）を混ぜない。手順は docs/REBUILD.md",
+  "mikkeDomain": null,
+  "pagesProjectPrefix": "mikke-",
+  "previewProject": "nitenlabs-preview"
+}
