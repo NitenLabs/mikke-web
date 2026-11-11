@@ -8,7 +8,7 @@
 //   catalog の先頭のメニュー（name＝お品書きの見出し、description＝注記）とその括り（name）・placements の順の品（name・prices）、location・contact.phone。
 // 使い方：node tools/wa13-gen.mjs <店のID> → node tools/build.mjs samples/<店のID> → node tools/wa13-finish.mjs <店のID>
 import fs from "node:fs";
-import { formatClosedDays } from "./lib/format.mjs";
+import { formatClosedDays, formatHoursShort, formatTime } from "./lib/format.mjs";
 const ID = process.argv[2];
 if (!ID) throw new Error("店の ID を指定してください（例：node tools/wa13-gen.mjs torinone）");
 const DIR = `samples/${ID}`, LIST = "templates/wa-13/photos.txt";
@@ -139,6 +139,20 @@ if (FS) {
   GROUPS = C.menu.groups.map((g) => ({ name: g.name, rows: g.rows.map((row) => ({ name: row.name, price: yen(row.price) + (row.from ? "〜" : "") })) }));
   INFO = C.info.rows.map(([k, v]) => [k, val(v)]); FOOT = C.footerHours;
 }
+// ---- 文の行の数の見積もり（fromShop の店だけ。指示 0050 段2）。札の中の文は build の reflow で下に押されても札（矩形）が伸びず、
+//   タブレット（768〜1024）は finish の CSS で位置を決め打ちにするので、① の文の字数から行の数を数えて札・箱・下の物・段の高さをずらす。
+//   1行の字数は列の幅÷字の大きさから、文節で折る分を引く（1行の札の文・見出しは 1 字、何行にもなる文は 2 字）（タブレットは一番狭い 768 で）。半角は 0.55 字。今の文では差 0
+const jw = (x) => [...x].reduce((n, c) => n + (/[\x20-\x7e]/.test(c) ? 0.55 : 1), 0);
+const nL = (x, pers, base = 1) => pers.map((per) => (FS ? String(x ?? "").split("\n").reduce((n, p) => n + Math.max(1, Math.ceil(jw(p) / per)), 0) : base));
+const exL = (x, pers, base) => nL(x, pers, base).map((n) => Math.max(0, n - base)); // 設計の行の数を超えた行
+let TX = {};
+if (FS) {
+  const A = (q) => shop.story?.answers?.[q]?.answer, mn = Object.values(shop.catalog.menus).sort((a, b) => a.order - b.order)[0];
+  const day = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"].find((d) => shop.hours.weekly?.[d]?.status === "open" && shop.hours.weekly[d].periods?.[0]?.lastOrder);
+  const cl = formatClosedDays(shop.hours);
+  TX = { f1: shop.basic.tagline, f2: formatHoursShort(shop.hours) + (day ? `（L.O. ${formatTime(shop.hours.weekly[day].periods[0].lastOrder)}）` : "") + (cl ? `・${cl}定休` : ""),
+    abh: A("q_catch"), abp: A("q_body"), sep: A("q_seats"), ses: shop.facilities?.note, mnh: mn.name, mnn: mn.description };
+}
 const M = 48; // タブレットの左右（SPEC：本文の列は画面幅の 70% 以上）
 const COL = `calc(100% - ${rem(M * 2)})`;
 const tT = (id, top, css = {}) => tb(id, { left: rem(M), width: COL, top: rem(top), ...css });
@@ -168,12 +182,14 @@ rect("nr_top", "sec_firstv", SHU, 2, { x: 0, y: 0, w: 1440, h: 360 }, { x: 0, y:
 t("fv_cp", "sec_firstv", C.catchCopy, [[88, 112, 0], [52, 68, 0]], H, WH, [{ x: 124, y: 64, w: 1192, h: 112 }, { x: 20, y: 24, w: 350, h: 68 }], { role: "pageTitle", ...CT, hidden: { sp: true } });
 t("fv_cp2", "sec_firstv", { lines: C.catchCopyLines }, [[88, 112, 0], [52, 68, 0]], H, WH, [{ x: 124, y: 64, w: 1192, h: 224 }, { x: 20, y: 24, w: 350, h: 136 }], { role: "pageTitle", ...CT, hidden: { pc: true } });
 {
-  const pc = { x: 124, y: 636, w: 376, h: 136 }, sp = { x: 20, y: 660, w: 350, h: 104 };
-  card("fv_c", "sec_firstv", pc, sp, { top: 692, h: 112 });
-  t("fv_f1", "sec_firstv", F1, [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: 146, y: 674, w: 332, h: 28 }, { x: 42, y: 682, w: 306, h: 28 }], { weight: 700 });
-  t("fv_f2", "sec_firstv", F2, [[14, 24, 0], [14, 24, 0]], B, INK, [{ x: 146, y: 710, w: 332, h: 24 }, { x: 42, y: 714, w: 306, h: 24 }]);
-  tT("fv_f1", 716, { left: rem(M + 24), width: `calc(100% - ${rem((M + 24) * 2)})`, "font-size": "1.6rem", "line-height": "2.8rem" });
-  tT("fv_f2", 750, { left: rem(M + 24), width: `calc(100% - ${rem((M + 24) * 2)})`, "font-size": "1.4rem", "line-height": "2.4rem" });
+  // 札は下を止めたまま、① の文の行の数だけ上へ伸ばす（d＝増えた行の高さ。PC 列 332・SP 306・タブレット 624 で数える）
+  const [a1, a2] = [nL(TX.f1, [18, 17, 37]), nL(TX.f2, [21, 20, 42])], ex = (i) => (a1[i] - 1) * 28 + (a2[i] - 1) * 24, [dP, dS, dT] = [0, 1, 2].map(ex);
+  const pc = { x: 124, y: 636 - dP, w: 376, h: 136 + dP }, sp = { x: 20, y: 660 - dS, w: 350, h: 104 + dS };
+  card("fv_c", "sec_firstv", pc, sp, { top: 692 - dT, h: 112 + dT });
+  t("fv_f1", "sec_firstv", F1, [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: 146, y: 674 - dP, w: 332, h: 28 * a1[0] }, { x: 42, y: 682 - dS, w: 306, h: 28 * a1[1] }], { weight: 700 });
+  t("fv_f2", "sec_firstv", F2, [[14, 24, 0], [14, 24, 0]], B, INK, [{ x: 146, y: 710 - dP + 28 * (a1[0] - 1), w: 332, h: 24 * a2[0] }, { x: 42, y: 714 - dS + 28 * (a1[1] - 1), w: 306, h: 24 * a2[1] }]);
+  tT("fv_f1", 716 - dT, { left: rem(M + 24), width: `calc(100% - ${rem((M + 24) * 2)})`, "font-size": "1.6rem", "line-height": "2.8rem" });
+  tT("fv_f2", 750 - dT + 28 * (a1[2] - 1), { left: rem(M + 24), width: `calc(100% - ${rem((M + 24) * 2)})`, "font-size": "1.4rem", "line-height": "2.4rem" });
 }
 tb("fv_ph", { left: "0", width: "100%", top: "0", height: rem(836) });
 tb("nr_top", { left: "0", width: "100%", top: "0", height: rem(296) });
@@ -186,10 +202,12 @@ sec("sec_about", "お店について", 746, 800, { anchor: "about", nav: NAV(C.l
 t("ab_h", "sec_about", ABH, [[56, 76, 0], [40, 56, 0]], H, INK, [{ x: 124, y: 160, w: 620, h: 152 }, { x: 20, y: 96, w: 350, h: 112 }], { role: "heading" });
 t("ab_p", "sec_about", ABP, [[18, 36, 0], [16, 32, 0]], B, INK, [{ x: 124, y: 352, w: 560, h: 144 }, { x: 20, y: 232, w: 350, h: 192 }]);
 photo("ab_ph", "sec_about", "ast_phab1", 2, { x: 784, y: 160, w: 532, h: 426 }, { x: 0, y: 456, w: 390, h: 312 });
-tT("ab_h", 96, { "font-size": "4.8rem", "line-height": "6.8rem", height: rem(136) });
-tT("ab_p", 256, { "font-size": "1.8rem", "line-height": "3.6rem", height: rem(144) });
-tT("ab_ph", 432, { height: `calc((100vw - ${rem(M * 2)}) * .625)` });
-tablet.secs.sec_about = `calc(${rem(432 + 96)} + (100vw - ${rem(M * 2)}) * .625)`;
+// タブレット：列 672 で見出し 48px 13 字（設計 2 行）・本文 18px 35 字（設計 4 行）。超えた行の分だけ下へ（PC・SP は reflow が押す）
+const dAh = exL(TX.abh, [13], 2)[0] * 68, dAp = exL(TX.abp, [35], 4)[0] * 36, dA = dAh + dAp;
+tT("ab_h", 96, { "font-size": "4.8rem", "line-height": "6.8rem", height: rem(136 + dAh) });
+tT("ab_p", 256 + dAh, { "font-size": "1.8rem", "line-height": "3.6rem", height: rem(144 + dAp) });
+tT("ab_ph", 432 + dA, { height: `calc((100vw - ${rem(M * 2)}) * .625)` });
+tablet.secs.sec_about = `calc(${rem(432 + dA + 96)} + (100vw - ${rem(M * 2)}) * .625)`;
 
 // ---- 3 串・酒・〆（線の入った札 3 枚。PC は中央だけ下にずらす）
 const cardH = 480, spCardH = 460, tabCardH = 300;
@@ -221,7 +239,11 @@ tablet.secs.sec_fire = rem(480);
 
 // ---- 5 お品書き（線の枠の中に、左に見出し、右に値段の表と写真 2 枚）
 const GH = 56, RH = 64, GAP = 32, rowsN = GROUPS.reduce((n, g) => n + g.rows.length, 0), tblH = GH * GROUPS.length + RH * rowsN + GAP * (GROUPS.length - 1);
-const PT = 160, SPT = 176, TT = 176, Sp = 2;
+// タブレット：見出し 48px 13 字・注記 14px 46 字（どちらも設計 1 行）。超えた行の分だけ表から下を下げる
+const dMh = exL(TX.mnh, [13], 1)[0] * 68, dMn = exL(TX.mnn, [46], 1)[0] * 24;
+// PC：左の列（見出し 56px 幅 260 で 4 字・注記 14px 幅 240 で 15 字）の箱を行の数だけ伸ばす（伸ばさないと reflow が全幅の枠の下の線だけを押し、写真の下が空く）
+const [pMh] = nL(TX.mnh, [4]), [pMn] = nL(TX.mnn, [15]);
+const PT = 160, SPT = 176, TT = 176 + dMh + dMn, Sp = 2;
 const phP = PT + tblH + 48, phS = SPT + tblH + 32, phT = TT + tblH + 40;
 const frP = { y: 80, h: phP + 224 + 80 - 80 }, frS = { y: 32, h: phS + 176 + 12 + 176 + 32 - 32 };
 const pcH = frP.y + frP.h + 80, spH = frS.y + frS.h + 32;
@@ -239,10 +261,10 @@ tb("mf_t", { left: rem(16), width: `calc(100% - ${rem(32)})`, top: rem(frT.top),
 tb("mf_b", { left: rem(16), width: `calc(100% - ${rem(32)})`, top: `calc(${rem(frT.top)} + ${frT.h} - 2px)`, height: "2px" });
 tb("mf_l", { left: rem(16), width: "2px", top: rem(frT.top), height: frT.h });
 tb("mf_r", { left: "auto", right: rem(16), width: "2px", top: rem(frT.top), height: frT.h });
-t("mn_h", "sec_menu", MNH, [[56, 76, 0], [40, 56, 0]], H, INK, [{ x: 178, y: PT, w: 260, h: 76 }, { x: 20, y: 72, w: 350, h: 56 }], { role: "heading" });
-t("mn_n", "sec_menu", MNN, [[14, 24, 0], [14, 24, 0]], B, INK, [{ x: 178, y: PT + 92, w: 240, h: 24 }, { x: 20, y: 132, w: 350, h: 24 }]);
-tT("mn_h", 64, { "font-size": "4.8rem", "line-height": "6.8rem", height: rem(68) });
-tT("mn_n", 136, { "font-size": "1.4rem", "line-height": "2.4rem" });
+t("mn_h", "sec_menu", MNH, [[56, 76, 0], [40, 56, 0]], H, INK, [{ x: 178, y: PT, w: 260, h: 76 * pMh }, { x: 20, y: 72, w: 350, h: 56 }], { role: "heading" });
+t("mn_n", "sec_menu", MNN, [[14, 24, 0], [14, 24, 0]], B, INK, [{ x: 178, y: PT + 92 + 76 * (pMh - 1), w: 240, h: 24 * pMn }, { x: 20, y: 132, w: 350, h: 24 }]);
+tT("mn_h", 64, { "font-size": "4.8rem", "line-height": "6.8rem", height: rem(68 + dMh) });
+tT("mn_n", 136 + dMh, { "font-size": "1.4rem", "line-height": "2.4rem" });
 {
   let yP = PT, yS = SPT, yT = TT;
   const xP = 454, wP = 808;
@@ -270,25 +292,27 @@ photo("mn_ph2", "sec_menu", "ast_phmn2", 3, { x: 868, y: phP, w: 394, h: 224 }, 
 tablet.secs.sec_menu = `calc(${rem(phT + 40 + 32 + 32)} + ${phH})`;
 
 // ---- 6 お席（大きな写真に札を 1 枚重ねる。札の高さは文の量に合わせて SPEC の 592 から 520 に詰めた）
-sec("sec_seats", "お席", 856, 840, { anchor: "seats", nav: NAV(C.labels.seats, 3) });
+// 札の中の要約（18px）と文（16px）：PC 列 360 で 19・20 字、SP 270 で 14・14 字、タブレット 284 で 14・15 字（文は設計 PC 3 行・SP 4 行・タブレット 4 行）。超えた行の分だけ札と段を伸ばす
+const eSs = exL(TX.ses, [19, 14, 14], 1), eSp = [exL(TX.sep, [20], 3)[0], ...exL(TX.sep, [14, 15], 4)], dSe = [0, 1, 2].map((i) => (eSs[i] + eSp[i]) * 28);
+sec("sec_seats", "お席", 856 + dSe[0], 840 + dSe[1], { anchor: "seats", nav: NAV(C.labels.seats, 3) });
 photo("se_ph", "sec_seats", "ast_phse1", 1, { x: 124, y: 160, w: 808, h: 505 }, { x: 0, y: 64, w: 390, h: 244 });
 {
-  const pc = { x: 868, y: 256, w: 448, h: 520 }, sp = { x: 20, y: 276, w: 350, h: 468 }, seW = `(100vw - ${rem(M * 2)})`, seH = `(${seW} * .625)`;
+  const pc = { x: 868, y: 256, w: 448, h: 520 + dSe[0] }, sp = { x: 20, y: 276, w: 350, h: 468 + dSe[1] }, seW = `(100vw - ${rem(M * 2)})`, seH = `(${seW} * .625)`;
   card("se_c", "sec_seats", pc, sp);
-  const f = (n) => ({ left: rem(M + n), width: `calc(100% - ${rem((M + n) * 2)})`, top: `calc(${rem(64)} + ${seH} + ${rem(32 + n)})`, height: rem(248 - n * 2) });
+  const f = (n) => ({ left: rem(M + n), width: `calc(100% - ${rem((M + n) * 2)})`, top: `calc(${rem(64)} + ${seH} + ${rem(32 + n)})`, height: rem(248 + dSe[2] - n * 2) });
   tb("se_c_o", f(0)); tb("se_c_l", f(10)); tb("se_c_i", f(12));
   photo("se_ph2", "sec_seats", "ast_phse2", 5, { x: 890, y: 278, w: 404, h: 240 }, { x: 42, y: 298, w: 306, h: 182 });
   t("se_h", "sec_seats", C.seats.heading, [[40, 56, 0], [40, 56, 0]], H, INK, [{ x: 912, y: 542, w: 360, h: 56 }, { x: 60, y: 504, w: 270, h: 56 }], { role: "heading" });
-  t("se_s", "sec_seats", SES, [[18, 28, 0], [18, 28, 0]], B, INK, [{ x: 912, y: 614, w: 360, h: 28 }, { x: 60, y: 576, w: 270, h: 28 }], { weight: 700 });
-  t("se_p", "sec_seats", SEP, [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: 912, y: 658, w: 360, h: 84 }, { x: 60, y: 620, w: 270, h: 112 }]);
+  t("se_s", "sec_seats", SES, [[18, 28, 0], [18, 28, 0]], B, INK, [{ x: 912, y: 614, w: 360, h: 28 * (1 + eSs[0]) }, { x: 60, y: 576, w: 270, h: 28 * (1 + eSs[1]) }], { weight: 700 });
+  t("se_p", "sec_seats", SEP, [[16, 28, 0], [16, 28, 0]], B, INK, [{ x: 912, y: 658 + 28 * eSs[0], w: 360, h: 84 + 28 * eSp[0] }, { x: 60, y: 620 + 28 * eSs[1], w: 270, h: 112 + 28 * eSp[1] }]);
   const txL = M + 24 + 300 + 32, txW = `calc(100% - ${rem(txL + M + 32)})`;
   const txTop = (n) => `calc(${rem(64)} + ${seH} + ${rem(32 + n)})`;
   tb("se_ph", { left: rem(M), width: `calc(100% - ${rem(M * 2)})`, top: rem(64), height: `calc(${seH})` });
   tb("se_ph2", { left: rem(M + 24), width: rem(300), top: txTop(24), height: rem(200) });
   tb("se_h", { left: rem(txL), width: txW, top: txTop(24), "font-size": "4rem", "line-height": "5.6rem" });
   tb("se_s", { left: rem(txL), width: txW, top: txTop(88), "font-size": "1.8rem", "line-height": "2.8rem" });
-  tb("se_p", { left: rem(txL), width: txW, top: txTop(124), height: rem(112), "font-size": "1.6rem", "line-height": "2.8rem" });
-  tablet.secs.sec_seats = `calc(${rem(64)} + ${seH} + ${rem(32 + 248 + 96)})`;
+  tb("se_p", { left: rem(txL), width: txW, top: txTop(124 + 28 * eSs[2]), height: rem(112 + 28 * eSp[2]), "font-size": "1.6rem", "line-height": "2.8rem" });
+  tablet.secs.sec_seats = `calc(${rem(64)} + ${seH} + ${rem(32 + 248 + dSe[2] + 96)})`;
 }
 
 // ---- 7 ご案内
