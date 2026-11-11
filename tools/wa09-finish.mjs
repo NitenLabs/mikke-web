@@ -8,6 +8,8 @@ const OUT = `dist/${ID}`;
 const shop = JSON.parse(fs.readFileSync(`samples/${ID}/shop.json`, "utf8"));
 const C = JSON.parse(fs.readFileSync(`samples/${ID}/wa09-content.json`, "utf8"));
 const TB = JSON.parse(fs.readFileSync(`samples/${ID}/wa09-tablet.json`, "utf8"));
+const SITE = JSON.parse(fs.readFileSync(`samples/${ID}/site.json`, "utf8"));
+const telRow = Object.keys(SITE.elements).filter((k) => /^in_v\d+$/.test(k)).find((k) => SITE.elements[k].style?.link?.kind === "shopPhone")?.slice(4); // ご案内の電話の行（① から行が決まる店もあるので site.json から探す）
 const BP = 1025, TAB = 768;
 const loc = shop.location, addr = `${loc.prefecture}${loc.city}${loc.town}`, TEL = shop.contact.phone;
 const BK = "#0E0E0E", WH = "#EFE9DD", GD = "#B8975A";
@@ -30,8 +32,8 @@ html:not(.wa09-past) .site-header.overlay.scrolled .el-text,html:not(.wa09-past)
 [data-el=in_btn]:hover{background:${GD}!important}
 [data-el=in_btn]:hover~[data-el=in_btn_t]{color:${BK}}
 [data-el=in_btn_t]{pointer-events:none}
-[data-el=hd_name] a,[data-el=in_v5] a,[data-el=ft_t] a{color:inherit;text-decoration:none}
-[data-el=in_v5] a,[data-el=ft_t] a{text-decoration:underline;text-underline-offset:.3em;text-decoration-thickness:1px}
+[data-el=hd_name] a,[data-el=in_v${telRow}] a,[data-el=ft_t] a{color:inherit;text-decoration:none}
+[data-el=in_v${telRow}] a,[data-el=ft_t] a{text-decoration:underline;text-underline-offset:.3em;text-decoration-thickness:1px}
 [data-el=in_map]{overflow:hidden}
 [data-el=in_map] iframe{width:100%;height:100%;border:0;display:block;filter:grayscale(1) invert(.92)}
 [data-el=ct_bg]{white-space:nowrap}
@@ -57,7 +59,6 @@ function apply(file, isHome) {
   let h = fs.readFileSync(file, "utf8");
   h = h.split(">☰</summary>").join(`>${C.labels.menuButton}</summary>`);
   // build.mjs は文字の要素の link を出さないので、店名と電話の文字をここでリンクにする
-  const telRow = C.info.rows.findIndex(([, v]) => v === "$phone");
   for (const [id, href] of [["hd_name", isHome ? "#top" : "./"], [`in_v${telRow}`, `tel:${TEL.digits}`], ["ft_t", `tel:${TEL.digits}`]]) {
     h = h.replace(new RegExp(`(<([a-z0-9]+) data-el="${id}"[^>]*>)([\\s\\S]*?)(</\\2>)`), `$1<a href="${href}">$3</a>$4`);
   }

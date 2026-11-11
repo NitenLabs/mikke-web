@@ -14,10 +14,12 @@ const WIDTHS = [320, 360, 390, 430, 600, 767, 768, 834, 1024, 1025, 1280, 1440, 
 const TABLET = [768, 834, 1024];
 const PHOTO_W = [390, 768, 1440]; // 写真の上の文字を画素で測る幅
 const site = JSON.parse(fs.readFileSync(`samples/${ID}/site.json`, "utf8"));
-const C = JSON.parse(fs.readFileSync(`samples/${ID}/wa09-content.json`, "utf8"));
 const specOf = (d) => Object.fromEntries(Object.entries(site.sections).filter(([k]) => k !== "sec_header").map(([k, v]) => [k, v.minHeight[d]]));
 const SPEC = { 1440: specOf("pc"), 390: specOf("sp") };
-const PHOTOS = Object.keys(C.photos).length, TEL = `tel:${C.phone.digits}`, ROWS = C.omakase.rows.length, TELROW = C.info.rows.findIndex(([, v]) => v === "$phone");
+const SHOP = JSON.parse(fs.readFileSync(`samples/${ID}/shop.json`, "utf8")), ASSETS = JSON.parse(fs.readFileSync(`samples/${ID}/assets.json`, "utf8")).assets;
+// 行の数・電話の行は site.json から（fromShop の店は ① で行が決まる）。写真の数は ④、電話は ①
+const PHOTOS = Object.keys(ASSETS).length, TEL = `tel:${SHOP.contact.phone.digits}`, ROWS = Object.keys(site.elements).filter((k) => /^om_t\d+$/.test(k)).length;
+const TELROW = +Object.keys(site.elements).filter((k) => /^in_v\d+$/.test(k)).find((k) => site.elements[k].style?.link?.kind === "shopPhone").slice(4);
 const lin = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
 const lum = (r, g, b) => 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
 const browser = await chromium.launch();

@@ -171,7 +171,11 @@
         {
           "runs": [
             {
-              "text": "鮨 一之汐"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -425,7 +429,8 @@
           "h": 20,
           "size": 13
         }
-      }
+      },
+      "edit": false
     },
     "ab_h": {
       "type": "text",
@@ -436,7 +441,11 @@
         {
           "runs": [
             {
-              "text": "その日いちばんの魚を、おまかせで。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_catch/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -474,7 +483,11 @@
         {
           "runs": [
             {
-              "text": "明石・淡路の魚を中心に、その日いちばんの仕入れでおまかせを組み立てます。シャリは赤酢と米酢を合わせ、ネタごとに温度を変えています。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_body/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -621,7 +634,8 @@
           "h": 40,
           "size": 28
         }
-      }
+      },
+      "edit": false
     },
     "om_h": {
       "type": "text",
@@ -632,7 +646,11 @@
         {
           "runs": [
             {
-              "text": "おまかせ"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_main/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -670,7 +688,11 @@
         {
           "runs": [
             {
-              "text": "価格はすべて税込です。サービス料はいただきません。"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/menus/mnu_main/description",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -730,7 +752,11 @@
         {
           "runs": [
             {
-              "text": "昼"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_lunch/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -768,7 +794,11 @@
         {
           "runs": [
             {
-              "text": "おまかせ"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_lunch/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -806,7 +836,11 @@
         {
           "runs": [
             {
-              "text": "11,000円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_lunch/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -867,7 +901,11 @@
         {
           "runs": [
             {
-              "text": "夜"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_dinner/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -905,7 +943,11 @@
         {
           "runs": [
             {
-              "text": "おまかせ"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_dinner/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -943,7 +985,11 @@
         {
           "runs": [
             {
-              "text": "22,000円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_dinner/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -1004,7 +1050,11 @@
         {
           "runs": [
             {
-              "text": "夜"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_dinner/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1042,7 +1092,11 @@
         {
           "runs": [
             {
-              "text": "特選（つまみ多め）"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_special/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1080,7 +1134,11 @@
         {
           "runs": [
             {
-              "text": "30,000円"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/items/itm_special/prices",
+                "format": "price"
+              }
             }
           ]
         }
@@ -1169,7 +1227,8 @@
           "h": 72,
           "size": 56
         }
-      }
+      },
+      "edit": false
     },
     "ct_ph1": {
       "type": "photo",
@@ -1234,7 +1293,8 @@
           "h": 20,
           "size": 13
         }
-      }
+      },
+      "edit": false
     },
     "ct_h": {
       "type": "text",
@@ -1245,7 +1305,17 @@
         {
           "runs": [
             {
-              "text": "一枚板のカウンター、8席。"
+              "text": "一枚板のカウンター、"
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/facilities/seats/total",
+                "format": "plain"
+              }
+            },
+            {
+              "text": "席。"
             }
           ]
         }
@@ -1283,7 +1353,11 @@
         {
           "runs": [
             {
-              "text": "お席は一枚板のカウンターの8席のみです。昼は一斉に、夜は二部制で、皆さまご一緒におまかせを始めます。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_counter/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -1397,7 +1471,8 @@
           "h": 20,
           "size": 13
         }
-      }
+      },
+      "edit": false
     },
     "in_h": {
       "type": "text",
@@ -1495,7 +1570,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v0": {
       "type": "text",
@@ -1570,7 +1646,11 @@
         {
           "runs": [
             {
-              "text": "昼"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_lunch/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1608,7 +1688,11 @@
         {
           "runs": [
             {
-              "text": "12:00〜 一斉"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_lunch/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1668,7 +1752,11 @@
         {
           "runs": [
             {
-              "text": "夜"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_dinner/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1706,7 +1794,11 @@
         {
           "runs": [
             {
-              "text": "18:00〜／20:30〜 二部制"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_dinner/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1793,7 +1885,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v3": {
       "type": "text",
@@ -1804,7 +1897,11 @@
         {
           "runs": [
             {
-              "text": "月曜日"
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
             }
           ]
         }
@@ -1891,7 +1988,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v4": {
       "type": "text",
@@ -1902,7 +2000,11 @@
         {
           "runs": [
             {
-              "text": "完全予約制"
+              "bind": {
+                "scope": "shop",
+                "path": "/reservation/note",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -1989,7 +2091,8 @@
           "h": 28,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_v5": {
       "type": "text",
@@ -2126,7 +2229,8 @@
           "h": 24,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "in_map": {
       "type": "shape",
@@ -2180,7 +2284,11 @@
         {
           "runs": [
             {
-              "text": "鮨 一之汐"
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2260,21 +2368,56 @@
         {
           "runs": [
             {
-              "text": "昼 12:00〜 一斉"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_lunch/name",
+                "format": "plain"
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_lunch/note",
+                "format": "plain"
+              }
             }
           ]
         },
         {
           "runs": [
             {
-              "text": "夜 18:00〜／20:30〜 二部制"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_dinner/name",
+                "format": "plain"
+              }
+            },
+            {
+              "text": " "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/categories/cat_dinner/note",
+                "format": "plain"
+              }
             }
           ]
         },
         {
           "runs": [
             {
-              "text": "定休日 月曜日"
+              "text": "定休日 "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/hours",
+                "format": "closedDays"
+              }
             }
           ]
         }
@@ -2357,7 +2500,14 @@
         {
           "runs": [
             {
-              "text": "© 鮨 一之汐"
+              "text": "© "
+            },
+            {
+              "bind": {
+                "scope": "shop",
+                "path": "/basic/name",
+                "format": "plain"
+              }
             }
           ]
         }

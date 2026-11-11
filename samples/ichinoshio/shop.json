@@ -112,21 +112,56 @@
       "digits": "0797000000"
     }
   },
+  "reservation": {
+    "policy": "required",
+    "methods": [
+      "phone"
+    ],
+    "note": "完全予約制"
+  },
   "facilities": {
+    "seats": {
+      "total": 8,
+      "counter": 8
+    },
     "smoking": "none"
+  },
+  "story": {
+    "answers": {
+      "q_catch": {
+        "question": "紹介の見出し",
+        "answer": "その日いちばんの魚を、おまかせで。"
+      },
+      "q_body": {
+        "question": "お店の紹介",
+        "answer": "明石・淡路の魚を中心に、その日いちばんの仕入れでおまかせを組み立てます。シャリは赤酢と米酢を合わせ、ネタごとに温度を変えています。"
+      },
+      "q_counter": {
+        "question": "お席について",
+        "answer": "お席は一枚板のカウンターの8席のみです。昼は一斉に、夜は二部制で、皆さまご一緒におまかせを始めます。"
+      }
+    }
   },
   "catalog": {
     "menus": {
       "mnu_main": {
         "order": 1,
-        "name": "おまかせ"
+        "name": "おまかせ",
+        "description": "価格はすべて税込です。サービス料はいただきません。"
       }
     },
     "categories": {
-      "cat_omakase": {
+      "cat_lunch": {
         "menuId": "mnu_main",
-        "name": "おまかせ",
+        "name": "昼",
+        "note": "12:00〜 一斉",
         "order": 1
+      },
+      "cat_dinner": {
+        "menuId": "mnu_main",
+        "name": "夜",
+        "note": "18:00〜／20:30〜 二部制",
+        "order": 2
       }
     },
     "labels": {
@@ -138,7 +173,7 @@
     },
     "items": {
       "itm_lunch": {
-        "name": "昼 おまかせ",
+        "name": "おまかせ",
         "photos": [],
         "prices": [
           {
@@ -151,7 +186,7 @@
         "labels": []
       },
       "itm_dinner": {
-        "name": "夜 おまかせ",
+        "name": "おまかせ",
         "photos": [],
         "prices": [
           {
@@ -164,7 +199,7 @@
         "labels": []
       },
       "itm_special": {
-        "name": "夜 特選（つまみ多め）",
+        "name": "特選（つまみ多め）",
         "photos": [],
         "prices": [
           {
@@ -180,19 +215,19 @@
     "placements": {
       "plc_lunch": {
         "itemId": "itm_lunch",
-        "categoryId": "cat_omakase",
+        "categoryId": "cat_lunch",
         "order": 1,
         "menuId": "mnu_main"
       },
       "plc_dinner": {
         "itemId": "itm_dinner",
-        "categoryId": "cat_omakase",
+        "categoryId": "cat_dinner",
         "order": 2,
         "menuId": "mnu_main"
       },
       "plc_special": {
         "itemId": "itm_special",
-        "categoryId": "cat_omakase",
+        "categoryId": "cat_dinner",
         "order": 3,
         "menuId": "mnu_main"
       }

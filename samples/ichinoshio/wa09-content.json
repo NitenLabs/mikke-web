@@ -1,53 +1,61 @@
 {
-  "name": "鮨 一之汐",
-  "nameKana": "すし いちのしお",
+  "fromShop": true,
+  "_note": "fromShop：店名・品書き・営業の案内・紹介文・席・定休日・予約・住所・電話は ① shop.json から出す（tools/wa09-gen.mjs の頭）。ここには型の飾り・キャッチコピー・段の見出し・ボタンの文だけを置く",
   "nameEn": "SUSHI ICHINOSHIO",
-  "genreDetail": "鮨・おまかせ",
-  "town": "東芦屋町",
-  "geo": { "lat": 34.7414, "lng": 135.3042 },
-  "phone": { "display": "0797-00-0000", "digits": "0797000000" },
-  "closedDay": "mon",
-  "periods": { "lunch": { "start": "12:00", "end": "14:30" }, "dinner": { "start": "18:00", "end": "22:30" } },
   "catchCopy": "ひと貫に、潮の香りを。",
-  "catchCopyLines": ["ひと貫に、", "潮の香りを。"],
-  "labels": { "about": "About", "omakase": "Omakase", "counter": "Counter", "counterBack": "COUNTER", "info": "Information", "menuButton": "Menu" },
-  "about": {
-    "heading": "その日いちばんの魚を、おまかせで。",
-    "body": "明石・淡路の魚を中心に、その日いちばんの仕入れでおまかせを組み立てます。シャリは赤酢と米酢を合わせ、ネタごとに温度を変えています。"
-  },
-  "omakase": {
-    "heading": "おまかせ",
-    "note": "価格はすべて税込です。サービス料はいただきません。",
-    "rows": [
-      { "time": "昼", "name": "おまかせ", "price": 11000, "id": "lunch" },
-      { "time": "夜", "name": "おまかせ", "price": 22000, "id": "dinner" },
-      { "time": "夜", "name": "特選（つまみ多め）", "price": 30000, "id": "special" }
-    ]
+  "catchCopyLines": [
+    "ひと貫に、",
+    "潮の香りを。"
+  ],
+  "labels": {
+    "about": "About",
+    "omakase": "Omakase",
+    "counter": "Counter",
+    "counterBack": "COUNTER",
+    "info": "Information",
+    "menuButton": "Menu"
   },
   "counter": {
-    "heading": "一枚板のカウンター、8席。",
-    "body": "お席は一枚板のカウンターの8席のみです。昼は一斉に、夜は二部制で、皆さまご一緒におまかせを始めます。"
+    "heading": "一枚板のカウンター、{seats}席。"
   },
   "info": {
     "heading": "ご案内",
-    "rows": [
-      ["所在地", "$address"],
-      ["昼", "12:00〜 一斉"],
-      ["夜", "18:00〜／20:30〜 二部制"],
-      ["定休日", "月曜日"],
-      ["ご予約", "完全予約制"],
-      ["お電話", "$phone"]
-    ],
+    "labels": {
+      "address": "所在地",
+      "closed": "定休日",
+      "reservation": "ご予約",
+      "phone": "お電話"
+    },
     "button": "お電話でご予約"
   },
-  "footerHours": ["昼 12:00〜 一斉", "夜 18:00〜／20:30〜 二部制", "定休日 月曜日"],
   "photos": {
-    "fv": ["signature", "木の板に置いた白身の握り"],
-    "ab1": ["signature", "白い石の皿に置いた白身の握り"],
-    "ab2": ["interior", "握りに煮切りを塗る手元"],
-    "ab3": ["interior", "飯切りに広げた酢飯"],
-    "om": ["signature", "木の下駄に置いたまぐろの握りとガリ"],
-    "ct1": ["interior", "カウンターに置いた柳刃"],
-    "ct2": ["interior", "土ものの湯呑み"]
+    "fv": [
+      "signature",
+      "木の板に置いた白身の握り"
+    ],
+    "ab1": [
+      "signature",
+      "白い石の皿に置いた白身の握り"
+    ],
+    "ab2": [
+      "interior",
+      "握りに煮切りを塗る手元"
+    ],
+    "ab3": [
+      "interior",
+      "飯切りに広げた酢飯"
+    ],
+    "om": [
+      "signature",
+      "木の下駄に置いたまぐろの握りとガリ"
+    ],
+    "ct1": [
+      "interior",
+      "カウンターに置いた柳刃"
+    ],
+    "ct2": [
+      "interior",
+      "土ものの湯呑み"
+    ]
   }
 }
