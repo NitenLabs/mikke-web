@@ -320,7 +320,8 @@
           "h": 14,
           "size": 10
         }
-      }
+      },
+      "edit": false
     },
     "hd_nav": {
       "type": "nav",
@@ -531,7 +532,8 @@
           "size": 12,
           "writingMode": "vertical"
         }
-      }
+      },
+      "edit": false
     },
     "fv_line": {
       "type": "shape",
@@ -621,7 +623,8 @@
           "size": 15,
           "writingMode": "vertical"
         }
-      }
+      },
+      "edit": false
     },
     "gal_1": {
       "type": "photo",
@@ -888,7 +891,8 @@
           "h": 19.6,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "st_enl": {
       "type": "shape",
@@ -997,28 +1001,11 @@
         {
           "runs": [
             {
-              "text": "炭火の音に、"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "耳をすませる。"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "芦屋の夜の、"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "とっておきの一軒。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_catch/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -1058,21 +1045,11 @@
         {
           "runs": [
             {
-              "text": "芦屋・東山町に灯る、炭火焼肉 李杏。"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "国産黒毛和牛を、一枚ずつ炭火で焼き上げます。カイノミや三角バラ、イチボといった希少な部位から、上タン、特選ハラミ、新鮮なホルモンまで。塩かタレか、お好みの味でどうぞ。"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "炭の香りと、肉の焼ける音。落ち着いた店内で、大切な人との夜をゆっくりとお過ごしください。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_body/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -1203,7 +1180,8 @@
           "size": 14,
           "writingMode": "vertical"
         }
-      }
+      },
+      "edit": false
     },
     "mn_tag": {
       "type": "shape",
@@ -1260,7 +1238,11 @@
         {
           "runs": [
             {
-              "text": "おすすめ"
+              "bind": {
+                "scope": "shop",
+                "path": "/catalog/labels/lbl_recommend/name",
+                "format": "plain"
+              }
             }
           ]
         }
@@ -2380,7 +2362,8 @@
           "size": 14,
           "writingMode": "vertical"
         }
-      }
+      },
+      "edit": false
     },
     "in_k0": {
       "type": "shape",
@@ -2464,7 +2447,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt0": {
       "type": "text",
@@ -2590,7 +2574,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt1": {
       "type": "text",
@@ -2716,7 +2701,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt2": {
       "type": "text",
@@ -2845,7 +2831,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt3": {
       "type": "text",
@@ -2971,7 +2958,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt4": {
       "type": "text",
@@ -3097,7 +3085,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt5": {
       "type": "text",
@@ -3223,7 +3212,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt6": {
       "type": "text",
@@ -3261,7 +3251,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_k7": {
       "type": "shape",
@@ -3345,7 +3336,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt7": {
       "type": "text",
@@ -3383,7 +3375,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_k8": {
       "type": "shape",
@@ -3467,7 +3460,8 @@
           "h": 22.4,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "in_vt8": {
       "type": "text",
@@ -3676,7 +3670,8 @@
           "h": 21,
           "size": 15
         }
-      }
+      },
+      "edit": false
     },
     "ac_ml": {
       "type": "shape",
@@ -3805,7 +3800,8 @@
           "h": 19.6,
           "size": 14
         }
-      }
+      },
+      "edit": false
     },
     "rv_enl": {
       "type": "shape",
@@ -4070,7 +4066,8 @@
           "h": 14,
           "size": 10
         }
-      }
+      },
+      "edit": false
     },
     "ft_addr": {
       "type": "text",
@@ -4196,7 +4193,8 @@
           "h": 18.2,
           "size": 13
         }
-      }
+      },
+      "edit": false
     },
     "ft_draft": {
       "type": "text",
@@ -4235,7 +4233,8 @@
           "h": 18.2,
           "size": 13
         }
-      }
+      },
+      "edit": false
     }
   }
 }

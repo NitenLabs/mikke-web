@@ -1,0 +1,44 @@
+{
+  "name": "李杏",
+  "nameEn": "- RIAN -",
+  "copyright": "© RIAN",
+  "mikkeUrl": "https://ashiya-mikke.pages.dev/spot/yakiniku-rian/",
+  "recOrder": [
+    "itm_m014",
+    "itm_m017",
+    "itm_m004",
+    "itm_m003",
+    "itm_m024",
+    "itm_m065"
+  ],
+  "menuLeft": {
+    "title": "焼きもの",
+    "first": [
+      "cat_yaki"
+    ],
+    "note": [
+      "当店では国産黒毛和牛を使用しております",
+      "価格は税抜（別途消費税10%）"
+    ],
+    "second": [
+      "cat_tori",
+      "cat_buta",
+      "cat_kaisen",
+      "cat_yasai"
+    ]
+  },
+  "menuRight": {
+    "title": "一品・ご飯もの",
+    "groups": [
+      "cat_ippin",
+      "cat_chige",
+      "cat_soup",
+      "cat_salad",
+      "cat_kimchi",
+      "cat_gohan"
+    ],
+    "note": [
+      "価格は税抜（別途消費税10%）"
+    ]
+  }
+}
