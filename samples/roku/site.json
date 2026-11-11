@@ -392,7 +392,8 @@
           "h": 34.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "fv_script": {
       "type": "text",
@@ -430,7 +431,8 @@
           "h": 64,
           "size": 64
         }
-      }
+      },
+      "edit": false
     },
     "st_en": {
       "type": "text",
@@ -468,7 +470,8 @@
           "h": 44.8,
           "size": 44.8
         }
-      }
+      },
+      "edit": false
     },
     "st_ja": {
       "type": "text",
@@ -517,14 +520,11 @@
         {
           "runs": [
             {
-              "text": "一杯の珈琲から、"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "くつろぎの時間を。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_catch/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -562,21 +562,11 @@
         {
           "runs": [
             {
-              "text": "芦屋の閑静な住宅街。緑に覆われた草屋根が目印の、小さな喫茶店です。"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "カウンターやテーブル、柱や梁には古木を使い、木と漆喰のぬくもりに包まれた店内には、ゆったりとした時間が流れます。屋根裏の小部屋のような2階席もあります。"
-            }
-          ]
-        },
-        {
-          "runs": [
-            {
-              "text": "珈琲は萩原珈琲の炭火焙煎の豆を、一杯ずつ丁寧に淹れています。カップは並んだ中からお好きなものを。芦屋の焼菓子店 Feu のケーキと一緒にどうぞ。"
+              "bind": {
+                "scope": "shop",
+                "path": "/story/answers/q_body/answer",
+                "format": "paragraphs"
+              }
             }
           ]
         }
@@ -723,7 +713,8 @@
           "h": 89.6,
           "size": 64
         }
-      }
+      },
+      "edit": false
     },
     "mn_en": {
       "type": "text",
@@ -761,7 +752,8 @@
           "h": 44.8,
           "size": 44.8
         }
-      }
+      },
+      "edit": false
     },
     "mn_ja": {
       "type": "text",
@@ -808,15 +800,8 @@
       "source": {
         "kind": "catalog",
         "menuId": "mnu_food",
-        "pick": [
-          "itm_m001",
-          "itm_m002",
-          "itm_m003",
-          "itm_m004",
-          "itm_m005",
-          "itm_m006",
-          "itm_m007",
-          "itm_m008"
+        "categoryIds": [
+          "cat_menu"
         ]
       },
       "display": {
@@ -1037,7 +1022,8 @@
           "h": 44.8,
           "size": 44.8
         }
-      }
+      },
+      "edit": false
     },
     "ac_ja": {
       "type": "text",
@@ -1151,7 +1137,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v0": {
       "type": "text",
@@ -1231,7 +1218,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v1": {
       "type": "text",
@@ -1311,7 +1299,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v2": {
       "type": "text",
@@ -1391,7 +1380,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v3": {
       "type": "text",
@@ -1474,7 +1464,8 @@
           "h": 28.8,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ac_v4": {
       "type": "text",
@@ -1590,7 +1581,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ac_mapbox": {
       "type": "shape",
@@ -1876,7 +1868,8 @@
           "h": 22.4,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_n1": {
       "type": "text",
@@ -1918,7 +1911,8 @@
           "h": 22.4,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_n2": {
       "type": "text",
@@ -1960,7 +1954,8 @@
           "h": 22.4,
           "size": 16
         }
-      }
+      },
+      "edit": false
     },
     "ft_mapbox": {
       "type": "shape",
@@ -2019,7 +2014,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_v0": {
       "type": "text",
@@ -2099,7 +2095,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_v1": {
       "type": "text",
@@ -2179,7 +2176,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_v2": {
       "type": "text",
@@ -2259,7 +2257,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_v3": {
       "type": "text",
@@ -2347,7 +2346,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_draft": {
       "type": "text",
@@ -2385,7 +2385,8 @@
           "h": 21.6,
           "size": 14.4
         }
-      }
+      },
+      "edit": false
     },
     "ft_copy": {
       "type": "text",

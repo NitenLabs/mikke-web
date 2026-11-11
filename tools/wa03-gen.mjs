@@ -35,6 +35,8 @@ const NAME = C.name, SITE_NAME_EN = C.nameEn;
 //   紹介文は ① と連動（format=paragraphs）、品書きは括り（categoryIds）で ① の catalog を回す、情報の表の行は ① から決める、
 //   飾りの文字（英字の見出し・項目名・ナビ・ボタンの文字など）は edit:false。fromShop の無い店（roku）は今までどおり。
 const FS = !!C.fromShop;
+// keyOverlap:false（wa03.json）：fromShop でも項目名の箱を前の幅のまま（値の列へかけない）。今の見た目と CSS を変えない店（roku）用
+const KO = FS && C.keyOverlap !== false;
 const MAP_Q = `${shop.location.prefecture}${shop.location.city}${shop.location.town}${shop.location.street}`;
 const mapUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${MAP_Q} ${shop.basic.name}`)}`;
 
@@ -58,7 +60,7 @@ photo("fv_1", "sec_firstv", "ast_fv01", 1, { x: 432, y: 0, w: 504, h: 810 }, { x
 photo("fv_2", "sec_firstv", "ast_fv02", 1, { x: 936, y: 0, w: 504, h: 810 }, { x: 195, y: 270.1, w: 195, h: 404.9 });
 t("fv_copy", "sec_firstv", lines(C.fvCopy), [[28.8, 40.32, 2.88], C.fvCopyBox?.sp ?? [25.6, 35.84, 1.28]], B, TX, [{ x: 175.7, y: C.fvCopyBox?.y ?? 251, w: 80.6, h: C.fvCopyBox?.h ?? 260 }, { x: 30, y: 63.3, w: 330, h: 71.7 }], { vp: 1, weight: 500 });
 // 見出しの下の一行：fvSub（日本語・行の配列）があればそれを本文の書体で、無ければ fvEn（英語）
-t("fv_en", "sec_firstv", C.fvSub ? lines(C.fvSub) : C.fvEn, [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], C.fvSub ? B : M, MU, [{ x: 80.4, y: 524, w: 271.2, h: 34.6 }, { x: 30, y: 154.9, w: 271.2, h: 34.6 }], { weight: 500, align: "center" });
+t("fv_en", "sec_firstv", C.fvSub ? lines(C.fvSub) : C.fvEn, [[14.4, 17.28, 0.72], [14.4, 17.28, 0.72]], C.fvSub ? B : M, MU, [{ x: 80.4, y: 524, w: 271.2, h: 34.6 }, { x: 30, y: 154.9, w: 271.2, h: 34.6 }], { weight: 500, align: "center", deco: !C.fvSub });
 t("fv_script", "sec_firstv", SITE_NAME_EN, [[144, 144, -7.2], [64, 64, -3.2]], SCRIPT, SCRIPT_C, [{ x: 200, y: 666, w: 997, h: 144 }, { x: 8, y: 603, w: 374, h: 64 }], { z: 5, weight: 300, deco: 1 });
 
 // ---- 2 Our story（PC 1498 / スマホは本文の長さで詰める）
@@ -120,7 +122,7 @@ const TBL = [[16, 28.8, 0.48], [16, 28.8, 0.48]];
 ROWS.forEach(([k, v], i) => {
   const yP = 358 + 48.8 * i, yS = 558.5 + 67.6 * i;
   // fromShop：項目名の箱を値の列へ 10px かけ、値が折り返して伸びたとき次の行の項目名も一緒に下がるようにする（見た目は同じ）
-  t(`ac_k${i}`, "sec_access", k, TBL, B, MU, [{ x: 80, y: yP, w: FS ? 130 : 110, h: 28.8 }, { x: 30, y: yS, w: 330, h: 28.8 }], { deco: 1 });
+  t(`ac_k${i}`, "sec_access", k, TBL, B, MU, [{ x: 80, y: yP, w: KO ? 130 : 110, h: 28.8 }, { x: 30, y: yS, w: 330, h: 28.8 }], { deco: 1 });
   t(`ac_v${i}`, "sec_access", v, TBL, B, TX, [{ x: 200, y: yP, w: 490, h: 28.8 }, { x: 30, y: yS + 28.8, w: 330, h: 28.8 }]);
 });
 const LNK = { kind: "url", value: mapUrl, newTab: true };
@@ -145,7 +147,7 @@ const FT = [[14.4, 21.6, 0.72], [14.4, 21.6, 0.72]];
 add("ft_mapbox", { type: "shape", z: 2, kind: "rect", fill: "theme:surface", section: "sec_footer", layout: lay({ x: 820.5, y: 180, w: 496.3, h: 280 }, { x: 30, y: 387, w: 330, h: 280 }) });
 F_R.forEach(([k, v], i) => {
   const yP = 490 + 41.6 * i, yS = 697 + 41.6 * i;
-  t(`ft_k${i}`, "sec_footer", k, FT, B, MU, [{ x: 820.5, y: yP, w: FS ? 133.9 : 103.9, h: 21.6 }, { x: 30, y: yS, w: FS ? 115 : 85, h: 21.6 }], { deco: 1 });
+  t(`ft_k${i}`, "sec_footer", k, FT, B, MU, [{ x: 820.5, y: yP, w: KO ? 133.9 : 103.9, h: 21.6 }, { x: 30, y: yS, w: KO ? 115 : 85, h: 21.6 }], { deco: 1 });
   t(`ft_v${i}`, "sec_footer", v, FT, B, TX, [{ x: 944.4, y: yP, w: 372.4, h: 21.6 }, { x: 135, y: yS, w: 225, h: 21.6 }]);
 });
 t("ft_mikke", "sec_footer", "芦屋みっけ 掲載店", FT, B, SO, [{ x: 123.2, y: 610, w: 500, h: 21.6 }, { x: 30, y: 883.4 + DF, w: 330, h: 21.6 }], { link: { kind: "url", value: C.mikkeUrl, newTab: true }, deco: 1 });
