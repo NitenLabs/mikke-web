@@ -22,6 +22,7 @@ export const API_ROUTES = {
   assets: (id) => `/api/shops/${id}/assets`, // GET（assets.json と同じ形）
   assetFile: (id, a) => `/api/shops/${id}/assets/${a}/file`, // GET（写真そのもの）
   publish: (id) => `/api/shops/${id}/publish`, // POST（下書き → 公開）
+  renderResult: (slug, n) => `/edit-api/shops/${encodeURIComponent(slug)}/versions/${n}/render`, // POST（鍵。render:"rebuild" の版を描いた結果）
 };
 
 /**
@@ -80,6 +81,8 @@ export function apiClient({ base, secret = "", cookie = "", origin = "", fetch: 
     getAssets: (shopId) => call("GET", API_ROUTES.assets(shopId)),
     getAssetFile: (shopId, assetId) => call("GET", API_ROUTES.assetFile(shopId, assetId), { raw: true }),
     publish: (shopId, body) => call("POST", API_ROUTES.publish(shopId), { json: body }),
+    /** render:"rebuild" の版を描いた結果を返す：{ok:true, url?} か {ok:false, error}（html の版は 409 not_rebuild） */
+    postRenderResult: (slug, n, body) => call("POST", API_ROUTES.renderResult(slug, n), { auth: "runner", json: body }),
   };
 }
 
@@ -244,7 +247,7 @@ export async function fetchPublishedSource(client, { site, dir, shopId = null, a
   const t = textsFromSiteDraft(v.site, readSamplesSite(site, root));
   const assets = apiAssets ? await fetchApiAssets(client, id) : null;
   const w = writeSourceDir(dir, { site, shop: v.shop, texts: t.texts, assets, root });
-  return { dir, shopId: id, version: n, scope: v.scope ?? null, publishedAt: v.publishedAt ?? null, texts: t.texts, ignored: t.ignored, genConfig: w.genConfig, assetsFrom: assets ? "api" : "samples", afterGen: textsAfterGen(t.texts) };
+  return { dir, shopId: id, version: n, scope: v.scope ?? null, render: v.render ?? null, publishedAt: v.publishedAt ?? null, texts: t.texts, ignored: t.ignored, genConfig: w.genConfig, assetsFrom: assets ? "api" : "samples", afterGen: textsAfterGen(t.texts) };
 }
 
 // ───────── 下書き → 公開
@@ -268,13 +271,25 @@ export function pagesFromDist(distDir) {
 
 /**
  * 下書き → 公開（POST /api/shops/:id/publish）。scope all は ①②③、shop は ① だけ（②③ は公開中の物を引き継ぐ）。
- * pages は書き出しの HTML（api は描いた HTML を R2 に置く決まり）
+ * render "html"：pages に書き出しの HTML を送る（api が R2 に置き、サブドメインで出す。スクリプトは /_mikke/ だけの検査がある）
+ * render "rebuild"：pages を送らず ①②③ の写しだけを版にする（render は pending）。描くのは rebuild-shop --from-api で、結果は
+ *   POST /edit-api/shops/:slug/versions/:n/render に返す。型（wa-NN）の店は書き出しにインラインのスクリプト（finish が足す）があり、
+ *   html では unsafe_html で断られるので rebuild を使う（0053 段E）
  */
-export async function publishDrafts(client, shopId, { shopDraftVersion, siteDraftVersion, distDir, scope = siteDraftVersion == null ? "shop" : "all" }) {
-  const { pages, skipped } = pagesFromDist(distDir);
-  if (!pages["/"]) throw new ApiError("publish", `書き出しにトップページ（index.html）が無い：${distDir}`);
-  const body = { scope, shopDraftVersion, pages };
+export async function publishDrafts(client, shopId, { shopDraftVersion, siteDraftVersion, distDir, render = "html", scope = siteDraftVersion == null ? "shop" : "all" }) {
+  if (render !== "html" && render !== "rebuild") throw new ApiError("publish", `render は html か rebuild：${render}`);
+  const body = { scope, shopDraftVersion };
   if (scope === "all") body.siteDraftVersion = siteDraftVersion;
+  let skipped = [];
+  if (render === "html") {
+    const p = pagesFromDist(distDir);
+    if (!p.pages["/"]) throw new ApiError("publish", `書き出しにトップページ（index.html）が無い：${distDir}`);
+    body.pages = p.pages;
+    skipped = p.skipped;
+  } else body.render = "rebuild";
   const r = await client.publish(shopId, body);
-  return { ...r, skipped };
+  return { ...r, render: r.render ?? render, skipped };
 }
+
+/** 公開の既定の描き方：型（site.json の templateId が tpl_wa_NN）の店は rebuild、ほかは html */
+export const publishRenderOf = (siteJson) => (templateNameOf(siteJson) ? "rebuild" : "html");

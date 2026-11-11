@@ -13,7 +13,7 @@ node tools/rebuild-shop.mjs <店> [--from <①のフォルダ>] [--out <フォ�
 | `<店>` | `samples/<店>` のフォルダ名（例 `amet`） |
 | `--from` | ① のフォルダ（下の形）。無ければ `samples/<店>` だけで作る |
 | `--out` | 書き出し先（既定 `dist/rebuild/<店>`）。中身を入れ替える。`_layout.json`（検査用）は入れない。`preview`・`_preview` の下は断る |
-| `--from-api <URL>` | apps/api の**公開された ①** から作る（0053）。公開中の版の ①・② の文字（`draft.content`）を `dist/_api-source/<店>-published` に下の形で書いてから流す。鍵 `--api-secret`（`MIKKE_API_RUNNER_SECRET`）で slug → 店の ID、版はログインの Cookie `--api-cookie`（`MIKKE_API_COOKIE`）で読む。`--api-assets` で写真も api の ④ から。部品は `tools/lib/api-source.mjs` |
+| `--from-api <URL>` | apps/api の**公開された ①** から作る（0053）。公開中の版の ①・② の文字（`draft.content`）を `dist/_api-source/<店>-published` に下の形で書いてから流す。鍵 `--api-secret`（`MIKKE_API_RUNNER_SECRET`）で slug → 店の ID、版はログインの Cookie `--api-cookie`（`MIKKE_API_COOKIE`）で読む。`--api-assets` で写真も api の ④ から。版が `render:"rebuild"`（型の店の公開。edit-runner --publish の既定）なら、作った結果を `POST /edit-api/shops/<店>/versions/<n>/render` に返す（`--dry-run`・`--no-report` では返さない）。部品は `tools/lib/api-source.mjs` |
 | `--dry-run` | 作って検査するだけ。書き出さない |
 | `--deploy` | wrangler の命令を組み立てて json に入れる。**走らせない**（ユーザーが貼る） |
 | `--date` | 書き出しの基準の日（既定 今日・日本時間）。品の出し入れ・年の表示に効く |

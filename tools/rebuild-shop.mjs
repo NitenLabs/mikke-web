@@ -6,6 +6,7 @@
 //   --from-api <api の URL>  apps/api の公開された ① から作り直す（0053）：公開中の版の ①・② の文字（draft.content）を取り出し、
 //             dist/_api-source/<店> に --from の形で書いてから流す。鍵 --api-secret（MIKKE_API_RUNNER_SECRET・EDIT_RUNNER_SECRET）で slug → 店の ID、
 //             公開中の版はログインの Cookie --api-cookie（MIKKE_API_COOKIE）で読む。--api-assets で写真も api の ④ から（既定は samples の写真）
+//             版が render:"rebuild"（描き直しの版）なら、作り直した結果を POST /edit-api/shops/<店>/versions/<n>/render に返す（--dry-run・--no-report では返さない）
 //   --out     書き出し先（既定 dist/rebuild/<店>）。--dry-run のときは書かない
 //   --dry-run 作って検査するだけ（書き出さない）
 //   --deploy  wrangler pages deploy の命令を組み立てて出す（走らせない。ユーザーが貼る）
@@ -30,10 +31,10 @@ if (flag("--from") && flag("--from-api")) { console.error("--from と --from-api
 const dryRun = flag("--dry-run");
 const logFile = opt("--log") ? path.resolve(opt("--log")) : null;
 if (logFile) fs.writeFileSync(logFile, "");
-let source = null;
+let source = null, client = null;
 if (flag("--from-api")) {
   try {
-    const client = apiClient({
+    client = apiClient({
       base: opt("--from-api"),
       secret: opt("--api-secret") ?? process.env.MIKKE_API_RUNNER_SECRET ?? process.env.EDIT_RUNNER_SECRET ?? "",
       cookie: opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE ?? "",
@@ -59,5 +60,13 @@ const result = await rebuildShop({
   log: logFile ? (s) => fs.appendFileSync(logFile, s + "\n") : undefined,
 });
 if (source) { const { afterGen, ...info } = source; result.source = { kind: "api", ...info }; }
+// 描き直しの版（render が html でない）なら、作った結果を api に返す。url は書き出しの置き場ではなく公開のアドレス（決まっていれば）
+const renderState = source ? (typeof source.render === "string" ? source.render : source.render?.state) : null;
+if (source && renderState && renderState !== "html" && !dryRun && !flag("--no-report")) {
+  const url = typeof result.url === "string" && result.url.startsWith("http") ? result.url : undefined;
+  const body = result.ok ? { ok: true, ...(url ? { url } : {}) } : { ok: false, error: String(result.error ?? result.errorCode ?? "作り直しに失敗").slice(0, 1000) };
+  try { result.renderReport = { sent: body, answer: await client.postRenderResult(site, source.version, body) }; }
+  catch (e) { if (!(e instanceof ApiError)) throw e; result.renderReport = { sent: body, errorCode: e.code, error: e.message }; }
+}
 console.log(JSON.stringify(result, null, 2));
 process.exitCode = result.ok ? 0 : 1;

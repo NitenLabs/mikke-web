@@ -14,7 +14,9 @@
 // 主な引数：
 //   --all            待ち行列が空になるまで続けて取る（既定は 1 件）
 //   --dry-run        api の下書きに書き戻さない（--local 以外。既定は書き戻す）
-//   --publish        書き戻した後に、下書き → 公開（POST /api/shops/<ID>/publish。pages は書き出しの HTML）。公開された ① から作り直すのは rebuild-shop --from-api
+//   --publish        書き戻した後に、下書き → 公開（POST /api/shops/<ID>/publish）。公開された ① から作り直すのは rebuild-shop --from-api
+//   --publish-render html|rebuild  公開の描き方。既定は型（wa-NN）の店は rebuild（①②③ の写しだけを版にし、rebuild-shop --from-api が描いて結果を返す）、
+//                    ほかは html（書き出しの HTML を送る）。型の店の書き出しはインラインのスクリプトがあり html では unsafe_html で断られる（0053 段E）
 //   --write          （--local だけ）成功したら samples/<店> の ①（と文字の箱を直したときは site.json・型の設定）を書き換える。既定は書き換えない（dry-run）
 //   --sync a,b       取る前に、その店の今の姿（snapshot）を desk に送る
 //   --out <dir>      書き出しの置き場（既定 dist/edit-runner）。<店>-job<ID>-<時刻>/ に after（書き出し）・result.json・log を置く
@@ -40,7 +42,7 @@ import {
   withLinkedRemovals,
 } from "./lib/edit-ops.mjs";
 import { RebuildError, loadDeployConfig, makeStage, removeStage, resolveSiteUrl, runPipeline } from "./lib/rebuild.mjs";
-import { ApiError, apiClient, fetchDraftSource, publishDrafts, templateNameOf, textsAfterGen, withSiteTexts } from "./lib/api-source.mjs";
+import { ApiError, apiClient, fetchDraftSource, publishDrafts, publishRenderOf, templateNameOf, textsAfterGen, withSiteTexts } from "./lib/api-source.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const argv = process.argv.slice(2);
@@ -56,11 +58,13 @@ const LOCAL = argv.includes("--local") || (argv.includes("--snapshot") && flag("
 const WRITE = LOCAL && flag("--write");
 const API_WRITE = !LOCAL && !flag("--dry-run");
 const PUBLISH = !LOCAL && flag("--publish");
+const PUBLISH_RENDER = opt("--publish-render") ?? null;
 const API_ASSETS = flag("--api-assets");
 const CHECK = !flag("--no-check");
 const KEEP = flag("--keep-stage");
 if (!/^\d{4}-\d{2}-\d{2}$/.test(DATE)) die(`--date の形が違う：${DATE}`);
 if (flag("--write") && !LOCAL) die("--write は --local のときだけ（api の下書きには既定で書き戻す。書き戻さないなら --dry-run）");
+if (PUBLISH_RENDER && !["html", "rebuild"].includes(PUBLISH_RENDER)) die("--publish-render は html か rebuild");
 if (PUBLISH && !API_WRITE) die("--publish は --dry-run と一緒に使えない");
 if (PUBLISH && !(opt("--api-cookie") ?? process.env.MIKKE_API_COOKIE)) die("--publish にはログインの Cookie と Origin が要る（--api-cookie・--api-origin。/edit-api に公開の口が無い）");
 const API = LOCAL ? null : apiClient({
@@ -362,9 +366,9 @@ async function runJob(job) {
       if (PUBLISH) {
         t = now();
         const siteVer = wrote.site?.version ?? src.site?.version ?? 0;
-        const pub = await publishDrafts(API, src.shopId, { shopDraftVersion: wrote.shop?.version ?? src.shop.version, siteDraftVersion: siteVer > 0 ? siteVer : undefined, distDir: after });
+        const pub = await publishDrafts(API, src.shopId, { shopDraftVersion: wrote.shop?.version ?? src.shop.version, siteDraftVersion: siteVer > 0 ? siteVer : undefined, distDir: after, render: PUBLISH_RENDER ?? publishRenderOf(site0) });
         timings.publish = Math.round(now() - t);
-        result.published = { number: pub.number, scope: pub.scope, publishedAt: pub.publishedAt, pages: pub.pages, skipped: pub.skipped, url: pub.url ?? null };
+        result.published = { number: pub.number, scope: pub.scope, render: pub.render, publishedAt: pub.publishedAt, pages: pub.pages, skipped: pub.skipped, url: pub.url ?? null };
       }
     }
     result.ok = true;
@@ -436,7 +440,7 @@ async function main() {
 function report(r) {
   const marks = Object.values(r.htmlDiff ?? {}).flat().flatMap((c) => c.marks);
   console.log(`${r.ok ? "✓" : "✗"} ${r.site} ${r.mode}：${r.ok ? `変わった印 ${[...new Set(marks)].join(" ")}・ファイル ${r.changedFiles?.length ?? 0}` : `[${r.errorCode}] ${r.error}`}`);
-  if (r.apiWrite) console.log(`  api の下書き：${JSON.stringify(r.apiWrite)}${r.published ? `　公開 版 ${r.published.number}（${r.published.scope}）` : ""}`);
+  if (r.apiWrite) console.log(`  api の下書き：${JSON.stringify(r.apiWrite)}${r.published ? `　公開 版 ${r.published.number}（${r.published.scope}・${r.published.render}）` : ""}`);
   console.log(`  置き場 ${r.outDir}　公開のアドレス ${r.url ?? r.deploy?.error ?? "—"}　時間 ${JSON.stringify(r.timings)}`);
   if (r.linkedRemovals?.length) console.log(`  連れて消した review：${r.linkedRemovals.map((x) => x.path).join(" ")}`);
 }

@@ -5,7 +5,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import {
-  ApiError, apiClient, fetchDraftSource, fetchPublishedSource, pagesFromDist, publishDrafts, templateNameOf, textsAfterGen, textsFromSiteDraft, withSiteTexts, writeSourceDir,
+  ApiError, apiClient, fetchDraftSource, fetchPublishedSource, pagesFromDist, publishDrafts, publishRenderOf, templateNameOf, textsAfterGen, textsFromSiteDraft, withSiteTexts, writeSourceDir,
 } from "./lib/api-source.mjs";
 import { paragraphsToText, shopHash } from "./lib/edit-ops.mjs";
 import { ROOT } from "./lib/rebuild.mjs";
@@ -177,4 +177,21 @@ test("下書き → 公開：書き出しの HTML を pages に（index → /）
   assert.equal(fa.calls[1].body.siteDraftVersion, undefined);
   const e = tmp();
   await assert.rejects(publishDrafts(client(fa), "shp_1", { shopDraftVersion: 1, distDir: e }), (x) => x.code === "publish");
+});
+
+test("下書き → 公開（render rebuild）：型の店は pages を送らず版だけ。描いた結果は /edit-api の render の口に鍵で返す", async () => {
+  assert.equal(publishRenderOf(ametSite()), "rebuild", "wa-03 の店は rebuild");
+  assert.equal(publishRenderOf({ templateId: "wa-01-editor" }), "html");
+  const fa = fakeApi({
+    "POST /api/shops/shp_1/publish": (r) => [200, { number: 7, scope: r.body.scope, pages: [], render: r.body.render === "rebuild" ? "pending" : "html" }],
+    "POST /edit-api/shops/amet/versions/7/render": (r) => [200, { shopId: "shp_1", number: 7, render: r.body.ok ? "ok" : "failed" }],
+  });
+  const r = await publishDrafts(client(fa), "shp_1", { shopDraftVersion: 5, siteDraftVersion: 2, distDir: tmp(), render: "rebuild" });
+  assert.deepEqual({ number: r.number, render: r.render }, { number: 7, render: "pending" });
+  assert.equal(fa.calls[0].body.render, "rebuild");
+  assert.equal(fa.calls[0].body.pages, undefined, "rebuild のときは pages を送らない（送ると 400）");
+  await assert.rejects(publishDrafts(client(fa), "shp_1", { shopDraftVersion: 5, distDir: tmp(), render: "x" }), (x) => x.code === "publish");
+  const a = await client(fa).postRenderResult("amet", 7, { ok: true });
+  assert.equal(a.render, "ok");
+  assert.equal(fa.calls.at(-1).headers["x-edit-runner-secret"], KEY);
 });
