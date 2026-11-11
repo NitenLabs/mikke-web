@@ -42,7 +42,13 @@ if (loc.building) {
   const bre = new RegExp(loc.building.trim().split(/\s+/).map((x) => x.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join(" ?"), "g");
   h = h.replace(bre, (m) => `<span style="white-space:nowrap">${m}</span>`);
 }
-h = h.replace("</head>", css + "</head>").replace("</body>", js + "</body>");
+// ① の文が長くて段が伸びたとき、左の地図（PC）と料理の段の暗い写真が段の下まで届かず地の色が出る（指示 0051 の崩れの検査）。
+// 文が今の長さ（営業時間 23 字・料理の文 66 字）より十分長いときだけ、段の下まで伸ばす（伸びていなければ見た目は同じ）
+const txt = (id) => (h.match(new RegExp(`<p data-el="${id}"[^>]*>([\\s\\S]*?)</p>`))?.[1] || "").replace(/<[^>]+>/g, "").trim().length;
+const fill = [];
+if (txt("in_v1") > 30) fill.push(`@media (min-width:768px){[data-sec=sec_info]{display:flex}[data-sec=sec_info]>.cbox{flex:0 0 auto}[data-el=in_mapbox]{height:auto!important;bottom:0}}`);
+if (txt("ms_p") > 100) fill.push(`[data-sec=sec_message]{display:flex}[data-sec=sec_message]>.cbox{flex:0 0 auto}[data-el=ms_bg]{height:auto!important;bottom:0}`);
+h = h.replace("</head>", (fill.length ? css.replace("</style>", fill.join("") + "</style>") : css) + "</head>").replace("</body>", js + "</body>");
 const bp = (x) => x.split("min-width:768px").join(`min-width:${BP}px`).split("max-width:767.98px").join(`max-width:${BP - 0.02}px`).split("innerWidth<768").join(`innerWidth<${BP}`);
 fs.writeFileSync(f, bp(h));
 const nf = `${OUT}/404.html`; fs.writeFileSync(nf, bp(fs.readFileSync(nf, "utf8")));

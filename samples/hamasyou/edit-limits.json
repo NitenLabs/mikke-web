@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "shop": "hamasyou",
+  "template": "tpl_wa_04",
+  "measuredAt": "2026-11-11",
+  "method": "① の写し（.edit0-baseline/hama-var/hamav）を変えて wa04-gen → build --date 2026-11-10 → wa04-finish し、1440・768・390 で数値の検査（横スクロール・文字のはみ出し・文字の重なり・セクション外・カードからのはみ出し・品名の最後の行・読めない写真・地図と暗い写真が段の下まで届くか）。道具は .edit0-baseline/hama-var/edit0h.mjs（麓の edit0k.mjs と同じ形）。指示 0051 段3",
+  "keys": "fields のキーは data-edit の値（DATA_SPEC 4.12）。shop:/… は ① の JSON Pointer。item:*/… は品ごと（全部の品に同じ上限）",
+  "fields": {
+    "shop:/story/answers/q_catch/answer": {
+      "maxLines": 2,
+      "maxLineChars": 11,
+      "level": "warn",
+      "note": "改行で行を分ける。PC は 1 行 11 字まで（22 字 2 行は可）。12 字の行は PC で折れて 4 行になり、段が 147 伸びる（build が「未解決(R2): ab_h」と知らせる。重なりは無し）。3 行（30 字）も崩れないが段が伸びる（PC +73・スマホ +46）"
+    },
+    "shop:/story/answers/q_body/answer": {
+      "maxChars": 200,
+      "hardMaxChars": 320,
+      "level": "warn",
+      "note": "長いと下を押すだけ（重なり無し）。200 字 2 段落で PC 12 行（段 +190）・スマホ 9 行（+109）。320 字 3 段落・今の文の倍でも崩れない（PC +380）。今の文は 100 字・PC 6 行"
+    },
+    "shop:/story/answers/q_message_h/answer": {
+      "maxChars": 13,
+      "hardMaxChars": 20,
+      "note": "PC は 13 字で 1 行。20 字・今の文の倍（26 字）で 2 行になるが、下の文との間に収まり崩れない"
+    },
+    "shop:/story/answers/q_message/answer": {
+      "maxChars": 160,
+      "hardMaxChars": 260,
+      "level": "warn",
+      "note": "160 字（2 段落）までは段の高さそのまま。200 字でスマホの段が伸び（+41）、260 字で PC も伸びる（+12、スマホ +151）。前は伸びた分だけ暗い写真（ms_bg）が足りず下にえんじの地が出た → 指示 0051 で wa04-finish を直した（文が 100 字を超えるときだけ写真を段の下まで伸ばす。今の文 66 字の出力は同じ）"
+    },
+    "shop:/hours": {
+      "maxRenderedChars": 123,
+      "maxExceptionDays": 5,
+      "level": "warn",
+      "note": "表示は「基本の時間（L.O.）」または「基本の時間（火曜は…・水曜は…）」の1文。2 部制（35 字）は PC 1 行、違う曜日 1 つ（39 字）で PC 2 行、5 つ（123 字）で PC 4 行・スマホ 3 行になるが、行は下を押すだけで崩れない。前は PC で営業時間が 2 行以上になると左の地図（in_mapbox）が段の下まで届かず地の色が 32〜95 出た → 指示 0051 で wa04-finish を直した（表示が 30 字を超えるときだけ地図を段の下まで伸ばす。今の 23 字の出力は同じ）。限界：L.O. は開いている曜日の最後の時間帯の L.O. がそろっているときだけ出る。曜日で時間か L.O. が違うと L.O. は表示から消える（共通の hoursShort が weekly の L.O. を出さないため。gen では直さず上限にした）"
+    },
+    "shop:/hours/weekly (closed)": {
+      "minClosedDays": 0,
+      "note": "休みの曜日は「定休日」の行に出る（月曜・火曜・水曜・木曜・第2・4日曜まで崩れなし）。休みが無く closedRules も無いと「定休日」の行ごと消え、下の行が詰まる（崩れなし）"
+    },
+    "item:*/name (mnu_osusume)": {
+      "maxChars": 16,
+      "hardMaxChars": 22,
+      "level": "warn",
+      "note": "おすすめの品名。16 字までは段の高さそのまま。22 字で行が増え段が伸びる（PC +161・スマホ +95。重なり無し）"
+    },
+    "item:*/description (mnu_osusume)": {
+      "maxChars": 65,
+      "hardMaxChars": 160,
+      "level": "warn",
+      "note": "今の文は 61〜65 字。90 字で段が伸び（PC +127・スマホ +109）、160 字で PC +507・スマホ +436。重なり・カードからのはみ出しは無し。PC は文が写真（540）より長くなる"
+    },
+    "item:*/name (mnu_food)": {
+      "maxChars": 13,
+      "level": "warn",
+      "note": "お品書きの品名。13 字までスマホ・768 で 2 行。14 字で 3 行になり最後の行が 1〜2 字（品名の最後の行の検査）、段が伸びる（スマホ +75・PC +69）"
+    },
+    "item:*/description (mnu_food)": {
+      "note": "お品書きのカードは写真と品名だけ。説明は出ない"
+    },
+    "item:*/prices": {
+      "note": "この型のカード（おすすめ・お品書き）に値段の欄が無い。4 桁（1,280円）・名前付き 2 選択肢（小皿／大皿）を全品に入れても表示は変わらない（崩れもしない）。値段を出すには型に欄を足す必要がある"
+    },
+    "text:mv_en": { "note": "ファーストビューの英語の一行（wa04.json の mvEn）は飾りの文字で edit:false。① と連動しない" }
+  },
+  "lists": {
+    "catalog:mnu_osusume": {
+      "dataEdit": "list:catalog:mnu_osusume",
+      "categoryIds": ["cat_recommend"],
+      "minItems": 0,
+      "maxItems": 6,
+      "designItems": 4,
+      "columns": { "pc": 1, "sp": 1 },
+      "note": "1 品ずつ縦に並ぶ大きなカード。gen が品の数で段の高さを決める（1・6 品で確かめた。1 品増えるごとに PC +616・スマホ +480）。0 品で段ごと隠れる（エンジン）。指示 0051 で wa04-gen を直し、0 品のときはフッターの「Recommend」のリンクも出さない（ヘッダーのナビはエンジンが消す）"
+    },
+    "catalog:mnu_food": {
+      "dataEdit": "list:catalog:mnu_food",
+      "categoryIds": ["cat_menu"],
+      "minItems": 0,
+      "maxItems": 12,
+      "designItems": 6,
+      "columns": { "pc": 3, "sp": 2 },
+      "note": "多い分は下を押す（9・12 品で崩れなし）。少ない分は gen が行の分だけ詰める（1・2・4 品）。前は 0 品で「Menu／お品書き」の見出しだけの空の段が残った → 指示 0051 で wa04-gen を直した（0 品のときは見出しを置かず段ごと隠れ、フッターの「Menu」のリンクも出さない）。品を消すときは review の該当行も消す（消した品を指す確認があると validate がエラー）。説明の無い品は description のキーごと書かない（空の文字は validate がエラー）"
+    }
+  },
+  "photos": {
+    "_rule": "全部 object-fit:cover で枠いっぱいに切り抜く（中央。crop の fx・fy で寄せられる）。MV・お店について・料理の段・おすすめ・お品書き・写真の段・ご予約・帯の写真を縦↔横・正方形に入れ替えても崩れなし",
+    "ast_mv01": { "aspect": { "pc": 1.42, "sp": 0.61 }, "orientation": "any" },
+    "ast_ab01": { "aspect": { "pc": 0.77, "sp": 0.97 }, "orientation": "portrait" },
+    "ast_ms01": { "aspect": { "pc": 2.25, "sp": 0.91 }, "orientation": "any", "note": "暗くして文字を重ねる地の写真" },
+    "ast_rc01-04": { "aspect": { "pc": 0.99, "sp": 1.59 }, "orientation": "any", "note": "おすすめの品の写真（item:*/photos）" },
+    "ast_mn01-06": { "aspect": { "pc": 1.0, "sp": 1.0 }, "orientation": "any", "note": "お品書きの丸い写真（item:*/photos）" },
+    "ast_ph01": { "aspect": { "pc": 2.64, "sp": 2.64 }, "orientation": "landscape" },
+    "ast_rs01": { "aspect": { "pc": 1.46, "sp": 1.63 }, "orientation": "landscape" },
+    "ast_sr01-06": { "note": "写真の帯。6 枚固定（finish の流れの CSS が 6 枚前提）。枠の高さは写真ごとに決まっている" }
+  },
+  "combined": {
+    "note": "全部を一度に（2 部制＋L.O.・休み 1 日・おすすめ +2・お品書き +3・値段 2 選択肢・文 4 つとも倍・写真の縦横入れ替え）と、（違う曜日 2 つ＋休み・おすすめ 2・お品書き 4・値段 4 桁・文の倍・写真）：1440・768・390 とも崩れなし"
+  }
+}

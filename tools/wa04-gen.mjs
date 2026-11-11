@@ -66,7 +66,7 @@ const item = (path, fmt, pc, sp, ps, ss, font, opts = {}) => ({ type: "text", z:
 const CAT = shop.catalog, REF = makeRefDate(process.env.WA04_DATE);
 const catsOf = (menuId) => Object.keys(CAT.categories).filter((k) => CAT.categories[k].menuId === menuId);
 const REC_SRC = { kind: "catalog", menuId: "mnu_osusume", categoryIds: catsOf("mnu_osusume") }, MEN_SRC = { kind: "catalog", menuId: "mnu_food", categoryIds: catsOf("mnu_food") };
-const RN = Math.max(1, resolveRepeater(shop, REC_SRC, REF).length), MN = resolveRepeater(shop, MEN_SRC, REF).length;
+const RN0 = resolveRepeater(shop, REC_SRC, REF).length, RN = Math.max(1, RN0), MN = resolveRepeater(shop, MEN_SRC, REF).length;
 const CW = 1209.6, RH = { pc: 540, sp: 430 }, RG = { pc: 75.5, sp: 50 };
 const RCH = { pc: RN * RH.pc + (RN - 1) * RG.pc, sp: RN * RH.sp + (RN - 1) * RG.sp };
 sec("sec_recommend", "おすすめの料理", "theme:primary", 120 + RCH.pc + 120, 62.4 + RCH.sp + 47, { anchor: "recommend", nav: { label: "Recommend", order: 2 } });
@@ -84,8 +84,9 @@ els.rc_cards.card.elements.c_ds.style.lineHeight = 2;
 // PC 3列×440・スマホ 2列×230。6品（PC 2行・スマホ 3行）より少ないときは行の分だけ詰める（多いときは build が押し下げる）
 const MN_LESS = { pc: Math.max(0, 2 - Math.max(1, Math.ceil(MN / 3))), sp: Math.max(0, 3 - Math.max(1, Math.ceil(MN / 2))) };
 sec("sec_menu", "お品書き", "theme:primary", 1479 - MN_LESS.pc * 440, 930 - MN_LESS.sp * 230, { anchor: "menu", nav: { label: "Menu", order: 3 } });
-t("mn_en", "sec_menu", "Menu", [[43.2, 69.12, 0], [19.5, 19.5, 0]], A, CR, [{ x: 175.7, y: 180, w: 1088.7, h: 69.1 }, { x: 37, y: 58.5, w: 315.9, h: 31.2 }], { ...C, ...D });
-t("mn_ja", "sec_menu", C_.menuJa, [[15.84, 31.68, 0], [13.26, 26.52, 0]], B, CR, [{ x: 175.7, y: 283.1, w: 1088.7, h: 31.7 }, { x: 37, y: 112, w: 315.9, h: 26.5 }], C);
+// 品が 0 のときは見出しも置かない（段が空になり、エンジンが段ごと隠す。おすすめの段と同じ）
+if (MN) t("mn_en", "sec_menu", "Menu", [[43.2, 69.12, 0], [19.5, 19.5, 0]], A, CR, [{ x: 175.7, y: 180, w: 1088.7, h: 69.1 }, { x: 37, y: 58.5, w: 315.9, h: 31.2 }], { ...C, ...D });
+if (MN) t("mn_ja", "sec_menu", C_.menuJa, [[15.84, 31.68, 0], [13.26, 26.52, 0]], B, CR, [{ x: 175.7, y: 283.1, w: 1088.7, h: 31.7 }, { x: 37, y: 112, w: 315.9, h: 26.5 }], C);
 const MW = 362.9, mp = (n) => r((n / MW) * 100), SW = 195, sp_ = (n) => r((n / SW) * 100);
 add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: MEN_SRC, display: { mode: "grid", columns: { pc: 3, sp: 2 }, gap: { pc: 0, sp: 0 }, photoless: "sameCard" },
   card: { height: { pc: 440, sp: 230 }, elements: {
@@ -143,7 +144,8 @@ t("rs_tel", "sec_resv", ["/contact/phone", "phone"], [[16, 25.6, 0], [14.82, 23.
 sec("sec_footer", "フッター", "theme:primary", 586.8, 646.6);
 t("ft_name", "sec_footer", NAME, [[30, 35, 1.5], [18, 24, 0.9]], H, CR, [{ x: 72, y: 120, w: 402, h: 35 }, { x: 19.5, y: 60, w: 300, h: 24 }]);
 const NV = [["About", "about"], ["Recommend", "recommend"], ["Menu", "menu"], ["Information", "information"], ["Reservation", "reservation"]];
-NV.forEach(([l, id], i) => t(`ft_n${i}`, "sec_footer", l, [[21.6, 21.6, 0], [13.65, 13.65, 0]], A, CR, [{ x: 914.4, y: 120 + 50 * i, w: 240, h: 21.6 }, { x: 19.5, y: 211 + 40 * i, w: 351, h: 13.7 }], { link: { kind: "anchor", value: `pg_home#${id}` }, ...D }));
+// 品が 0 で隠れる段（おすすめ・お品書き）へのリンクは出さず、下のリンクを詰める（id は元の番号のまま）
+NV.map((x, i) => [...x, i]).filter(([, id]) => !(id === "recommend" && !RN0) && !(id === "menu" && !MN)).forEach(([l, id, i], j) => t(`ft_n${i}`, "sec_footer", l, [[21.6, 21.6, 0], [13.65, 13.65, 0]], A, CR, [{ x: 914.4, y: 120 + 50 * j, w: 240, h: 21.6 }, { x: 19.5, y: 211 + 40 * j, w: 351, h: 13.7 }], { link: { kind: "anchor", value: `pg_home#${id}` }, ...D }));
 // Instagram は ① にあるときだけ（リンクは ① の contact.sns.instagram から）
 const IG = { kind: "shopInstagram" };
 if (shop.contact?.sns?.instagram) {
