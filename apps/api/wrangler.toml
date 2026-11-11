@@ -35,15 +35,80 @@ bucket_name = "mikke-media"
 [triggers]
 crons = ["0 15 * * *"]
 
-# ---- 本番・試し（Cloudflare のアカウントができたら埋める）----
-# [env.staging]
-# name = "mikke-api-staging"
-# routes = [{ pattern = "*.staging.<ドメイン>/*", zone_name = "<ドメイン>" }, { pattern = "app.staging.<アプリのドメイン>/*", zone_name = "<アプリのドメイン>" }]
-# vars = { PUBLIC_DOMAIN = "staging.<ドメイン>", APP_ORIGINS = "https://app.staging.<アプリのドメイン>", MAILER = "resend", MAIL_FROM = "芦屋みっけ <login@mail.<アプリのドメイン>>", COOKIE_SECURE = "true" }
-# d1_databases = [{ binding = "DB", database_name = "mikke-staging", database_id = "<作ったときの ID>", migrations_dir = "migrations" }]
-# r2_buckets = [{ binding = "BUCKET", bucket_name = "mikke-media-staging" }]
-# triggers = { crons = ["0 15 * * *"] }
-# [[env.staging.ratelimits]]
-# name = "LOGIN_IP_LIMITER"
-# namespace_id = "1001"                 # アカウントの中で環境ごとに別の数字（本番は 1002 など）
-# simple = { limit = 10, period = 60 }  # 同じ IP から、申し込み・確かめそれぞれ 1 分に 10 回まで
+# ======================================================================
+# 秘密の値（名前だけ。値はここにも git にも書かない）
+#   AUTH_SECRET     … 必須。32 文字以上（`openssl rand -hex 32`）。
+#                     local：.dev.vars（.dev.vars.example を写す）
+#                     dev・prod：`npx wrangler secret put AUTH_SECRET --env dev`（prod は --env prod）
+#   RESEND_API_KEY  … MAILER = "resend" のとき必須（dev・prod）。`npx wrangler secret put RESEND_API_KEY --env prod`
+# 秘密ではない設定（vars。環境ごとに下で書く。上の段からは引き継がれない）
+#   PUBLIC_DOMAIN・APP_ORIGINS・MAILER・MAIL_FROM・COOKIE_SECURE・PUBLIC_PORT（local だけ）
+# 結びつけ（環境ごとに下で書く。上の段からは引き継がれない）
+#   DB（D1）・BUCKET（R2）・LOGIN_IP_LIMITER（Rate Limiting）
+# ======================================================================
+
+# ---- dev（試しの環境。Cloudflare に出すとき `--env dev`）----
+# 作り方（ユーザーが手元で）：
+#   npx wrangler d1 create mikke-shops-db-dev     → 出た database_id を下に
+#   npx wrangler r2 bucket create mikke-shops-photos-dev
+[env.dev]
+name = "mikke-api-dev"
+# routes は公開のドメイン・アプリのドメインが決まってから（README「本番に出すとき」。2 段のワイルドカードは無料の証明書では足りない）
+# routes = [{ pattern = "*-dev.<公開のドメイン>/*", zone_name = "<公開のドメイン>" }, { pattern = "app-dev.<アプリのドメイン>/*", zone_name = "<アプリのドメイン>" }]
+triggers = { crons = ["0 15 * * *"] }
+
+[env.dev.vars]
+# ↓ 仮の値（example のドメイン。まだ届かない）。ドメインが決まったら差し替える
+PUBLIC_DOMAIN = "dev.public.example"
+APP_ORIGINS = "https://app-dev.app.example"
+MAILER = "resend"
+MAIL_FROM = "芦屋みっけ <login@mail.app.example>"
+COOKIE_SECURE = "true"
+PUBLIC_PORT = ""                      # local だけ使う。空にしておく（上の段から引き継がれない警告を消すため）
+
+[[env.dev.d1_databases]]
+binding = "DB"
+database_name = "mikke-shops-db-dev"
+database_id = "REPLACE_WITH_DEV_D1_DATABASE_ID"   # ← 仮。`wrangler d1 create` で出た ID に差し替える
+migrations_dir = "migrations"
+
+[[env.dev.r2_buckets]]
+binding = "BUCKET"
+bucket_name = "mikke-shops-photos-dev"
+
+[[env.dev.ratelimits]]
+name = "LOGIN_IP_LIMITER"
+namespace_id = "1001"                 # アカウントの中で環境ごとに別の数字
+simple = { limit = 10, period = 60 }  # 同じ IP から、申し込み・確かめそれぞれ 1 分に 10 回まで
+
+# ---- prod（本番。`--env prod`）----
+#   npx wrangler d1 create mikke-shops-db       → 出た database_id を下に
+#   npx wrangler r2 bucket create mikke-shops-photos
+[env.prod]
+name = "mikke-api-prod"
+# routes = [{ pattern = "*.<公開のドメイン>/*", zone_name = "<公開のドメイン>" }, { pattern = "app.<アプリのドメイン>/*", zone_name = "<アプリのドメイン>" }]
+triggers = { crons = ["0 15 * * *"] }
+
+[env.prod.vars]
+# ↓ 仮の値。ドメインが決まったら差し替える
+PUBLIC_DOMAIN = "public.example"
+APP_ORIGINS = "https://app.app.example"
+MAILER = "resend"
+MAIL_FROM = "芦屋みっけ <login@mail.app.example>"
+COOKIE_SECURE = "true"
+PUBLIC_PORT = ""
+
+[[env.prod.d1_databases]]
+binding = "DB"
+database_name = "mikke-shops-db"
+database_id = "REPLACE_WITH_PROD_D1_DATABASE_ID"  # ← 仮。`wrangler d1 create` で出た ID に差し替える
+migrations_dir = "migrations"
+
+[[env.prod.r2_buckets]]
+binding = "BUCKET"
+bucket_name = "mikke-shops-photos"
+
+[[env.prod.ratelimits]]
+name = "LOGIN_IP_LIMITER"
+namespace_id = "1002"
+simple = { limit = 10, period = 60 }

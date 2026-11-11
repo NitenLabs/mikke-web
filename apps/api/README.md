@@ -197,15 +197,15 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 | もの | 中身 |
 |---|---|
 | Cloudflare の API トークン | アカウント：**Workers Scripts 編集・D1 編集・Workers R2 Storage 編集**・Account Settings 読む。ゾーン（公開のドメインとアプリのドメイン）：**Workers Routes 編集・DNS 編集**・Zone 読む |
-| D1 | `mikke-staging`・`mikke-production`（`wrangler d1 create` で作り、出た ID を `wrangler.toml` の `[env.*]` に） |
-| R2 | `mikke-media-staging`・`mikke-media-production` |
+| D1 | `mikke-shops-db-dev`（`[env.dev]`）・`mikke-shops-db`（`[env.prod]`）。`wrangler d1 create` で作り、出た ID を `wrangler.toml` の `REPLACE_WITH_…_D1_DATABASE_ID` に。マイグレーションは `npm run db:migrate:dev`／`db:migrate:prod` |
+| R2 | `mikke-shops-photos-dev`・`mikke-shops-photos`（local は `mikke-media` のまま） |
 | 公開のドメイン | 例 `mikke.site`。DNS に `*`（ワイルドカード、プロキシ有効）と Workers のルート `*.<ドメイン>/*`。**`*.staging.<ドメイン>` のような 2 段のワイルドカードは無料の証明書（Universal SSL）では足りない**（Advanced Certificate Manager が要る）。試しは別のドメインにするか、`<スラッグ>-staging.<ドメイン>` にするかを決める |
 | アプリのドメイン | 編集画面と API。**公開のドメインとは別の親ドメインが必須**（例 公開 `mikke.site`／アプリ `app.mikke-web.jp`）。同じ親ドメインだと、起動したときに設定の問題として止まる（L5。公開ページはお店ごとに中身を作れるので、アプリと同じサイトに置かない）。`https` も必須 |
-| Resend | API キー（`wrangler secret put RESEND_API_KEY --env production`。権限は「Sending access」だけ・送り元のドメインに絞る）、送り元のドメインの確認（Resend の画面に出る SPF・DKIM の DNS を足す）、送り元のアドレス（`vars` の `MAIL_FROM`、例 `芦屋みっけ <login@mail.<アプリのドメイン>>`）、`MAILER = "resend"`。どちらかがなければ起動したときに止まる。**本番（`COOKIE_SECURE = "true"`）で `MAILER = "log"` も止まる**（L6） |
-| 秘密の値 | `wrangler secret put AUTH_SECRET`（`openssl rand -hex 32` など 32 文字以上） |
+| Resend | API キー（`wrangler secret put RESEND_API_KEY --env prod`。権限は「Sending access」だけ・送り元のドメインに絞る）、送り元のドメインの確認（Resend の画面に出る SPF・DKIM の DNS を足す）、送り元のアドレス（`vars` の `MAIL_FROM`、例 `芦屋みっけ <login@mail.<アプリのドメイン>>`）、`MAILER = "resend"`。どちらかがなければ起動したときに止まる。**本番（`COOKIE_SECURE = "true"`）で `MAILER = "log"` も止まる**（L6） |
+| 秘密の値 | `wrangler secret put AUTH_SECRET --env prod`（dev も同じく `--env dev`。`openssl rand -hex 32` など 32 文字以上） |
 | IP ごとの回数の制限 | `wrangler.toml` の環境ごとに `[[env.<名前>.ratelimits]]`（`name = "LOGIN_IP_LIMITER"`・`namespace_id` は環境ごとに別の数字・`simple = { limit = 10, period = 60 }`。`period` は 10 か 60 だけ）。上の段からは引き継がれないので、環境ごとに必ず書く。数えるのは 1 つの Cloudflare の拠点の中で（拠点をまたいだ合計ではない）、おおよその数 |
 
-`wrangler.toml` の `[env.staging]` にひな形を書いてある。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
+`wrangler.toml` の `[env.dev]`・`[env.prod]` に書いてある（ドメイン・routes・database_id は仮。秘密の値の名前の一覧も上の注に）。出す前に `npm run deploy:check`（dry-run）。`PUBLIC_PORT` は local だけ（本番では書かない）、`COOKIE_SECURE = "true"`。
 
 ### 毎日のバックアップと戻し方（B6）
 
@@ -213,11 +213,11 @@ Workers の中では画像を縮められない（有料の Cloudflare Images �
 
 戻すとき（例：2026-10-25 の 0 時の状態に戻す）：
 
-1. 戻す先の D1 に、バックアップと同じマイグレーションまで当ててあることを確かめる（`npx wrangler d1 migrations list <DB> --remote --env production`。バックアップの `migrations` と、スクリプトが最初に出す「マイグレーション：… まで」）
+1. 戻す先の D1 に、バックアップと同じマイグレーションまで当ててあることを確かめる（`npx wrangler d1 migrations list <DB> --remote --env prod`。バックアップの `migrations` と、スクリプトが最初に出す「マイグレーション：… まで」）
 2. 中身を見る（まだ戻さない）：
    ```sh
    cd apps/api
-   node scripts/restore-backup.mjs --env production --remote --db mikke-production --bucket mikke-media-production --date 2026-10-25
+   node scripts/restore-backup.mjs --env prod --remote --db mikke-shops-db --bucket mikke-shops-photos --date 2026-10-25
    ```
    表ごとの行の数と、作った SQL（`.wrangler/restore/<日付>.sql`）が出る。local なら `--env`・`--remote`・`--db`・`--bucket` なしで `--date` だけ。手元のファイルなら `--file <…json.gz>`
 3. 戻す：同じものに `--apply` を付ける。バックアップにある表の中身は全部消して入れ直す（rowid も同じに戻る）

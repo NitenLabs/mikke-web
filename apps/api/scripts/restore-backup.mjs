@@ -5,7 +5,7 @@
 //     node scripts/restore-backup.mjs --date 2026-10-25                 # 中身を見て SQL を作るだけ（まだ戻さない）
 //     node scripts/restore-backup.mjs --date 2026-10-25 --apply         # 戻す
 //   本番・試し：
-//     node scripts/restore-backup.mjs --env production --remote --db mikke-production --bucket mikke-media-production --date 2026-10-25 --apply
+//     node scripts/restore-backup.mjs --env prod --remote --db mikke-shops-db --bucket mikke-shops-photos --date 2026-10-25 --apply
 //   手元のファイルから：
 //     node scripts/restore-backup.mjs --file ./2026-10-25.json.gz [--apply]
 //
