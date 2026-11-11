@@ -6,12 +6,16 @@
 //   写真を差し替える → 下書きに保存 → 別のタブで 409 →「新しい方を読み込む」→ 公開（render:"rebuild"）→ 作り直し（dry-run）ok → 版の一覧
 // 数値の確かめ（横のはみ出し・水色の枠・押せる所の大きさ ほか）を出し、画面の写しを docs/gallery/review/owner/ に置く。
 // 終わりに 1 行の JSON（checks）を出す。1 つでも通らなければ終了コード 1。
+// 後始末（指示 0056）：書いたデータは dist/e2e の中だけ（state・rebuild）。終わったら（失敗しても）立てたサーバーを
+//   taskkill /T /F で子まで止め、使った番号で何も待っていないことを確かめ、state と rebuild を消す（ログだけ残す）。
+//   手元の dev-state・dist/rebuild には触らない。
 import fs from "node:fs";
 import path from "node:path";
 import net from "node:net";
 import { spawn, execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
+import { PNG } from "pngjs";
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const OWNER_DIR = path.resolve(HERE, "..");
@@ -31,9 +35,24 @@ const checks = [];
 function check(name, ok, value) { checks.push({ name, ok: !!ok, value }); console.log(`${ok ? "ok  " : "NG  "} ${name}${value !== undefined ? `：${typeof value === "object" ? JSON.stringify(value) : value}` : ""}`); }
 
 let wr, sv, browser, log = "", svlog = "";
-const procs = [];
-function cleanup() { for (const p of procs) { try { p.kill("SIGTERM"); } catch (e) {} } }
+const procs = [], ports = [], pids = [];
+/** 立てたサーバーを子（workerd など）まで止める。Windows は taskkill /T /F */
+function killTree(p) {
+  if (!p?.pid || p.exitCode !== null || p.signalCode !== null) return;
+  try {
+    if (process.platform === "win32") execFileSync("taskkill", ["/PID", String(p.pid), "/T", "/F"], { stdio: "ignore" });
+    else p.kill("SIGKILL");
+  } catch (e) { try { p.kill("SIGKILL"); } catch (_) {} }
+}
+function cleanup() { while (procs.length) killTree(procs.pop()); }
 process.on("exit", cleanup);
+for (const sig of ["SIGINT", "SIGTERM"]) process.on(sig, () => { cleanup(); process.exit(130); });
+/** 使った番号のうち、まだ待っている（LISTENING）もの */
+function listening(list) {
+  let out = "";
+  try { out = execFileSync(process.platform === "win32" ? "netstat" : "netstat", ["-ano"], { encoding: "utf8" }); } catch (e) { return ["netstat が使えません"]; }
+  return list.filter((p) => new RegExp(`[:.]${p}\\s.*LISTEN`).test(out));
+}
 
 async function startStack() {
   fs.rmSync(WORK, { recursive: true, force: true }); fs.mkdirSync(WORK, { recursive: true });
@@ -41,24 +60,25 @@ async function startStack() {
   execFileSync(process.execPath, [path.join(OWNER_DIR, "build.mjs")], { cwd: ROOT, stdio: "inherit" });
   const state = path.join(WORK, "state");
   execFileSync(process.execPath, [path.join(API_DIR, "scripts/seed.mjs"), "--site", SLUG, "--persist-to", state], { cwd: API_DIR, stdio: ["ignore", "ignore", "inherit"] });
-  const uiPort = await freePort();
+  const uiPort = await freePort(); ports.push(uiPort);
   const UI = `http://localhost:${uiPort}`;
   let API;
   for (let attempt = 0; attempt < 3; attempt++) {
     const apiPort = await freePort(), insp = await freePort();
+    ports.push(apiPort, insp);
     API = `http://127.0.0.1:${apiPort}`;
     let exited = false;
     wr = spawn(process.execPath, [path.join(API_DIR, "node_modules/wrangler/bin/wrangler.js"), "dev", "--ip", "127.0.0.1", "--port", String(apiPort), "--inspector-port", String(insp), "--persist-to", state,
       "--show-interactive-dev-session=false", "--var", `APP_ORIGINS:${UI}`, "--var", `PUBLIC_PORT:${apiPort}`, "--var", `EDIT_RUNNER_SECRET:${SECRET}`, "--var", "AUTH_SECRET:e2e-secret-0123456789abcdef-0123456789abcdef"],
     { cwd: API_DIR, env: { ...process.env, NO_COLOR: "1", WRANGLER_SEND_METRICS: "false" }, stdio: ["ignore", "pipe", "pipe"] });
-    procs.push(wr);
+    procs.push(wr); pids.push(wr.pid);
     wr.stdout.on("data", (d) => { log += d; }); wr.stderr.on("data", (d) => { log += d; });
     wr.on("exit", () => { exited = true; });
     try { await until(async () => { if (exited) throw new Error("wrangler dev が止まりました"); return (await fetch(`${API}/api/health`)).ok; }, 90000, "wrangler dev"); break; }
-    catch (e) { try { wr.kill("SIGKILL"); } catch (_) {} if (attempt === 2) throw e; await sleep(1000); }
+    catch (e) { killTree(wr); if (attempt === 2) throw e; await sleep(1000); }
   }
-  sv = spawn(process.execPath, [path.join(OWNER_DIR, "dev/serve.mjs"), "--port", String(uiPort), "--api", API, "--secret", SECRET], { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] });
-  procs.push(sv);
+  sv = spawn(process.execPath, [path.join(OWNER_DIR, "dev/serve.mjs"), "--port", String(uiPort), "--api", API, "--secret", SECRET, "--work", path.join(WORK, "rebuild")], { cwd: ROOT, stdio: ["ignore", "pipe", "pipe"] });
+  procs.push(sv); pids.push(sv.pid);
   sv.stdout.on("data", (d) => { svlog += d; }); sv.stderr.on("data", (d) => { svlog += d; });
   await until(async () => (await fetch(`${UI}/`)).ok, 20000, "serve.mjs");
   // 下地を先に作っておく（初回は rebuild-shop で 10 秒ほど）
@@ -90,6 +110,40 @@ const frameEval = (page, fn, arg) => page.evaluate(([src, a]) => { const d = doc
 const apiGet = (page, p) => page.evaluate(async (p) => (await fetch(p, { credentials: "include" })).json(), p);
 const saveMsg = (page) => page.textContent("#saveMsg");
 const shot = (page, name) => page.screenshot({ path: path.join(SHOTS, `${name}.png`), fullPage: false });
+const itemNames = (page) => page.$$eval(".items .nm", (els) => els.map((e) => e.textContent));
+/** 箱が開き終わるまで待つ（動き・移り変わりが終わり、先祖まで含めた不透明度が 1） */
+async function settled(page, sel) {
+  await page.waitForFunction((sel) => {
+    const el = document.querySelector(sel); if (!el) return false;
+    const anims = [el, ...el.querySelectorAll("*")].flatMap((e) => e.getAnimations?.() ?? []);
+    if (anims.some((a) => a.playState === "running" || a.playState === "pending")) return false;
+    for (let e = el; e; e = e.parentElement) if (Number(getComputedStyle(e).opacity) < 1) return false;
+    return true;
+  }, sel, { timeout: 10000 });
+}
+/** 要素を写した画素のうち、墨緑（#2E3B36）に近い所の割合と、いちばん暗い所の明るさ */
+async function inkPixels(loc) {
+  const png = PNG.sync.read(await loc.screenshot());
+  let near = 0, min = 255; const n = png.width * png.height;
+  for (let i = 0; i < png.data.length; i += 4) {
+    const r = png.data[i], g = png.data[i + 1], b = png.data[i + 2];
+    if (Math.abs(r - 46) + Math.abs(g - 59) + Math.abs(b - 54) < 30) near++;
+    min = Math.min(min, Math.round(0.299 * r + 0.587 * g + 0.114 * b));
+  }
+  return { near: +(near / n).toFixed(3), min };
+}
+/** 指（タッチ）で長押しして縦に引きずる（CDP のタッチ） */
+async function touchDrag(page, x, y0, y1, holdMs = 500) {
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x, y: y0 }] });
+  await sleep(holdMs);
+  const dragging = await page.locator(".item.dragging").count();
+  for (let k = 1; k <= 10; k++) await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y: y0 + ((y1 - y0) * k) / 10 }] });
+  const mid = await page.locator(".item.dragging").count();
+  await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await cdp.detach();
+  return { dragging, mid };
+}
 
 /** 小さい押せる所（44px 未満）の数。見えている btn・入力・段の見出し */
 const smallTargets = (page) => page.evaluate(() => [...document.querySelectorAll("button, input:not([type=checkbox]):not([type=file]), textarea, .sec-head")]
@@ -121,7 +175,9 @@ async function flow(ctx, UI, W, { first }) {
   check(`${tag} 営業時間の表示`, /日曜は1[67]:00まで/.test(shown), shown);
   check(`${tag} 定休日の表示`, (await page.textContent("#closedShown")) === "水曜");
   if (pc) {
-    const hl = await frameEval(page, (d) => ({ n: d.querySelectorAll(".mk-hl").length, text: d.querySelector('[data-el="ac_v1"]')?.textContent }));
+    // 右の今の姿が読み込み直しの途中のことがあるので、少し待って見る
+    const hlNow = () => frameEval(page, (d) => ({ n: d.querySelectorAll(".mk-hl").length, text: d.querySelector('[data-el="ac_v1"]')?.textContent }));
+    const hl = await until(async () => { const v = await hlNow(); return v && v.n >= 1 && /日曜は17:00まで/.test(v.text) ? v : null; }, 8000, "右の営業時間").catch(hlNow);
     check(`${tag} 水色の枠（営業時間）`, hl.n >= 1, hl.n);
     check(`${tag} 右の営業時間も変わる`, /日曜は17:00まで/.test(hl.text), hl.text);
   }
@@ -146,10 +202,74 @@ async function flow(ctx, UI, W, { first }) {
   check(`${tag} 理由がその場に出る`, /15 字までにしてください（今 16 字）/.test(errMsg));
   await page.fill('.item.open [data-if="name"]', newName);
   check(`${tag} 直すと保存できる`, !(await page.locator("#btnSave").isDisabled()));
-  // 並べ替え（上へ 1 つ）
-  await page.click('.item.open [data-act="up"]');
-  const names = await page.$$eval(".items .nm", (els) => els.map((e) => e.textContent));
-  check(`${tag} 並べ替え`, names.at(-2) === newName, names.slice(-3));
+  // 値段の書き方：○〜○円・時価・値段を出さない → ○円 600 に戻す（指示 0056）
+  const pvPrice = async () => pc ? frameEval(page, (d, nm) => [...d.querySelectorAll('[data-edit~="list:catalog:mnu_food"] > [data-card]')].find((c) => c.textContent.includes(nm))?.querySelector('[data-cel="c_pr"]')?.textContent ?? "", newName) : null;
+  const headPr = () => page.textContent(".item.open .item-head .pr");
+  await page.click('.item.open [data-act="price-type"][data-type="range"]');
+  await page.fill('.item.open [data-pf="amount"]', "500");
+  await page.fill('.item.open [data-pf="max"]', "800");
+  const rg = { head: await headPr(), pv: await pvPrice() };
+  check(`${tag} 値段の書き方 ○〜○円`, /500円〜800円/.test(rg.head) && (!pc || rg.pv === "500円〜800円"), rg);
+  if (!pc) { await page.locator(".item.open .ptype").scrollIntoViewIfNeeded(); await shot(page, "owner2-390-price"); }
+  await page.fill('.item.open [data-pf="max"]', "400");
+  check(`${tag} ○〜○円 は上の値段が大きくないと保存できない`, await page.locator("#btnSave").isDisabled(), await page.textContent(`.item.open [data-msg$=":prices"]`));
+  await page.click('.item.open [data-act="price-type"][data-type="market"]');
+  const mk = { head: await headPr(), pv: await pvPrice(), amt: await page.locator('.item.open [data-pf="amount"]').count() };
+  check(`${tag} 値段の書き方 時価`, /時価/.test(mk.head) && mk.amt === 0 && (!pc || mk.pv === "時価") && !(await page.locator("#btnSave").isDisabled()), mk);
+  await page.click('.item.open [data-act="price-show"][data-on="0"]');
+  const ns = { head: await headPr(), pv: await pvPrice(), prices: await page.evaluate((nm) => Object.values(window.OWNER.state().shop.catalog.items).find((i) => i.name === nm)?.prices, newName) };
+  check(`${tag} 値段を出さない（prices: []・カードに値段なし）`, Array.isArray(ns.prices) && ns.prices.length === 0 && (!pc || ns.pv === ""), ns);
+  await page.click('.item.open [data-act="price-show"][data-on="1"]');
+  await page.click('.item.open [data-act="price-type"][data-type="fixed"]');
+  await page.fill('.item.open [data-pf="amount"]', "600");
+  check(`${tag} ○円 に戻す`, /600円/.test(await headPr()), await headPr());
+
+  // 並べ替え：つまみを引きずる（1440 はマウス、390 は指で長押し）→ 2 つ上へ
+  const rowOf = (nm) => page.locator(".items > li").filter({ has: page.locator(".nm", { hasText: nm }) });
+  await rowOf(newName).locator(".grip").evaluate((e) => e.scrollIntoView({ block: "center" }));   // 下の保存の帯に隠れないように
+  const g0 = await rowOf(newName).locator(".grip").boundingBox();
+  const hit = await page.evaluate(([x, y]) => !!document.elementFromPoint(x, y)?.closest(".grip"), [g0.x + g0.width / 2, g0.y + g0.height / 2]);
+  const lb = await page.locator(".items").boundingBox();
+  check(`${tag} 並べ替えのつまみ（44px 以上・右の端）`, g0.width >= 44 && g0.height >= 44 && Math.abs(g0.x + g0.width - (lb.x + lb.width)) < 2, { w: g0.width, h: g0.height, right: Math.round(lb.x + lb.width - g0.x - g0.width) });
+  check(`${tag} ↑↓ のボタンは無い`, (await page.locator('[data-act="up"], [data-act="down"]').count()) === 0);
+  const nrows = await page.locator(".items > li").count();
+  const target = await page.locator(`.items > li:nth-child(${nrows - 2})`).boundingBox();
+  const gx = g0.x + g0.width / 2, gy = g0.y + g0.height / 2, ty = target.y + 14;
+  let dragInfo;
+  if (pc) {
+    await page.mouse.move(gx, gy); await page.mouse.down();
+    await page.mouse.move(gx, gy - 10, { steps: 2 });
+    const d1 = await page.locator(".item.dragging").count();
+    await page.mouse.move(gx, ty, { steps: 8 });
+    dragInfo = { dragging: d1, mid: await page.locator(".item.dragging").count() };
+    await page.mouse.up();
+  } else dragInfo = await touchDrag(page, gx, gy, ty);
+  let names = await itemNames(page);
+  check(`${tag} 引きずって並べ替え（${pc ? "マウス" : "指で長押し"}）`, hit && dragInfo.mid === 1 && names.at(-3) === newName && (await page.locator(".reorder-pop").count()) === 0, { hit, ...dragInfo, last3: names.slice(-3) });
+  await sleep(400);   // 引きずった直後の click は数えないので少し置く
+  // つまみを押すだけ →「上へ」「下へ」の箱 →「下へ」で 1 つ下（最後から 2 番目）
+  await rowOf(newName).locator(".grip").click();
+  const pop = await page.$$eval(".reorder-pop button", (bs) => bs.map((b) => ({ t: b.textContent, w: Math.round(b.getBoundingClientRect().width), h: Math.round(b.getBoundingClientRect().height), dis: b.disabled })));
+  check(`${tag} 押すと「上へ」「下へ」の箱（44px 以上）`, pop.length === 2 && pop[0].t === "上へ" && pop[1].t === "下へ" && pop.every((b) => b.w >= 44 && b.h >= 44), pop);
+  await page.click('.reorder-pop [data-dir="1"]');
+  names = await itemNames(page);
+  check(`${tag} 「下へ」で並べ替え（箱は開いたまま）`, names.at(-2) === newName && (await page.locator(".reorder-pop").count()) === 1, names.slice(-3));
+  if (!pc) {
+    await page.locator(".reorder-pop").scrollIntoViewIfNeeded();
+    check(`${tag} 箱を開いても横のはみ出し 0`, (await overflow(page)) <= 0, await overflow(page));
+    const sm = await smallTargets(page); check(`${tag} 押せる所 44px 以上（並べ替えの箱）`, sm.length === 0, sm.slice(0, 5));
+    await shot(page, "owner2-390-menu-reorder");
+  }
+  await page.click('.reorder-pop [data-dir="-1"]'); await page.click('.reorder-pop [data-dir="1"]');
+  check(`${tag} 「上へ」→「下へ」で元の所`, (await itemNames(page)).at(-2) === newName);
+  // 鍵盤：つまみで ↑ ↓、Esc で箱を閉じる
+  await rowOf(newName).locator(".grip").focus(); await page.keyboard.press("Escape");
+  check(`${tag} Esc で箱を閉じる`, (await page.locator(".reorder-pop").count()) === 0);
+  await page.keyboard.press("ArrowUp");
+  const kUp = (await itemNames(page)).at(-3) === newName;
+  await page.keyboard.press("ArrowDown");
+  names = await itemNames(page);
+  check(`${tag} 鍵盤の ↑↓ で並べ替え`, kUp && names.at(-2) === newName, names.slice(-3));
   if (pc) {
     const cards = await frameEval(page, (d, nm) => { const cs = [...d.querySelectorAll('[data-edit~="list:catalog:mnu_food"] > [data-card]')]; return { n: cs.length, idx: cs.findIndex((c) => c.textContent.includes(nm)), price: cs.find((c) => c.textContent.includes(nm))?.querySelector('[data-cel="c_pr"]')?.textContent, hl: d.querySelectorAll(".mk-hl").length }; }, newName);
     check(`${tag} 右に品のカードが増える`, cards.n === before + 1 && cards.idx === cards.n - 2, cards);
@@ -182,13 +302,19 @@ async function flow(ctx, UI, W, { first }) {
   await page.click('[data-act="photo"][data-el="fv_1"]');
   await page.setInputFiles("#phFile", PHOTO);
   await page.waitForSelector("#crop:not([hidden])");
+  await settled(page, "#sheet");
+  // 開き終わった箱がはっきり見える（白い覆いが見出し・ボタンに掛かっていない。指示 0056）
+  const vis = await page.evaluate(() => ["#sheet h2", "#sheet label.file", "#phOk"].map((s) => { const e = document.querySelector(s); let op = 1; for (let x = e; x; x = x.parentElement) op *= Number(getComputedStyle(x).opacity); return { s, op, color: getComputedStyle(e).color, bg: getComputedStyle(e).backgroundColor, dis: e.disabled ?? false }; }));
+  check(`${tag} 切り抜きの箱：不透明度 1・字は墨緑`, vis.every((v) => v.op === 1 && !v.dis) && vis[0].color === "rgb(46, 59, 54)" && vis[2].bg === "rgb(46, 59, 54)", vis.map((v) => `${v.s} ${v.op} ${v.color}`));
+  const px = { h2: await inkPixels(page.locator("#sheet h2")), pick: await inkPixels(page.locator("#sheet label.file")), ok: await inkPixels(page.locator("#phOk")) };
+  check(`${tag} 切り抜きの箱：画素も薄くない（見出し・写真を選ぶ・この写真にする）`, px.h2.min < 70 && px.pick.min < 70 && px.ok.near > 0.5, px);
   const box = await page.$eval("#cropBox", (e) => ({ w: e.offsetWidth, h: e.offsetHeight }));
   check(`${tag} 切り抜きの枠は PC の枠の比（0.62）`, Math.abs(box.w / box.h - 0.62) < 0.02, (box.w / box.h).toFixed(3));
   check(`${tag} スマホの枠（点線）が中に`, (await page.locator("#cropSp").count()) === 1);
   await page.fill("#phScale", "60"); await page.locator("#phScale").dispatchEvent("input");
   check(`${tag} 小さく切ると「ぼやけるかも」`, /ぼやける/.test(await page.textContent("#phMsg")), await page.textContent("#phMsg"));
   await page.fill("#phScale", "100"); await page.locator("#phScale").dispatchEvent("input");
-  if (W <= 760) await shot(page, `owner-${tag}-4-crop`);
+  if (W <= 760) { await page.$eval(".sheet-in", (e) => { e.scrollTop = 0; }); await settled(page, "#sheet"); await shot(page, "owner2-390-crop"); }
   await page.click("#phOk");
   await page.waitForSelector("#sheet[hidden]", { state: "attached", timeout: 30000 });
   const asset = await page.evaluate(() => window.OWNER.state().site.draft.elements.fv_1.asset);
@@ -198,7 +324,7 @@ async function flow(ctx, UI, W, { first }) {
   if (pc) check(`${tag} 右の写真も替わる`, (await frameEval(page, (d) => d.querySelector('[data-el="fv_1"] img')?.getAttribute("src")))?.includes(asset));
 
   // 下書きに保存
-  if (pc) await shot(page, `owner-${tag}-2-editing`);
+  if (pc) await shot(page, "owner2-1440-editing");
   await page.click("#btnSave");
   await until(async () => /下書きに保存しました/.test(await saveMsg(page)), 20000, "保存");
   const dShop = await apiGet(page, `/api/shops/${SHOP}/drafts/shop`), dSite = await apiGet(page, `/api/shops/${SHOP}/drafts/site`);
@@ -276,6 +402,12 @@ try {
   fs.mkdirSync(WORK, { recursive: true });
   fs.writeFileSync(path.join(WORK, "wrangler.log"), log);
   fs.writeFileSync(path.join(WORK, "serve.log"), svlog);
+  // 試験で書いたデータ（409 の「ほかのタブで直した見出し」ほか）を消す。次は毎回まっさらから
+  await sleep(1500);
+  const still = listening(ports);
+  check("立てたサーバーは止めた（使った番号で待っている物 0）", still.length === 0, { pids, ports, still });
+  for (const d of ["state", "rebuild"]) { try { fs.rmSync(path.join(WORK, d), { recursive: true, force: true, maxRetries: 5, retryDelay: 500 }); } catch (e) { check(`後始末：${d} を消した`, false, e.message); } }
+  check("試験のデータを消した（dist/e2e/state・rebuild）", !fs.existsSync(path.join(WORK, "state")) && !fs.existsSync(path.join(WORK, "rebuild")));
 }
 const ng = checks.filter((c) => !c.ok);
 console.log(JSON.stringify({ checks: checks.length, ok: checks.length - ng.length, ng: ng.map((c) => c.name), seconds: Math.round((Date.now() - t0) / 1000), shots: SHOTS }));

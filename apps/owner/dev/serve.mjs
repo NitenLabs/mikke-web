@@ -22,7 +22,7 @@ const PORT = Number(opt("--port", process.env.OWNER_PORT ?? 5174));
 const API = opt("--api", process.env.OWNER_API ?? "http://127.0.0.1:8787").replace(/\/$/, "");
 const SECRET = opt("--secret", process.env.EDIT_RUNNER_SECRET ?? "");
 const PREVIEW = path.join(DIST, "base");   // 書き出しの置き場の名前に preview を使えない（rebuild-shop が営業用の見本の置き場と見なす）
-const WORK = path.join(DIST, "rebuild");
+const WORK = path.resolve(opt("--work", path.join(DIST, "rebuild")));   // 作り直しの作業のフォルダ（通しの試験は自分の置き場所を渡す）
 
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".json": "application/json; charset=utf-8", ".map": "application/json", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml", ".woff2": "font/woff2" };
 

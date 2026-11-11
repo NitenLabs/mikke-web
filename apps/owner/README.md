@@ -46,7 +46,7 @@ npm run test:owner                       # 純粋な部品（limits・hours・me
 node apps/owner/e2e/flow.mjs             # 通し（Playwright。CI では走らせない。数分かかる）
 ```
 
-- 通しは毎回まっさらな置き場所（`apps/owner/dist/e2e/state`）に種をまき、空いている番号で wrangler dev と serve.mjs を立てる。1440 と 390 で、入る → 営業時間・お休み → 品を足す（上限超えで保存できない）→ 紹介文 → 表紙の言葉 → 写真の差し替え → 下書きに保存 → 別のタブで 409 → 公開 → 作り直し ok → 版の一覧。数値の確かめを出し、画面の写しを `docs/gallery/review/owner/`（git に入れない）に置く。同じお店の公開は 1 分に 1 回までなので、間で 1 分待つ
+- 通しは毎回まっさらな置き場所（`apps/owner/dist/e2e/state`、作り直しは `dist/e2e/rebuild`。`serve.mjs --work`）に種をまき、終わったら（失敗しても）立てたサーバーを `taskkill /T /F` で止め、使った番号で何も待っていないことを確かめて state と rebuild を消す（手元の `dev-state`・`dist/rebuild` には触らない）。空いている番号で wrangler dev と serve.mjs を立てる。1440 と 390 で、入る → 営業時間・お休み → 品を足す（上限超えで保存できない）→ 値段の書き方（○〜○円・時価・値段を出さない）→ 並べ替え（引きずる・「上へ」「下へ」・鍵盤）→ 紹介文 → 表紙の言葉 → 写真の差し替え → 下書きに保存 → 別のタブで 409 → 公開 → 作り直し ok → 版の一覧。数値の確かめを出し、画面の写しを `docs/gallery/review/owner/`（git に入れない）に置く。同じお店の公開は 1 分に 1 回までなので、間で 1 分待つ
 
 ## 作り
 

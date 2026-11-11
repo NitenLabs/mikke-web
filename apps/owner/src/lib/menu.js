@@ -59,6 +59,28 @@ export function moveItem(shop, menuId, itemId, dir) {
   return s;
 }
 
+/** 品を list の中の toIndex（0 始まり）へ動かす（引きずって並べ替え）。order は今ある値を小さい順に配り直す（重なっていれば 1..n） */
+export function moveItemTo(shop, menuId, itemId, toIndex) {
+  const s = clone(shop);
+  const list = listItems(s, menuId);
+  const i = list.findIndex((x) => x.itemId === itemId);
+  if (i < 0) return s;
+  const j = Math.max(0, Math.min(list.length - 1, Math.round(Number(toIndex) || 0)));
+  if (i === j) return s;
+  const orders = list.map((x) => x.order ?? 0);
+  const uniq = new Set(orders).size === orders.length;
+  const next = list.slice(); const [x] = next.splice(i, 1); next.splice(j, 0, x);
+  next.forEach((r, k) => { s.catalog.placements[r.placementId].order = uniq ? orders[k] : k + 1; });
+  return s;
+}
+
+/** 引きずっている品の落とす先（0 始まり）。mids＝今の並びの各行の縦の真ん中、from＝引きずっている行、y＝指の縦の位置 */
+export function dropIndex(mids, from, y) {
+  let n = 0;
+  mids.forEach((m, k) => { if (k !== from && m < y) n++; });
+  return n;
+}
+
 /** 品の項目を直す（name・description・prices・photos）。draft:true を外す */
 export function setItemField(shop, itemId, field, value) {
   const s = clone(shop);

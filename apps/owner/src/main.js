@@ -2,7 +2,7 @@
 import { api, ApiError, sayError } from "./lib/api.js";
 import { ruleFor, defaultTextRule, checkText, checkHours, checkPrices, checkList, checkPhotoWidth, photoRule, remainText, canAdd, canRemove, worst } from "./lib/limits.js";
 import { DAYS, setDay, applyAll, hoursLine, closedLine, dayView } from "./lib/hours.js";
-import { listItems, addItem, removeItem, moveItem, setItemField, pricesFromRows, rowsFromPrices, setRowType, setPriceShown, PRICE_TYPES } from "./lib/menu.js";
+import { listItems, addItem, removeItem, moveItem, moveItemTo, dropIndex, setItemField, pricesFromRows, rowsFromPrices, setRowType, setPriceShown, PRICE_TYPES } from "./lib/menu.js";
 import { fitCrop, moveCrop, scaleCrop, innerRect } from "./lib/crop.js";
 import { editableFrom, textParagraphs, setTextParagraphs, setShopValue, getPointer, setElementPhoto, setItemPhoto, photoAsset, outsideEdits, dirtyKinds, resolveConflict, previewTexts, same, priceSummary } from "./lib/draft.js";
 import { patchTexts, patchPhotos, patchMenu, highlight, readMarks } from "./lib/patch.js";
@@ -100,7 +100,7 @@ async function openShop(me, shop) {
   // 既定の上限（今の段落の数・最長＋2 字）は下地の字から（直した下書きから測ると、直すたびに縮むので）
   const fvBase = [...baseDoc.querySelectorAll('[data-el="fv_copy"] > .pg')].map((e) => e.textContent.trim());
   S.origFv = fvBase.length ? fvBase : textParagraphs(S.site, "fv_copy");
-  S.open = null; S.openItem = null; S.view = "pc"; S.priceStash = {};
+  S.open = null; S.openItem = null; S.reorder = null; S.view = "pc"; S.priceStash = {};
   renderShell();
   await refreshStatus();
   S.ready = true;
@@ -148,6 +148,9 @@ function renderForm() {
       <div class="sec-body">${S.open === s.id ? body(s.id) : ""}</div>
     </div>`).join("");
   form.onclick = onFormClick;
+  form.onpointerdown = onGripDown;
+  form.onkeydown = onFormKey;
+  form.oncontextmenu = (e) => { if (e.target.closest(".grip")) e.preventDefault(); };   // 長押しで出る箱を止める
   form.oninput = onFormInput;
   form.onchange = onFormInput;
   form.onfocusin = (e) => { const k = e.target.closest("[data-key]")?.dataset.key; if (k) focusKey(k); };
@@ -210,7 +213,8 @@ function body(id) {
         const it = x.item, op = S.openItem === x.itemId;
         return `<li class="item${op ? " open" : ""}" data-item="${x.itemId}" data-key="item:${x.itemId}">
           <div class="item-row"><button type="button" class="item-head" data-act="item" aria-expanded="${op}"><span class="nm">${esc(it.name)}</span><span class="pr mono">${esc(headPrice(it.prices))}</span></button>
-            ${ef.size || S.ed.lists.size ? `<button type="button" class="btn sq" data-act="up" aria-label="上へ"${i === 0 ? " disabled" : ""}>↑</button><button type="button" class="btn sq" data-act="down" aria-label="下へ"${i === items.length - 1 ? " disabled" : ""}>↓</button>` : ""}</div>
+            ${ef.size || S.ed.lists.size ? `<button type="button" class="grip" data-act="grip" aria-label="「${esc(it.name)}」を並べ替える（上下の矢印でも動きます）" aria-expanded="${S.reorder === x.itemId}" title="長押し（パソコンは引きずる）で動かす。押すと「上へ」「下へ」"><span aria-hidden="true"></span></button>` : ""}</div>
+          ${S.reorder === x.itemId ? `<div class="reorder-pop" role="group" aria-label="並べ替え"><button type="button" class="btn" data-act="mv" data-dir="-1"${i === 0 ? " disabled" : ""}>上へ</button><button type="button" class="btn" data-act="mv" data-dir="1"${i === items.length - 1 ? " disabled" : ""}>下へ</button></div>` : ""}
           ${op ? itemBody(x.itemId, it) : ""}</li>`;
       }).join("")}</ol>
       ${S.ed.lists.size ? `<button class="btn line" type="button" data-act="add"${canAdd(items.length, m.rule) ? "" : " disabled"}>品を足す</button>` : ""}
@@ -258,6 +262,9 @@ function onFormClick(e) {
   const b = e.target.closest("[data-act]");
   if (!b) return;
   const act = b.dataset.act, li = b.closest("[data-item]"), itemId = li?.dataset.item;
+  if (act !== "grip" && act !== "mv" && S.reorder) {   // ほかを押したら「上へ」「下へ」の箱を閉じる
+    S.reorder = null; $("#form .reorder-pop")?.remove(); $('#form .grip[aria-expanded="true"]')?.setAttribute("aria-expanded", "false");
+  }
   if (act === "sec") {
     const id = b.closest("[data-sec]").dataset.sec;
     S.open = S.open === id ? null : id; S.openItem = null;
@@ -282,7 +289,18 @@ function onFormClick(e) {
   }
   const m = MENU();
   if (act === "item") { S.openItem = S.openItem === itemId ? null : itemId; rerender(); if (S.openItem) focusKey(`item:${itemId}`); return; }
-  if (act === "up" || act === "down") { S.shop = moveItem(S.shop, m.menuId, itemId, act === "up" ? -1 : 1); rerender(); focusKey(`item:${itemId}`); return; }
+  if (act === "grip") {
+    if (Date.now() - gripDragAt < 250) return;   // 引きずった後の click は数えない
+    S.reorder = S.reorder === itemId ? null : itemId; rerender();
+    $(`[data-item="${itemId}"] .grip`)?.focus(); return;
+  }
+  if (act === "mv") {
+    const dir = Number(b.dataset.dir);
+    S.shop = moveItem(S.shop, m.menuId, itemId, dir); rerender(); focusKey(`item:${itemId}`);
+    const pop = $(`[data-item="${itemId}"] .reorder-pop`);
+    (pop?.querySelector(`[data-dir="${dir}"]:not(:disabled)`) ?? pop?.querySelector("button:not(:disabled)"))?.focus();
+    return;
+  }
   if (act === "add") {
     const r = addItem(S.shop, m.menuId, m.categoryIds?.[0] ?? menuItems()[0]?.categoryId);
     S.shop = r.shop; S.openItem = r.itemId; rerender();
@@ -316,6 +334,62 @@ function onFormClick(e) {
     rerender(); return;
   }
   if (act === "photo") return openPhoto(b.dataset.item ? { itemId: b.dataset.item } : { elId: b.dataset.el });
+}
+// ───────── 並べ替え：つまみを長押し（指）・引きずる（マウス）で動かす。押すだけなら「上へ」「下へ」の箱
+let gripDragAt = 0;
+function onGripDown(e) {
+  const g = e.target.closest(".grip");
+  if (!g || (e.pointerType === "mouse" && e.button !== 0)) return;
+  const li = g.closest("[data-item]"), list = li.parentElement, itemId = li.dataset.item;
+  const st = { on: false, cancel: false, y0: e.clientY, x0: e.clientX, from: 0, to: 0, mids: [], rows: [], h: 0, timer: 0 };
+  try { g.setPointerCapture(e.pointerId); } catch (_) {}
+  if (e.pointerType !== "mouse") e.preventDefault();
+  const begin = () => {
+    if (st.on || st.cancel) return;
+    st.on = true; st.rows = [...list.children]; st.from = st.to = st.rows.indexOf(li);
+    st.mids = st.rows.map((r) => { const b = r.getBoundingClientRect(); return b.top + b.height / 2; });
+    st.h = li.getBoundingClientRect().height;
+    li.classList.add("dragging"); list.classList.add("sorting");
+    try { navigator.vibrate?.(8); } catch (_) {}
+  };
+  if (e.pointerType !== "mouse") st.timer = setTimeout(begin, 350);
+  const end = () => { clearTimeout(st.timer); g.onpointermove = g.onpointerup = g.onpointercancel = null; };
+  g.onpointermove = (m) => {
+    const dy = m.clientY - st.y0;
+    if (!st.on) {
+      if (e.pointerType === "mouse") { if (Math.abs(dy) > 4) begin(); }
+      else if (Math.hypot(dy, m.clientX - st.x0) > 10) { st.cancel = true; clearTimeout(st.timer); }
+      if (!st.on) return;
+    }
+    li.style.transform = `translateY(${dy}px)`;
+    st.to = dropIndex(st.mids, st.from, m.clientY);   // 指の高さと、ほかの行の真ん中を比べる（開いている品は背が高いので行の真ん中は使わない）
+    st.rows.forEach((r, k) => {
+      if (k === st.from) return;
+      const sh = st.from < st.to && k > st.from && k <= st.to ? -st.h : st.from > st.to && k >= st.to && k < st.from ? st.h : 0;
+      r.style.transform = sh ? `translateY(${sh}px)` : "";
+    });
+  };
+  g.onpointerup = g.onpointercancel = (u) => {
+    end();
+    if (st.cancel) gripDragAt = Date.now();
+    if (!st.on) return;
+    gripDragAt = Date.now();
+    st.rows.forEach((r) => { r.style.transform = ""; }); li.classList.remove("dragging"); list.classList.remove("sorting");
+    if (u.type === "pointerup" && st.to !== st.from) {
+      S.shop = moveItemTo(S.shop, MENU().menuId, itemId, st.to); S.reorder = null; rerender(); focusKey(`item:${itemId}`);
+      $(`[data-item="${itemId}"] .grip`)?.focus();
+    }
+  };
+}
+function onFormKey(e) {
+  const g = e.target.closest?.(".grip, .reorder-pop");
+  if (!g) return;
+  const itemId = g.closest("[data-item]")?.dataset.item;
+  if (e.key === "Escape" && S.reorder) { S.reorder = null; rerender(); $(`[data-item="${itemId}"] .grip`)?.focus(); e.preventDefault(); return; }
+  if (!g.classList.contains("grip") || (e.key !== "ArrowUp" && e.key !== "ArrowDown")) return;
+  e.preventDefault();
+  S.shop = moveItem(S.shop, MENU().menuId, itemId, e.key === "ArrowUp" ? -1 : 1); rerender(); focusKey(`item:${itemId}`);
+  $(`[data-item="${itemId}"] .grip`)?.focus();
 }
 const allIds = () => new Set(JSON.stringify(S.shop).match(/[a-z]{2,4}_[a-z0-9]{4,24}/g) ?? []);
 const headPrice = (prices) => priceSummary(prices);

@@ -6,7 +6,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ruleFor, defaultTextRule, checkText, checkHours, checkPrices, checkList, checkPhotoWidth, photoRule, exceptionDays, remainText, canAdd, canRemove, worst } from "../src/lib/limits.js";
 import { setDay, applyAll, hoursLine, closedLine, normTime, dayView } from "../src/lib/hours.js";
-import { listItems, addItem, removeItem, moveItem, setItemField, pricesFromRows, newId, rowsFromPrices, setRowType, setPriceShown, PRICE_TYPES } from "../src/lib/menu.js";
+import { listItems, addItem, removeItem, moveItem, moveItemTo, dropIndex, setItemField, pricesFromRows, newId, rowsFromPrices, setRowType, setPriceShown, PRICE_TYPES } from "../src/lib/menu.js";
 import { fitCrop, moveCrop, scaleCrop, innerRect, outputSize, limitSize } from "../src/lib/crop.js";
 import { editableFrom, textParagraphs, setTextParagraphs, setShopValue, setElementPhoto, setItemPhoto, photoAsset, outsideEdits, dirtyKinds, resolveConflict, previewTexts, changedPaths, cardTexts, completePrices, priceSummary } from "../src/lib/draft.js";
 
@@ -280,4 +280,34 @@ test("値段：書き方の切り替えと、選べる書き方（edit-limits �
   assert.equal(checkPrices([{ id: "prc_aaaa", type: "ask" }], PRULE).level, "error", "types に無い書き方は保存できない");
   assert.equal(checkPrices([{ id: "prc_aaaa", type: "ask" }], null).level, "ok", "types が無い店は止めない");
   assert.deepEqual(completePrices([{ type: "fixed", amount: "" }, { type: "market" }]), [{ type: "market" }]);
+});
+
+test("menu：引きずって並べ替え（moveItemTo・dropIndex）", () => {
+  const ids = (s) => listItems(s, "mnu_food").map((x) => x.itemId);
+  const base = ids(SHOP), n = base.length;
+  let s = moveItemTo(SHOP, "mnu_food", base[0], 2);
+  assert.deepEqual(ids(s), [base[1], base[2], base[0], ...base.slice(3)]);
+  assert.deepEqual(ids(SHOP), base, "元は変えない");
+  assert.deepEqual(listItems(s, "mnu_food").map((x) => x.order), listItems(SHOP, "mnu_food").map((x) => x.order), "order の値はそのまま配り直す");
+  s = moveItemTo(s, "mnu_food", base[0], 0);
+  assert.deepEqual(ids(s), base, "戻せる");
+  assert.deepEqual(ids(moveItemTo(SHOP, "mnu_food", base[1], 99)).at(-1), base[1], "範囲の外は端へ");
+  assert.deepEqual(ids(moveItemTo(SHOP, "mnu_food", base[1], -5))[0], base[1]);
+  assert.deepEqual(ids(moveItemTo(SHOP, "mnu_food", "itm_none", 0)), base, "無い品は変えない");
+  // order が重なっていても 1..n で配り直す
+  const dup = JSON.parse(JSON.stringify(SHOP));
+  for (const p of Object.values(dup.catalog.placements)) if (p.menuId === "mnu_food") p.order = 1;
+  const d0 = ids(dup);
+  const d = moveItemTo(dup, "mnu_food", d0.at(-1), 0);
+  assert.equal(ids(d)[0], d0.at(-1));
+  assert.deepEqual(listItems(d, "mnu_food").map((x) => x.order), Array.from({ length: n }, (_, k) => k + 1));
+  // 落とす先：行の真ん中 25・75・125・175、1 行目を引きずる
+  const mids = [25, 75, 125, 175];
+  assert.equal(dropIndex(mids, 0, 10), 0);
+  assert.equal(dropIndex(mids, 0, 80), 1);
+  assert.equal(dropIndex(mids, 0, 130), 2);
+  assert.equal(dropIndex(mids, 0, 500), 3);
+  assert.equal(dropIndex(mids, 3, 0), 0);
+  assert.equal(dropIndex(mids, 3, 100), 2);
+  assert.equal(dropIndex(mids, 2, 126), 2, "自分の行は数えない");
 });
