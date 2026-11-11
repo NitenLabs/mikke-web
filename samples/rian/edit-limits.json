@@ -1,0 +1,78 @@
+{
+  "version": 1,
+  "shop": "rian",
+  "template": "tpl_wa_02",
+  "measuredAt": "2026-11-11",
+  "method": "① の写し（.edit0-baseline/rian-var/rianv）を変えて wa02-gen → build --date 2026-11-10 → wa02-finish し、1440・768・390 で数値の検査（横スクロール・文字のはみ出し・文字の重なり・セクション外・カードからのはみ出し・情報の表の行越え・炭の面からのはみ出し・予約のピルからのはみ出し）。指示 0051 段3",
+  "keys": "fields のキーは data-edit の値（DATA_SPEC 4.12）。shop:/… は ① の JSON Pointer。item:*/… は品ごと（全部の品に同じ上限）",
+  "fields": {
+    "shop:/story/answers/q_body/answer": {
+      "maxChars": 300,
+      "maxParagraphs": 3,
+      "maxLines": { "pc": 15 },
+      "budget": { "pc": { "lineChars": 24, "lineHeight": 32, "paragraphGap": 12, "maxHeight": 530 } },
+      "level": "warn",
+      "note": "紹介文は炭の色の面（st_sage）の上の明るい文字。PC で本文の高さ（行数×32＋(段落数−1)×12）が 530 を超えると、文字が面の下にはみ出す（白地に白い文字）。実測：今の文の倍（約 340 字・6 段落・14 行）は可、380 字3段落（19 行）で 102px、460 字で 198px はみ出す。768・スマホは下を押すだけで 600 字（30 行）まで面の中、それ以上は面から出る。面の高さは文字の実測で決まるので gen では直せない（直すなら面を本文に付いていく形にする）"
+    },
+    "shop:/story/answers/q_catch/answer": {
+      "maxLines": 4,
+      "maxLineChars": 9,
+      "level": "error",
+      "note": "縦書きの見出し（st_copy）。改行で列を分ける。箱は PC 幅 224・高さ 277、スマホ 160×198 の固定で、4 列×9 字が入る分。10 字の列（40 字4列）や 5 列以上（今の文の倍＝8 列）は箱の外にはみ出す"
+    },
+    "shop:/hours": {
+      "maxExceptionDays": 6,
+      "level": "ok",
+      "note": "情報の表（in_vt3）は伸びて下を押す（7 曜日ばらばら・2 部制でもスマホ 5 行、重なり無し）。予約の『受付時間』は、表示が 22 字を超えると gen がピルの下の広い箱に移す（指示 0051 で直した。今の 16 字はピルの中のまま）。休みの曜日は『定休日』の行に別に出る"
+    },
+    "item:*/name": {
+      "maxChars": 12,
+      "hardMaxChars": 16,
+      "level": "warn",
+      "note": "一覧の品名（幅 PC 68%・スマホ 64%）は 12 字で全品が折り返しても重なり無し（行が伸びて下を押す）。おすすめのカードの品名は 16 字でも可（カードの段が伸びる）。読みやすさの目安は 12 字"
+    },
+    "item:*/description": {
+      "maxChars": 40,
+      "hardMaxChars": 60,
+      "level": "warn",
+      "note": "おすすめのカードにだけ出る。60 字でも重なり無し（カードが伸び下を押す。スマホで段 +187）。見た目の目安 40 字"
+    },
+    "item:*/prices": {
+      "maxOptions": 3,
+      "maxOptionNameChars": 5,
+      "note": "4 桁（12,800円）・〜付き・範囲（1,280円〜3,800円）・名前付きの選択肢 2 つ（1人前／2人前）・3 つ（ハーフ／レギュラー／大盛り 2,980円〜）を全品に入れても崩れ無し（行が伸びるだけ）。schema の決まりで金額は税込（品書きの注記『税抜』は wa02.json の文字のまま。0051 の聞きたいこと 1）"
+    },
+    "text:mn_na": { "note": "品書きの注記は wa02.json の menuLeft.note（② の文字）。① の品を変えても追従しない" }
+  },
+  "lists": {
+    "label:lbl_recommend": {
+      "dataEdit": "list の印は無い（mn_cards は ① で lbl_recommend の付いた品。並びは wa02.json の recOrder、載っていない品は後ろ）",
+      "minItems": 0,
+      "designItems": 6,
+      "testedMax": 7,
+      "columns": { "pc": 3, "sp": 2 },
+      "note": "gen が品の数の行だけ段の高さを取る（指示 0051 で直した：3 品で PC −413・スマホ −309 詰まる。7 品で1行増える）。0 品なら『おすすめ』の札とカードの段を出さない（直す前は 0 品で全 75 品がカードになっていた）"
+    },
+    "catalog:mnu_food": {
+      "categoryIds": "wa02.json の menuLeft.first・menuLeft.second・menuRight.groups。① にあって wa02.json に無い括りは右の列の最後",
+      "minItems": 1,
+      "testedMax": 80,
+      "note": "品を足す（焼肉に1品・ご飯ものに5品）・括りごとに1品だけ残す・括りを空にする、すべて崩れ無し。品の無い括りは見出しごと外れる。列の高さは gen が品の数から決める"
+    }
+  },
+  "fixedCounts": {
+    "gallery": { "count": 7, "note": "ギャラリーは 7 枚固定（ast_gal1〜7。finish の送りの JS が 7 枚前提）" },
+    "firstView": { "count": 3, "note": "FV の写真は 3 枚固定（重ねフェード）" }
+  },
+  "photos": {
+    "_rule": "全部 object-fit:cover で枠いっぱいに切り抜く（中央。crop の fx・fy で寄せられる）。縦横を入れ替えても崩れない（FV・ギャラリー・紹介・予約の背景・品の写真で確かめた）。minWidth は 2 倍の解像度で一番大きく出る幅（PC 1440 と 768 の大きい方）",
+    "ast_fv01": { "aspect": { "pc": 1.6, "sp": 0.46 }, "orientation": "any", "minWidth": 2400, "note": "全面。2 倍なら 2880 だが今の素材は 2400" },
+    "ast_fv02": { "aspect": { "pc": 1.6, "sp": 0.46 }, "orientation": "any", "minWidth": 2400 },
+    "ast_fv03": { "aspect": { "pc": 1.6, "sp": 0.46 }, "orientation": "any", "minWidth": 2400 },
+    "ast_gal1-7": { "aspect": { "pc": 1.75, "sp": 1.43 }, "orientation": "landscape", "minWidth": 1400 },
+    "ast_ab01": { "aspect": { "pc": 1.95, "sp": 0.98 }, "orientation": "landscape", "minWidth": 1950 },
+    "ast_ab02": { "aspect": { "pc": 1.15, "sp": 1.1 }, "orientation": "square", "minWidth": 1300 },
+    "ast_resv": { "aspect": { "pc": 3.24, "sp": 0.97 }, "orientation": "any", "minWidth": 2400, "note": "暗くした背景（darken 50）" },
+    "item:*/photos": { "aspect": { "pc": 1.5, "sp": 1.5 }, "orientation": "any", "minWidth": 700, "note": "おすすめのカードだけ。写真の無い品も同じカード（photoless: sameCard）" }
+  }
+}

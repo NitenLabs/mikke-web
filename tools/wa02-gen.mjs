@@ -4,7 +4,7 @@
 // 指示 0051：中身は ①（shop.json）から出す。① に無い店ごとの文字（短い店名・飾りの英字・品書きの列の見出しと注記・
 //   おすすめの並び順など）は samples/<店>/wa02.json。飾りの文字（英字の見出し・項目名・ボタンの文字など）は edit:false。
 import fs from "node:fs";
-import { formatClosedDays } from "./lib/format.mjs";
+import { formatClosedDays, formatHoursShort } from "./lib/format.mjs";
 const DIR = "samples/rian";
 const shop = JSON.parse(fs.readFileSync(`${DIR}/shop.json`, "utf8"));
 const C = JSON.parse(fs.readFileSync(`${DIR}/wa02.json`, "utf8"));
@@ -95,7 +95,12 @@ const listed = new Set([...C.menuLeft.first, ...C.menuLeft.second, ...C.menuRigh
 const extraCats = Object.keys(cat.categories).filter((id) => !listed.has(id)).sort((a, b) => (cat.categories[a].order ?? 0) - (cat.categories[b].order ?? 0));
 const A1 = C.menuLeft.first.filter(has), A2 = C.menuLeft.second.filter(has), B1 = [...C.menuRight.groups, ...extraCats].filter(has);
 const N2 = { pc: 39.2, sp: 33.6 }, N1 = { pc: 19.6, sp: 16.8 }, G1 = 16, G2 = 32;
-const yP = 1114.8, yS = 1302.1, H0 = { pc: 72, sp: 60 };
+// おすすめのカードの段の高さは品の数の行だけ（設計は 6 品＝PC 2 行・スマホ 3 行）。下の一覧はその差だけ上下する
+const nRec = Object.values(cat.items).filter((it) => (it.labels || []).includes("lbl_recommend")).length;
+const recH = (cols, ch, gap) => { const n = Math.max(1, Math.ceil(nRec / cols)); return r(n * ch + (n - 1) * gap); };
+const RH = { pc: recH(3, 373.4, 40), sp: recH(2, 289.4, 20) };
+// おすすめが 0 品なら札とカードの段を出さず、一覧を札の位置から始める
+const yP = nRec ? r(1114.8 + RH.pc - 786.8) : 190, yS = nRec ? r(1302.1 + RH.sp - 908.2) : 285.8, H0 = { pc: 72, sp: 60 };
 const lay2 = (y0, d) => { const a1 = y0 + H0[d], nA = a1 + listH(A1, d) + G1, a2 = nA + N2[d] + G2; return { a1, nA, a2, end: a2 + listH(A2, d) }; };
 const layB = (y0, d) => { const b1 = y0 + H0[d], nB = b1 + listH(B1, d) + G1; return { b1, nB, end: nB + N1[d] }; };
 const LA = lay2(yP, "pc"), LB = layB(yP, "pc"), SA = lay2(yS, "sp"), yBS = SA.end + 60, SB = layB(yBS, "sp");
@@ -115,8 +120,9 @@ add("mn_cards", { type: "repeater", z: 3, section: "sec_menu", source: { kind: "
     c_ln: { type: "shape", z: 1, kind: "line", fill: "theme:line", layout: { pc: { x: 0, y: 262, w: 100, h: 1, strokeWidth: 1 }, sp: { x: 0, y: 150, w: 100, h: 1, strokeWidth: 1 } } },
     c_ds: cell(["/description", "plain"], null, { x: 0, y: 277, w: 100, h: 48 }, { x: 0, y: 163.4, w: 100, h: 83.2 }, 15, 13, B, G),
     c_pr: cell(["/prices", "price"], "right", { x: 0, y: 359, w: 100, h: 14.4 }, { x: 0, y: 256.6, w: 100, h: 16 }, 18, 16) } },
-  layout: lay({ x: 245.2, y: 258, w: 1073.6, h: 786.8 }, { x: 20, y: 344, w: 350, h: 908.2 }) });
+  layout: lay({ x: 245.2, y: 258, w: 1073.6, h: RH.pc }, { x: 20, y: 344, w: 350, h: RH.sp }) });
 els.mn_cards.card.elements.c_ds.style.lineHeight = 1.6; // 説明は 15/24・13/20.8（SPEC 3）
+if (!nRec) for (const id of ["mn_tag", "mn_tagi", "mn_tagt", "mn_cards"]) delete els[id];
 const listCard = (fmt) => ({ height: { pc: ROW.pc, sp: ROW.sp }, elements: {
   c_name: cell(["/name", "plain"], null, { x: 0, y: 4.5, w: 68, h: 22.4 }, { x: 0, y: 4.5, w: 64, h: 19.6 }, 16, 14),
   c_price: cell(["/prices", fmt], "right", { x: 68, y: 4.5, w: 32, h: 22.4 }, { x: 64, y: 4.5, w: 36, h: 19.6 }, 16, 14),
@@ -181,7 +187,9 @@ line("rv_enl", "sec_resv", W, { x: 665, y: 173, w: 110, h: 1 }, { x: 150, y: 139
 t("rv_note", "sec_resv", ["/reservation/note"], [[18, 25.2, 0.9], [14, 22.4, 0.7]], H, W, [{ x: 120, y: 220.2, w: 1200, h: 25.2 }, { x: 30, y: 186.1, w: 330, h: 22.4 }], CT);
 add("rv_pill", { type: "shape", z: 2, kind: "rect", fill: W, radius: 48, stroke: { width: 1, color: W }, section: "sec_resv", link: { kind: "shopPhone" }, layout: lay({ x: 560, y: 265.4, w: 320, h: 80 }, { x: 55, y: 250.9, w: 280, h: 70 }) });
 t("rv_tel", "sec_resv", ["/contact/phone", "phone"], [[28, 36, 1.4], [24, 30.9, 1.2]], A, W, [{ x: 560, y: 275, w: 320, h: 36 }, { x: 55, y: 257, w: 280, h: 30.9 }], { ...CT, z: 3, link: { kind: "shopPhone" } });
-t("rv_hr", "sec_resv", "受付時間", [[13, 18.2, 0.65], [12, 16.8, 0.6]], B, W, [{ x: 560, y: 318, w: 320, h: 18.2 }, { x: 55, y: 295, w: 280, h: 18.2 }], CT);
+// 受付時間がピルの1行（約 22 字）に入らないときは、ピルの下に広い箱で出す（ピルからはみ出さないように）
+const hrLong = `受付時間 ${formatHoursShort(shop.hours)}`.length > 22;
+t("rv_hr", "sec_resv", "受付時間", [[13, 18.2, 0.65], [12, 16.8, 0.6]], B, W, hrLong ? [{ x: 120, y: 365.4, w: 1200, h: 18.2 }, { x: 30, y: 336.9, w: 330, h: 16.8 }] : [{ x: 560, y: 318, w: 320, h: 18.2 }, { x: 55, y: 295, w: 280, h: 18.2 }], CT);
 els.rv_hr.paragraphs = [{ runs: [{ text: "受付時間 " }, { bind: { scope: "shop", path: "/hours", format: "hoursShort" } }] }];
 
 // ---- フッター（SNS なしの値・SPEC 6章。芦屋みっけ掲載店の表示を一番下に足す）
