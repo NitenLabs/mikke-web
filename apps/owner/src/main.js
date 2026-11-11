@@ -2,9 +2,9 @@
 import { api, ApiError, sayError } from "./lib/api.js";
 import { ruleFor, defaultTextRule, checkText, checkHours, checkPrices, checkList, checkPhotoWidth, photoRule, remainText, canAdd, canRemove, worst } from "./lib/limits.js";
 import { DAYS, setDay, applyAll, hoursLine, closedLine, dayView } from "./lib/hours.js";
-import { listItems, addItem, removeItem, moveItem, setItemField, pricesFromRows } from "./lib/menu.js";
+import { listItems, addItem, removeItem, moveItem, setItemField, pricesFromRows, rowsFromPrices, setRowType, setPriceShown, PRICE_TYPES } from "./lib/menu.js";
 import { fitCrop, moveCrop, scaleCrop, innerRect } from "./lib/crop.js";
-import { editableFrom, textParagraphs, setTextParagraphs, setShopValue, getPointer, setElementPhoto, setItemPhoto, photoAsset, outsideEdits, dirtyKinds, resolveConflict, previewTexts, same } from "./lib/draft.js";
+import { editableFrom, textParagraphs, setTextParagraphs, setShopValue, getPointer, setElementPhoto, setItemPhoto, photoAsset, outsideEdits, dirtyKinds, resolveConflict, previewTexts, same, priceSummary } from "./lib/draft.js";
 import { patchTexts, patchPhotos, patchMenu, highlight, readMarks } from "./lib/patch.js";
 import { loadPhoto, buildCroppedUpload } from "./lib/photo-upload.js";
 import { formatPriceAll } from "../../../tools/lib/format.mjs";
@@ -100,7 +100,7 @@ async function openShop(me, shop) {
   // 既定の上限（今の段落の数・最長＋2 字）は下地の字から（直した下書きから測ると、直すたびに縮むので）
   const fvBase = [...baseDoc.querySelectorAll('[data-el="fv_copy"] > .pg')].map((e) => e.textContent.trim());
   S.origFv = fvBase.length ? fvBase : textParagraphs(S.site, "fv_copy");
-  S.open = null; S.openItem = null; S.view = "pc";
+  S.open = null; S.openItem = null; S.view = "pc"; S.priceStash = {};
   renderShell();
   await refreshStatus();
   S.ready = true;
@@ -209,7 +209,7 @@ function body(id) {
       <ol class="items">${items.map((x, i) => {
         const it = x.item, op = S.openItem === x.itemId;
         return `<li class="item${op ? " open" : ""}" data-item="${x.itemId}" data-key="item:${x.itemId}">
-          <div class="item-row"><button type="button" class="item-head" data-act="item" aria-expanded="${op}"><span class="nm">${esc(it.name)}</span><span class="pr mono">${esc(formatPriceAll(it.prices ?? []))}</span></button>
+          <div class="item-row"><button type="button" class="item-head" data-act="item" aria-expanded="${op}"><span class="nm">${esc(it.name)}</span><span class="pr mono">${esc(headPrice(it.prices))}</span></button>
             ${ef.size || S.ed.lists.size ? `<button type="button" class="btn sq" data-act="up" aria-label="上へ"${i === 0 ? " disabled" : ""}>↑</button><button type="button" class="btn sq" data-act="down" aria-label="下へ"${i === items.length - 1 ? " disabled" : ""}>↓</button>` : ""}</div>
           ${op ? itemBody(x.itemId, it) : ""}</li>`;
       }).join("")}</ol>
@@ -221,15 +221,26 @@ function body(id) {
 
 function itemBody(itemId, it) {
   const ef = S.ed.itemFields, k = (f) => `item:${itemId}/${f}`;
-  const rows = (it.prices ?? []).map((p, i) => `<div class="price" data-pi="${i}">
-      <input type="text" data-key="${k("prices")}" data-pf="name" value="${esc(p.name ?? "")}" placeholder="名前（無くてよい）" aria-label="値段の名前">
-      <input type="text" class="mono" inputmode="numeric" data-key="${k("prices")}" data-pf="amount" value="${esc(p.amount ?? "")}" aria-label="値段"><span>円</span>
-      <label class="chk"><input type="checkbox" data-key="${k("prices")}" data-pf="from"${p.type === "from" ? " checked" : ""}>〜</label>
-      <button type="button" class="btn sq" data-act="price-del" aria-label="この値段を消す">×</button></div>`).join("");
+  const types = priceTypes();
+  const shown = (it.prices ?? []).length > 0;
+  const amt = (p, f, label) => `<input type="text" class="mono amt" inputmode="numeric" data-key="${k("prices")}" data-pf="${f}" value="${esc(p[f] ?? "")}" aria-label="${label}">`;
+  const rows = (it.prices ?? []).map((p, i) => `<div class="price" data-pi="${i}" data-pt="${esc(p.type)}">
+      <div class="seg ptype" role="group" aria-label="値段の書き方">${types.map((t) => `<button type="button" data-act="price-type" data-type="${t.type}" aria-pressed="${p.type === t.type}">${t.label}</button>`).join("")}</div>
+      <div class="price-in">
+        <input type="text" class="pname" data-key="${k("prices")}" data-pf="name" value="${esc(p.name ?? "")}" placeholder="名前（無くてよい）" aria-label="値段の名前">
+        ${p.type === "fixed" || p.type === "from" ? `${amt(p, "amount", "値段")}<span>${p.type === "from" ? "円〜" : "円"}</span>`
+          : p.type === "range" ? `${amt(p, "amount", "下の値段")}<span>〜</span>${amt(p, "max", "上の値段")}<span>円</span>`
+          : p.type === "market" ? `<span class="pfix">時価</span>` : `<span class="pfix">${esc(formatPriceAll([p]))}</span>`}
+        <button type="button" class="btn sq" data-act="price-del" aria-label="この値段を消す">×</button>
+      </div></div>`).join("");
+  const showSeg = `<div class="seg" role="group" aria-label="値段を出すか"><button type="button" data-act="price-show" data-on="1" aria-pressed="${shown}">値段を出す</button><button type="button" data-act="price-show" data-on="0" aria-pressed="${!shown}">値段を出さない</button></div>`;
+  const priceField = `<div class="field"><label>値段（税込）</label>${showSeg}
+    ${shown ? `${rows}<button type="button" class="btn line" data-act="price-add">値段を足す</button>` : `<p class="note">ページに値段は出ません。</p>`}
+    <p class="msg" data-msg="i:${itemId}:prices"></p></div>`;
   return `<div class="item-body">
     ${ef.has("name") ? `<div class="field"><label>名前</label><input type="text" data-key="${k("name")}" data-if="name" value="${esc(it.name)}"><p class="msg" data-msg="i:${itemId}:name"></p></div>` : ""}
     ${ef.has("description") ? `<div class="field"><label>説明</label><textarea rows="3" data-key="${k("description")}" data-if="description">${esc(it.description ?? "")}</textarea><p class="msg" data-msg="i:${itemId}:description"></p></div>` : ""}
-    ${ef.has("prices") ? `<div class="field"><label>値段（税込）</label>${rows}<button type="button" class="btn line" data-act="price-add">値段を足す</button><p class="msg" data-msg="i:${itemId}:prices"></p></div>` : ""}
+    ${ef.has("prices") ? priceField : ""}
     ${ef.has("photos") ? `<div class="field ph"><label>写真</label>${it.photos?.[0] ? `<img alt="" src="${esc(assetUrl(it.photos[0]))}">` : `<span class="note">写真はまだありません</span>`}<button type="button" class="btn line" data-act="photo" data-item="${itemId}">写真を替える</button></div>` : ""}
     ${S.ed.lists.size ? `<button type="button" class="btn warnline" data-act="del">この品を消す</button>` : ""}
   </div>`;
@@ -283,18 +294,33 @@ function onFormClick(e) {
     if (!canRemove(menuItems().length, m.rule)) return;
     S.shop = removeItem(S.shop, itemId); S.openItem = null; rerender(); return;
   }
-  if (act === "price-add" || act === "price-del") {
+  if (act === "price-add" || act === "price-del" || act === "price-type") {
     const it = S.shop.catalog.items[itemId];
-    const ps = clone(it.prices ?? []);
-    if (act === "price-add") ps.push({ id: null, type: "fixed", amount: "" });
-    else ps.splice(Number(b.closest("[data-pi]").dataset.pi), 1);
-    const rows = ps.map((p) => ({ name: p.name, amount: p.amount, type: p.type }));
-    S.shop = setItemField(S.shop, itemId, "prices", pricesFromRows(rows, ps.filter((p) => p.id), allIds()));
+    const prev = clone(it.prices ?? []);
+    let rows = rowsFromPrices(prev);
+    const pi = Number(b.closest("[data-pi]")?.dataset.pi);
+    if (act === "price-add") rows.push({ name: "", type: "fixed", amount: "", max: "" });
+    else if (act === "price-del") { rows.splice(pi, 1); prev.splice(pi, 1); }
+    else rows = setRowType(rows, pi, b.dataset.type);
+    // 最後の 1 つを消したら「値段を出さない」と同じ（prices: []）
+    if (act === "price-del" && !rows.length) S.priceStash[itemId] = [];
+    S.shop = setItemField(S.shop, itemId, "prices", pricesFromRows(rows, prev, allIds()));
+    rerender();
+    if (act === "price-type") $(`[data-item="${itemId}"] [data-pi="${pi}"] [data-pf="amount"]`)?.focus();
+    return;
+  }
+  if (act === "price-show") {
+    const it = S.shop.catalog.items[itemId], on = b.dataset.on === "1";
+    if (!on && it.prices?.length) S.priceStash[itemId] = clone(it.prices);   // 戻したときに前の値段を出す（この画面を開いている間だけ）
+    S.shop = setItemField(S.shop, itemId, "prices", setPriceShown(it.prices, on, { stash: S.priceStash[itemId], taken: allIds() }));
     rerender(); return;
   }
   if (act === "photo") return openPhoto(b.dataset.item ? { itemId: b.dataset.item } : { elId: b.dataset.el });
 }
 const allIds = () => new Set(JSON.stringify(S.shop).match(/[a-z]{2,4}_[a-z0-9]{4,24}/g) ?? []);
+const headPrice = (prices) => priceSummary(prices);
+// 選べる値段の書き方（edit-limits の「item:*/prices」の types があれば、その中だけ）
+const priceTypes = () => { const t = ruleFor(S.limits, "item:*/prices")?.types; return Array.isArray(t) ? PRICE_TYPES.filter((x) => t.includes(x.type)) : PRICE_TYPES; };
 
 function onFormInput(e) {
   const t = e.target;
@@ -312,9 +338,10 @@ function onFormInput(e) {
     if (t.dataset.if === "name") $(`[data-item="${itemId}"] .nm`).textContent = t.value;
   } else if (t.dataset.pf) {
     const li = t.closest("[data-item]"), itemId = li.dataset.item;
-    const rows = [...li.querySelectorAll("[data-pi]")].map((r) => ({ name: $('[data-pf="name"]', r).value, amount: $('[data-pf="amount"]', r).value, type: $('[data-pf="from"]', r).checked ? "from" : "fixed" }));
+    const val = (r, f) => $(`[data-pf="${f}"]`, r)?.value ?? "";
+    const rows = [...li.querySelectorAll("[data-pi]")].map((r) => ({ name: val(r, "name"), type: r.dataset.pt, amount: val(r, "amount"), max: val(r, "max") }));
     S.shop = setItemField(S.shop, itemId, "prices", pricesFromRows(rows, S.shop.catalog.items[itemId].prices ?? [], allIds()));
-    $(".pr", li).textContent = formatPriceAll(S.shop.catalog.items[itemId].prices.filter((p) => Number.isInteger(p.amount)));
+    $(".pr", li).textContent = headPrice(S.shop.catalog.items[itemId].prices);
   } else return;
   updateChecks();
   refreshPreview();

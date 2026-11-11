@@ -144,7 +144,16 @@ export function previewTexts(shop, site, ed) {
   for (const id of ed.texts) if (id === "fv_copy") out[`text:${id}`] = textParagraphs(site, id);
   return out;
 }
-/** 品のカードに出す文 */
+/** 入れ終わった値段だけ（入れている途中の「円」だけの文を出さない）。金額の要らない時価などはそのまま */
+export function completePrices(prices) {
+  const ok = (n) => Number.isInteger(n) && n >= 0;
+  return (prices ?? []).filter((p) => (p.type === "fixed" || p.type === "from" ? ok(p.amount) : p.type === "range" ? ok(p.amount) && ok(p.max) : true));
+}
+/** 品の一覧の行の右に出す短い値段（出さない品は「値段なし」） */
+export function priceSummary(prices) {
+  return (prices ?? []).length ? formatPriceAll(completePrices(prices)) : "値段なし";
+}
+/** 品のカードに出す文（prices が空＝値段を出さない → 値段の行を消す） */
 export function cardTexts(item) {
-  return { name: item.name ?? "", description: item.description ?? "", prices: formatPriceAll(item.prices ?? []) };
+  return { name: item.name ?? "", description: item.description ?? "", prices: formatPriceAll(completePrices(item.prices)) };
 }

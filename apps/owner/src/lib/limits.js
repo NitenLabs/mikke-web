@@ -116,12 +116,18 @@ export function checkHours(hours, rule) {
 export function checkPrices(prices, rule) {
   const r = res();
   const ps = prices ?? [];
+  // 空（prices: []）は「値段を出さない」（DATA_SPEC 3.4。カードに値段の行が出ない）
   for (const p of ps) {
     if (["fixed", "from", "range"].includes(p.type) && !(Number.isInteger(p.amount) && p.amount >= 0)) { add(r, "error", "値段は 0 以上の数字で入れてください"); break; }
-    if (p.type === "range" && !(Number.isInteger(p.max) && p.max >= p.amount)) { add(r, "error", "上の値段は下の値段より大きくしてください"); break; }
+    if (p.type === "range" && !(Number.isInteger(p.max) && p.max >= 0)) { add(r, "error", "「〜」の後の値段も数字で入れてください"); break; }
+    if (p.type === "range" && p.max <= p.amount) { add(r, "error", "「〜」の後の値段は、前の値段より大きくしてください"); break; }   // validate と同じ（max > amount）
   }
   if (ps.length > 1 && ps.some((p) => !String(p.name ?? "").trim())) add(r, "error", "値段が 2 つ以上のときは、それぞれに名前を付けてください");
   if (!rule) return r;
+  if (Array.isArray(rule.types)) {
+    const bad = ps.find((p) => !rule.types.includes(p.type));
+    if (bad) add(r, "error", "この書き方は、このページでは使えません。ほかの書き方を選んでください");
+  }
   if (rule.maxOptions != null && ps.length > rule.maxOptions) add(r, "error", `値段は ${rule.maxOptions} つまでにしてください`);
   if (rule.maxOptionNameChars != null) {
     const over = ps.find((p) => len(p.name) > rule.maxOptionNameChars);

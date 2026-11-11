@@ -135,7 +135,7 @@ async function flow(ctx, UI, W, { first }) {
   const newName = W > 760 ? "ほうじ茶ラテ" : "レモネード";
   await page.fill('.item.open [data-if="name"]', newName);
   await page.fill('.item.open [data-if="description"]', "香ばしい、やさしい一杯。");
-  await page.click('.item.open [data-act="price-add"]');
+  await page.click('.item.open [data-act="price-show"][data-on="1"]');   // 足した品は「値段を出さない」から始まる（指示 0056）
   await page.fill('.item.open [data-pf="amount"]', "600");
   check(`${tag} 品が 1 つ増えた`, (await page.locator(".items > li").count()) === before + 1, `${before}→${before + 1}`);
   check(`${tag} 品は 1 つずつ開く`, (await page.locator(".item.open").count()) === 1);

@@ -38,7 +38,10 @@ export function patchMenu(doc, shop, { menuId, categoryIds, listKey }, url) {
   if (!cards.length) return;
   const byItem = new Map(cards.map((c) => [/item:(\S+)/.exec(c.getAttribute("data-edit") ?? "")?.[1], c]));
   const tpl = cards.at(-1);
-  const prTpl = box.querySelector('[data-cel="c_pr"]');
+  // 値段の行の見本。全部の品が「値段を出さない」になって下地から消えても、後で出し直せるよう最初の 1 つを覚えておく
+  const found = box.querySelector('[data-cel="c_pr"]');
+  if (found && !box.__prTpl) box.__prTpl = found.cloneNode(true);
+  const prTpl = found ?? box.__prTpl ?? null;
   const want = listItems(shop, menuId, categoryIds);
   const keep = new Set();
   for (const { itemId, placementId, item } of want) {

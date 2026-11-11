@@ -6,9 +6,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ruleFor, defaultTextRule, checkText, checkHours, checkPrices, checkList, checkPhotoWidth, photoRule, exceptionDays, remainText, canAdd, canRemove, worst } from "../src/lib/limits.js";
 import { setDay, applyAll, hoursLine, closedLine, normTime, dayView } from "../src/lib/hours.js";
-import { listItems, addItem, removeItem, moveItem, setItemField, pricesFromRows, newId } from "../src/lib/menu.js";
+import { listItems, addItem, removeItem, moveItem, setItemField, pricesFromRows, newId, rowsFromPrices, setRowType, setPriceShown, PRICE_TYPES } from "../src/lib/menu.js";
 import { fitCrop, moveCrop, scaleCrop, innerRect, outputSize, limitSize } from "../src/lib/crop.js";
-import { editableFrom, textParagraphs, setTextParagraphs, setShopValue, setElementPhoto, setItemPhoto, photoAsset, outsideEdits, dirtyKinds, resolveConflict, previewTexts, changedPaths } from "../src/lib/draft.js";
+import { editableFrom, textParagraphs, setTextParagraphs, setShopValue, setElementPhoto, setItemPhoto, photoAsset, outsideEdits, dirtyKinds, resolveConflict, previewTexts, changedPaths, cardTexts, completePrices, priceSummary } from "../src/lib/draft.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const read = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, f), "utf8"));
@@ -220,4 +220,64 @@ test("draft：変えた方だけ送る・409 の片付け", () => {
   const mine = { me: 1 }, current = { version: 7, data: { them: 1 } };
   assert.deepEqual(resolveConflict("shop", "theirs", mine, current), { backup: { shop: mine }, put: null, adopt: { version: 7, data: { them: 1 } } });
   assert.deepEqual(resolveConflict("site", "mine", mine, current), { backup: { site: { them: 1 } }, put: { version: 7, data: mine }, adopt: null });
+});
+
+// ───────── 値段の書き方（指示 0056）：○円・○円〜・○〜○円・時価・値段を出さない
+const PRULE = ruleFor(LIM, "item:a/prices");
+const rows1 = (r) => pricesFromRows([r], [{ id: "prc_m001" }], new Set(), rnd);
+test("値段：○円（fixed）", () => {
+  const ps = rows1({ type: "fixed", amount: "１,２８０" });
+  assert.deepEqual(ps, [{ id: "prc_m001", type: "fixed", amount: 1280 }]);
+  assert.equal(checkPrices(ps, PRULE).level, "ok");
+  assert.equal(cardTexts({ prices: ps }).prices, "1,280円");
+});
+test("値段：○円〜（from）", () => {
+  const ps = rows1({ type: "from", amount: "500", max: "900" });
+  assert.deepEqual(ps, [{ id: "prc_m001", type: "from", amount: 500 }], "from は max を持たない");
+  assert.equal(checkPrices(ps, PRULE).level, "ok");
+  assert.equal(cardTexts({ prices: ps }).prices, "500円〜");
+});
+test("値段：○〜○円（range）", () => {
+  const ps = rows1({ type: "range", amount: "800", max: "1,200" });
+  assert.deepEqual(ps, [{ id: "prc_m001", type: "range", amount: 800, max: 1200 }]);
+  assert.equal(checkPrices(ps, PRULE).level, "ok");
+  assert.equal(cardTexts({ prices: ps }).prices, "800円〜1,200円");
+  assert.equal(checkPrices(rows1({ type: "range", amount: "800", max: "" }), PRULE).level, "error", "上の値段が空");
+  assert.match(checkPrices(rows1({ type: "range", amount: "800", max: "800" }), PRULE).messages[0].text, /大きく/, "validate と同じく max > amount");
+  assert.equal(checkPrices(rows1({ type: "range", amount: "800", max: "500" }), PRULE).level, "error");
+  assert.equal(cardTexts({ prices: rows1({ type: "range", amount: "800", max: "" }) }).prices, "", "入れている途中は今の姿に出さない");
+});
+test("値段：時価（market）", () => {
+  const ps = rows1({ type: "market", amount: "500", max: "900", name: "" });
+  assert.deepEqual(ps, [{ id: "prc_m001", type: "market" }], "時価は金額を持たない（schema）");
+  assert.equal(checkPrices(ps, PRULE).level, "ok");
+  assert.equal(cardTexts({ prices: ps }).prices, "時価");
+  const two = pricesFromRows([{ name: "小", type: "fixed", amount: "500" }, { name: "大", type: "market" }], [], new Set(), rnd);
+  assert.equal(checkPrices(two, PRULE).level, "ok");
+  assert.equal(cardTexts({ prices: two }).prices, "小 500円 ／ 大 時価");
+});
+test("値段：値段を出さない（prices を空に）・戻す", () => {
+  const cur = SHOP.catalog.items.itm_m001.prices;
+  const off = setPriceShown(cur, false);
+  assert.deepEqual(off, []);
+  assert.equal(checkPrices(off, PRULE).level, "ok");
+  assert.equal(cardTexts({ prices: off }).prices, "", "カードの値段の行は消す（patch.js）");
+  assert.equal(priceSummary(off), "値段なし");
+  assert.deepEqual(setPriceShown(off, true, { stash: cur }), cur, "しまっておいた値段に戻す（id も同じ）");
+  const fresh = setPriceShown([], true, { rand: rnd });
+  assert.equal(fresh.length, 1); assert.equal(fresh[0].type, "fixed"); assert.match(fresh[0].id, /^prc_/);
+  assert.equal(checkPrices(fresh, PRULE).level, "error", "空の ○円 は数字を入れるまで保存できない");
+  assert.equal(setPriceShown(cur, true), cur, "出しているときはそのまま");
+});
+test("値段：書き方の切り替えと、選べる書き方（edit-limits の types）", () => {
+  let rows = rowsFromPrices([{ id: "prc_aaaa", type: "fixed", amount: 700 }]);
+  rows = setRowType(rows, 0, "range");
+  assert.deepEqual(rows[0], { name: "", type: "range", amount: 700, max: "" }, "金額は持ち越す");
+  rows = setRowType(rows, 0, "market");
+  assert.deepEqual(pricesFromRows(rows, [{ id: "prc_aaaa" }]), [{ id: "prc_aaaa", type: "market" }]);
+  assert.deepEqual(PRICE_TYPES.map((t) => t.label), ["○円", "○円〜", "○〜○円", "時価"]);
+  assert.deepEqual(PRULE.types, ["fixed", "from", "range", "market"]);
+  assert.equal(checkPrices([{ id: "prc_aaaa", type: "ask" }], PRULE).level, "error", "types に無い書き方は保存できない");
+  assert.equal(checkPrices([{ id: "prc_aaaa", type: "ask" }], null).level, "ok", "types が無い店は止めない");
+  assert.deepEqual(completePrices([{ type: "fixed", amount: "" }, { type: "market" }]), [{ type: "market" }]);
 });

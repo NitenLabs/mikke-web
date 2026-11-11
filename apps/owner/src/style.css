@@ -104,7 +104,16 @@ label { font-weight: 500; }
 .item-head .pr { font-size: 13px; color: var(--mute); white-space: nowrap; }
 .item.open { border-left: 3px solid var(--sky); padding-left: 10px; }
 .item-body { padding: 0 0 12px; }
-.price { display: grid; grid-template-columns: 1fr 96px auto auto 44px; gap: 6px; align-items: center; }
+.price { display: grid; gap: 6px; padding: 8px 0; border-top: 1px dashed var(--rule); }
+.field > .seg + .price { border-top: 0; }
+.ptype { display: flex; width: 100%; }
+.ptype button { flex: 1 1 0; min-width: 0; padding: 6px 4px; white-space: nowrap; }
+.price-in { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.price-in .pname { flex: 1 1 140px; min-width: 0; }
+.price-in .amt { width: 96px; flex: 0 0 auto; }
+.price-in .pfix { min-height: 44px; display: inline-flex; align-items: center; padding: 0 4px; }
+.price-in .btn.sq { margin-left: auto; }
+.field > .seg + .price, .field > .seg + .note { margin-top: 4px; }
 .chk { display: inline-flex; gap: 4px; align-items: center; min-height: 44px; font-weight: 400; }
 .chk input { width: 20px; height: 20px; }
 .ph img { width: 160px; aspect-ratio: 3 / 2; object-fit: cover; display: block; }
@@ -152,8 +161,8 @@ input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--sky); }
   .bar-r .btn { flex: 1; }
   .day { grid-template-columns: 24px 1fr; }
   .day .times { grid-column: 2; }
-  .price { grid-template-columns: 1fr 84px auto; }
-  .price .chk { grid-column: 1; }
+  .price-in .pname { flex-basis: 100%; }
+  .price-in .amt { width: 84px; }
   .savebar { flex-direction: column; align-items: stretch; gap: 4px; }
   .savebar .btn { width: 100%; }
 }

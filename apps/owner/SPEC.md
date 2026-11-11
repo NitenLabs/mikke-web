@@ -21,7 +21,7 @@
 | 紹介の見出し | `shop:/story/answers/q_catch/answer` | ① 同じ | 24 字・2 行・1 行 12 字（warn） |
 | 表紙の言葉 | `text:fv_copy` | ② `elements.fv_copy.paragraphs` ＋ `genConfig.fvCopy` | 無し→「今の段落数まで・各段落 最長＋2 字」（error） |
 | 品の名前・説明 | `item:<id>/name`・`/description` | ① `/catalog/items/<id>/…` | 10/15 字・40/80 字（warn、hardMax は error） |
-| 値段 | `item:<id>/prices` | ① `…/prices`（fixed・from・range・ask など） | maxOptions 3・名前 6 字 |
+| 値段 | `item:<id>/prices` | ① `…/prices`。書き方は「○円」fixed・「○円〜」from・「○〜○円」range（amount〜max、max > amount）・「時価」market（金額を持たない）。「値段を出さない」は `prices: []`（カードに値段の行が出ない。DATA_SPEC 3.4）。指示 0056 | maxOptions 3・名前 6 字・types（選べる書き方） |
 | 品を足す・消す・並べ替え | `list:catalog:mnu_food` | ① `items`＋`placements`（order） | min 1・max 24 |
 | 写真 | `photo:<素材>` | ② `elements.<el>.asset`・`crop`／品は ① `items.<id>.photos[0]` | 枠の比は ② の layout から計算、minWidth は `photos[元の素材]`（warn） |
 

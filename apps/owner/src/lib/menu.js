@@ -70,15 +70,54 @@ export function setItemField(shop, itemId, field, value) {
   return s;
 }
 
-/** 値段の入力（1 行＝1 つの選択肢 {name, amount, type}）から ① の prices を作る。前の id は残す */
+/** 店主が選べる値段の書き方（① の price.type。表示は tools/lib/format.mjs の priceValue）。「値段を出さない」は prices を空にする（DATA_SPEC 3.4） */
+export const PRICE_TYPES = [
+  { type: "fixed", label: "○円" },
+  { type: "from", label: "○円〜" },
+  { type: "range", label: "○〜○円" },
+  { type: "market", label: "時価" },
+];
+const ALL_TYPES = new Set(["fixed", "from", "range", "market", "ask", "free", "tbd"]);
+const AMOUNT_TYPES = new Set(["fixed", "from", "range"]);
+const num = (v) => {
+  const n = v === "" || v == null ? NaN : Number(String(v).replace(/[,，円\s]/g, "").replace(/[０-９]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)));
+  return Number.isFinite(n) ? n : v;
+};
+
+/**
+ * 値段の入力（1 行＝1 つの選択肢 {name, type, amount, max}）から ① の prices を作る。前の id は残す。
+ * 金額を持つのは fixed・from・range だけ（range は max も）。時価などは金額を持たない（schema）
+ */
 export function pricesFromRows(rows, prev = [], taken = new Set(), rand) {
   const ids = new Set([...taken, ...prev.map((p) => p.id)]);
   return rows.map((r, i) => {
     const id = prev[i]?.id ?? (() => { const x = newId("prc", ids, rand); ids.add(x); return x; })();
-    const type = r.type === "from" ? "from" : "fixed";
-    const amount = r.amount === "" || r.amount == null ? NaN : Number(String(r.amount).replace(/[,，円\s]/g, ""));
-    const p = { id, type, amount: Number.isFinite(amount) ? amount : r.amount };
+    const type = ALL_TYPES.has(r.type) ? r.type : "fixed";
+    const p = { id, type };
+    if (AMOUNT_TYPES.has(type)) p.amount = num(r.amount);
+    if (type === "range") p.max = num(r.max);
     if (String(r.name ?? "").trim()) p.name = String(r.name).trim();
     return p;
   });
+}
+
+/** ① の prices を入力の行に戻す（金額は文字のまま） */
+export function rowsFromPrices(prices = []) {
+  return prices.map((p) => ({ name: p.name ?? "", type: p.type, amount: p.amount ?? "", max: p.max ?? "" }));
+}
+
+/** 行 i の書き方を変える。金額は持ち越す（時価にすると金額は外れる。○〜○円に戻すと上の値段は空） */
+export function setRowType(rows, i, type) {
+  return rows.map((r, j) => (j === i ? { ...r, type, max: type === "range" ? r.max ?? "" : "" } : r));
+}
+
+/**
+ * 「値段を出さない」（prices を空に）か、出す。出すときは今の値段・しまっておいた値段（stash）・空の ○円 1 つ の順。
+ * 答えは ① の prices（id は stash から引き継ぐ）
+ */
+export function setPriceShown(prices, shown, { stash = [], taken = new Set(), rand } = {}) {
+  if (!shown) return [];
+  if (prices?.length) return prices;
+  if (stash?.length) return pricesFromRows(rowsFromPrices(stash), stash, taken, rand);
+  return pricesFromRows([{ type: "fixed", amount: "" }], [], taken, rand);
 }
