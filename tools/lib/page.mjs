@@ -163,7 +163,7 @@ function correct(){
       info.forEach(function(b){
         if(b===a) return;
         var sameCol = b.left < a.right-1 && a.left < b.right-1; // 横の範囲が重なる＝同じ列
-        if(sameCol && (b.top + b.h) <= a.top + 1) shift += b.delta;
+        if(sameCol && (b.top + b.h - b.delta) <= a.top + 1) shift += b.delta; // 焼いた高さ（伸びる前）で「上にあるか」を決める（指示 0064 の 5）
       });
       if(Math.abs(shift)>2) a.e.style.transform='translateY('+shift+'px)';
     });
