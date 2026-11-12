@@ -4,7 +4,7 @@
 //   hoursGroupTokens：営業時間を曜日のまとまりに分ける（B）
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { chooseKeep, hoursGroupTokens, tokenize, KEEP_TOL } from "./lib/linebreak.mjs";
+import { chooseKeep, hoursGroupTokens, tokenize, tokenizeInfo, protectedRanges, KEEP_TOL } from "./lib/linebreak.mjs";
 
 const dev = (chosen, boxW, chunkW = {}) => ({ chosen, boxW, chunkW });
 
@@ -40,4 +40,33 @@ test("tokenize：hoursGroups は営業時間の run だけに効く（ほかの 
   assert.deepEqual(grouped.slice(0, 2), ["<span>9:00〜18:00</span>", "<span>（日曜は17:00まで）</span>"]);
   assert.deepEqual(grouped.slice(2), tokenize([runs[1]], true));
   assert.notDeepEqual(plain, grouped);
+});
+
+// ---------- 守りたい塊（指示 0064）----------
+test("protectedRanges：時刻の範囲・L.O.・数＋単位", () => {
+  const t = "昼 11:30〜14:00（L.O. 13:30）・全8席・1,200円";
+  assert.deepEqual(protectedRanges(t).map(([s, e]) => t.slice(s, e)), ["11:30〜14:00", "（L.O. 13:30）", "8席", "1,200円"]);
+  assert.deepEqual(protectedRanges("季節の上生菓子"), []);
+});
+
+test("tokenize：連動の境が塊の中なら <wbr> を入れずにつなぐ（span は run ごとのまま）", () => {
+  const runs = [{ text: "昼" }, { text: " " }, { text: "11:30" }, { text: "〜" }, { text: "14:00" }, { text: "（L.O. " }, { text: "13:30" }, { text: "）" }];
+  const toks = tokenize(runs, true);
+  assert.deepEqual(toks, ["<span>昼</span>", "<span> </span>", "<span>11:30</span><span>〜</span><span>14:00</span>", "<span>（L.O. </span><span>13:30</span><span>）</span>"]);
+  assert.deepEqual(tokenize([{ text: "全" }, { text: "8" }, { text: "席" }], true), ["<span>全</span>", "<span>8</span><span>席</span>"]);
+  // lb=false は今までどおり run ごと
+  assert.equal(tokenize([{ text: "11:30" }, { text: "〜" }], false).length, 2);
+});
+
+test("tokenizeInfo：prot は塊だけを nowrap で包む（塊の無いトークンはそのまま）", () => {
+  const i = tokenizeInfo([{ text: "8:00〜18:00（L.O. 17:30）定休日なし" }], true);
+  assert.equal(i.prot.length, i.toks.length);
+  assert.ok(i.prot.join("").includes('<span class="nowrap"><span>8:00〜18:00</span></span>'));
+  assert.equal(tokenizeInfo([{ text: "季節の和菓子" }], true).prot, null);
+});
+
+test("chooseKeep：長い（）の塊（箱より広い）は keep 0（0050 の天ぷらの品名）", () => {
+  // 「天ぷら定食（車海老・季節の野菜・ご飯・赤出汁）」：末尾の塊が 390 の箱より広い
+  assert.deepEqual(chooseKeep({ pc: dev(0, 490, { 2: 300 }), sp: dev(3, 150, { 2: 140, 3: 260, 4: 300 }) }), { keep: 2, fixed: true });
+  assert.deepEqual(chooseKeep({ sp: dev(2, 150, { 2: 240 }) }), { keep: 0, fixed: true });
 });

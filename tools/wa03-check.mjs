@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // wa-03：dist/<店> の数値の検査（node tools/wa03-check.mjs <店>。既定は roku）（撮影はしない）。幅 320〜1920 の横はみ出し・文字のはみ出し・文字どうしの重なり・
-// セクションの高さ（SPEC 比）・読めない写真・コントラスト・写真の帯の動きを調べる。問題があれば終了コード 1。
+// 情報の表の見出しと値のずれ（指示 0064）・セクションの高さ（SPEC 比）・読めない写真・コントラスト・写真の帯の動きを調べる。問題があれば終了コード 1。
 import fs from "node:fs";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -32,6 +32,22 @@ for (const w of WIDTHS) {
     const sameRow = (p, q) => { const m = /^(ac|ft)_k([0-9]+)$/.exec(p), n = /^(ac|ft)_v([0-9]+)$/.exec(q); return !!(m && n && m[1] === n[1] && m[2] === n[2]); };
     const R = T.filter((e) => !e.closest(".site-header")).map((e) => { const b = rect(e); return [idOf(e), { l: b.left, r: b.right, t: b.top + scrollY, b: b.bottom + scrollY }]; });
     for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) { const a = R[i][1], b = R[j][1]; if (a.l < b.r - 1 && b.l < a.r - 1 && a.t < b.b - 1 && b.t < a.b - 1 && !sameRow(R[i][0], R[j][0])) out.over.push(R[i][0] + "×" + R[j][0]); }
+    // 情報の表の見出しと値がそろうか（指示 0064）：フッター（ft）は全幅で同じ行の項目名と値の文字の上端の差 ≤ 2px。
+    //   Access（ac）は 1008 以上（横並び）で同じく ≤ 2px、1008 未満は横並び（上端の差 ≤ 2px）か、項目名が値の上（値の上端 ≥ 項目名の下端 − 1）
+    out.rowgap = [];
+    const byId = Object.fromEntries(T.map((e) => [idOf(e), e]));
+    for (const [id, e] of Object.entries(byId)) {
+      const m = /^(ac|ft)_k([0-9]+)$/.exec(id); if (!m) continue;
+      const v = byId[`${m[1]}_v${m[2]}`]; if (!v) continue;
+      const kb = rect(e), vb = rect(v);
+      if (m[1] === "ft" || vw >= 1008) { if (Math.abs(kb.top - vb.top) > 2) out.rowgap.push(`${id}・${m[1]}_v${m[2]} ${(vb.top - kb.top).toFixed(1)}px`); }
+      else if (Math.abs(kb.top - vb.top) > 2 && vb.top < kb.bottom - 1) out.rowgap.push(`${id}・${m[1]}_v${m[2]} 値が項目名に ${(kb.bottom - vb.top).toFixed(1)}px かかる`);
+    }
+    // 組み立ての高さ（スマホは webkit で測った data-mh-sp）と、このブラウザ（chromium）の高さが半行より違う箱（情報。行数のずれ）
+    out.lines = [];
+    if (vw < 768) { const sc = parseFloat(getComputedStyle(document.documentElement).fontSize) / 10;
+      for (const e of document.querySelectorAll("[data-mh-sp]")) { if (!vis(e)) continue; const st = getComputedStyle(e); const lh = parseFloat(st.lineHeight) || parseFloat(st.fontSize) * 1.5;
+        const d = e.offsetHeight - parseFloat(e.getAttribute("data-mh-sp")) * sc; if (Math.abs(d) > lh / 2) out.lines.push(`${idOf(e) || e.className}(${d > 0 ? "+" : ""}${Math.round(d)}px)`); } }
     for (const s of document.querySelectorAll("[data-sec]")) out.secs[s.dataset.sec] = Math.round(s.getBoundingClientRect().height * 10) / 10;
     const body = document.querySelector("[data-el=st_body]"); out.bodyPx = body ? parseFloat(getComputedStyle(body).fontSize) : 0;
     const R2 = document.createRange(); if (body) { R2.selectNodeContents(body); out.bodyH = Math.round(R2.getBoundingClientRect().height * 10) / 10; }
@@ -59,6 +75,8 @@ for (const w of WIDTHS) {
   if (r.sw > r.vw) ng(`${w}: 横はみ出し ${r.sw}>${r.vw}`);
   if (r.clip.length) ng(`${w}: 文字のはみ出し ${[...new Set(r.clip)].join(",")}`);
   if (r.over.length) ng(`${w}: 文字の重なり ${r.over.join(",")}`);
+  if (r.rowgap.length) ng(`${w}: 見出しと値がずれる ${r.rowgap.join(",")}`);
+  if (r.lines.length) console.log(`${w}: 行数のずれ（webkit と chromium。情報） ${r.lines.join(",")}`);
   if (r.orphan.length) ng(`${w}: 品名の最後の行が 1〜2 字 ${r.orphan.join(",")}`);
   if (r.broken.length) ng(`${w}: 読めない写真 ${r.broken.join(",")}`);
   if (r.contrast.length) ng(`${w}: コントラスト ${r.contrast.join(",")}`);

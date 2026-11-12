@@ -136,16 +136,58 @@ export function formatHoursShortLO(hours) {
   return [main, ...parts].join("／");
 }
 
+// period：1つの時間帯（値は /hours/weekly/<曜日>/periods/<i>）。「昼 11:30〜14:00（L.O. 13:30）」。
+//   label・lastOrder が無ければ付けない（指示 0064）。
+export function formatPeriod(p) {
+  if (!p || !p.start || !p.end) return "";
+  return `${p.label ? `${p.label} ` : ""}${periodStr(p)}${p.lastOrder ? `（L.O. ${formatTime(p.lastOrder)}）` : ""}`;
+}
+
+// hoursPeriods：時間帯ごとに period の形で「／」でつなぐ（値は /hours。指示 0064）。
+//   いちばん多い曜日の時間帯を本体にし、違う曜日は hoursShortLO と同じく「／土曜は…」で足す。servingTime は periods をそのまま。
+//   例「昼 11:30〜14:00（L.O. 13:30）／夜 17:30〜21:30（L.O. 20:30）／土曜は昼 11:30〜15:00」
+export function formatHoursPeriods(hours) {
+  if (!hours) return "";
+  if (!hours.weekly) return Array.isArray(hours.periods) ? hours.periods.map(formatPeriod).filter(Boolean).join("／") : "";
+  const weekly = hours.weekly;
+  const openDays = WEEKDAYS.filter((d) => weekly[d]?.status === "open" && weekly[d].periods?.length);
+  if (openDays.length === 0) return "";
+  const sig = (d) => weekly[d].periods.map(formatPeriod).join("／");
+  const counts = new Map();
+  for (const d of openDays) counts.set(sig(d), (counts.get(sig(d)) || 0) + 1);
+  let main = null, best = -1;
+  for (const d of openDays) { const c = counts.get(sig(d)); if (c > best) { best = c; main = sig(d); } }
+  const parts = openDays.filter((d) => sig(d) !== main).map((d) => `${WD_JA[d]}は${sig(d)}`);
+  return [main, ...parts].join("／");
+}
+
+// 店主の画面の字数（指示 0064 の 6。apps/owner/src/lib/limits.js が呼ぶ）
+//   hoursShownChars：表示の字数＝hoursShortLO の字数（L.O. の無い店は hoursShort と同じ）
+export function hoursShownChars(hours) { return [...formatHoursShortLO(hours)].length; }
+//   hoursExceptionDays：基本と違う時間の曜日の数（hoursShort が添える曜日）。lo=true なら最後の時間帯の L.O. の違いも数える（hoursShortLO）
+export function hoursExceptionDays(hours, { lo = false } = {}) {
+  const w = hours?.weekly ?? {};
+  const open = WEEKDAYS.filter((d) => w[d]?.status === "open" && w[d].periods?.length);
+  const sig = (d) => w[d].periods.map((p) => `${p.start}-${p.end}`).join(",") + (lo ? `|${w[d].periods[w[d].periods.length - 1].lastOrder || ""}` : "");
+  const counts = new Map();
+  for (const d of open) counts.set(sig(d), (counts.get(sig(d)) || 0) + 1);
+  let best = -1, main = null;
+  for (const d of open) { const c = counts.get(sig(d)); if (c > best) { best = c; main = sig(d); } }
+  return open.filter((d) => sig(d) !== main).length;
+}
+
 // closedDays：定休日。「水曜・第3火曜・年末年始」
 //   曜日の休み → 定休の規則 → 決まった期間の例外（休業）の順。
-export function formatClosedDays(hours) {
+//   closedDaysLong（opts.long）：曜日に「日」を付ける。「水曜日・第3火曜日・年末年始」（指示 0064）
+export function formatClosedDays(hours, opts = {}) {
   if (!hours) return "";
   const out = [];
   const weekly = hours.weekly || {};
-  for (const d of WEEKDAYS) if (weekly[d]?.status === "closed") out.push(WD_JA[d]);
+  const wd = (d) => WD_JA[d] + (opts.long ? "日" : "");
+  for (const d of WEEKDAYS) if (weekly[d]?.status === "closed") out.push(wd(d));
   for (const r of hours.closedRules || []) {
-    if (r.type === "nthWeekday") out.push(`第${[...r.nth].sort((a, b) => a - b).join("・")}${WD_JA[r.weekday]}`);
-    else if (r.type === "lastWeekday") out.push(`最終${WD_JA[r.weekday]}`);
+    if (r.type === "nthWeekday") out.push(`第${[...r.nth].sort((a, b) => a - b).join("・")}${wd(r.weekday)}`);
+    else if (r.type === "lastWeekday") out.push(`最終${wd(r.weekday)}`);
     else if (r.type === "irregular") out.push("不定休");
   }
   for (const ex of Object.values(hours.exceptions || {})) {
@@ -155,12 +197,13 @@ export function formatClosedDays(hours) {
 }
 
 // hoursTable：曜日ごとの表（各曜日1行）。表示の仕組みが行に分ける前提で、行を配列で返す。
-export function formatHoursTable(hours) {
+//   hoursTableLO（opts.lo）：各曜日の値に、最後の時間帯の L.O. を添える「17:30〜21:00（L.O. 20:30）」（指示 0064。hoursTable は今までどおり）
+export function formatHoursTable(hours, opts = {}) {
   if (!hours?.weekly) return [];
   return WEEKDAYS.filter((d) => hours.weekly[d]).map((d) => {
     const v = hours.weekly[d];
     let val;
-    if (v.status === "open") val = periodsStr(v.periods);
+    if (v.status === "open") { val = periodsStr(v.periods); const lo = opts.lo && v.periods?.length ? v.periods[v.periods.length - 1].lastOrder : null; if (lo) val += `（L.O. ${formatTime(lo)}）`; }
     else if (v.status === "byAppointment") val = "予約のみ";
     else val = "休み";
     return { day: WD_JA[d], value: val };
@@ -246,7 +289,11 @@ export function applyFormat(format, value, ctx = {}) {
     case "hoursShort": return formatHoursShort(value);
     case "hoursShortLO": return formatHoursShortLO(value);
     case "hoursTable": return formatHoursTable(value); // 配列を返す（特別扱い）
+    case "hoursTableLO": return formatHoursTable(value, { lo: true }); // 同じく配列
     case "closedDays": return formatClosedDays(value);
+    case "closedDaysLong": return formatClosedDays(value, { long: true });
+    case "period": return formatPeriod(value);
+    case "hoursPeriods": return formatHoursPeriods(value);
     case "address": return formatAddress(value);
     case "addressShort": return formatAddressShort(value);
     case "access": return formatAccess(value);

@@ -641,9 +641,13 @@
             "plain",
             "paragraphs",
             "hoursTable",
+            "hoursTableLO",
             "hoursShort",
             "hoursShortLO",
             "closedDays",
+            "closedDaysLong",
+            "period",
+            "hoursPeriods",
             "address",
             "addressShort",
             "access",
@@ -656,7 +660,7 @@
             "seats",
             "flag"
           ],
-          "description": "複雑な値を文字にする書き方。例：paragraphs=改行で段落に分ける（紹介文など）、hoursTable=曜日ごとの表、hoursShort=「9:00〜18:00（水曜定休）」、hoursShortLO=hoursShort に各曜日の L.O. を添える（そろえば「（L.O. 20:30）」、そろわなければ「／土曜は17:00〜22:00（L.O. 21:00）」）、flag=true/false の項目（true なら段落の自由な文字だけを出し、false・空なら段落ごと消す。「できません」とは書かない）"
+          "description": "複雑な値を文字にする書き方。例：paragraphs=改行で段落に分ける（紹介文など）、hoursTable=曜日ごとの表、hoursTableLO=曜日ごとの表に各曜日の L.O.、hoursShort=「9:00〜18:00（水曜定休）」、hoursShortLO=hoursShort に各曜日の L.O. を添える（そろえば「（L.O. 20:30）」、そろわなければ「／土曜は17:00〜22:00（L.O. 21:00）」）、closedDaysLong=定休日を「月曜日・第2日曜日」の形で、period=1つの時間帯（値は /hours/weekly/<曜日>/periods/<i>）を「昼 11:30〜14:00（L.O. 13:30）」、hoursPeriods=時間帯ごとに period の形で「／」でつなぎ違う曜日は「／土曜は…」で足す、flag=true/false の項目（true なら段落の自由な文字だけを出し、false・空なら段落ごと消す。「できません」とは書かない）"
         }
       }
     },

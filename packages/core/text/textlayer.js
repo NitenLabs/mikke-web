@@ -12,14 +12,48 @@ export const TEXT = (function () {
   const PUNCT = new RegExp(PUNCT_SRC, "g");
   const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
+  // 守りたい塊（本線 linebreak.mjs の PROTECT_SRC と同じ。指示 0064）：時刻の範囲・時刻・（L.O. 21:00）・数＋単位。
+  //   中で文節を切らない（1-a）。測って中で折れたら nowrap で包む（1-b。buildH）
+  const PROTECT_SRC = String.raw`(?:翌)?\d{1,2}:\d{2}(?:\s*[〜~～]\s*(?:翌)?\d{1,2}:\d{2})?|（?L\.O\.\s*(?:翌)?\d{1,2}:\d{2}）?|\d{1,3}(?:,\d{3})*(?:席|名様|名|円|分|時間|人|品|貫|本|台|個|枚|杯|皿|種|部|年|歳|g|ml)`;
+  function protectedRanges(text) {
+    const out = []; if (!text) return out; const re = new RegExp(PROTECT_SRC, "g"); let m;
+    while ((m = re.exec(text))) { if (!m[0].length) { re.lastIndex++; continue; } out.push([m.index, m.index + m[0].length]); }
+    return out;
+  }
+  // 文節の列を、境が守りたい塊の中に来る所でつなぐ
+  function mergePhrases(phrases, ranges) {
+    if (!ranges.length) return phrases;
+    const out = []; let pos = 0;
+    for (const ph of phrases) { if (out.length && ranges.some(([a, b]) => a < pos && pos < b)) out[out.length - 1] += ph; else out.push(ph); pos += ph.length; }
+    return out;
+  }
+  const rangeIdx = (ranges, i) => ranges.findIndex(([a, b]) => a <= i && i < b);
   // runs=[{text}]、lb=改行規則の有無。lb=false は1トークン。
   function tokenize(runs, lb) {
     const toks = [];
     for (const r of runs) {
       if (!lb || !r.text) { toks.push(`<span>${esc(r.text || "")}</span>`); continue; }
-      for (const ph of splitPhrases(r.text)) toks.push(`<span>${esc(ph)}</span>`);
+      for (const ph of mergePhrases(splitPhrases(r.text), protectedRanges(r.text))) toks.push(`<span>${esc(ph)}</span>`);
     }
     return toks;
+  }
+  // 1-b 用：tokenize と同じトークンで、守りたい塊を nowrap で包んだ物（塊が無ければ null）
+  function tokenizeProt(runs, lb) {
+    if (!lb) return null; const toks = []; let any = false;
+    for (const r of runs) {
+      if (!r.text) { toks.push("<span></span>"); continue; }
+      const rg = protectedRanges(r.text); if (rg.length) any = true;
+      let pos = 0;
+      for (const ph of mergePhrases(splitPhrases(r.text), rg)) { toks.push("<span>" + wrapRanges(ph, pos, rg, (i, j) => esc(ph.slice(i, j))) + "</span>"); pos += ph.length; }
+    }
+    return any ? toks : null;
+  }
+  // 文字列 text（全体の中の位置 base から）のうち守りたい塊の所を <span class="nowrap"> で包む。piece(t) は中身の HTML
+  function wrapRanges(text, base, ranges, piece) {
+    let out = "", i = 0;
+    while (i < text.length) { const ri = rangeIdx(ranges, base + i); let j = i + 1; while (j < text.length && rangeIdx(ranges, base + j) === ri) j++;
+      out += ri >= 0 ? '<span class="nowrap">' + piece(i, j) + "</span>" : piece(i, j); i = j; }
+    return out;
   }
   // 文の一部の見た目（試験台13）：ひと続きの切れ目 runs=[{text,bold?,color?,scale?}] を、改行の切れ目（phrase）ごとに
   // 見た目つきの span に分けてトークン化する。色は token 名なら CSS 変数、#hex ならそのまま。大きさは箱に対する倍率（em）。
@@ -36,17 +70,27 @@ export const TEXT = (function () {
     if (r.link) { s.push("text-decoration:underline"); s.push("text-decoration-thickness:1px"); s.push("text-underline-offset:3px"); }
     return s.join(";");
   }
-  function tokenizeRuns(runs, lb) {
+  // prot=true のとき、守りたい塊を nowrap で包んだトークンを返す（塊が無ければ null）
+  function tokenizeRuns(runs, lb, prot) {
     const plain = runs.map((r) => r.text || "").join("");
-    if (!plain) return ["<span></span>"];
-    const phrases = lb ? splitPhrases(plain) : [plain];
+    if (!plain) return prot ? null : ["<span></span>"];
+    const ranges = lb ? protectedRanges(plain) : [];
+    if (prot && !ranges.length) return null;
+    const phrases = lb ? mergePhrases(splitPhrases(plain), ranges) : [plain];
     const bnd = []; let o = 0; for (const r of runs) { const len = (r.text || "").length; bnd.push([o, o + len, r]); o += len; }
     const runAt = (i) => { for (const [s, e, r] of bnd) if (i >= s && i < e) return r; return runs.length ? runs[runs.length - 1] : {}; };
     const seg = (text, r) => { const css = runStyleCss(r); const lk = r.link ? (' data-lk="' + esc(JSON.stringify(r.link)) + '"') : ""; return (css || lk) ? ('<span' + lk + (css ? ' style="' + css + '"' : "") + '>' + esc(text) + "</span>") : esc(text); };
     const toks = []; let pos = 0;
     for (const ph of phrases) { const L = ph.length; if (L === 0) continue; const start = pos; pos += L; const end = start + L;
       let inner = ""; let i = start;
-      while (i < end) { const r = runAt(i); let j = i + 1; while (j < end && runAt(j) === r) j++; inner += seg(plain.slice(i, j), r); i = j; }
+      while (i < end) { const r = runAt(i); const ri = prot ? rangeIdx(ranges, i) : -1; let j = i + 1; while (j < end && runAt(j) === r && (!prot || rangeIdx(ranges, j) === ri)) j++; inner += seg(plain.slice(i, j), r); i = j; }
+      if (prot) { // 塊ごとに nowrap で包む（同じ塊の続きの seg はまとめる）
+        inner = ""; i = start; let open = -1;
+        while (i < end) { const r = runAt(i); const ri = rangeIdx(ranges, i); let j = i + 1; while (j < end && runAt(j) === r && rangeIdx(ranges, j) === ri) j++;
+          if (ri !== open) { if (open >= 0) inner += "</span>"; if (ri >= 0) inner += '<span class="nowrap">'; open = ri; }
+          inner += seg(plain.slice(i, j), r); i = j; }
+        if (open >= 0) inner += "</span>";
+      }
       toks.push("<span>" + inner + "</span>");
     }
     return toks.length ? toks : ["<span></span>"];
@@ -101,6 +145,13 @@ export const TEXT = (function () {
     return 0;
   }
 
+  // 要素の文字で、守りたい塊の中で行が変わる所があるか（文字ごとの矩形の上端が 2px より違う）
+  function rangeBroken(el) {
+    const tops = []; const walk = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); const g = document.createRange(); let n; let txt = "";
+    while ((n = walk.nextNode())) for (let k = 0; k < n.length; k++) { g.setStart(n, k); g.setEnd(n, k + 1); const r = g.getBoundingClientRect(); tops.push(r.width === 0 && r.height === 0 ? null : r.top); txt += n.data[k]; }
+    for (const [a, b] of protectedRanges(txt)) { let first = null; for (let k = a; k < b; k++) { if (tops[k] == null) continue; if (first == null) first = tops[k]; else if (Math.abs(tops[k] - first) > 2) return true; } }
+    return false;
+  }
   // H を作る：collectTextBoxes の各箱を tokenize→keep→join。返り値 Map key->{html}
   // measRoot: keep 実測用の隠しコンテナ（呼び出し側が用意。:root font-size 10px 配下）
   const MEAS_BASE = "position:absolute;left:0;top:0;visibility:hidden;white-space:break-spaces;line-break:strict;word-break:keep-all;overflow-wrap:anywhere";
@@ -122,7 +173,20 @@ export const TEXT = (function () {
         meas.style.width = b.widthPx + "px";
         keep = chooseKeep(meas, toks);
       }
-      H.set(b.key, { html: joinTokens(toks, lb ? keep : 0) });
+      let html = joinTokens(toks, lb ? keep : 0);
+      // 1-b：守りたい塊の中で行が変わるなら、塊を nowrap で包む（包んだ塊が箱の幅＋KEEP_TOL より広ければ包まない。本線と同じ）
+      if (lb) {
+        const ptoks = (b.runs && b.runs.length) ? tokenizeRuns(b.runs, lb, true) : tokenizeProt([{ text: b.text }], lb);
+        if (ptoks && ptoks.length === toks.length) {
+          meas.innerHTML = html;
+          if (rangeBroken(meas)) {
+            meas.innerHTML = ptoks.join("<wbr>");
+            let maxW = 0; for (const n of meas.querySelectorAll(".nowrap")) maxW = Math.max(maxW, n.getBoundingClientRect().width);
+            if (maxW <= meas.clientWidth + KEEP_TOL) html = joinTokens(ptoks, keep);
+          }
+        }
+      }
+      H.set(b.key, { html });
     }
     meas.remove();
     return H;

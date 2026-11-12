@@ -45,7 +45,7 @@ const resolved = resolveSite(data, refDate);
 resolved.fontIds = themeFontIds(data.theme);
 const fontUrl = googleFontsUrl(resolved.fontIds), rootVars = themeRootVars(data.theme);
 // 改行の規則（R2）の keep を先に決める（build と同じ手順＝結果が一致する）
-{ const lbr = await computeLineBreakKeep(lineBreakRequests(resolved), fontUrl, rootVars, { chromium, webkit }); resolved.lineBreakKeep = lbr.keep; resolved.lineBreakAlt = lbr.alt; }
+{ const lbr = await computeLineBreakKeep(lineBreakRequests(resolved), fontUrl, rootVars, { chromium, webkit }); resolved.lineBreakKeep = lbr.keep; resolved.lineBreakAlt = lbr.alt; resolved.lineBreakProtect = lbr.protect; }
 const heights = await measureHeights(measurementRequests(resolved), fontUrl, rootVars);
 resolved.heights = heights;
 buildRepLayouts(resolved);

@@ -1,7 +1,7 @@
 // 上限の判定（SPEC 3章）。判定はここだけ。純粋（DOM を使わない）。
 // 上限はお店ごとの samples/<店>/edit-limits.json。level:"warn" は「目安」（保存はできる）、それ以外は保存の前に止める。
 // edit-limits に無い文字の箱は「今の段落の数まで・各段落は今の最長＋2 字まで」（error）。
-import { formatHoursShort } from "../../../../tools/lib/format.mjs";
+import { hoursShownChars, hoursExceptionDays } from "../../../../tools/lib/format.mjs";
 
 const WEEKDAYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"];
 export const len = (s) => [...String(s ?? "")].length;
@@ -75,17 +75,8 @@ export function remainText(r) {
 const TIME_RE = /^([01]\d|2[0-9]|3[0-5]):[0-5]\d$/;
 const mins = (t) => { const [h, m] = t.split(":").map(Number); return h * 60 + m; };
 
-/** 基本と違う曜日の数（formatHoursShort が括弧で添える曜日） */
-export function exceptionDays(hours) {
-  const w = hours?.weekly ?? {};
-  const open = WEEKDAYS.filter((d) => w[d]?.status === "open" && w[d].periods?.length);
-  const sig = (d) => w[d].periods.map((p) => `${p.start}-${p.end}`).join(",");
-  const counts = new Map();
-  for (const d of open) counts.set(sig(d), (counts.get(sig(d)) || 0) + 1);
-  let best = -1, main = null;
-  for (const d of open) { const c = counts.get(sig(d)); if (c > best) { best = c; main = sig(d); } }
-  return open.filter((d) => sig(d) !== main).length;
-}
+/** 基本と違う曜日の数（formatHoursShort が括弧で添える曜日）。数え方は tools/lib/format.mjs の hoursExceptionDays（共通） */
+export const exceptionDays = (hours) => hoursExceptionDays(hours);
 
 /** 営業時間の判定（shop:/hours） */
 export function checkHours(hours, rule) {
@@ -106,7 +97,7 @@ export function checkHours(hours, rule) {
   const ex = exceptionDays(hours);
   if (rule.maxExceptionDays != null && ex > rule.maxExceptionDays)
     add(r, lv, `ほかと違う時間の曜日は ${rule.maxExceptionDays} つまでにしてください（今 ${ex} つ）`);
-  const shown = len(formatHoursShort(hours));
+  const shown = hoursShownChars(hours); // 表示の字数（L.O. を出す店はその分も。共通の数え方）
   if (rule.maxRenderedChars != null && shown > rule.maxRenderedChars)
     add(r, lv, `表示が長すぎます（${rule.maxRenderedChars} 字まで・今 ${shown} 字）`);
   return r;

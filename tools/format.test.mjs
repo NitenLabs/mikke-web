@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 
 import {
   formatTime, formatHoursShort, formatHoursShortLO, formatClosedDays, formatPriceAll, formatPrice, formatPriceAllTax,
+  formatPeriod, formatHoursPeriods, hoursShownChars, hoursExceptionDays, applyFormat,
 } from "./lib/format.mjs";
 import { resolveRepeater, makeRefDate, effectivePrices } from "./lib/catalog.mjs";
 import { resolveText } from "./lib/text.mjs";
@@ -182,4 +183,44 @@ test("空になったセクションは消え、背景の交互は消えたあ�
   assert.equal(bg.sec_c, "theme:surface");
   assert.equal(bg.sec_d, "theme:background");
   assert.equal(bg.sec_e, "#123456");
+});
+
+// ---------- 時間帯の L.O.・定休日の「曜日」の形・店主の画面の字数（指示 0064）----------
+test("period：label・L.O. があれば「昼 11:30〜14:00（L.O. 13:30）」、無ければ付けない", () => {
+  assert.equal(formatPeriod({ label: "昼", start: "11:30", end: "14:00", lastOrder: "13:30" }), "昼 11:30〜14:00（L.O. 13:30）");
+  assert.equal(formatPeriod({ start: "17:30", end: "24:30" }), "17:30〜翌0:30");
+  assert.equal(applyFormat("period", { label: "夜", start: "17:30", end: "21:30" }), "夜 17:30〜21:30");
+});
+
+test("hoursPeriods：そろえば時間帯を「／」で、違う曜日は「／土曜は…」で足す", () => {
+  const P = (lunchEnd) => [{ label: "昼", start: "11:30", end: lunchEnd, lastOrder: "13:30" }, { label: "夜", start: "17:30", end: "21:30", lastOrder: "20:30" }];
+  const open = (ps) => ({ status: "open", periods: ps });
+  const weekly = { mon: { status: "closed" }, tue: open(P("14:00")), wed: open(P("14:00")), thu: open(P("14:00")), fri: open(P("14:00")), sat: open(P("15:00")), sun: open(P("14:00")) };
+  assert.equal(formatHoursPeriods({ weekly }), "昼 11:30〜14:00（L.O. 13:30）／夜 17:30〜21:30（L.O. 20:30）／土曜は昼 11:30〜15:00（L.O. 13:30）／夜 17:30〜21:30（L.O. 20:30）");
+  const same = { ...weekly, sat: open(P("14:00")) };
+  assert.equal(formatHoursPeriods({ weekly: same }), "昼 11:30〜14:00（L.O. 13:30）／夜 17:30〜21:30（L.O. 20:30）");
+  assert.equal(formatHoursPeriods({ periods: [{ start: "11:00", end: "14:00" }] }), "11:00〜14:00");
+});
+
+test("closedDaysLong：芦屋堂は「水曜日・第3火曜日・年末年始」（closedDays は今までどおり）", () => {
+  const shop = JSON.parse(fs.readFileSync(path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "samples", "ashiyado", "shop.json"), "utf8"));
+  assert.equal(applyFormat("closedDaysLong", shop.hours), "水曜日・第3火曜日・年末年始");
+  assert.equal(applyFormat("closedDays", shop.hours), "水曜・第3火曜・年末年始");
+});
+
+test("hoursShownChars・hoursExceptionDays：L.O. の分も数える（L.O. の無い店は hoursShort と同じ）", () => {
+  const open = (end, lo) => ({ status: "open", periods: [{ start: "17:30", end, ...(lo ? { lastOrder: lo } : {}) }] });
+  const noLo = { weekly: { mon: open("21:00"), tue: open("21:00"), sat: open("22:00") } };
+  assert.equal(hoursShownChars(noLo), [...formatHoursShort(noLo)].length);
+  const lo = { weekly: { mon: open("21:00", "20:30"), tue: open("21:00", "20:30"), sat: open("21:00", "21:00") } };
+  assert.equal(hoursShownChars(lo), [...formatHoursShortLO(lo)].length);
+  assert.equal(hoursExceptionDays(lo), 0);
+  assert.equal(hoursExceptionDays(lo, { lo: true }), 1);
+  assert.equal(hoursExceptionDays(noLo), 1);
+});
+
+test("hoursTableLO：各曜日の値に最後の時間帯の L.O.（hoursTable は今までどおり）", () => {
+  const h = { weekly: { mon: { status: "closed" }, tue: { status: "open", periods: [{ start: "11:30", end: "14:00", lastOrder: "13:30" }, { start: "17:30", end: "21:00", lastOrder: "20:30" }] }, wed: { status: "open", periods: [{ start: "11:30", end: "14:00" }] } } };
+  assert.deepEqual(applyFormat("hoursTableLO", h).map((r) => r.value), ["休み", "11:30〜14:00・17:30〜21:00（L.O. 20:30）", "11:30〜14:00"]);
+  assert.deepEqual(applyFormat("hoursTable", h).map((r) => r.value), ["休み", "11:30〜14:00・17:30〜21:00", "11:30〜14:00"]);
 });
